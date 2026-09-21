@@ -59,6 +59,13 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 - **Data yang dipegang:** `BudgetPlan`, `ShoppingListItem`.
 - **Halaman:** 1 halaman dengan form dan hasil dalam satu tampilan, mengikuti mockup terakhir.
 
+**CRUD Smart Budget Meal Planner:**
+
+- **Create:** membuat card rencana dan daftar belanja dari input budget, durasi, jumlah porsi, target gizi, dan preferensi.
+- **Read:** menampilkan daftar card dan detail belanja per kategori, estimasi harga, total vs budget, serta jadwal masak.
+- **Update:** mengubah judul card, budget, durasi, porsi, atau item belanja; hasil dan total belanja dihitung ulang.
+- **Delete:** menghapus satu card rencana beserta item belanjanya.
+
 ### Modul 2 — Smart Pantry & Meal Planner
 
 **PIC:** Rajendra Akbar Mahdiansyah
@@ -68,6 +75,13 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 - **Integrasi:** menyediakan fungsi `pantry_service.kurangi_stok()` untuk dipanggil Modul 4 saat pengguna menekan **Sudah Masak**.
 - **Data yang dipegang:** `PantryItem`.
 - **Halaman:** 1 halaman berisi dua panel input dan tabel inventaris.
+
+**CRUD Virtual Pantry:**
+
+- **Create:** menambahkan bahan lewat form manual atau hasil OCR struk yang sudah diperiksa dan diedit.
+- **Read:** menampilkan tabel stok, lokasi simpan, dan estimasi kedaluwarsa.
+- **Update:** mengubah nama, kategori, kuantitas, lokasi simpan, atau estimasi daya simpan. Kuantitas juga berkurang saat **Sudah Masak**.
+- **Delete:** menghapus satu bahan dari inventaris.
 
 Foto bahan mentah dan image classification dihapus dari cakupan fitur.
 
@@ -81,6 +95,15 @@ Foto bahan mentah dan image classification dihapus dari cakupan fitur.
 - **Data yang dipegang:** `User`, `UserProfile`, `FoodPreference`.
 - **Halaman:** 4 halaman, yaitu Landing, Register, Login, dan Profil & Preferensi.
 
+**CRUD User Account & Food Preference:**
+
+- **Create:** mendaftarkan akun, lalu mengisi data diri, target diet/gizi, alergi, dan preferensi halal.
+- **Read:** menampilkan informasi akun, profil, dan preferensi milik pengguna.
+- **Update:** mengubah informasi akun dan data diri yang tersedia di profil, serta target diet/gizi, alergi, dan preferensi halal.
+- **Delete:** belum termasuk cakupan fitur untuk akun, profil, maupun preferensi.
+
+Login dan logout merupakan operasi autentikasi.
+
 ### Modul 4 — Recipe Book & Cooking Tracker
 
 **PIC:** Alena Aura Deviyana
@@ -92,6 +115,13 @@ Foto bahan mentah dan image classification dihapus dari cakupan fitur.
 - **Data yang dipegang:** `Resep`, `FavoritResep`, `CookingHistory`.
 - **Halaman:** 1 halaman yang menggabungkan list/detail resep, favorit, dan tracker dalam satu tampilan, mengikuti mockup terakhir.
 
+**CRUD Recipe Book & Cooking Tracker:**
+
+- **Create:** administrator menambahkan resep; pengguna menyimpan resep favorit atau mencatat riwayat setelah aksi **Sudah Masak** berhasil.
+- **Read:** pengguna mencari, memfilter, dan membuka detail resep, serta melihat favorit dan riwayat masak pribadi.
+- **Update:** administrator mengubah informasi resep. Mengedit favorit atau riwayat masak belum termasuk cakupan fitur.
+- **Delete:** administrator menghapus resep dengan tetap menjaga riwayat masak yang sudah tercatat; pengguna menghapus resep dari favorit. Menghapus riwayat masak belum termasuk cakupan fitur.
+
 ### Modul 5 — Eco-Savings & Market Locator
 
 **PIC:** Aiko Zahwa
@@ -101,24 +131,12 @@ Foto bahan mentah dan image classification dihapus dari cakupan fitur.
 - **Data yang dipegang:** agregasi **read-only** dari Modul 1, 2, dan 4; tidak memiliki model utama sendiri.
 - **Halaman:** 0 halaman mandiri; seluruh fitur terintegrasi ke Dashboard.
 
-## Rancangan CRUD
+**CRUD Eco-Savings & Market Locator:**
 
-Tabel berikut menjelaskan rencana operasi **Create, Read, Update, Delete** untuk setiap model, bukan status implementasi. Data pribadi dikelola oleh pemiliknya, sedangkan master resep dikelola administrator. Tanda **—** berarti operasi tersebut tidak termasuk cakupan fitur.
-
-| Modul / Model | Create | Read | Update | Delete |
-| --- | --- | --- | --- | --- |
-| 1 — `BudgetPlan` | Membuat rencana dari budget, durasi, porsi, dan preferensi. | Melihat rencana, total belanja vs budget, dan jadwal masak. | Mengubah input dan menghitung ulang rencana. | Menghapus rencana beserta item belanjanya. |
-| 1 — `ShoppingListItem` | Menambahkan item belanja ke rencana. | Melihat item per kategori beserta kuantitas dan estimasi harga. | Mengubah item atau kuantitas dan menghitung ulang total belanja. | Menghapus item dari daftar belanja. |
-| 2 — `PantryItem` | Menambahkan stok dari hasil OCR yang dikonfirmasi atau form manual. | Melihat inventaris dan estimasi kedaluwarsa. | Mengubah data bahan, kuantitas, lokasi simpan, atau estimasi daya simpan; mengurangi stok melalui `kurangi_stok()`. | Menghapus bahan dari inventaris. |
-| 3 — `User` | Mendaftarkan akun. | Membaca informasi akun sendiri. | Memperbarui data akun yang tersedia di halaman profil. | — |
-| 3 — `UserProfile` | Mengisi profil pengguna. | Melihat profil sendiri. | Mengubah data diri. | — |
-| 3 — `FoodPreference` | Menyimpan target diet/gizi, alergi, dan preferensi halal. | Melihat preferensi untuk profil, perencanaan, dan pemilihan resep. | Mengubah target dan preferensi, termasuk menghapus pilihan alergi. | — |
-| 4 — `Resep` | Administrator menambahkan master resep. | Pengguna mencari, memfilter, dan melihat detail resep. | Administrator memperbarui master resep. | Administrator menghapus master resep dengan menjaga riwayat masak yang sudah tercatat. |
-| 4 — `FavoritResep` | Menyimpan resep ke favorit pribadi. | Melihat daftar favorit. | — | Menghapus resep dari favorit pribadi. |
-| 4 — `CookingHistory` | Mencatat resep, waktu, dan bahan terpakai saat **Sudah Masak** berhasil. | Melihat riwayat masak pribadi. | — | — |
-| 5 — Agregasi Dashboard | — | Melihat total dihemat, limbah dicegah, serta peta pasar/bank sampah melalui modal. | — | — |
-
-Login dan logout merupakan operasi autentikasi. Riwayat masak dibuat melalui aksi **Sudah Masak** dan hanya dibaca melalui tracker; edit atau hapus riwayat belum masuk cakupan. Modul 5 membaca data sumber tanpa menyediakan CRUD tersendiri.
+- **Create:** tidak ada; modul ini tidak menyimpan data utama sendiri.
+- **Read:** menampilkan card total dihemat dan limbah dicegah di Dashboard, serta peta pasar/bank sampah melalui modal.
+- **Update:** tidak ada; statistik dihitung dari data Modul 1, 2, dan 4.
+- **Delete:** tidak ada; penghapusan data dilakukan pada modul sumbernya.
 
 ## Integrasi Antar Modul
 
