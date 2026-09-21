@@ -34,7 +34,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "alfredo-nathaniel-takarin.pws.cs.ui.ac.id",
+    "alfredo-nathaniel-takarkuy.pws.cs.ui.ac.id",
 ]
 PRODUCTION = os.getenv("PRODUCTION", "False").lower() == "true"
 
