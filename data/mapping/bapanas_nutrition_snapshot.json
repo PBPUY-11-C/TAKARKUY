@@ -1,0 +1,514 @@
+[
+  {
+    "source_id": "beras",
+    "raw_name": "Beras",
+    "protein_per_100g": "9.24",
+    "fat_per_100g": "0.19",
+    "carbs_total_per_100g": "79.87",
+    "carbs_available_per_100g": "76.29"
+  },
+  {
+    "source_id": "tepung_terigu",
+    "raw_name": "Tepung Terigu",
+    "protein_per_100g": "10.83",
+    "fat_per_100g": "1.68",
+    "carbs_total_per_100g": "77.05",
+    "carbs_available_per_100g": "74.04"
+  },
+  {
+    "source_id": "jagung_segar",
+    "raw_name": "Jagung Segar",
+    "protein_per_100g": "4.08",
+    "fat_per_100g": "2.47",
+    "carbs_total_per_100g": "15.10",
+    "carbs_available_per_100g": "9.86"
+  },
+  {
+    "source_id": "beras_ketan",
+    "raw_name": "Beras Ketan",
+    "protein_per_100g": "10.34",
+    "fat_per_100g": "0.39",
+    "carbs_total_per_100g": "77.59",
+    "carbs_available_per_100g": "75.77"
+  },
+  {
+    "source_id": "jagung_pipil",
+    "raw_name": "Jagung Pipil",
+    "protein_per_100g": "11.13",
+    "fat_per_100g": "3.52",
+    "carbs_total_per_100g": "73.14",
+    "carbs_available_per_100g": "58.76"
+  },
+  {
+    "source_id": "kentang",
+    "raw_name": "Kentang",
+    "protein_per_100g": "2.05",
+    "fat_per_100g": "0.02",
+    "carbs_total_per_100g": "17.39",
+    "carbs_available_per_100g": "15.51"
+  },
+  {
+    "source_id": "singkong",
+    "raw_name": "Singkong",
+    "protein_per_100g": "1.99",
+    "fat_per_100g": "1.53",
+    "carbs_total_per_100g": "39.15",
+    "carbs_available_per_100g": "35.22"
+  },
+  {
+    "source_id": "ubi_jalar",
+    "raw_name": "Ubi Jalar",
+    "protein_per_100g": "2.09",
+    "fat_per_100g": "0.78",
+    "carbs_total_per_100g": "24.03",
+    "carbs_available_per_100g": "20.24"
+  },
+  {
+    "source_id": "talas",
+    "raw_name": "Talas",
+    "protein_per_100g": "4.91",
+    "fat_per_100g": "0.17",
+    "carbs_total_per_100g": "26.47",
+    "carbs_available_per_100g": "19.64"
+  },
+  {
+    "source_id": "sagu",
+    "raw_name": "Sagu",
+    "protein_per_100g": "0.32",
+    "fat_per_100g": "0.25",
+    "carbs_total_per_100g": "85.58",
+    "carbs_available_per_100g": "83.13"
+  },
+  {
+    "source_id": "ikan_lele",
+    "raw_name": "Ikan Lele",
+    "protein_per_100g": "16.17",
+    "fat_per_100g": "9.95",
+    "carbs_total_per_100g": "3.22",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "ikan_bandeng",
+    "raw_name": "Ikan Bandeng",
+    "protein_per_100g": "21.59",
+    "fat_per_100g": "5.59",
+    "carbs_total_per_100g": "1.74",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "ikan_mujair",
+    "raw_name": "Ikan Mujair",
+    "protein_per_100g": "18.46",
+    "fat_per_100g": "0.35",
+    "carbs_total_per_100g": "2.04",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "ikan_tongkol",
+    "raw_name": "Ikan Tongkol",
+    "protein_per_100g": "23.91",
+    "fat_per_100g": "0.42",
+    "carbs_total_per_100g": "3.26",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "ikan_kembung",
+    "raw_name": "Ikan Kembung",
+    "protein_per_100g": "22.16",
+    "fat_per_100g": "4.18",
+    "carbs_total_per_100g": "0.94",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "ikan_tuna",
+    "raw_name": "Ikan Tuna",
+    "protein_per_100g": "25.76",
+    "fat_per_100g": "0.27",
+    "carbs_total_per_100g": "1.93",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "udang",
+    "raw_name": "Udang",
+    "protein_per_100g": "18.93",
+    "fat_per_100g": "0.24",
+    "carbs_total_per_100g": "2.53",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "cumi",
+    "raw_name": "Cumi",
+    "protein_per_100g": "12.68",
+    "fat_per_100g": "0.38",
+    "carbs_total_per_100g": "0.86",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "daging_ayam",
+    "raw_name": "Daging Ayam",
+    "protein_per_100g": "21.04",
+    "fat_per_100g": "3.80",
+    "carbs_total_per_100g": "3.97",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "daging_sapi",
+    "raw_name": "Daging Sapi",
+    "protein_per_100g": "22.51",
+    "fat_per_100g": "0.30",
+    "carbs_total_per_100g": "3.95",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "daging_ayam_kampung",
+    "raw_name": "Daging Ayam Kampung",
+    "protein_per_100g": "21.94",
+    "fat_per_100g": "1.34",
+    "carbs_total_per_100g": "4.01",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "telur_ayam",
+    "raw_name": "Telur Ayam",
+    "protein_per_100g": "11.94",
+    "fat_per_100g": "7.69",
+    "carbs_total_per_100g": "7.03",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "telur_ayam_kampung",
+    "raw_name": "Telur Ayam Kampung",
+    "protein_per_100g": "12.75",
+    "fat_per_100g": "10.69",
+    "carbs_total_per_100g": "10.73",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "telur_puyuh",
+    "raw_name": "Telur Puyuh",
+    "protein_per_100g": "13.00",
+    "fat_per_100g": "11.24",
+    "carbs_total_per_100g": "13.21",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "susu_sapi_segar",
+    "raw_name": "Susu Sapi Segar",
+    "protein_per_100g": "3.39",
+    "fat_per_100g": "3.41",
+    "carbs_total_per_100g": "5.36",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "tomat",
+    "raw_name": "Tomat",
+    "protein_per_100g": "0.97",
+    "fat_per_100g": "0.02",
+    "carbs_total_per_100g": "4.47",
+    "carbs_available_per_100g": "2.54"
+  },
+  {
+    "source_id": "bayam",
+    "raw_name": "Bayam",
+    "protein_per_100g": "2.11",
+    "fat_per_100g": "0.55",
+    "carbs_total_per_100g": "6.23",
+    "carbs_available_per_100g": "1.72"
+  },
+  {
+    "source_id": "kangkung",
+    "raw_name": "Kangkung",
+    "protein_per_100g": "2.19",
+    "fat_per_100g": "0.25",
+    "carbs_total_per_100g": "4.15",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "kacang_panjang",
+    "raw_name": "Kacang Panjang",
+    "protein_per_100g": "1.46",
+    "fat_per_100g": "0.14",
+    "carbs_total_per_100g": "8.70",
+    "carbs_available_per_100g": "3.79"
+  },
+  {
+    "source_id": "sawi_hijau",
+    "raw_name": "Sawi Hijau",
+    "protein_per_100g": "3.09",
+    "fat_per_100g": "0.59",
+    "carbs_total_per_100g": "3.46",
+    "carbs_available_per_100g": "1.52"
+  },
+  {
+    "source_id": "terong",
+    "raw_name": "Terong",
+    "protein_per_100g": "1.13",
+    "fat_per_100g": "0.02",
+    "carbs_total_per_100g": "5.70",
+    "carbs_available_per_100g": "1.96"
+  },
+  {
+    "source_id": "buncis",
+    "raw_name": "Buncis",
+    "protein_per_100g": "1.41",
+    "fat_per_100g": "0.22",
+    "carbs_total_per_100g": "4.29",
+    "carbs_available_per_100g": "1.44"
+  },
+  {
+    "source_id": "tauge",
+    "raw_name": "Tauge",
+    "protein_per_100g": "3.66",
+    "fat_per_100g": "0.16",
+    "carbs_total_per_100g": "3.96",
+    "carbs_available_per_100g": "1.56"
+  },
+  {
+    "source_id": "daun_ketela_pohon",
+    "raw_name": "Daun Ketela Pohon",
+    "protein_per_100g": "8.05",
+    "fat_per_100g": "5.41",
+    "carbs_total_per_100g": "7.87",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "pakcoy",
+    "raw_name": "Pakcoy",
+    "protein_per_100g": "0.16",
+    "fat_per_100g": "0.25",
+    "carbs_total_per_100g": "5.55",
+    "carbs_available_per_100g": "3.46"
+  },
+  {
+    "source_id": "labu_siam",
+    "raw_name": "Labu Siam",
+    "protein_per_100g": "0.08",
+    "fat_per_100g": "0.01",
+    "carbs_total_per_100g": "5.10",
+    "carbs_available_per_100g": "3.63"
+  },
+  {
+    "source_id": "kubis",
+    "raw_name": "Kubis",
+    "protein_per_100g": "0.11",
+    "fat_per_100g": "0.04",
+    "carbs_total_per_100g": "5.05",
+    "carbs_available_per_100g": "2.33"
+  },
+  {
+    "source_id": "mentimun",
+    "raw_name": "Mentimun",
+    "protein_per_100g": "0.07",
+    "fat_per_100g": "0.04",
+    "carbs_total_per_100g": "3.59",
+    "carbs_available_per_100g": "2.74"
+  },
+  {
+    "source_id": "sawi_putih",
+    "raw_name": "Sawi Putih",
+    "protein_per_100g": "0.10",
+    "fat_per_100g": "0.04",
+    "carbs_total_per_100g": "3.91",
+    "carbs_available_per_100g": "3.29"
+  },
+  {
+    "source_id": "selada",
+    "raw_name": "Selada",
+    "protein_per_100g": "0.16",
+    "fat_per_100g": "0.12",
+    "carbs_total_per_100g": "4.61",
+    "carbs_available_per_100g": "2.52"
+  },
+  {
+    "source_id": "wortel",
+    "raw_name": "Wortel",
+    "protein_per_100g": "0.16",
+    "fat_per_100g": "0.05",
+    "carbs_total_per_100g": "9.04",
+    "carbs_available_per_100g": "5.57"
+  },
+  {
+    "source_id": "jamur_tiram",
+    "raw_name": "Jamur Tiram",
+    "protein_per_100g": "0.22",
+    "fat_per_100g": "0.14",
+    "carbs_total_per_100g": "5.90",
+    "carbs_available_per_100g": "3.26"
+  },
+  {
+    "source_id": "kembang_kol",
+    "raw_name": "Kembang Kol",
+    "protein_per_100g": "0.23",
+    "fat_per_100g": "0.21",
+    "carbs_total_per_100g": "6.67",
+    "carbs_available_per_100g": "4.00"
+  },
+  {
+    "source_id": "bawang_merah",
+    "raw_name": "Bawang Merah",
+    "protein_per_100g": "3.05",
+    "fat_per_100g": "0.11",
+    "carbs_total_per_100g": "13.54",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "cabe_merah",
+    "raw_name": "Cabe Merah",
+    "protein_per_100g": "5.40",
+    "fat_per_100g": "0.25",
+    "carbs_total_per_100g": "15.86",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "bawang_putih",
+    "raw_name": "Bawang Putih",
+    "protein_per_100g": "6.20",
+    "fat_per_100g": "0.05",
+    "carbs_total_per_100g": "23.99",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "cabe_rawit",
+    "raw_name": "Cabe Rawit",
+    "protein_per_100g": "3.35",
+    "fat_per_100g": "0.98",
+    "carbs_total_per_100g": "15.06",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "kacang_kedelai",
+    "raw_name": "Kacang Kedelai",
+    "protein_per_100g": "33.22",
+    "fat_per_100g": "13.26",
+    "carbs_total_per_100g": "38.08",
+    "carbs_available_per_100g": "9.20"
+  },
+  {
+    "source_id": "kacang_tanah",
+    "raw_name": "Kacang Tanah",
+    "protein_per_100g": "30.59",
+    "fat_per_100g": "39.83",
+    "carbs_total_per_100g": "21.70",
+    "carbs_available_per_100g": "6.09"
+  },
+  {
+    "source_id": "jeruk",
+    "raw_name": "Jeruk",
+    "protein_per_100g": "1.51",
+    "fat_per_100g": "0.48",
+    "carbs_total_per_100g": "10.69",
+    "carbs_available_per_100g": "7.97"
+  },
+  {
+    "source_id": "pisang",
+    "raw_name": "Pisang",
+    "protein_per_100g": "1.68",
+    "fat_per_100g": "0.03",
+    "carbs_total_per_100g": "23.25",
+    "carbs_available_per_100g": "19.47"
+  },
+  {
+    "source_id": "apel",
+    "raw_name": "Apel",
+    "protein_per_100g": "1.08",
+    "fat_per_100g": "0.02",
+    "carbs_total_per_100g": "11.12",
+    "carbs_available_per_100g": "7.74"
+  },
+  {
+    "source_id": "pepaya",
+    "raw_name": "Pepaya",
+    "protein_per_100g": "0.97",
+    "fat_per_100g": "0.02",
+    "carbs_total_per_100g": "9.98",
+    "carbs_available_per_100g": "7.50"
+  },
+  {
+    "source_id": "semangka",
+    "raw_name": "Semangka",
+    "protein_per_100g": "0.99",
+    "fat_per_100g": "0.11",
+    "carbs_total_per_100g": "4.69",
+    "carbs_available_per_100g": "3.15"
+  },
+  {
+    "source_id": "salak",
+    "raw_name": "Salak",
+    "protein_per_100g": "1.51",
+    "fat_per_100g": "0.52",
+    "carbs_total_per_100g": "16.85",
+    "carbs_available_per_100g": "13.11"
+  },
+  {
+    "source_id": "mangga",
+    "raw_name": "Mangga",
+    "protein_per_100g": "2.66",
+    "fat_per_100g": "1.37",
+    "carbs_total_per_100g": "6.90",
+    "carbs_available_per_100g": "4.18"
+  },
+  {
+    "source_id": "nanas_madu",
+    "raw_name": "Nanas Madu",
+    "protein_per_100g": "0.26",
+    "fat_per_100g": "0.08",
+    "carbs_total_per_100g": "12.45",
+    "carbs_available_per_100g": "10.16"
+  },
+  {
+    "source_id": "buah_naga",
+    "raw_name": "Buah Naga",
+    "protein_per_100g": "0.27",
+    "fat_per_100g": "0.04",
+    "carbs_total_per_100g": "12.24",
+    "carbs_available_per_100g": "8.60"
+  },
+  {
+    "source_id": "jambu_biji",
+    "raw_name": "Jambu Biji",
+    "protein_per_100g": "0.19",
+    "fat_per_100g": "0.03",
+    "carbs_total_per_100g": "11.11",
+    "carbs_available_per_100g": "6.08"
+  },
+  {
+    "source_id": "melon",
+    "raw_name": "Melon",
+    "protein_per_100g": "0.11",
+    "fat_per_100g": "0.02",
+    "carbs_total_per_100g": "6.72",
+    "carbs_available_per_100g": "5.44"
+  },
+  {
+    "source_id": "anggur_merah",
+    "raw_name": "Anggur Merah",
+    "protein_per_100g": "0.33",
+    "fat_per_100g": "0.04",
+    "carbs_total_per_100g": "18.16",
+    "carbs_available_per_100g": "14.23"
+  },
+  {
+    "source_id": "minyak_goreng",
+    "raw_name": "Minyak Goreng",
+    "protein_per_100g": "0.00",
+    "fat_per_100g": "99.94",
+    "carbs_total_per_100g": "0.06",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "kelapa",
+    "raw_name": "Kelapa",
+    "protein_per_100g": "5.01",
+    "fat_per_100g": "38.41",
+    "carbs_total_per_100g": "5.65",
+    "carbs_available_per_100g": "-"
+  },
+  {
+    "source_id": "minyak_kelapa",
+    "raw_name": "Minyak Kelapa",
+    "protein_per_100g": "0.00",
+    "fat_per_100g": "99.91",
+    "carbs_total_per_100g": "0.09",
+    "carbs_available_per_100g": "-"
+  }
+]

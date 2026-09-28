@@ -1,0 +1,51 @@
+[
+  {
+    "file": "bapanas_fresh_nutrition.html",
+    "source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+    "retrieved_at": "2026-09-28",
+    "bytes": 260501,
+    "sha256": "b2637989101d990085abb0acebb8ecbd8d090eb003e66ab27f9c4fc774ebda59"
+  },
+  {
+    "file": "foodkeeper_mirror_2019.csv",
+    "source_url": "https://raw.githubusercontent.com/jelera/food-shelflife-db/master/lib/seeds/ingredients.csv",
+    "retrieved_at": "2026-09-28",
+    "bytes": 89390,
+    "sha256": "5d686a38121ca6af2342fbbfcc97c3e95a6397f8be56871d8cf412bd4a44deac"
+  },
+  {
+    "file": "garut_prices_2026-09-28.html",
+    "source_url": "https://bapokting.disperindag.garutkab.go.id/Bapokting/",
+    "retrieved_at": "2026-09-28",
+    "bytes": 411125,
+    "sha256": "823c4a3a0431d907341528e897e2e5393eab761b1fc18f8d6097069fcf31944a"
+  },
+  {
+    "file": "indonesian_food_recipes.zip",
+    "source_url": "https://www.kaggle.com/datasets/canggih/indonesian-food-recipes",
+    "retrieved_at": "2026-09-28",
+    "bytes": 3809213,
+    "sha256": "749496a12074246168690d166757b77f8182959cd9a01a8963a43951dfed6b89"
+  },
+  {
+    "file": "pihps_prices_2026-09-28.json",
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget",
+    "retrieved_at": "2026-09-28",
+    "bytes": 9363,
+    "sha256": "697becb8d56b9961ca615123e9a2ef0173e6066ec89d4e8c156b72e035d46a24"
+  },
+  {
+    "file": "tkpi_2020.pdf",
+    "source_url": "https://repository.kemkes.go.id/book/668",
+    "retrieved_at": "2026-09-28",
+    "bytes": 6270131,
+    "sha256": "cc4f26dd7612222d0e5d458d52ed8275a16e045d4038536ff08296304de6c12b"
+  },
+  {
+    "file": "usda_sr_legacy_2018-04.zip",
+    "source_url": "https://fdc.nal.usda.gov/download-datasets/",
+    "retrieved_at": "2026-09-28",
+    "bytes": 13456312,
+    "sha256": "0fe8ae486a2c8eb42cb96413f058deb51863a46c8fb8eeb4b1fb45006dd338ef"
+  }
+]

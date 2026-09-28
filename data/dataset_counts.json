@@ -1,0 +1,12 @@
+{
+  "processed/ingredients.csv": 140,
+  "processed/ingredient_prices.csv": 99,
+  "processed/ingredient_shelf_life.csv": 149,
+  "processed/recipes.csv": 247,
+  "processed/recipe_ingredients.csv": 417,
+  "processed/recipe_tags.csv": 844,
+  "mapping/ingredient_aliases.csv": 315,
+  "mapping/unit_conversions.csv": 429,
+  "plannable_recipes": 81,
+  "priced_plannable_ingredients": 33
+}

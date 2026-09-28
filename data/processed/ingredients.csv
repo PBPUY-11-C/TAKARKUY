@@ -1,0 +1,141 @@
+ingredient_code,name,category,base_unit,calories_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g,nutrition_source,nutrition_source_id,nutrition_verified,calories_method,nutrition_source_url
+ING-BERAS,Beras,karbohidrat,g,343.83,9.24,79.87,0.19,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:beras,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TEPUNG-TERIGU,Tepung Terigu,karbohidrat,g,354.6,10.83,77.05,1.68,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:tepung_terigu,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-JAGUNG-SEGAR,Jagung Segar,karbohidrat,g,77.99,4.08,15.1,2.47,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:jagung_segar,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BERAS-KETAN,Beras Ketan,karbohidrat,g,347.95,10.34,77.59,0.39,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:beras_ketan,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-JAGUNG-PIPIL,Jagung Pipil,karbohidrat,g,311.24,11.13,73.14,3.52,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:jagung_pipil,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-KENTANG,Kentang,karbohidrat,g,70.42,2.05,17.39,0.02,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kentang,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SINGKONG,Singkong,karbohidrat,g,162.61,1.99,39.15,1.53,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:singkong,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-UBI-JALAR,Ubi Jalar,karbohidrat,g,96.34,2.09,24.03,0.78,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:ubi_jalar,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TALAS,Talas,karbohidrat,g,99.73,4.91,26.47,0.17,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:talas,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SAGU,Sagu,karbohidrat,g,336.05,0.32,85.58,0.25,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:sagu,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-IKAN-LELE,Ikan Lele,protein,g,167.11,16.17,3.22,9.95,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:ikan_lele,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-IKAN-BANDENG,Ikan Bandeng,protein,g,143.63,21.59,1.74,5.59,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:ikan_bandeng,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-IKAN-MUJAIR,Ikan Mujair,protein,g,85.15,18.46,2.04,0.35,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:ikan_mujair,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-IKAN-TONGKOL,Ikan Tongkol,protein,g,112.46,23.91,3.26,0.42,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:ikan_tongkol,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-IKAN-KEMBUNG,Ikan Kembung,protein,g,130.02,22.16,0.94,4.18,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:ikan_kembung,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-IKAN-TUNA,Ikan Tuna,protein,g,113.19,25.76,1.93,0.27,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:ikan_tuna,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-UDANG,Udang,protein,g,88,18.93,2.53,0.24,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:udang,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-CUMI,Cumi,protein,g,57.58,12.68,0.86,0.38,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:cumi,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-DAGING-AYAM,Daging Ayam,protein,g,134.24,21.04,3.97,3.8,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:daging_ayam,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-DAGING-SAPI,Daging Sapi,protein,g,108.54,22.51,3.95,0.3,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:daging_sapi,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-DAGING-AYAM-KAMPUNG,Daging Ayam Kampung,protein,g,115.86,21.94,4.01,1.34,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:daging_ayam_kampung,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TELUR-AYAM,Telur Ayam,protein,g,145.09,11.94,7.03,7.69,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:telur_ayam,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TELUR-AYAM-KAMPUNG,Telur Ayam Kampung,protein,g,190.13,12.75,10.73,10.69,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:telur_ayam_kampung,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TELUR-PUYUH,Telur Puyuh,protein,g,206,13,13.21,11.24,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:telur_puyuh,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SUSU-SAPI-SEGAR,Susu Sapi Segar,protein,g,65.69,3.39,5.36,3.41,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:susu_sapi_segar,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TOMAT,Tomat,sayur,g,14.22,0.97,4.47,0.02,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:tomat,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BAYAM,Bayam,sayur,g,20.27,2.11,6.23,0.55,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:bayam,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-KANGKUNG,Kangkung,sayur,g,27.61,2.19,4.15,0.25,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kangkung,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-KACANG-PANJANG,Kacang Panjang,protein,g,22.26,1.46,8.7,0.14,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kacang_panjang,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SAWI-HIJAU,Sawi Hijau,sayur,g,23.75,3.09,3.46,0.59,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:sawi_hijau,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TERONG,Terong,sayur,g,12.54,1.13,5.7,0.02,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:terong,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BUNCIS,Buncis,sayur,g,13.38,1.41,4.29,0.22,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:buncis,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TAUGE,Tauge,sayur,g,22.32,3.66,3.96,0.16,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:tauge,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-DAUN-KETELA-POHON,Daun Ketela Pohon,sayur,g,112.37,8.05,7.87,5.41,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:daun_ketela_pohon,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-PAKCOY,Pakcoy,sayur,g,16.73,0.16,5.55,0.25,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:pakcoy,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-LABU-SIAM,Labu Siam,sayur,g,14.93,0.08,5.1,0.01,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:labu_siam,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-KUBIS,Kubis,karbohidrat,g,10.12,0.11,5.05,0.04,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kubis,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MENTIMUN,Mentimun,sayur,g,11.6,0.07,3.59,0.04,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:mentimun,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SAWI-PUTIH,Sawi Putih,sayur,g,13.92,0.1,3.91,0.04,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:sawi_putih,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SELADA,Selada,sayur,g,11.8,0.16,4.61,0.12,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:selada,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-WORTEL,Wortel,sayur,g,23.37,0.16,9.04,0.05,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:wortel,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-JAMUR-TIRAM,Jamur Tiram,sayur,g,15.18,0.22,5.9,0.14,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:jamur_tiram,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-KEMBANG-KOL,Kembang Kol,sayur,g,18.81,0.23,6.67,0.21,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kembang_kol,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BAWANG-MERAH,Bawang Merah,bumbu,g,67.35,3.05,13.54,0.11,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:bawang_merah,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-CABE-MERAH,Cabe Merah,bumbu,g,87.29,5.4,15.86,0.25,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:cabe_merah,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BAWANG-PUTIH,Bawang Putih,bumbu,g,121.21,6.2,23.99,0.05,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:bawang_putih,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-CABE-RAWIT,Cabe Rawit,bumbu,g,82.46,3.35,15.06,0.98,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:cabe_rawit,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-KACANG-KEDELAI,Kacang Kedelai,protein,g,289.02,33.22,38.08,13.26,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kacang_kedelai,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-KACANG-TANAH,Kacang Tanah,protein,g,505.19,30.59,21.7,39.83,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kacang_tanah,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-JERUK,Jeruk,buah,g,42.24,1.51,10.69,0.48,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:jeruk,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-PISANG,Pisang,buah,g,84.87,1.68,23.25,0.03,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:pisang,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-APEL,Apel,buah,g,35.46,1.08,11.12,0.02,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:apel,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-PEPAYA,Pepaya,buah,g,34.06,0.97,9.98,0.02,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:pepaya,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SEMANGKA,Semangka,buah,g,17.55,0.99,4.69,0.11,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:semangka,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SALAK,Salak,buah,g,63.16,1.51,16.85,0.52,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:salak,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MANGGA,Mangga,buah,g,39.69,2.66,6.9,1.37,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:mangga,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-NANAS-MADU,Nanas Madu,buah,g,42.4,0.26,12.45,0.08,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:nanas_madu,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BUAH-NAGA,Buah Naga,buah,g,35.84,0.27,12.24,0.04,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:buah_naga,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-JAMBU-BIJI,Jambu Biji,buah,g,25.35,0.19,11.11,0.03,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:jambu_biji,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MELON,Melon,buah,g,22.38,0.11,6.72,0.02,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:melon,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-ANGGUR-MERAH,Anggur Merah,buah,g,58.6,0.33,18.16,0.04,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:anggur_merah,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MINYAK-GORENG,Minyak Goreng,lemak,g,899.7,0,0.06,99.94,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:minyak_goreng,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-KELAPA,Kelapa,lemak,g,388.33,5.01,5.65,38.41,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kelapa,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MINYAK-KELAPA,Minyak Kelapa,lemak,g,899.55,0,0.09,99.91,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:minyak_kelapa,true,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TAHU-PUTIH,Tahu Putih,protein,g,76,8.08,1.87,4.78,USDA FoodData Central SR Legacy,172476,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/172476/nutrients
+ING-TEMPE,Tempe,protein,g,192,20.3,7.64,10.8,USDA FoodData Central SR Legacy,174272,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/174272/nutrients
+ING-GARAM,Garam,bumbu,g,0,0,0,0,USDA FoodData Central SR Legacy,173468,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/173468/nutrients
+ING-GULA-PASIR,Gula Pasir,bumbu,g,387,0,100,0,USDA FoodData Central SR Legacy,169655,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/169655/nutrients
+ING-GULA-MERAH,Gula Merah,bumbu,g,380,0.12,98.1,0,USDA FoodData Central SR Legacy,168833,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/168833/nutrients
+ING-BAWANG-BOMBAY,Bawang Bombay,bumbu,g,40,1.1,9.34,0.1,USDA FoodData Central SR Legacy,170000,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/170000/nutrients
+ING-KACANG-HIJAU,Kacang Hijau,protein,g,347,23.9,62.6,1.15,USDA FoodData Central SR Legacy,174256,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/174256/nutrients
+ING-AIR,Air,sayur,g,0,0,0,0,USDA FoodData Central SR Legacy,173647,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/173647/nutrients
+ING-BERAS-PREMIUM,Beras Premium,karbohidrat,g,343.83,9.24,79.87,0.19,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:beras,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BERAS-MEDIUM,Beras Medium,karbohidrat,g,343.83,9.24,79.87,0.19,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:beras,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BERAS-TERMAHAL,Beras Termahal,karbohidrat,g,343.83,9.24,79.87,0.19,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:beras,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-BERAS-TERMURAH-NON-BULOG,Beras Termurah (Non Bulog),karbohidrat,g,343.83,9.24,79.87,0.19,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:beras,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-GULA-PASIR-DALAM-NEGERI,Gula Pasir Dalam Negeri,bumbu,g,387,0,100,0,USDA FoodData Central SR Legacy,169655,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/169655/nutrients
+ING-MINYAK-GORENG-BIMOLI-KEMASAN,Minyak Goreng Bimoli Kemasan,lemak,g,899.7,0,0.06,99.94,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:minyak_goreng,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MINYAK-GORENG-CURAH,Minyak Goreng Curah,lemak,g,899.7,0,0.06,99.94,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:minyak_goreng,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MINYAK-GORENG-KEMASAN-SEDERHANA,Minyak Goreng Kemasan Sederhana,lemak,g,899.7,0,0.06,99.94,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:minyak_goreng,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-DAGING-AYAM-BROILER,Daging Ayam Broiler,protein,g,134.24,21.04,3.97,3.8,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:daging_ayam,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TELUR-AYAM-BROILER,Telur Ayam Broiler,protein,g,145.09,11.94,7.03,7.69,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:telur_ayam,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SUSU-KENTAL-MANIS-MERK-BENDERA,Susu Kental Manis Merk bendera,protein,g,,,,,,,false,,
+ING-SUSU-KENTAL-MANIS-MERK-INDOMILK,Susu Kental Manis Merk Indomilk,protein,g,,,,,,,false,,
+ING-SUSU-BUBUK-DANCOW,Susu Bubuk Dancow,protein,g,,,,,,,false,,
+ING-SUSU-BUBUK-INDOMILK,Susu Bubuk Indomilk,protein,g,,,,,,,false,,
+ING-JAGUNG-PIPILAN,Jagung Pipilan,karbohidrat,g,,,,,,,false,,
+ING-GARAM-BERYODIUM-BATA,Garam Beryodium Bata,bumbu,g,0,0,0,0,USDA FoodData Central SR Legacy,173468,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/173468/nutrients
+ING-GARAM-BERYODIUM-HALUS,Garam Beryodium Halus,bumbu,g,0,0,0,0,USDA FoodData Central SR Legacy,173468,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/173468/nutrients
+ING-TEPUNG-TERIGU-CAP-SEGITIGA-BIRU,Tepung Terigu Cap Segitiga Biru,karbohidrat,g,,,,,,,false,,
+ING-TEPUNG-TERIGU-CAP-CAKRA-KEMBAR,Tepung Terigu Cap Cakra Kembar,karbohidrat,g,,,,,,,false,,
+ING-TEPUNG-TERIGU-CAP-KUNCI,Tepung Terigu Cap Kunci,karbohidrat,g,,,,,,,false,,
+ING-KACANG-KEDELAI-IMPOR,Kacang Kedelai Impor,protein,g,289.02,33.22,38.08,13.26,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kacang_kedelai,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MIE-INSTAN,Mie Instan,karbohidrat,g,,,,,,,false,,
+ING-CABAI-MERAH-KERITING,Cabe Merah Keriting,bumbu,g,87.29,5.4,15.86,0.25,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:cabe_merah,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-CABE-MERAH-BIASA,Cabe Merah Biasa,bumbu,g,87.29,5.4,15.86,0.25,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:cabe_merah,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-CABAI-RAWIT-HIJAU,Cabe Rawit Hijau,bumbu,g,82.46,3.35,15.06,0.98,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:cabe_rawit,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-CABAI-RAWIT-MERAH,Cabe Rawit Merah,bumbu,g,82.46,3.35,15.06,0.98,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:cabe_rawit,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-IKAN-ASIN-TERI-NO-2,Ikan Asin Teri No. 2,protein,g,,,,,,,false,,
+ING-JAGUNG-MANIS,Jagung Manis,karbohidrat,g,77.99,4.08,15.1,2.47,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:jagung_segar,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TEPUNG-TERIGU-CURAH,Tepung Terigu Curah,karbohidrat,g,354.6,10.83,77.05,1.68,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:tepung_terigu,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-IKAN-SEGAR-TONGKOL-TUNA-CAKALANG,Ikan Segar Tongkol/Tuna/Cakalang,protein,g,,,,,,,false,,
+ING-CABE-HIJAU-BIASA,Cabe Hijau Biasa,bumbu,g,,,,,,,false,,
+ING-TOMAT-HIJAU,Tomat Hijau,sayur,g,14.22,0.97,4.47,0.02,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:tomat,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-MINYAK-KITA,Minyak Kita,lemak,g,,,,,,,false,,
+ING-IKAN-MAS,Ikan Mas,protein,g,,,,,,,false,,
+ING-UBI-JALAR-PUTIH,Ubi Jalar Putih,karbohidrat,g,96.34,2.09,24.03,0.78,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:ubi_jalar,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-SUSU-BALITA-SGM-400GR,Susu Balita SGM 400Gr,protein,g,,,,,,,false,,
+ING-DAGING-SAPI-LOKAL-TETELAN,"Daging Sapi, Lokal, Tetelan",protein,g,,,,,,,false,,
+ING-DAGING-SAPI-LOKAL-PAHA-DEPAN,"Daging Sapi, Lokal, Paha Depan",protein,g,,,,,,,false,,
+ING-DAGING-SAPI-LOKAL-PAHA-BELAKANG,"Daging Sapi, Lokal, Paha Belakang",protein,g,,,,,,,false,,
+ING-DAGING-SAPI-LOKAL-HAS-DALAM,"Daging Sapi, Lokal, Has Dalam",protein,g,,,,,,,false,,
+ING-DAGING-SAPI-LOKAL-HAS-LUAR,"Daging Sapi, Lokal, Has Luar",protein,g,,,,,,,false,,
+ING-SUSU-KOTAK,Susu Kotak,protein,g,,,,,,,false,,
+ING-ANGGUR,Anggur,buah,g,,,,,,,false,,
+ING-LECI,Leci,buah,g,,,,,,,false,,
+ING-LENGKENG,Lengkeng,buah,g,,,,,,,false,,
+ING-IKAN-DORI,Ikan Dori,protein,g,,,,,,,false,,
+ING-KOL,Kol,sayur,g,10.12,0.11,5.05,0.04,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,row:kubis,false,Atwater 4-4-9; karbohidrat tersedia bila ada,https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia
+ING-TIMUN,Timun,sayur,g,,,,,,,false,,
+ING-ROTI,Roti,karbohidrat,g,,,,,,,false,,
+ING-TAHU-MENTAH-PCS,Tahu Mentah / pcs,protein,g,76,8.08,1.87,4.78,USDA FoodData Central SR Legacy,172476,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/172476/nutrients
+ING-TEMPE-PCS,Tempe / pcs,protein,g,192,20.3,7.64,10.8,USDA FoodData Central SR Legacy,174272,false,USDA reported energy,https://fdc.nal.usda.gov/food-details/174272/nutrients
+ING-BAWANG-MERAH-UKURAN-SEDANG,Bawang Merah Ukuran Sedang,bumbu,g,,,,,,,false,,
+ING-BAWANG-PUTIH-UKURAN-SEDANG,Bawang Putih Ukuran Sedang,bumbu,g,,,,,,,false,,
+ING-BERAS-KUALITAS-BAWAH-I,Beras Kualitas Bawah I,karbohidrat,g,,,,,,,false,,
+ING-BERAS-KUALITAS-BAWAH-II,Beras Kualitas Bawah II,karbohidrat,g,,,,,,,false,,
+ING-BERAS-KUALITAS-MEDIUM-I,Beras Kualitas Medium I,karbohidrat,g,,,,,,,false,,
+ING-BERAS-KUALITAS-MEDIUM-II,Beras Kualitas Medium II,karbohidrat,g,,,,,,,false,,
+ING-BERAS-KUALITAS-SUPER-I,Beras Kualitas Super I,karbohidrat,g,,,,,,,false,,
+ING-BERAS-KUALITAS-SUPER-II,Beras Kualitas Super II,karbohidrat,g,,,,,,,false,,
+ING-CABAI-MERAH-BESAR,Cabai Merah Besar,bumbu,g,,,,,,,false,,
+ING-DAGING-AYAM-RAS-SEGAR,Daging Ayam Ras Segar,protein,g,,,,,,,false,,
+ING-DAGING-SAPI-KUALITAS-1,Daging Sapi Kualitas 1,protein,g,,,,,,,false,,
+ING-DAGING-SAPI-KUALITAS-2,Daging Sapi Kualitas 2,protein,g,,,,,,,false,,
+ING-GULA-PASIR-KUALITAS-PREMIUM,Gula Pasir Kualitas Premium,bumbu,g,,,,,,,false,,
+ING-GULA-PASIR-LOKAL,Gula Pasir Lokal,bumbu,g,,,,,,,false,,
+ING-MINYAK-GORENG-KEMASAN-BERMERK-1,Minyak Goreng Kemasan Bermerk 1,lemak,g,,,,,,,false,,
+ING-MINYAK-GORENG-KEMASAN-BERMERK-2,Minyak Goreng Kemasan Bermerk 2,lemak,g,,,,,,,false,,
+ING-TELUR-AYAM-RAS-SEGAR,Telur Ayam Ras Segar,protein,g,,,,,,,false,,

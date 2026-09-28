@@ -1,0 +1,845 @@
+recipe_tag_code,recipe_code,tag,source
+TAG-BBF2CC04799F,RCP-MVP-001,halal,TAKARKUY aturan internal
+TAG-027408925E1E,RCP-MVP-001,mengandung_telur,TAKARKUY aturan internal
+TAG-8682D646515E,RCP-MVP-001,sarapan,TAKARKUY aturan internal
+TAG-1AB4D963ABB1,RCP-MVP-001,seimbang_internal,TAKARKUY aturan internal
+TAG-20E0D367F14E,RCP-MVP-001,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-073BA7C9F3DE,RCP-MVP-002,halal,TAKARKUY aturan internal
+TAG-70EA8F09D797,RCP-MVP-002,makan_siang,TAKARKUY aturan internal
+TAG-76C660435C45,RCP-MVP-002,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-B0003E8EC052,RCP-MVP-002,tinggi_protein,TAKARKUY aturan internal
+TAG-F2406E31D016,RCP-MVP-003,halal,TAKARKUY aturan internal
+TAG-62045710C547,RCP-MVP-003,makan_siang,TAKARKUY aturan internal
+TAG-FECE482DD461,RCP-MVP-003,mengandung_kedelai,TAKARKUY aturan internal
+TAG-E2F5B9AE5ACC,RCP-MVP-003,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-D012C641F453,RCP-MVP-003,tinggi_protein,TAKARKUY aturan internal
+TAG-A2E26279DB1A,RCP-MVP-003,vegetarian,TAKARKUY aturan internal
+TAG-35542072D309,RCP-MVP-004,halal,TAKARKUY aturan internal
+TAG-C908FD64B03B,RCP-MVP-004,makan_siang,TAKARKUY aturan internal
+TAG-933264C7307F,RCP-MVP-004,mengandung_kedelai,TAKARKUY aturan internal
+TAG-E4572C50BA39,RCP-MVP-004,seimbang_internal,TAKARKUY aturan internal
+TAG-10C1D25CC2EA,RCP-MVP-004,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-EEED1F908FBA,RCP-MVP-004,vegetarian,TAKARKUY aturan internal
+TAG-37C392BD19CA,RCP-MVP-005,halal,TAKARKUY aturan internal
+TAG-0EF63CC9BC6E,RCP-MVP-005,makan_malam,TAKARKUY aturan internal
+TAG-33F9A3CB83DE,RCP-MVP-005,mengandung_krustasea,TAKARKUY aturan internal
+TAG-645BE1DB7A65,RCP-MVP-005,seimbang_internal,TAKARKUY aturan internal
+TAG-D2FA13A22603,RCP-MVP-005,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-95C99CFA03C7,RCP-MVP-005,tinggi_protein,TAKARKUY aturan internal
+TAG-BF8013CF785E,RCP-MVP-006,halal,TAKARKUY aturan internal
+TAG-0497145A7150,RCP-MVP-006,makan_siang,TAKARKUY aturan internal
+TAG-A0CCC8471F2D,RCP-MVP-006,mengandung_ikan,TAKARKUY aturan internal
+TAG-EFC53DC6A6CD,RCP-MVP-006,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-96F9B28E936D,RCP-MVP-006,tinggi_protein,TAKARKUY aturan internal
+TAG-22C9CA23B53A,RCP-MVP-007,halal,TAKARKUY aturan internal
+TAG-9BAB045EAB5F,RCP-MVP-007,makan_siang,TAKARKUY aturan internal
+TAG-FB069002887D,RCP-MVP-007,mengandung_ikan,TAKARKUY aturan internal
+TAG-57A7BE8EB61D,RCP-MVP-007,seimbang_internal,TAKARKUY aturan internal
+TAG-7B3D1AC2D24F,RCP-MVP-007,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-53F255624EFD,RCP-MVP-007,tinggi_protein,TAKARKUY aturan internal
+TAG-B071A71D0A41,RCP-MVP-008,halal,TAKARKUY aturan internal
+TAG-33ABFE31ABEF,RCP-MVP-008,makan_malam,TAKARKUY aturan internal
+TAG-46D365D52812,RCP-MVP-008,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-FD22BEDA50FD,RCP-MVP-008,tinggi_protein,TAKARKUY aturan internal
+TAG-29D0A45612FE,RCP-MVP-009,halal,TAKARKUY aturan internal
+TAG-55D0BC55C510,RCP-MVP-009,makan_malam,TAKARKUY aturan internal
+TAG-9FBEC954FB40,RCP-MVP-009,mengandung_kedelai,TAKARKUY aturan internal
+TAG-11B5DE355E89,RCP-MVP-009,rendah_kalori,TAKARKUY aturan internal
+TAG-E3DF33FFDD9B,RCP-MVP-009,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-66F55C0B1196,RCP-MVP-009,tinggi_protein,TAKARKUY aturan internal
+TAG-E7F2413C21B7,RCP-MVP-009,vegetarian,TAKARKUY aturan internal
+TAG-3656E6A237DD,RCP-MVP-010,halal,TAKARKUY aturan internal
+TAG-3BA40F9D5B98,RCP-MVP-010,makan_malam,TAKARKUY aturan internal
+TAG-8A4D23A34A78,RCP-MVP-010,mengandung_kedelai,TAKARKUY aturan internal
+TAG-CEDCE4D0F3E4,RCP-MVP-010,rendah_kalori,TAKARKUY aturan internal
+TAG-3486748C30F3,RCP-MVP-010,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-7DD4466759CE,RCP-MVP-010,vegetarian,TAKARKUY aturan internal
+TAG-0F1F37925B01,RCP-MVP-011,halal,TAKARKUY aturan internal
+TAG-E0795E12C5EE,RCP-MVP-011,makan_siang,TAKARKUY aturan internal
+TAG-56D23ADAF6FC,RCP-MVP-011,rendah_kalori,TAKARKUY aturan internal
+TAG-9029ADB85D74,RCP-MVP-011,seimbang_internal,TAKARKUY aturan internal
+TAG-846BD6936EFA,RCP-MVP-011,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-AF4D04B6566F,RCP-MVP-011,tinggi_protein,TAKARKUY aturan internal
+TAG-64B036F014DA,RCP-MVP-012,halal,TAKARKUY aturan internal
+TAG-FD79229D787B,RCP-MVP-012,makan_malam,TAKARKUY aturan internal
+TAG-709F3A7A46E3,RCP-MVP-012,mengandung_krustasea,TAKARKUY aturan internal
+TAG-9BEAC34B5950,RCP-MVP-012,rendah_kalori,TAKARKUY aturan internal
+TAG-D9A874463ED1,RCP-MVP-012,seimbang_internal,TAKARKUY aturan internal
+TAG-A9E4BD7DE6EA,RCP-MVP-012,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-84C5780665A6,RCP-MVP-012,tinggi_protein,TAKARKUY aturan internal
+TAG-6DC22404F170,RCP-MVP-013,halal,TAKARKUY aturan internal
+TAG-E0E7BA7C9A22,RCP-MVP-013,mengandung_telur,TAKARKUY aturan internal
+TAG-F2A566CC8778,RCP-MVP-013,rendah_kalori,TAKARKUY aturan internal
+TAG-1A7E35140CBC,RCP-MVP-013,sarapan,TAKARKUY aturan internal
+TAG-1D111B01A9BF,RCP-MVP-013,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-BF8ED774A312,RCP-MVP-014,halal,TAKARKUY aturan internal
+TAG-7929E5BADA53,RCP-MVP-014,mengandung_telur,TAKARKUY aturan internal
+TAG-4DDCE98E61AD,RCP-MVP-014,rendah_kalori,TAKARKUY aturan internal
+TAG-DDCEC406929D,RCP-MVP-014,sarapan,TAKARKUY aturan internal
+TAG-C537B95608A4,RCP-MVP-014,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-D0EEE6D0E368,RCP-MVP-015,halal,TAKARKUY aturan internal
+TAG-5494728F5FEA,RCP-MVP-015,makan_siang,TAKARKUY aturan internal
+TAG-A9BEABAFF831,RCP-MVP-015,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-F718D7C5D2CC,RCP-MVP-015,tinggi_protein,TAKARKUY aturan internal
+TAG-F112C9FEB98B,RCP-MVP-016,halal,TAKARKUY aturan internal
+TAG-A49E1FB81D64,RCP-MVP-016,mengandung_telur,TAKARKUY aturan internal
+TAG-105B32126CD8,RCP-MVP-016,rendah_kalori,TAKARKUY aturan internal
+TAG-358F2BDA208D,RCP-MVP-016,sarapan,TAKARKUY aturan internal
+TAG-76483D7E081B,RCP-MVP-016,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-DE08C9B3FD62,RCP-MVP-017,halal,TAKARKUY aturan internal
+TAG-EA078B22ACB0,RCP-MVP-017,makan_malam,TAKARKUY aturan internal
+TAG-17A4F66FBBAD,RCP-MVP-017,mengandung_kedelai,TAKARKUY aturan internal
+TAG-C87DC931F1E9,RCP-MVP-017,rendah_kalori,TAKARKUY aturan internal
+TAG-FDA83CB6CDB0,RCP-MVP-017,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-95B9DAFFCCEF,RCP-MVP-017,tinggi_protein,TAKARKUY aturan internal
+TAG-7FAF26DE7AEF,RCP-MVP-017,vegetarian,TAKARKUY aturan internal
+TAG-4E6606D5EAF9,RCP-MVP-018,halal,TAKARKUY aturan internal
+TAG-C860BD07911B,RCP-MVP-018,makan_malam,TAKARKUY aturan internal
+TAG-08136CF1D38F,RCP-MVP-018,mengandung_kedelai,TAKARKUY aturan internal
+TAG-0B8D918CA569,RCP-MVP-018,rendah_kalori,TAKARKUY aturan internal
+TAG-D3D7A357EF65,RCP-MVP-018,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-5E0E17E77D1C,RCP-MVP-018,vegetarian,TAKARKUY aturan internal
+TAG-4749CCAFABBF,RCP-MVP-019,halal,TAKARKUY aturan internal
+TAG-CAD8F419CE88,RCP-MVP-019,makan_siang,TAKARKUY aturan internal
+TAG-E44CCB410D3C,RCP-MVP-019,rendah_kalori,TAKARKUY aturan internal
+TAG-8EAD91F2B630,RCP-MVP-019,seimbang_internal,TAKARKUY aturan internal
+TAG-38DD291151E6,RCP-MVP-019,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-B217760F2AEC,RCP-MVP-019,tinggi_protein,TAKARKUY aturan internal
+TAG-F1BABA6F2370,RCP-MVP-020,halal,TAKARKUY aturan internal
+TAG-1E6BA60FCFB5,RCP-MVP-020,makan_malam,TAKARKUY aturan internal
+TAG-BAC9CB678D28,RCP-MVP-020,mengandung_kedelai,TAKARKUY aturan internal
+TAG-5465E84DF0DC,RCP-MVP-020,rendah_kalori,TAKARKUY aturan internal
+TAG-F748E0370116,RCP-MVP-020,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-5EC5692F8DA8,RCP-MVP-020,tinggi_protein,TAKARKUY aturan internal
+TAG-EB38D3E32318,RCP-MVP-020,vegetarian,TAKARKUY aturan internal
+TAG-4FFE64FA01D4,RCP-MVP-021,halal,TAKARKUY aturan internal
+TAG-4FEB63154150,RCP-MVP-021,rendah_kalori,TAKARKUY aturan internal
+TAG-436B44A4ABA5,RCP-MVP-021,sarapan,TAKARKUY aturan internal
+TAG-13A1AA1F83C2,RCP-MVP-021,sarapan_ringan,TAKARKUY aturan internal
+TAG-19907878E896,RCP-MVP-021,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-8C396F20FA48,RCP-MVP-021,vegetarian,TAKARKUY aturan internal
+TAG-D3398C045AD5,RCP-MVP-026,halal,TAKARKUY aturan internal
+TAG-55A8F62A937C,RCP-MVP-026,mengandung_telur,TAKARKUY aturan internal
+TAG-2DA5A60C6055,RCP-MVP-026,rendah_kalori,TAKARKUY aturan internal
+TAG-CCB1D64141A4,RCP-MVP-026,sarapan,TAKARKUY aturan internal
+TAG-BF1161E83529,RCP-MVP-026,sarapan_ringan,TAKARKUY aturan internal
+TAG-7D5F973EA63B,RCP-MVP-026,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-F2324216668F,RCP-MVP-027,halal,TAKARKUY aturan internal
+TAG-7F813621B98D,RCP-MVP-027,mengandung_telur,TAKARKUY aturan internal
+TAG-89EBBD5DED4B,RCP-MVP-027,rendah_kalori,TAKARKUY aturan internal
+TAG-3719A9D8B56A,RCP-MVP-027,sarapan,TAKARKUY aturan internal
+TAG-84F031831E29,RCP-MVP-027,sarapan_ringan,TAKARKUY aturan internal
+TAG-397E8BA2F3BA,RCP-MVP-027,seimbang_internal,TAKARKUY aturan internal
+TAG-1B423AE03833,RCP-MVP-027,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-F65608A83D3E,RCP-MVP-028,halal,TAKARKUY aturan internal
+TAG-1651EF63BDA3,RCP-MVP-028,mengandung_telur,TAKARKUY aturan internal
+TAG-421EB74782B9,RCP-MVP-028,rendah_kalori,TAKARKUY aturan internal
+TAG-F9C904695DB1,RCP-MVP-028,sarapan,TAKARKUY aturan internal
+TAG-2163512775D2,RCP-MVP-028,sarapan_ringan,TAKARKUY aturan internal
+TAG-9C60E02BA49F,RCP-MVP-028,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-A13D46BE652A,RCP-MVP-029,halal,TAKARKUY aturan internal
+TAG-7F58E734FF4E,RCP-MVP-029,mengandung_telur,TAKARKUY aturan internal
+TAG-D156943D15F4,RCP-MVP-029,rendah_kalori,TAKARKUY aturan internal
+TAG-0232D7ED9694,RCP-MVP-029,sarapan,TAKARKUY aturan internal
+TAG-03F01BA385FC,RCP-MVP-029,sarapan_ringan,TAKARKUY aturan internal
+TAG-531E9146F0BD,RCP-MVP-029,seimbang_internal,TAKARKUY aturan internal
+TAG-2283A345CBD0,RCP-MVP-029,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-D00AC9777F5A,RCP-MVP-030,halal,TAKARKUY aturan internal
+TAG-278ECBEDB3BB,RCP-MVP-030,mengandung_kedelai,TAKARKUY aturan internal
+TAG-2CBA2CC3A750,RCP-MVP-030,mengandung_telur,TAKARKUY aturan internal
+TAG-ED682E808200,RCP-MVP-030,sarapan,TAKARKUY aturan internal
+TAG-C481DB2FFBE8,RCP-MVP-030,sarapan_ringan,TAKARKUY aturan internal
+TAG-12588D2D2209,RCP-MVP-030,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-712FBF3EF406,RCP-MVP-030,tinggi_protein,TAKARKUY aturan internal
+TAG-7057FD520CA7,RCP-MVP-031,halal,TAKARKUY aturan internal
+TAG-92C8C541B8AD,RCP-MVP-031,mengandung_kedelai,TAKARKUY aturan internal
+TAG-3588155E06A2,RCP-MVP-031,rendah_kalori,TAKARKUY aturan internal
+TAG-F3A808CC328D,RCP-MVP-031,sarapan,TAKARKUY aturan internal
+TAG-517EA565577D,RCP-MVP-031,sarapan_ringan,TAKARKUY aturan internal
+TAG-A3B12977F40B,RCP-MVP-031,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-FC35F1D0797B,RCP-MVP-031,vegetarian,TAKARKUY aturan internal
+TAG-0CAE8C78218F,RCP-MVP-032,halal,TAKARKUY aturan internal
+TAG-12E370182113,RCP-MVP-032,mengandung_telur,TAKARKUY aturan internal
+TAG-3901B92277A4,RCP-MVP-032,rendah_kalori,TAKARKUY aturan internal
+TAG-A837E5916AEC,RCP-MVP-032,sarapan,TAKARKUY aturan internal
+TAG-A5FC3B121947,RCP-MVP-032,sarapan_ringan,TAKARKUY aturan internal
+TAG-13EB82D03E19,RCP-MVP-032,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-801DDC8159AF,RCP-MVP-033,halal,TAKARKUY aturan internal
+TAG-1E1D07AE77B5,RCP-MVP-033,mengandung_telur,TAKARKUY aturan internal
+TAG-A52753A0DE81,RCP-MVP-033,rendah_kalori,TAKARKUY aturan internal
+TAG-4342A5274DD3,RCP-MVP-033,sarapan,TAKARKUY aturan internal
+TAG-5A0205B21130,RCP-MVP-033,sarapan_ringan,TAKARKUY aturan internal
+TAG-8F9F3D38D3A5,RCP-MVP-033,seimbang_internal,TAKARKUY aturan internal
+TAG-7C4266C5188E,RCP-MVP-033,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-18CE47E49F31,RCP-MVP-034,halal,TAKARKUY aturan internal
+TAG-50891B613708,RCP-MVP-034,makan_siang,TAKARKUY aturan internal
+TAG-E65277E5B804,RCP-MVP-034,seimbang_internal,TAKARKUY aturan internal
+TAG-93BCB3485AF7,RCP-MVP-034,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-DF724458D2B9,RCP-MVP-034,tinggi_protein,TAKARKUY aturan internal
+TAG-41D7393A8852,RCP-MVP-035,halal,TAKARKUY aturan internal
+TAG-CBD0ED503B0D,RCP-MVP-035,makan_siang,TAKARKUY aturan internal
+TAG-D1E906F67947,RCP-MVP-035,mengandung_kedelai,TAKARKUY aturan internal
+TAG-5D7B6E678832,RCP-MVP-035,seimbang_internal,TAKARKUY aturan internal
+TAG-2E4B08EDCE47,RCP-MVP-035,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-D176D3E41087,RCP-MVP-035,tinggi_protein,TAKARKUY aturan internal
+TAG-E4F70B91AC91,RCP-MVP-035,vegetarian,TAKARKUY aturan internal
+TAG-C7583E4B4B01,RCP-MVP-036,halal,TAKARKUY aturan internal
+TAG-D28EE1338FD1,RCP-MVP-036,makan_siang,TAKARKUY aturan internal
+TAG-13F91E995A18,RCP-MVP-036,mengandung_telur,TAKARKUY aturan internal
+TAG-A31002BD57FF,RCP-MVP-036,seimbang_internal,TAKARKUY aturan internal
+TAG-16B3ACD610A5,RCP-MVP-036,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-2835CC9BDD6C,RCP-MVP-037,halal,TAKARKUY aturan internal
+TAG-2923D9BCA26B,RCP-MVP-037,makan_siang,TAKARKUY aturan internal
+TAG-63F7E20441EF,RCP-MVP-037,mengandung_kedelai,TAKARKUY aturan internal
+TAG-7371278BCB65,RCP-MVP-037,seimbang_internal,TAKARKUY aturan internal
+TAG-7A69DB77A7AD,RCP-MVP-037,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-2AD32CAF0786,RCP-MVP-037,vegetarian,TAKARKUY aturan internal
+TAG-D71E1E93F0A5,RCP-MVP-038,halal,TAKARKUY aturan internal
+TAG-A6D9D2BA665F,RCP-MVP-038,makan_siang,TAKARKUY aturan internal
+TAG-CAD6994D167E,RCP-MVP-038,seimbang_internal,TAKARKUY aturan internal
+TAG-0841BBEABB95,RCP-MVP-038,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-5EAEC9651DB8,RCP-MVP-038,tinggi_protein,TAKARKUY aturan internal
+TAG-9CA27C8CE34B,RCP-MVP-039,halal,TAKARKUY aturan internal
+TAG-66421B7182C3,RCP-MVP-039,makan_siang,TAKARKUY aturan internal
+TAG-0A9824847BCB,RCP-MVP-039,mengandung_ikan,TAKARKUY aturan internal
+TAG-EAFD7071A72B,RCP-MVP-039,seimbang_internal,TAKARKUY aturan internal
+TAG-0445E5BD21D3,RCP-MVP-039,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-0636ECE86768,RCP-MVP-039,tinggi_protein,TAKARKUY aturan internal
+TAG-A0155CC9524B,RCP-MVP-040,halal,TAKARKUY aturan internal
+TAG-2716B18D0F0D,RCP-MVP-040,makan_siang,TAKARKUY aturan internal
+TAG-2390FDF5EBF1,RCP-MVP-040,seimbang_internal,TAKARKUY aturan internal
+TAG-89BF86A502E0,RCP-MVP-040,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-0B7EDAB76EDA,RCP-MVP-040,tinggi_protein,TAKARKUY aturan internal
+TAG-FDB0498F1219,RCP-MVP-041,halal,TAKARKUY aturan internal
+TAG-A85E54E727FB,RCP-MVP-041,makan_malam,TAKARKUY aturan internal
+TAG-E873F96F1F85,RCP-MVP-041,mengandung_kedelai,TAKARKUY aturan internal
+TAG-BC0337038806,RCP-MVP-041,rendah_kalori,TAKARKUY aturan internal
+TAG-5E6BEF9CC9CA,RCP-MVP-041,seimbang_internal,TAKARKUY aturan internal
+TAG-B85A047AD622,RCP-MVP-041,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-247599F67536,RCP-MVP-041,vegetarian,TAKARKUY aturan internal
+TAG-E9D031F314DA,RCP-MVP-042,halal,TAKARKUY aturan internal
+TAG-F00AA4F01088,RCP-MVP-042,makan_malam,TAKARKUY aturan internal
+TAG-CE9F106607D5,RCP-MVP-042,seimbang_internal,TAKARKUY aturan internal
+TAG-251F8208A9C0,RCP-MVP-042,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-ABDE47D87805,RCP-MVP-042,tinggi_protein,TAKARKUY aturan internal
+TAG-D9551CEBB821,RCP-MVP-043,halal,TAKARKUY aturan internal
+TAG-2EE4CBFD318C,RCP-MVP-043,makan_malam,TAKARKUY aturan internal
+TAG-3C7F115016A9,RCP-MVP-043,mengandung_kedelai,TAKARKUY aturan internal
+TAG-F0E6396B67E5,RCP-MVP-043,seimbang_internal,TAKARKUY aturan internal
+TAG-1FC7721EF0A9,RCP-MVP-043,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-48047651694E,RCP-MVP-043,tinggi_protein,TAKARKUY aturan internal
+TAG-7170F154395D,RCP-MVP-043,vegetarian,TAKARKUY aturan internal
+TAG-DB5F05F285CB,RCP-MVP-044,halal,TAKARKUY aturan internal
+TAG-5568528E445A,RCP-MVP-044,makan_malam,TAKARKUY aturan internal
+TAG-50711B5DB88E,RCP-MVP-044,mengandung_telur,TAKARKUY aturan internal
+TAG-6A13C46580E1,RCP-MVP-044,seimbang_internal,TAKARKUY aturan internal
+TAG-D1E658922B66,RCP-MVP-044,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-D6D6EFEC4A35,RCP-MVP-045,halal,TAKARKUY aturan internal
+TAG-D4A3B93C981C,RCP-MVP-045,makan_malam,TAKARKUY aturan internal
+TAG-E0F90C94B0E5,RCP-MVP-045,mengandung_ikan,TAKARKUY aturan internal
+TAG-855730CAC866,RCP-MVP-045,seimbang_internal,TAKARKUY aturan internal
+TAG-A9D28E2C8031,RCP-MVP-045,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-CF84C293779A,RCP-MVP-045,tinggi_protein,TAKARKUY aturan internal
+TAG-7DDD3BB3C5B8,RCP-MVP-046,halal,TAKARKUY aturan internal
+TAG-6F5B0A5A2421,RCP-MVP-046,makan_malam,TAKARKUY aturan internal
+TAG-3165F0950AC5,RCP-MVP-046,mengandung_kedelai,TAKARKUY aturan internal
+TAG-70B036B85755,RCP-MVP-046,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-BC9D6CFFF279,RCP-MVP-046,tinggi_protein,TAKARKUY aturan internal
+TAG-B562637CEDE9,RCP-MVP-046,vegetarian,TAKARKUY aturan internal
+TAG-6BBCB1767746,RCP-MVP-047,halal,TAKARKUY aturan internal
+TAG-2E94D30B307F,RCP-MVP-047,rendah_kalori,TAKARKUY aturan internal
+TAG-5B19896EC2B7,RCP-MVP-047,sarapan,TAKARKUY aturan internal
+TAG-B5F92B27E907,RCP-MVP-047,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-FCF67D58CB2A,RCP-MVP-047,vegetarian,TAKARKUY aturan internal
+TAG-EE548EC2C55F,RCP-MVP-048,halal,TAKARKUY aturan internal
+TAG-A1266457BEDC,RCP-MVP-048,mengandung_telur,TAKARKUY aturan internal
+TAG-6F8DDC94EEDA,RCP-MVP-048,rendah_kalori,TAKARKUY aturan internal
+TAG-B431E5F06E9C,RCP-MVP-048,sarapan,TAKARKUY aturan internal
+TAG-D7968FDBD140,RCP-MVP-048,sarapan_ringan,TAKARKUY aturan internal
+TAG-28D4B73C1D9C,RCP-MVP-048,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-41EE78DEB592,RCP-MVP-049,halal,TAKARKUY aturan internal
+TAG-B49DB0794582,RCP-MVP-049,mengandung_telur,TAKARKUY aturan internal
+TAG-155423F0D138,RCP-MVP-049,rendah_kalori,TAKARKUY aturan internal
+TAG-AC4CF666167F,RCP-MVP-049,sarapan,TAKARKUY aturan internal
+TAG-EFF7B60F1F4C,RCP-MVP-049,sarapan_ringan,TAKARKUY aturan internal
+TAG-4BAA7C5487E3,RCP-MVP-049,seimbang_internal,TAKARKUY aturan internal
+TAG-DECE67F91100,RCP-MVP-049,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-314D1C9A0460,RCP-MVP-050,halal,TAKARKUY aturan internal
+TAG-5B4812C2DEEE,RCP-MVP-050,mengandung_telur,TAKARKUY aturan internal
+TAG-7927689528AB,RCP-MVP-050,rendah_kalori,TAKARKUY aturan internal
+TAG-DB8C978A5F79,RCP-MVP-050,sarapan,TAKARKUY aturan internal
+TAG-5F182F2EFE5E,RCP-MVP-050,sarapan_ringan,TAKARKUY aturan internal
+TAG-13E04A8DF66E,RCP-MVP-050,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-BB054384536E,RCP-MVP-051,halal,TAKARKUY aturan internal
+TAG-094784F76CA0,RCP-MVP-051,rendah_kalori,TAKARKUY aturan internal
+TAG-F04D7F8AFD58,RCP-MVP-051,sarapan,TAKARKUY aturan internal
+TAG-26ACED9A62F3,RCP-MVP-051,sarapan_ringan,TAKARKUY aturan internal
+TAG-8317C4FFA972,RCP-MVP-051,seimbang_internal,TAKARKUY aturan internal
+TAG-28F82C7A71BD,RCP-MVP-051,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-1D8906079B60,RCP-MVP-052,halal,TAKARKUY aturan internal
+TAG-3B3480627832,RCP-MVP-052,rendah_kalori,TAKARKUY aturan internal
+TAG-8654C563ED3E,RCP-MVP-052,sarapan,TAKARKUY aturan internal
+TAG-65696CCFAC39,RCP-MVP-052,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-49A9034A34E1,RCP-MVP-052,vegetarian,TAKARKUY aturan internal
+TAG-525C45A245B5,RCP-MVP-053,halal,TAKARKUY aturan internal
+TAG-8A70EB5898FE,RCP-MVP-053,mengandung_kedelai,TAKARKUY aturan internal
+TAG-C04AF118E07B,RCP-MVP-053,rendah_kalori,TAKARKUY aturan internal
+TAG-D65B82110702,RCP-MVP-053,sarapan,TAKARKUY aturan internal
+TAG-0D39DE6FC77E,RCP-MVP-053,sarapan_ringan,TAKARKUY aturan internal
+TAG-27D0623624B0,RCP-MVP-053,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-662B426917A0,RCP-MVP-053,vegetarian,TAKARKUY aturan internal
+TAG-290C64ABBFAD,RCP-MVP-054,halal,TAKARKUY aturan internal
+TAG-145C55060057,RCP-MVP-054,mengandung_telur,TAKARKUY aturan internal
+TAG-8A07717FB243,RCP-MVP-054,rendah_kalori,TAKARKUY aturan internal
+TAG-00D0B5A0E1F4,RCP-MVP-054,sarapan,TAKARKUY aturan internal
+TAG-82251C9D7428,RCP-MVP-054,sarapan_ringan,TAKARKUY aturan internal
+TAG-70707B767944,RCP-MVP-054,seimbang_internal,TAKARKUY aturan internal
+TAG-D8C2B84B593F,RCP-MVP-054,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-68D85A40C377,RCP-MVP-055,halal,TAKARKUY aturan internal
+TAG-6B3EE7B135B5,RCP-MVP-055,mengandung_telur,TAKARKUY aturan internal
+TAG-76410319C11A,RCP-MVP-055,rendah_kalori,TAKARKUY aturan internal
+TAG-DE10CCB1AB20,RCP-MVP-055,sarapan,TAKARKUY aturan internal
+TAG-BCF907852ED3,RCP-MVP-055,sarapan_ringan,TAKARKUY aturan internal
+TAG-9A0CBC2CFD06,RCP-MVP-055,seimbang_internal,TAKARKUY aturan internal
+TAG-3BC8071FD2D7,RCP-MVP-055,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-77FAF845F8CC,RCP-MVP-056,halal,TAKARKUY aturan internal
+TAG-DFF0AA0D32B0,RCP-MVP-056,mengandung_telur,TAKARKUY aturan internal
+TAG-1BDC78866E00,RCP-MVP-056,rendah_kalori,TAKARKUY aturan internal
+TAG-557CCD5C808A,RCP-MVP-056,sarapan,TAKARKUY aturan internal
+TAG-8A1E544865EE,RCP-MVP-056,sarapan_ringan,TAKARKUY aturan internal
+TAG-D339A095ABAB,RCP-MVP-056,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-E5988A81422C,RCP-MVP-057,halal,TAKARKUY aturan internal
+TAG-4E8B3080DC3D,RCP-MVP-057,mengandung_kedelai,TAKARKUY aturan internal
+TAG-09CCE70E858F,RCP-MVP-057,mengandung_telur,TAKARKUY aturan internal
+TAG-173BBE2AFA41,RCP-MVP-057,rendah_kalori,TAKARKUY aturan internal
+TAG-18412C3D1F36,RCP-MVP-057,sarapan,TAKARKUY aturan internal
+TAG-6C632F1E1E5A,RCP-MVP-057,sarapan_ringan,TAKARKUY aturan internal
+TAG-AB697826B5AB,RCP-MVP-057,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-F93932AA033C,RCP-MVP-058,halal,TAKARKUY aturan internal
+TAG-737015333E26,RCP-MVP-058,rendah_kalori,TAKARKUY aturan internal
+TAG-DB38ED916177,RCP-MVP-058,sarapan,TAKARKUY aturan internal
+TAG-3C4D01A9189F,RCP-MVP-058,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-3B0613705A41,RCP-MVP-058,vegetarian,TAKARKUY aturan internal
+TAG-46003990AD0F,RCP-MVP-059,halal,TAKARKUY aturan internal
+TAG-EA7F397D9EFE,RCP-MVP-059,makan_siang,TAKARKUY aturan internal
+TAG-84C1B92C9697,RCP-MVP-059,seimbang_internal,TAKARKUY aturan internal
+TAG-27C27F22BD86,RCP-MVP-059,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-E05C89648504,RCP-MVP-059,tinggi_protein,TAKARKUY aturan internal
+TAG-3EFE640CDF2A,RCP-MVP-060,halal,TAKARKUY aturan internal
+TAG-EDF30B1A2F5D,RCP-MVP-060,makan_siang,TAKARKUY aturan internal
+TAG-9DA7E69DDD2E,RCP-MVP-060,mengandung_krustasea,TAKARKUY aturan internal
+TAG-44958E6ED03F,RCP-MVP-060,rendah_kalori,TAKARKUY aturan internal
+TAG-38F22A5E84D4,RCP-MVP-060,seimbang_internal,TAKARKUY aturan internal
+TAG-F1BB3271E40F,RCP-MVP-060,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-52E3C1CF523E,RCP-MVP-060,tinggi_protein,TAKARKUY aturan internal
+TAG-67FFA058D13D,RCP-MVP-061,halal,TAKARKUY aturan internal
+TAG-946075171111,RCP-MVP-061,makan_siang,TAKARKUY aturan internal
+TAG-6DB2B5389487,RCP-MVP-061,mengandung_telur,TAKARKUY aturan internal
+TAG-5EFB6EF62AAA,RCP-MVP-061,seimbang_internal,TAKARKUY aturan internal
+TAG-E9841356EC52,RCP-MVP-061,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-7B472CA31085,RCP-MVP-062,halal,TAKARKUY aturan internal
+TAG-43BB8F4AD02A,RCP-MVP-062,makan_siang,TAKARKUY aturan internal
+TAG-C1ED78C30037,RCP-MVP-062,mengandung_ikan,TAKARKUY aturan internal
+TAG-B9BD91ECC261,RCP-MVP-062,seimbang_internal,TAKARKUY aturan internal
+TAG-D61B19382790,RCP-MVP-062,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-655D111D4BA0,RCP-MVP-062,tinggi_protein,TAKARKUY aturan internal
+TAG-6DCFDAE6C101,RCP-MVP-063,halal,TAKARKUY aturan internal
+TAG-D945BC55BCB5,RCP-MVP-063,makan_siang,TAKARKUY aturan internal
+TAG-F9C05FE61CB4,RCP-MVP-063,rendah_kalori,TAKARKUY aturan internal
+TAG-1DE2861AB485,RCP-MVP-063,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-0C0D5A597058,RCP-MVP-063,tinggi_protein,TAKARKUY aturan internal
+TAG-75ACA5237232,RCP-MVP-064,halal,TAKARKUY aturan internal
+TAG-83D4648A880D,RCP-MVP-064,makan_siang,TAKARKUY aturan internal
+TAG-3FF99393018F,RCP-MVP-064,mengandung_ikan,TAKARKUY aturan internal
+TAG-1A6EAA755ECD,RCP-MVP-064,seimbang_internal,TAKARKUY aturan internal
+TAG-19D94BC4D335,RCP-MVP-064,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-F9CA38A5CE56,RCP-MVP-064,tinggi_protein,TAKARKUY aturan internal
+TAG-CFCA3D7F7161,RCP-MVP-065,halal,TAKARKUY aturan internal
+TAG-B1DF4295ACC6,RCP-MVP-065,makan_siang,TAKARKUY aturan internal
+TAG-FC0EB6C57FFF,RCP-MVP-065,mengandung_kedelai,TAKARKUY aturan internal
+TAG-30B8F5E875AA,RCP-MVP-065,seimbang_internal,TAKARKUY aturan internal
+TAG-20675F812153,RCP-MVP-065,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-FCC5F6A87C44,RCP-MVP-065,tinggi_protein,TAKARKUY aturan internal
+TAG-6F5A9165EBF9,RCP-MVP-065,vegetarian,TAKARKUY aturan internal
+TAG-802EF33A2095,RCP-MVP-066,halal,TAKARKUY aturan internal
+TAG-FBFCA4D8D108,RCP-MVP-066,makan_siang,TAKARKUY aturan internal
+TAG-BF603FCFEB58,RCP-MVP-066,mengandung_kedelai,TAKARKUY aturan internal
+TAG-3AE92349FB1F,RCP-MVP-066,rendah_kalori,TAKARKUY aturan internal
+TAG-AE6E9562E110,RCP-MVP-066,seimbang_internal,TAKARKUY aturan internal
+TAG-ED35FF8E962B,RCP-MVP-066,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-9EC094226436,RCP-MVP-066,vegetarian,TAKARKUY aturan internal
+TAG-FE26525BA47D,RCP-MVP-067,halal,TAKARKUY aturan internal
+TAG-148FE0CC8CFB,RCP-MVP-067,makan_siang,TAKARKUY aturan internal
+TAG-476FE7C09633,RCP-MVP-067,seimbang_internal,TAKARKUY aturan internal
+TAG-A5D44DC24694,RCP-MVP-067,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-194752C384E9,RCP-MVP-067,tinggi_protein,TAKARKUY aturan internal
+TAG-77FDF918D11A,RCP-MVP-068,halal,TAKARKUY aturan internal
+TAG-5890F14D904B,RCP-MVP-068,makan_siang,TAKARKUY aturan internal
+TAG-CC54BFFB4B63,RCP-MVP-068,mengandung_kedelai,TAKARKUY aturan internal
+TAG-D9D1FF0438A4,RCP-MVP-068,mengandung_telur,TAKARKUY aturan internal
+TAG-2A525AAD8569,RCP-MVP-068,seimbang_internal,TAKARKUY aturan internal
+TAG-22DB41DBC4FF,RCP-MVP-068,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-9B01955F4A18,RCP-MVP-068,tinggi_protein,TAKARKUY aturan internal
+TAG-939CAA2C4FD9,RCP-MVP-069,halal,TAKARKUY aturan internal
+TAG-A9D29DC457F5,RCP-MVP-069,makan_siang,TAKARKUY aturan internal
+TAG-CC9FB96D5A50,RCP-MVP-069,mengandung_krustasea,TAKARKUY aturan internal
+TAG-1D85528DE006,RCP-MVP-069,rendah_kalori,TAKARKUY aturan internal
+TAG-9A2694A73B67,RCP-MVP-069,seimbang_internal,TAKARKUY aturan internal
+TAG-39712DCEB945,RCP-MVP-069,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-69CAF6E2D4DF,RCP-MVP-069,tinggi_protein,TAKARKUY aturan internal
+TAG-55318F2D53D3,RCP-MVP-071,halal,TAKARKUY aturan internal
+TAG-0F85308D5DE2,RCP-MVP-071,makan_siang,TAKARKUY aturan internal
+TAG-E1B1DCD2BEFF,RCP-MVP-071,seimbang_internal,TAKARKUY aturan internal
+TAG-0ECAC3A29FCC,RCP-MVP-071,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-30811B1BB763,RCP-MVP-071,tinggi_protein,TAKARKUY aturan internal
+TAG-D98B204C09CB,RCP-MVP-072,halal,TAKARKUY aturan internal
+TAG-89A07DE06B77,RCP-MVP-072,makan_siang,TAKARKUY aturan internal
+TAG-AD21090E97D8,RCP-MVP-072,mengandung_telur,TAKARKUY aturan internal
+TAG-2B55FCFDF06C,RCP-MVP-072,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-057B8507B799,RCP-MVP-073,halal,TAKARKUY aturan internal
+TAG-AF1F414D97BE,RCP-MVP-073,makan_siang,TAKARKUY aturan internal
+TAG-D732042A71E1,RCP-MVP-073,mengandung_ikan,TAKARKUY aturan internal
+TAG-C3577B432624,RCP-MVP-073,seimbang_internal,TAKARKUY aturan internal
+TAG-2089A97BBB98,RCP-MVP-073,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-53FB1759872B,RCP-MVP-073,tinggi_protein,TAKARKUY aturan internal
+TAG-13EFB71DCA68,RCP-MVP-074,halal,TAKARKUY aturan internal
+TAG-750CE3A3FF73,RCP-MVP-074,makan_malam,TAKARKUY aturan internal
+TAG-5AF1C5089C3E,RCP-MVP-074,rendah_kalori,TAKARKUY aturan internal
+TAG-17409FDCE7CC,RCP-MVP-074,seimbang_internal,TAKARKUY aturan internal
+TAG-FD8BB3451545,RCP-MVP-074,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-34BB458CF03C,RCP-MVP-074,tinggi_protein,TAKARKUY aturan internal
+TAG-BE64D18CB7A9,RCP-MVP-075,halal,TAKARKUY aturan internal
+TAG-D41140060A3D,RCP-MVP-075,makan_malam,TAKARKUY aturan internal
+TAG-1501460EB6BE,RCP-MVP-075,mengandung_kedelai,TAKARKUY aturan internal
+TAG-67277B1C8F0F,RCP-MVP-075,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-0A265BB6F6D6,RCP-MVP-075,tinggi_protein,TAKARKUY aturan internal
+TAG-889BBC2BB955,RCP-MVP-075,vegetarian,TAKARKUY aturan internal
+TAG-499C4FE114C9,RCP-MVP-076,halal,TAKARKUY aturan internal
+TAG-986469E1BBEE,RCP-MVP-076,makan_malam,TAKARKUY aturan internal
+TAG-70E2A1578F6E,RCP-MVP-076,mengandung_krustasea,TAKARKUY aturan internal
+TAG-1C46089C6B5B,RCP-MVP-076,rendah_kalori,TAKARKUY aturan internal
+TAG-9150EF0619ED,RCP-MVP-076,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-DC63142D82A2,RCP-MVP-077,halal,TAKARKUY aturan internal
+TAG-262FBCEC9744,RCP-MVP-077,makan_malam,TAKARKUY aturan internal
+TAG-05A8E76469DB,RCP-MVP-077,rendah_kalori,TAKARKUY aturan internal
+TAG-E7E1A204B4D2,RCP-MVP-077,seimbang_internal,TAKARKUY aturan internal
+TAG-EF614922D4F0,RCP-MVP-077,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-5B23409E9F62,RCP-MVP-077,tinggi_protein,TAKARKUY aturan internal
+TAG-A0F1EEC52CF2,RCP-MVP-078,halal,TAKARKUY aturan internal
+TAG-6759FE711D1A,RCP-MVP-078,makan_malam,TAKARKUY aturan internal
+TAG-90C034A12286,RCP-MVP-078,mengandung_ikan,TAKARKUY aturan internal
+TAG-91EE2BFFBBDC,RCP-MVP-078,rendah_kalori,TAKARKUY aturan internal
+TAG-23248B565D0F,RCP-MVP-078,seimbang_internal,TAKARKUY aturan internal
+TAG-94632A3AC948,RCP-MVP-078,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-2765C752A341,RCP-MVP-078,tinggi_protein,TAKARKUY aturan internal
+TAG-26FC5249011D,RCP-MVP-079,halal,TAKARKUY aturan internal
+TAG-6A1BA4FE6553,RCP-MVP-079,makan_malam,TAKARKUY aturan internal
+TAG-ECCAF3BBA79A,RCP-MVP-079,mengandung_kedelai,TAKARKUY aturan internal
+TAG-6F836A7330D3,RCP-MVP-079,rendah_kalori,TAKARKUY aturan internal
+TAG-E9EACD0DA3EC,RCP-MVP-079,seimbang_internal,TAKARKUY aturan internal
+TAG-E8BDCC100820,RCP-MVP-079,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-6CEFA68F0BA9,RCP-MVP-079,vegetarian,TAKARKUY aturan internal
+TAG-2E47A0CD01CE,RCP-MVP-080,halal,TAKARKUY aturan internal
+TAG-04FCDE2360A0,RCP-MVP-080,makan_malam,TAKARKUY aturan internal
+TAG-B324DC442153,RCP-MVP-080,seimbang_internal,TAKARKUY aturan internal
+TAG-770E772857EB,RCP-MVP-080,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-C22EAB180D30,RCP-MVP-080,tinggi_protein,TAKARKUY aturan internal
+TAG-76D17A25A09C,RCP-MVP-081,halal,TAKARKUY aturan internal
+TAG-D441F7A4EE82,RCP-MVP-081,makan_malam,TAKARKUY aturan internal
+TAG-790C98B63091,RCP-MVP-081,mengandung_telur,TAKARKUY aturan internal
+TAG-814FF470C6E2,RCP-MVP-081,rendah_kalori,TAKARKUY aturan internal
+TAG-8692BB14CE81,RCP-MVP-081,seimbang_internal,TAKARKUY aturan internal
+TAG-4BD1C7B79852,RCP-MVP-081,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-14C85B428469,RCP-MVP-082,halal,TAKARKUY aturan internal
+TAG-51506E0394C3,RCP-MVP-082,makan_malam,TAKARKUY aturan internal
+TAG-9E03A495C001,RCP-MVP-082,mengandung_krustasea,TAKARKUY aturan internal
+TAG-0A2A13B29571,RCP-MVP-082,rendah_kalori,TAKARKUY aturan internal
+TAG-40DE5C3EDB5F,RCP-MVP-082,seimbang_internal,TAKARKUY aturan internal
+TAG-5988E0C59720,RCP-MVP-082,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-7F2E0E84966C,RCP-MVP-082,tinggi_protein,TAKARKUY aturan internal
+TAG-35733039466B,RCP-MVP-083,halal,TAKARKUY aturan internal
+TAG-FCAAC24C09BC,RCP-MVP-083,makan_malam,TAKARKUY aturan internal
+TAG-8D6513513C38,RCP-MVP-083,mengandung_kedelai,TAKARKUY aturan internal
+TAG-C15A3865BAF8,RCP-MVP-083,rendah_kalori,TAKARKUY aturan internal
+TAG-9E09178F8CB5,RCP-MVP-083,seimbang_internal,TAKARKUY aturan internal
+TAG-82EB0D1AD270,RCP-MVP-083,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-461BD0ECDF63,RCP-MVP-083,vegetarian,TAKARKUY aturan internal
+TAG-A69DF1CE8321,RCP-MVP-085,halal,TAKARKUY aturan internal
+TAG-4B4660DED8DB,RCP-MVP-085,makan_malam,TAKARKUY aturan internal
+TAG-6295D2CF7BA2,RCP-MVP-085,rendah_kalori,TAKARKUY aturan internal
+TAG-E3FC4958B7B8,RCP-MVP-085,seimbang_internal,TAKARKUY aturan internal
+TAG-5312487FA0D7,RCP-MVP-085,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-7BBB74D00EEF,RCP-MVP-085,tinggi_protein,TAKARKUY aturan internal
+TAG-088D218D8607,RCP-MVP-086,halal,TAKARKUY aturan internal
+TAG-EE565A03FDB2,RCP-MVP-086,makan_malam,TAKARKUY aturan internal
+TAG-81AA724B112A,RCP-MVP-086,mengandung_kedelai,TAKARKUY aturan internal
+TAG-DDDA7BDD6019,RCP-MVP-086,seimbang_internal,TAKARKUY aturan internal
+TAG-0AA9DE1BD963,RCP-MVP-086,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-F5C05E2AD063,RCP-MVP-086,tinggi_protein,TAKARKUY aturan internal
+TAG-08DB35A05D3C,RCP-MVP-086,vegetarian,TAKARKUY aturan internal
+TAG-60B908CEEA0F,RCP-MVP-087,halal,TAKARKUY aturan internal
+TAG-20CF467CA274,RCP-MVP-087,makan_malam,TAKARKUY aturan internal
+TAG-50837219494F,RCP-MVP-087,mengandung_krustasea,TAKARKUY aturan internal
+TAG-95F17BA7F34E,RCP-MVP-087,rendah_kalori,TAKARKUY aturan internal
+TAG-432B7F948211,RCP-MVP-087,seimbang_internal,TAKARKUY aturan internal
+TAG-8008111DE724,RCP-MVP-087,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-F358F6764F7D,RCP-KAGGLE-4473027,kategori_sumber_ayam,Kaggle file category
+TAG-E51081909818,RCP-KAGGLE-4471956,kategori_sumber_ayam,Kaggle file category
+TAG-0B256298DAEE,RCP-KAGGLE-4473057,kategori_sumber_ayam,Kaggle file category
+TAG-265A8E1D0AF0,RCP-KAGGLE-4473023,kategori_sumber_ayam,Kaggle file category
+TAG-CCDAFB666691,RCP-KAGGLE-4427438,kategori_sumber_ayam,Kaggle file category
+TAG-6AF706CBE600,RCP-KAGGLE-4472552,kategori_sumber_ayam,Kaggle file category
+TAG-4087D75C2269,RCP-KAGGLE-4437475,kategori_sumber_ayam,Kaggle file category
+TAG-4ABD817364DF,RCP-KAGGLE-4472877,kategori_sumber_ayam,Kaggle file category
+TAG-04BAE30FDA5B,RCP-KAGGLE-4472822,kategori_sumber_ayam,Kaggle file category
+TAG-408C666466C6,RCP-KAGGLE-4472901,kategori_sumber_ayam,Kaggle file category
+TAG-394E5BBFEB19,RCP-KAGGLE-4472541,kategori_sumber_ayam,Kaggle file category
+TAG-7E8EA59E9167,RCP-KAGGLE-4472362,kategori_sumber_ayam,Kaggle file category
+TAG-0ACB6A1E6B3D,RCP-KAGGLE-4472563,kategori_sumber_ayam,Kaggle file category
+TAG-52739A1CDF69,RCP-KAGGLE-4471653,kategori_sumber_ayam,Kaggle file category
+TAG-D02F88EFBC51,RCP-KAGGLE-4472498,kategori_sumber_ayam,Kaggle file category
+TAG-DB9DA73998AF,RCP-KAGGLE-4472409,kategori_sumber_ayam,Kaggle file category
+TAG-03CA82BD3DEA,RCP-KAGGLE-4472187,kategori_sumber_ayam,Kaggle file category
+TAG-2A58E11B78F0,RCP-KAGGLE-4472298,kategori_sumber_ayam,Kaggle file category
+TAG-7436CEDD5C0F,RCP-KAGGLE-4472222,kategori_sumber_ayam,Kaggle file category
+TAG-3A3382401E45,RCP-KAGGLE-4472482,kategori_sumber_ayam,Kaggle file category
+TAG-CD1264F723CF,RCP-KAGGLE-4472309,kategori_sumber_ayam,Kaggle file category
+TAG-19702B3A56C6,RCP-KAGGLE-4472258,kategori_sumber_ayam,Kaggle file category
+TAG-A0B02A7DF39E,RCP-KAGGLE-4472532,kategori_sumber_ayam,Kaggle file category
+TAG-129C9C7CCCC9,RCP-KAGGLE-4472100,kategori_sumber_ayam,Kaggle file category
+TAG-0C99ED8747F2,RCP-KAGGLE-4472201,kategori_sumber_ayam,Kaggle file category
+TAG-D1150DE67FA3,RCP-KAGGLE-4471980,kategori_sumber_ayam,Kaggle file category
+TAG-E3B404E54347,RCP-KAGGLE-4472141,kategori_sumber_ayam,Kaggle file category
+TAG-6B940D714AF1,RCP-KAGGLE-4472084,kategori_sumber_ayam,Kaggle file category
+TAG-2BBA0E909DC4,RCP-KAGGLE-4471847,kategori_sumber_ayam,Kaggle file category
+TAG-3E28033C931A,RCP-KAGGLE-4469586,kategori_sumber_ayam,Kaggle file category
+TAG-4CFCC3804A43,RCP-KAGGLE-4471776,kategori_sumber_ayam,Kaggle file category
+TAG-675EF319A11D,RCP-KAGGLE-4472147,kategori_sumber_ayam,Kaggle file category
+TAG-A0DCC11A9F82,RCP-KAGGLE-4466395,kategori_sumber_ayam,Kaggle file category
+TAG-401BF1F89829,RCP-KAGGLE-927515,kategori_sumber_ayam,Kaggle file category
+TAG-F0C2F31FEAE2,RCP-KAGGLE-4471637,kategori_sumber_ayam,Kaggle file category
+TAG-7961EBCDAB74,RCP-KAGGLE-4471748,kategori_sumber_ayam,Kaggle file category
+TAG-6BC66D6B641B,RCP-KAGGLE-4471738,kategori_sumber_ayam,Kaggle file category
+TAG-DD0FECC2DB9F,RCP-KAGGLE-4471771,kategori_sumber_ayam,Kaggle file category
+TAG-F1BB8DC58884,RCP-KAGGLE-4471802,kategori_sumber_ayam,Kaggle file category
+TAG-7886FB3DCA28,RCP-KAGGLE-4460035,kategori_sumber_ayam,Kaggle file category
+TAG-2DBD8235F6FC,RCP-KAGGLE-4471498,kategori_sumber_ayam,Kaggle file category
+TAG-FBF214615A3A,RCP-KAGGLE-4471625,kategori_sumber_ayam,Kaggle file category
+TAG-4A8CC42754CA,RCP-KAGGLE-4471418,kategori_sumber_ayam,Kaggle file category
+TAG-40595A7C2C64,RCP-KAGGLE-4471562,kategori_sumber_ayam,Kaggle file category
+TAG-DE27EFF84058,RCP-KAGGLE-4471258,kategori_sumber_ayam,Kaggle file category
+TAG-DB47E350E0A7,RCP-KAGGLE-4469261,kategori_sumber_ayam,Kaggle file category
+TAG-F900339CE48C,RCP-KAGGLE-4464881,kategori_sumber_ayam,Kaggle file category
+TAG-6E7CA8896968,RCP-KAGGLE-4471433,kategori_sumber_ayam,Kaggle file category
+TAG-4B3650A31019,RCP-KAGGLE-4471388,kategori_sumber_ayam,Kaggle file category
+TAG-BC1B1CACDC04,RCP-KAGGLE-3452442,kategori_sumber_ayam,Kaggle file category
+TAG-B6A609B4D76A,RCP-KAGGLE-4471237,kategori_sumber_ayam,Kaggle file category
+TAG-088F1BD41793,RCP-KAGGLE-4466981,kategori_sumber_ayam,Kaggle file category
+TAG-9784ABCC0933,RCP-KAGGLE-4471032,kategori_sumber_ayam,Kaggle file category
+TAG-0BFCC7F25016,RCP-KAGGLE-4448850,kategori_sumber_ayam,Kaggle file category
+TAG-DEDBD7F98245,RCP-KAGGLE-4470916,kategori_sumber_ayam,Kaggle file category
+TAG-C22992D253B7,RCP-KAGGLE-4470142,kategori_sumber_ayam,Kaggle file category
+TAG-6490FEA9F7DC,RCP-KAGGLE-4470089,kategori_sumber_ayam,Kaggle file category
+TAG-212273E2D26D,RCP-KAGGLE-4470099,kategori_sumber_ayam,Kaggle file category
+TAG-A5744B8699E5,RCP-KAGGLE-3934445,kategori_sumber_ayam,Kaggle file category
+TAG-189CB2209A14,RCP-KAGGLE-4469858,kategori_sumber_ayam,Kaggle file category
+TAG-D94FFEA8CC93,RCP-TMDB-53430,kandidat_belum_dikurasi,TheMealDB API
+TAG-F96925F91893,RCP-TMDB-53430,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-B48B38D8D859,RCP-TMDB-53430,kategori_sumber_breakfast,TheMealDB API
+TAG-1296B4E3AB19,RCP-TMDB-53076,kandidat_belum_dikurasi,TheMealDB API
+TAG-6BCF61E4FC5F,RCP-TMDB-53076,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-C4D9BD7D6461,RCP-TMDB-53076,kategori_sumber_breakfast,TheMealDB API
+TAG-9E71C2FB5C27,RCP-TMDB-52965,kandidat_belum_dikurasi,TheMealDB API
+TAG-A4A6DCBC3097,RCP-TMDB-52965,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-42674CC62838,RCP-TMDB-52965,kategori_sumber_breakfast,TheMealDB API
+TAG-0D33225DC7A9,RCP-TMDB-53379,kandidat_belum_dikurasi,TheMealDB API
+TAG-01AB1F0CFFAE,RCP-TMDB-53379,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-3BBD17FB4FAA,RCP-TMDB-53379,kategori_sumber_breakfast,TheMealDB API
+TAG-A9C28FA4C983,RCP-TMDB-52895,kandidat_belum_dikurasi,TheMealDB API
+TAG-8F913D685F33,RCP-TMDB-52895,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-749AA36F9F2C,RCP-TMDB-52895,kategori_sumber_breakfast,TheMealDB API
+TAG-671B243D4533,RCP-TMDB-53413,kandidat_belum_dikurasi,TheMealDB API
+TAG-CAD90AAC9F0B,RCP-TMDB-53413,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-DF3B2540A70C,RCP-TMDB-53413,kategori_sumber_breakfast,TheMealDB API
+TAG-74C70AFCAD37,RCP-TMDB-52957,kandidat_belum_dikurasi,TheMealDB API
+TAG-88025EFC58EA,RCP-TMDB-52957,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-616C2C0790DD,RCP-TMDB-52957,kategori_sumber_breakfast,TheMealDB API
+TAG-AC2F007F9D8D,RCP-TMDB-52896,kandidat_belum_dikurasi,TheMealDB API
+TAG-EF476957D186,RCP-TMDB-52896,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-47F9C314EBB7,RCP-TMDB-52896,kategori_sumber_breakfast,TheMealDB API
+TAG-61FBF8D8850A,RCP-TMDB-53450,kandidat_belum_dikurasi,TheMealDB API
+TAG-7871AD7EB153,RCP-TMDB-53450,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-DBD2B27D6EFE,RCP-TMDB-53450,kategori_sumber_breakfast,TheMealDB API
+TAG-5C6E7AF9C826,RCP-TMDB-52967,kandidat_belum_dikurasi,TheMealDB API
+TAG-6BCA19BE2005,RCP-TMDB-52967,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-7FE2C08F4A7E,RCP-TMDB-52967,kategori_sumber_breakfast,TheMealDB API
+TAG-D23E5992C49A,RCP-TMDB-53363,kandidat_belum_dikurasi,TheMealDB API
+TAG-015A1730E4C5,RCP-TMDB-53363,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-3521D53976BD,RCP-TMDB-53363,kategori_sumber_breakfast,TheMealDB API
+TAG-D5CF57C6F0D0,RCP-TMDB-53331,kandidat_belum_dikurasi,TheMealDB API
+TAG-E71F19F944C0,RCP-TMDB-53331,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-DB55BE8F8823,RCP-TMDB-53331,kategori_sumber_breakfast,TheMealDB API
+TAG-5FD423DB688F,RCP-TMDB-53118,kandidat_belum_dikurasi,TheMealDB API
+TAG-4EB9BEA06B81,RCP-TMDB-53118,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-033DDAD40AC2,RCP-TMDB-53118,kategori_sumber_breakfast,TheMealDB API
+TAG-571B0D53D2BB,RCP-TMDB-52962,kandidat_belum_dikurasi,TheMealDB API
+TAG-02CA6F16A291,RCP-TMDB-52962,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-F42CC686F197,RCP-TMDB-52962,kategori_sumber_breakfast,TheMealDB API
+TAG-A5E0B8B65DE6,RCP-TMDB-52964,kandidat_belum_dikurasi,TheMealDB API
+TAG-6795757AF8D7,RCP-TMDB-52964,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-A7F3CD03DED6,RCP-TMDB-52964,kategori_sumber_breakfast,TheMealDB API
+TAG-E568CF3928AD,RCP-TMDB-53415,kandidat_belum_dikurasi,TheMealDB API
+TAG-7F9DC76C2142,RCP-TMDB-53415,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-F9C8D360375D,RCP-TMDB-53415,kategori_sumber_breakfast,TheMealDB API
+TAG-E00D634F1CEA,RCP-TMDB-53165,kandidat_belum_dikurasi,TheMealDB API
+TAG-55E0AA5CB166,RCP-TMDB-53165,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-3B0387BFD27D,RCP-TMDB-53165,kategori_sumber_breakfast,TheMealDB API
+TAG-8DA35A781D05,RCP-TMDB-53114,kandidat_belum_dikurasi,TheMealDB API
+TAG-EEC57EAD2725,RCP-TMDB-53114,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-DE0C4A3B149E,RCP-TMDB-53114,kategori_sumber_breakfast,TheMealDB API
+TAG-886F5AD97CC3,RCP-TMDB-53225,kandidat_belum_dikurasi,TheMealDB API
+TAG-506E0C7E4785,RCP-TMDB-53225,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-7954A255D314,RCP-TMDB-53225,kategori_sumber_breakfast,TheMealDB API
+TAG-62B5995FF427,RCP-TMDB-53425,kandidat_belum_dikurasi,TheMealDB API
+TAG-EAB7788ABD60,RCP-TMDB-53425,slot_saran_sarapan,TAKARKUY; penempatan sementara
+TAG-24EB507423B7,RCP-TMDB-53425,kategori_sumber_dessert,TheMealDB API
+TAG-7FE26130508E,RCP-TMDB-53281,kandidat_belum_dikurasi,TheMealDB API
+TAG-6847EF6E65CE,RCP-TMDB-53281,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-A7A4518132F3,RCP-TMDB-53281,kategori_sumber_beef,TheMealDB API
+TAG-3E56E8E17E4D,RCP-TMDB-53085,kandidat_belum_dikurasi,TheMealDB API
+TAG-A7C9C079EA13,RCP-TMDB-53085,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-EBCF52803990,RCP-TMDB-53085,kategori_sumber_chicken,TheMealDB API
+TAG-7F4B72B332EA,RCP-TMDB-53483,kandidat_belum_dikurasi,TheMealDB API
+TAG-DAD20DF25B66,RCP-TMDB-53483,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-37D6232CA26F,RCP-TMDB-53483,kategori_sumber_seafood,TheMealDB API
+TAG-3456E86A4311,RCP-TMDB-53158,kandidat_belum_dikurasi,TheMealDB API
+TAG-85CE50F9FE31,RCP-TMDB-53158,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-DC1144909526,RCP-TMDB-53158,kategori_sumber_vegetarian,TheMealDB API
+TAG-EAA1FD7C7343,RCP-TMDB-53092,kandidat_belum_dikurasi,TheMealDB API
+TAG-B0396F8D8841,RCP-TMDB-53092,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-84E712EBF5A2,RCP-TMDB-53092,kategori_sumber_vegan,TheMealDB API
+TAG-EB4A2C7EDF58,RCP-TMDB-52839,kandidat_belum_dikurasi,TheMealDB API
+TAG-8FC651D39F67,RCP-TMDB-52839,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-03D65FD74D1C,RCP-TMDB-52839,kategori_sumber_pasta,TheMealDB API
+TAG-0C27EF0A0852,RCP-TMDB-53527,kandidat_belum_dikurasi,TheMealDB API
+TAG-9E01A5890614,RCP-TMDB-53527,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-2889EF7578F5,RCP-TMDB-53527,kategori_sumber_miscellaneous,TheMealDB API
+TAG-1879AF2484A9,RCP-TMDB-53262,kandidat_belum_dikurasi,TheMealDB API
+TAG-4DE4B60E98FA,RCP-TMDB-53262,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-E9299BCD46A1,RCP-TMDB-53262,kategori_sumber_lamb,TheMealDB API
+TAG-77B8A99D38DB,RCP-TMDB-53354,kandidat_belum_dikurasi,TheMealDB API
+TAG-1333028CF803,RCP-TMDB-53354,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-000A7C76E6AA,RCP-TMDB-53354,kategori_sumber_goat,TheMealDB API
+TAG-93B442251B9C,RCP-TMDB-53334,kandidat_belum_dikurasi,TheMealDB API
+TAG-711AA07D80E1,RCP-TMDB-53334,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-A0DB34035492,RCP-TMDB-53334,kategori_sumber_beef,TheMealDB API
+TAG-60DFA01F6D59,RCP-TMDB-53050,kandidat_belum_dikurasi,TheMealDB API
+TAG-4479F920EE70,RCP-TMDB-53050,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-50D3CFAE89F8,RCP-TMDB-53050,kategori_sumber_chicken,TheMealDB API
+TAG-F5F44C68284C,RCP-TMDB-53495,kandidat_belum_dikurasi,TheMealDB API
+TAG-A45269703003,RCP-TMDB-53495,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-BA161D2CE434,RCP-TMDB-53495,kategori_sumber_seafood,TheMealDB API
+TAG-BE2711670A3D,RCP-TMDB-53288,kandidat_belum_dikurasi,TheMealDB API
+TAG-D3477729FF62,RCP-TMDB-53288,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-4DDE8FC12C5C,RCP-TMDB-53288,kategori_sumber_vegetarian,TheMealDB API
+TAG-5B215C7F9E97,RCP-TMDB-53150,kandidat_belum_dikurasi,TheMealDB API
+TAG-9348EE45A180,RCP-TMDB-53150,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-F583AB188D92,RCP-TMDB-53150,kategori_sumber_vegan,TheMealDB API
+TAG-74F725CB4A43,RCP-TMDB-53064,kandidat_belum_dikurasi,TheMealDB API
+TAG-7896B12C5ED0,RCP-TMDB-53064,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-3642FE7D4D22,RCP-TMDB-53064,kategori_sumber_pasta,TheMealDB API
+TAG-1FDF861A4BE8,RCP-TMDB-53525,kandidat_belum_dikurasi,TheMealDB API
+TAG-E69B0D7B3218,RCP-TMDB-53525,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-F95C5F6D6F75,RCP-TMDB-53525,kategori_sumber_miscellaneous,TheMealDB API
+TAG-F8ED545F7974,RCP-TMDB-53265,kandidat_belum_dikurasi,TheMealDB API
+TAG-0842B5F69D2F,RCP-TMDB-53265,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-AF9097CBDA24,RCP-TMDB-53265,kategori_sumber_lamb,TheMealDB API
+TAG-5D700907929D,RCP-TMDB-52968,kandidat_belum_dikurasi,TheMealDB API
+TAG-4D36CB53BD15,RCP-TMDB-52968,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-BE539874F0B6,RCP-TMDB-52968,kategori_sumber_goat,TheMealDB API
+TAG-8EBE7B4644AD,RCP-TMDB-53329,kandidat_belum_dikurasi,TheMealDB API
+TAG-BA164AB3C423,RCP-TMDB-53329,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-47CE4713D18B,RCP-TMDB-53329,kategori_sumber_beef,TheMealDB API
+TAG-35AE32A84CA6,RCP-TMDB-53466,kandidat_belum_dikurasi,TheMealDB API
+TAG-E41F0FA43183,RCP-TMDB-53466,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-BB82BD625736,RCP-TMDB-53466,kategori_sumber_chicken,TheMealDB API
+TAG-7ADFBB4B096F,RCP-TMDB-53147,kandidat_belum_dikurasi,TheMealDB API
+TAG-0ED5EF3E10A0,RCP-TMDB-53147,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-300507C6EA40,RCP-TMDB-53147,kategori_sumber_seafood,TheMealDB API
+TAG-BC2B26CFA520,RCP-TMDB-53278,kandidat_belum_dikurasi,TheMealDB API
+TAG-D68DF65AF8DC,RCP-TMDB-53278,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-BA490CBCCB99,RCP-TMDB-53278,kategori_sumber_vegetarian,TheMealDB API
+TAG-B7C10C7999D0,RCP-TMDB-53115,kandidat_belum_dikurasi,TheMealDB API
+TAG-4883932D1524,RCP-TMDB-53115,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-C5EBFC8A3820,RCP-TMDB-53115,kategori_sumber_vegan,TheMealDB API
+TAG-A7656BFBAC15,RCP-TMDB-52835,kandidat_belum_dikurasi,TheMealDB API
+TAG-D67F69B9A5B9,RCP-TMDB-52835,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-F359C0EDEA2E,RCP-TMDB-52835,kategori_sumber_pasta,TheMealDB API
+TAG-640330F353AB,RCP-TMDB-52848,kandidat_belum_dikurasi,TheMealDB API
+TAG-AF1513B0EB32,RCP-TMDB-52848,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-90AA4D76A07D,RCP-TMDB-52848,kategori_sumber_miscellaneous,TheMealDB API
+TAG-0AD50835D92B,RCP-TMDB-53289,kandidat_belum_dikurasi,TheMealDB API
+TAG-EFF66DD0100B,RCP-TMDB-53289,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-E7226CD10011,RCP-TMDB-53289,kategori_sumber_lamb,TheMealDB API
+TAG-B7549E21107B,RCP-TMDB-53133,kandidat_belum_dikurasi,TheMealDB API
+TAG-D4E7A997355B,RCP-TMDB-53133,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-DE9CA0F87BFF,RCP-TMDB-53133,kategori_sumber_beef,TheMealDB API
+TAG-D9E50B707F67,RCP-TMDB-53453,kandidat_belum_dikurasi,TheMealDB API
+TAG-15F5A38C167E,RCP-TMDB-53453,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-AC03702A277C,RCP-TMDB-53453,kategori_sumber_chicken,TheMealDB API
+TAG-F8094BD2B9A5,RCP-TMDB-53481,kandidat_belum_dikurasi,TheMealDB API
+TAG-202398C19E66,RCP-TMDB-53481,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-15A5ABDA2227,RCP-TMDB-53481,kategori_sumber_seafood,TheMealDB API
+TAG-C9D72739D914,RCP-TMDB-53267,kandidat_belum_dikurasi,TheMealDB API
+TAG-9EA69946E211,RCP-TMDB-53267,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-74D061ED21CF,RCP-TMDB-53267,kategori_sumber_vegetarian,TheMealDB API
+TAG-D3B7EC7F1082,RCP-TMDB-52942,kandidat_belum_dikurasi,TheMealDB API
+TAG-0ED0D255D0D7,RCP-TMDB-52942,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-59ED0B85EFA4,RCP-TMDB-52942,kategori_sumber_vegan,TheMealDB API
+TAG-45043E0C6C47,RCP-TMDB-52829,kandidat_belum_dikurasi,TheMealDB API
+TAG-69F1C77ACE98,RCP-TMDB-52829,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-4C2B59E6933D,RCP-TMDB-52829,kategori_sumber_pasta,TheMealDB API
+TAG-4BC6F2DD8CE9,RCP-TMDB-53438,kandidat_belum_dikurasi,TheMealDB API
+TAG-0E65AB730225,RCP-TMDB-53438,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-0265643C8BC8,RCP-TMDB-53438,kategori_sumber_miscellaneous,TheMealDB API
+TAG-7A8BD47F2BDA,RCP-TMDB-53123,kandidat_belum_dikurasi,TheMealDB API
+TAG-58D50D178054,RCP-TMDB-53123,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-FD0F0848B614,RCP-TMDB-53123,kategori_sumber_lamb,TheMealDB API
+TAG-12E77550987C,RCP-TMDB-53099,kandidat_belum_dikurasi,TheMealDB API
+TAG-E35509F638B8,RCP-TMDB-53099,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-2A5B4B6F58E9,RCP-TMDB-53099,kategori_sumber_beef,TheMealDB API
+TAG-90018ED4F5B2,RCP-TMDB-52940,kandidat_belum_dikurasi,TheMealDB API
+TAG-55F08B24C434,RCP-TMDB-52940,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-57AFF702E0DA,RCP-TMDB-52940,kategori_sumber_chicken,TheMealDB API
+TAG-A3B4F47EB35C,RCP-TMDB-52959,kandidat_belum_dikurasi,TheMealDB API
+TAG-22E697627706,RCP-TMDB-52959,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-20F510D09372,RCP-TMDB-52959,kategori_sumber_seafood,TheMealDB API
+TAG-16AADF26C143,RCP-TMDB-53107,kandidat_belum_dikurasi,TheMealDB API
+TAG-B00FDDFC99C2,RCP-TMDB-53107,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-F38713DE8287,RCP-TMDB-53107,kategori_sumber_vegetarian,TheMealDB API
+TAG-E71EA612C08B,RCP-TMDB-53250,kandidat_belum_dikurasi,TheMealDB API
+TAG-08D1AE163F76,RCP-TMDB-53250,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-BC075BAE6E5A,RCP-TMDB-53250,kategori_sumber_vegan,TheMealDB API
+TAG-7E252AE86B8D,RCP-TMDB-52987,kandidat_belum_dikurasi,TheMealDB API
+TAG-369A4B9D5764,RCP-TMDB-52987,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-4D14D6119BE5,RCP-TMDB-52987,kategori_sumber_pasta,TheMealDB API
+TAG-CB808CCE6206,RCP-TMDB-52939,kandidat_belum_dikurasi,TheMealDB API
+TAG-830BC4024688,RCP-TMDB-52939,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-2546897A5E3E,RCP-TMDB-52939,kategori_sumber_miscellaneous,TheMealDB API
+TAG-727E8D8FE946,RCP-TMDB-53258,kandidat_belum_dikurasi,TheMealDB API
+TAG-1D77551A6970,RCP-TMDB-53258,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-D200383CAC2C,RCP-TMDB-53258,kategori_sumber_lamb,TheMealDB API
+TAG-054F51D5DAB3,RCP-TMDB-53457,kandidat_belum_dikurasi,TheMealDB API
+TAG-35886A740E5A,RCP-TMDB-53457,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-21FBEF4D47A8,RCP-TMDB-53457,kategori_sumber_beef,TheMealDB API
+TAG-9FC4743E80E2,RCP-TMDB-53016,kandidat_belum_dikurasi,TheMealDB API
+TAG-9A9ECD6E0A2E,RCP-TMDB-53016,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-BC898868BA8E,RCP-TMDB-53016,kategori_sumber_chicken,TheMealDB API
+TAG-A0EBDB5862A9,RCP-TMDB-53440,kandidat_belum_dikurasi,TheMealDB API
+TAG-445778C79268,RCP-TMDB-53440,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-62325C74E0ED,RCP-TMDB-53440,kategori_sumber_seafood,TheMealDB API
+TAG-758805FEF494,RCP-TMDB-52807,kandidat_belum_dikurasi,TheMealDB API
+TAG-118A0E75E381,RCP-TMDB-52807,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-4449E5723B68,RCP-TMDB-52807,kategori_sumber_vegetarian,TheMealDB API
+TAG-B0BA39604059,RCP-TMDB-52794,kandidat_belum_dikurasi,TheMealDB API
+TAG-0FE071B419FE,RCP-TMDB-52794,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-95787D265F0B,RCP-TMDB-52794,kategori_sumber_vegan,TheMealDB API
+TAG-F21B60A10ECB,RCP-TMDB-52844,kandidat_belum_dikurasi,TheMealDB API
+TAG-72687F14DED3,RCP-TMDB-52844,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-539D5C11E921,RCP-TMDB-52844,kategori_sumber_pasta,TheMealDB API
+TAG-70E619342874,RCP-TMDB-52969,kandidat_belum_dikurasi,TheMealDB API
+TAG-152E2FDC995D,RCP-TMDB-52969,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-BFBC39AB83C5,RCP-TMDB-52969,kategori_sumber_miscellaneous,TheMealDB API
+TAG-6EDCE106A8C4,RCP-TMDB-53253,kandidat_belum_dikurasi,TheMealDB API
+TAG-18432F27D5E7,RCP-TMDB-53253,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-21A333D3FC59,RCP-TMDB-53253,kategori_sumber_lamb,TheMealDB API
+TAG-CFC2154177B9,RCP-TMDB-53366,kandidat_belum_dikurasi,TheMealDB API
+TAG-6344B870AAA7,RCP-TMDB-53366,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-F07A889524AA,RCP-TMDB-53366,kategori_sumber_beef,TheMealDB API
+TAG-7A75AC6182B8,RCP-TMDB-53161,kandidat_belum_dikurasi,TheMealDB API
+TAG-6AFF90029039,RCP-TMDB-53161,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-02250D1FA8FB,RCP-TMDB-53161,kategori_sumber_chicken,TheMealDB API
+TAG-541ADB0C2A4D,RCP-TMDB-53239,kandidat_belum_dikurasi,TheMealDB API
+TAG-FCA51A062E15,RCP-TMDB-53239,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-60594B535D7F,RCP-TMDB-53239,kategori_sumber_seafood,TheMealDB API
+TAG-20611A3ABA0D,RCP-TMDB-53307,kandidat_belum_dikurasi,TheMealDB API
+TAG-8BC37D9C411C,RCP-TMDB-53307,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-1108DC1F2AD3,RCP-TMDB-53307,kategori_sumber_vegetarian,TheMealDB API
+TAG-70CFF458BF46,RCP-TMDB-52775,kandidat_belum_dikurasi,TheMealDB API
+TAG-062C7CF66B8B,RCP-TMDB-52775,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-2FFF00991245,RCP-TMDB-52775,kategori_sumber_vegan,TheMealDB API
+TAG-EEB045B4F273,RCP-TMDB-53461,kandidat_belum_dikurasi,TheMealDB API
+TAG-D441B576535A,RCP-TMDB-53461,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-78A5AC5BB605,RCP-TMDB-53461,kategori_sumber_pasta,TheMealDB API
+TAG-B07994F2B908,RCP-TMDB-53446,kandidat_belum_dikurasi,TheMealDB API
+TAG-DBB0C841FCA8,RCP-TMDB-53446,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-2E602B55920A,RCP-TMDB-53446,kategori_sumber_miscellaneous,TheMealDB API
+TAG-B04F3F2AF002,RCP-TMDB-52769,kandidat_belum_dikurasi,TheMealDB API
+TAG-268AE8449408,RCP-TMDB-52769,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-FF573694C021,RCP-TMDB-52769,kategori_sumber_lamb,TheMealDB API
+TAG-240DC4B970EA,RCP-TMDB-52874,kandidat_belum_dikurasi,TheMealDB API
+TAG-0595CBE14B29,RCP-TMDB-52874,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-253BA93870FC,RCP-TMDB-52874,kategori_sumber_beef,TheMealDB API
+TAG-27A7130B2BE1,RCP-TMDB-52846,kandidat_belum_dikurasi,TheMealDB API
+TAG-C21617D34AE8,RCP-TMDB-52846,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-7C6BAB48E15D,RCP-TMDB-52846,kategori_sumber_chicken,TheMealDB API
+TAG-125D821DA98E,RCP-TMDB-53451,kandidat_belum_dikurasi,TheMealDB API
+TAG-0DB51DFD41D3,RCP-TMDB-53451,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-3EF913B35C92,RCP-TMDB-53451,kategori_sumber_seafood,TheMealDB API
+TAG-6C1C7E5F942F,RCP-TMDB-53313,kandidat_belum_dikurasi,TheMealDB API
+TAG-5E0E7A7FB88C,RCP-TMDB-53313,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-B363DC497746,RCP-TMDB-53313,kategori_sumber_vegetarian,TheMealDB API
+TAG-DACA464788BF,RCP-TMDB-53504,kandidat_belum_dikurasi,TheMealDB API
+TAG-AA435BCBD251,RCP-TMDB-53504,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-6D67E4C1A571,RCP-TMDB-53504,kategori_sumber_pasta,TheMealDB API
+TAG-C3B38853CC04,RCP-TMDB-52907,kandidat_belum_dikurasi,TheMealDB API
+TAG-6A5D40D99F0C,RCP-TMDB-52907,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-DB70756E81B8,RCP-TMDB-52907,kategori_sumber_miscellaneous,TheMealDB API
+TAG-AD8FA2D6D23B,RCP-TMDB-53449,kandidat_belum_dikurasi,TheMealDB API
+TAG-68B48F40A560,RCP-TMDB-53449,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-D4750B5FFBEA,RCP-TMDB-53449,kategori_sumber_lamb,TheMealDB API
+TAG-7766C5F1ACB3,RCP-TMDB-52878,kandidat_belum_dikurasi,TheMealDB API
+TAG-A4D85667CA41,RCP-TMDB-52878,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-E24A7DB65CCD,RCP-TMDB-52878,kategori_sumber_beef,TheMealDB API
+TAG-3AB3CDDA8C78,RCP-TMDB-52796,kandidat_belum_dikurasi,TheMealDB API
+TAG-C5E7721CE73A,RCP-TMDB-52796,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-EBAE3B4438E4,RCP-TMDB-52796,kategori_sumber_chicken,TheMealDB API
+TAG-D5231A107791,RCP-TMDB-53103,kandidat_belum_dikurasi,TheMealDB API
+TAG-1972EB460EC8,RCP-TMDB-53103,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-1CEBAEC1BD86,RCP-TMDB-53103,kategori_sumber_seafood,TheMealDB API
+TAG-430C7EA754AC,RCP-TMDB-53078,kandidat_belum_dikurasi,TheMealDB API
+TAG-8CEFE056EF9A,RCP-TMDB-53078,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-0DD7864305B5,RCP-TMDB-53078,kategori_sumber_vegetarian,TheMealDB API
+TAG-9A7DB915D3CD,RCP-TMDB-52837,kandidat_belum_dikurasi,TheMealDB API
+TAG-9579BCD0EB76,RCP-TMDB-52837,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-37B82AEC2200,RCP-TMDB-52837,kategori_sumber_pasta,TheMealDB API
+TAG-9CB189E36D83,RCP-TMDB-52815,kandidat_belum_dikurasi,TheMealDB API
+TAG-4238AFFCDEF6,RCP-TMDB-52815,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-63F163ACB616,RCP-TMDB-52815,kategori_sumber_miscellaneous,TheMealDB API
+TAG-3A7CCB0F9E16,RCP-TMDB-52974,kandidat_belum_dikurasi,TheMealDB API
+TAG-820C552079CC,RCP-TMDB-52974,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-D695E5A6E80E,RCP-TMDB-52974,kategori_sumber_lamb,TheMealDB API
+TAG-6F438BEEBD89,RCP-TMDB-53071,kandidat_belum_dikurasi,TheMealDB API
+TAG-7B973CD7D257,RCP-TMDB-53071,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-F2AC0255DC02,RCP-TMDB-53071,kategori_sumber_beef,TheMealDB API
+TAG-EF057BA4E98C,RCP-TMDB-53459,kandidat_belum_dikurasi,TheMealDB API
+TAG-202C96FCD96F,RCP-TMDB-53459,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-4E2AFF0E12C4,RCP-TMDB-53459,kategori_sumber_chicken,TheMealDB API
+TAG-0CDEEF635752,RCP-TMDB-52819,kandidat_belum_dikurasi,TheMealDB API
+TAG-0201821E2882,RCP-TMDB-52819,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-66253B9B0CF7,RCP-TMDB-52819,kategori_sumber_seafood,TheMealDB API
+TAG-23384DAF3F05,RCP-TMDB-53536,kandidat_belum_dikurasi,TheMealDB API
+TAG-4406AEBAD563,RCP-TMDB-53536,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-D169ACEF76BE,RCP-TMDB-53536,kategori_sumber_vegetarian,TheMealDB API
+TAG-9B7D12F299A2,RCP-TMDB-52982,kandidat_belum_dikurasi,TheMealDB API
+TAG-595DB39A251B,RCP-TMDB-52982,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-A016EFFCB031,RCP-TMDB-52982,kategori_sumber_pasta,TheMealDB API
+TAG-09C8CCA78CC8,RCP-TMDB-52915,kandidat_belum_dikurasi,TheMealDB API
+TAG-DFDA3038B8BD,RCP-TMDB-52915,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-2826F2ACB7A6,RCP-TMDB-52915,kategori_sumber_miscellaneous,TheMealDB API
+TAG-9F872B29110A,RCP-TMDB-53257,kandidat_belum_dikurasi,TheMealDB API
+TAG-A3C2673C55C6,RCP-TMDB-53257,slot_saran_makan_siang,TAKARKUY; penempatan sementara
+TAG-E66C00D29500,RCP-TMDB-53257,kategori_sumber_lamb,TheMealDB API
+TAG-E385CE0C671B,RCP-TMDB-52997,kandidat_belum_dikurasi,TheMealDB API
+TAG-48776478E227,RCP-TMDB-52997,slot_saran_makan_malam,TAKARKUY; penempatan sementara
+TAG-12B49AEB9EF0,RCP-TMDB-52997,kategori_sumber_beef,TheMealDB API

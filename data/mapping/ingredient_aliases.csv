@@ -1,0 +1,316 @@
+alias_code,source,raw_name,ingredient_code,mapping_status
+ALS-04EEAD48C48C,Bapokting Garut,Beras Premium,ING-BERAS-PREMIUM,reviewed
+ALS-A818E4EF22A8,Bapokting Garut,Beras Medium,ING-BERAS-MEDIUM,reviewed
+ALS-7DC88618FA2A,Bapokting Garut,Beras Termahal,ING-BERAS-TERMAHAL,reviewed
+ALS-34688259FDAB,Bapokting Garut,Beras Termurah (Non Bulog),ING-BERAS-TERMURAH-NON-BULOG,reviewed
+ALS-4E6708195216,Bapokting Garut,Gula Pasir Dalam Negeri,ING-GULA-PASIR-DALAM-NEGERI,reviewed
+ALS-FB1A203FB889,Bapokting Garut,Minyak Goreng Bimoli Kemasan,ING-MINYAK-GORENG-BIMOLI-KEMASAN,reviewed
+ALS-C5BA480BF9BA,Bapokting Garut,Minyak Goreng Curah,ING-MINYAK-GORENG-CURAH,reviewed
+ALS-AD181C599DC9,Bapokting Garut,Minyak Goreng Kemasan Sederhana,ING-MINYAK-GORENG-KEMASAN-SEDERHANA,reviewed
+ALS-6849C78812A8,Bapokting Garut,Daging Sapi,ING-DAGING-SAPI,reviewed
+ALS-CCBA5A4A1BEF,Bapokting Garut,Daging Ayam Broiler,ING-DAGING-AYAM-BROILER,reviewed
+ALS-69825CE92E5F,Bapokting Garut,Daging Ayam Kampung,ING-DAGING-AYAM-KAMPUNG,reviewed
+ALS-490C27D2BD9B,Bapokting Garut,Telur Ayam Broiler,ING-TELUR-AYAM-BROILER,reviewed
+ALS-B911E38A54B6,Bapokting Garut,Telur Ayam Kampung,ING-TELUR-AYAM-KAMPUNG,reviewed
+ALS-7BA2348C45DA,Bapokting Garut,Susu Kental Manis Merk bendera,ING-SUSU-KENTAL-MANIS-MERK-BENDERA,reviewed
+ALS-165A25681C48,Bapokting Garut,Susu Kental Manis Merk Indomilk,ING-SUSU-KENTAL-MANIS-MERK-INDOMILK,reviewed
+ALS-F8D77A877504,Bapokting Garut,Susu Bubuk Dancow,ING-SUSU-BUBUK-DANCOW,reviewed
+ALS-CDE333B0EA43,Bapokting Garut,Susu Bubuk Indomilk,ING-SUSU-BUBUK-INDOMILK,reviewed
+ALS-B54146C2997D,Bapokting Garut,Jagung Pipilan,ING-JAGUNG-PIPILAN,reviewed
+ALS-E0ADFAF51A16,Bapokting Garut,Garam Beryodium Bata,ING-GARAM-BERYODIUM-BATA,reviewed
+ALS-B75D174B2BE4,Bapokting Garut,Garam Beryodium Halus,ING-GARAM-BERYODIUM-HALUS,reviewed
+ALS-5FFC6432BF0E,Bapokting Garut,Tepung Terigu Cap Segitiga Biru,ING-TEPUNG-TERIGU-CAP-SEGITIGA-BIRU,reviewed
+ALS-EF4F5BD33BC6,Bapokting Garut,Tepung Terigu Cap Cakra Kembar,ING-TEPUNG-TERIGU-CAP-CAKRA-KEMBAR,reviewed
+ALS-29B8B22CC9F7,Bapokting Garut,Tepung Terigu Cap Kunci,ING-TEPUNG-TERIGU-CAP-KUNCI,reviewed
+ALS-E917DFFBF996,Bapokting Garut,Kacang Kedelai Impor,ING-KACANG-KEDELAI-IMPOR,reviewed
+ALS-144B009C4F82,Bapokting Garut,Kacang Hijau,ING-KACANG-HIJAU,reviewed
+ALS-C7E49DA81DD4,Bapokting Garut,Kacang Tanah,ING-KACANG-TANAH,reviewed
+ALS-04ADE5C04CC4,Bapokting Garut,Mie Instan,ING-MIE-INSTAN,reviewed
+ALS-D81CF32260F3,Bapokting Garut,Cabe Merah Keriting,ING-CABAI-MERAH-KERITING,reviewed
+ALS-76A8FB6FF250,Bapokting Garut,Cabe Merah Biasa,ING-CABE-MERAH-BIASA,reviewed
+ALS-1048A2378BF4,Bapokting Garut,Cabe Rawit Hijau,ING-CABAI-RAWIT-HIJAU,reviewed
+ALS-8130F59FAD7E,Bapokting Garut,Cabe Rawit Merah,ING-CABAI-RAWIT-MERAH,reviewed
+ALS-41A576FD05ED,Bapokting Garut,Bawang Merah,ING-BAWANG-MERAH,reviewed
+ALS-5A61DE22238C,Bapokting Garut,Bawang Putih,ING-BAWANG-PUTIH,reviewed
+ALS-E09392EF73C8,Bapokting Garut,Ikan Asin Teri No. 2,ING-IKAN-ASIN-TERI-NO-2,reviewed
+ALS-CD546FF8A407,Bapokting Garut,Ikan kembung,ING-IKAN-KEMBUNG,reviewed
+ALS-CCC51F1DAD24,Bapokting Garut,Ketela Pohon,ING-SINGKONG,reviewed
+ALS-D1DBE141B0DE,Bapokting Garut,Kentang,ING-KENTANG,reviewed
+ALS-BA51CEF190E8,Bapokting Garut,Jagung Manis,ING-JAGUNG-MANIS,reviewed
+ALS-D5CE7F3BE38D,Bapokting Garut,Tepung Terigu Curah,ING-TEPUNG-TERIGU-CURAH,reviewed
+ALS-66E18D1CCE5C,Bapokting Garut,Ikan Bandeng,ING-IKAN-BANDENG,reviewed
+ALS-7E450D3EF263,Bapokting Garut,Ikan Segar Tongkol/Tuna/Cakalang,ING-IKAN-SEGAR-TONGKOL-TUNA-CAKALANG,reviewed
+ALS-F68B396F78F4,Bapokting Garut,Cabe Hijau Biasa,ING-CABE-HIJAU-BIASA,reviewed
+ALS-0033FEFCF1AA,Bapokting Garut,Gula Merah,ING-GULA-MERAH,reviewed
+ALS-57EABB5E97B2,Bapokting Garut,Tomat Merah,ING-TOMAT,reviewed
+ALS-BBC925B1748C,Bapokting Garut,Bawang Bombay,ING-BAWANG-BOMBAY,reviewed
+ALS-969FDEEAA149,Bapokting Garut,Kol/Kubis,ING-KUBIS,reviewed
+ALS-8F07F090F665,Bapokting Garut,Tempe / Kg,ING-TEMPE,reviewed
+ALS-5FDAD96C6E63,Bapokting Garut,Tahu Mentah / Kg,ING-TAHU-PUTIH,reviewed
+ALS-368A13000FAB,Bapokting Garut,Udang,ING-UDANG,reviewed
+ALS-53185DAEA041,Bapokting Garut,Jeruk,ING-JERUK,reviewed
+ALS-A44F8D1DB5B1,Bapokting Garut,Pisang,ING-PISANG,reviewed
+ALS-BE8A4DB0CF93,Bapokting Garut,Tomat Hijau,ING-TOMAT-HIJAU,reviewed
+ALS-A1CA531DB9D0,Bapokting Garut,Minyak Kita,ING-MINYAK-KITA,reviewed
+ALS-C658E760C1EA,Bapokting Garut,Ikan Mas,ING-IKAN-MAS,reviewed
+ALS-1FEC0AAF2CA0,Bapokting Garut,Ubi Jalar Putih,ING-UBI-JALAR-PUTIH,reviewed
+ALS-482F8AD9908C,Bapokting Garut,Susu Balita SGM 400Gr,ING-SUSU-BALITA-SGM-400GR,reviewed
+ALS-E5505615B9B7,Bapokting Garut,"Daging Sapi, Lokal, Tetelan",ING-DAGING-SAPI-LOKAL-TETELAN,reviewed
+ALS-BB2F90262533,Bapokting Garut,"Daging Sapi, Lokal, Paha Depan",ING-DAGING-SAPI-LOKAL-PAHA-DEPAN,reviewed
+ALS-7BC9DCEB18F9,Bapokting Garut,"Daging Sapi, Lokal, Paha Belakang",ING-DAGING-SAPI-LOKAL-PAHA-BELAKANG,reviewed
+ALS-A813290089D3,Bapokting Garut,"Daging Sapi, Lokal, Has Dalam",ING-DAGING-SAPI-LOKAL-HAS-DALAM,reviewed
+ALS-2DFB5887982B,Bapokting Garut,"Daging Sapi, Lokal, Has Luar",ING-DAGING-SAPI-LOKAL-HAS-LUAR,reviewed
+ALS-D8BA50D20CE3,Bapokting Garut,Susu Kotak,ING-SUSU-KOTAK,reviewed
+ALS-E67BC9C4A7FF,Bapokting Garut,Anggur,ING-ANGGUR,reviewed
+ALS-3B97A6A99B78,Bapokting Garut,Melon,ING-MELON,reviewed
+ALS-78B9651CDF33,Bapokting Garut,Leci,ING-LECI,reviewed
+ALS-3CE7D3CF1050,Bapokting Garut,Lengkeng,ING-LENGKENG,reviewed
+ALS-D7E3EF298747,Bapokting Garut,Ikan Dori,ING-IKAN-DORI,reviewed
+ALS-F36B802EAB80,Bapokting Garut,Wortel,ING-WORTEL,reviewed
+ALS-1EE99D18174B,Bapokting Garut,Buncis,ING-BUNCIS,reviewed
+ALS-DE54E249E586,Bapokting Garut,Sawi Putih,ING-SAWI-PUTIH,reviewed
+ALS-A6E3CC5CB463,Bapokting Garut,Pak Choi,ING-PAKCOY,reviewed
+ALS-98F1ADAC3388,Bapokting Garut,Kol,ING-KOL,reviewed
+ALS-02A0AA2A8351,Bapokting Garut,Timun,ING-TIMUN,reviewed
+ALS-6D84C7E48591,Bapokting Garut,Kangkung,ING-KANGKUNG,reviewed
+ALS-ACDC04E74C74,Bapokting Garut,Bayam,ING-BAYAM,reviewed
+ALS-748289FD1E2A,Bapokting Garut,Roti,ING-ROTI,reviewed
+ALS-7B335592CE49,Bapokting Garut,Tahu Mentah / pcs,ING-TAHU-MENTAH-PCS,reviewed
+ALS-875235110DB0,Bapokting Garut,Tempe / pcs,ING-TEMPE-PCS,reviewed
+ALS-672442490B28,PIHPS BI,Bawang Merah Ukuran Sedang,ING-BAWANG-MERAH-UKURAN-SEDANG,reviewed
+ALS-633283BEECAE,PIHPS BI,Bawang Putih Ukuran Sedang,ING-BAWANG-PUTIH-UKURAN-SEDANG,reviewed
+ALS-47CE280F8BE9,PIHPS BI,Beras Kualitas Bawah I,ING-BERAS-KUALITAS-BAWAH-I,reviewed
+ALS-3562116326F6,PIHPS BI,Beras Kualitas Bawah II,ING-BERAS-KUALITAS-BAWAH-II,reviewed
+ALS-10283D81CA8C,PIHPS BI,Beras Kualitas Medium I,ING-BERAS-KUALITAS-MEDIUM-I,reviewed
+ALS-1425FD74F33E,PIHPS BI,Beras Kualitas Medium II,ING-BERAS-KUALITAS-MEDIUM-II,reviewed
+ALS-F683740646E1,PIHPS BI,Beras Kualitas Super I,ING-BERAS-KUALITAS-SUPER-I,reviewed
+ALS-F8E2852586C0,PIHPS BI,Beras Kualitas Super II,ING-BERAS-KUALITAS-SUPER-II,reviewed
+ALS-74AB0E421FD6,PIHPS BI,Cabai Merah Besar,ING-CABAI-MERAH-BESAR,reviewed
+ALS-FC5C671146C7,PIHPS BI,Cabai Merah Keriting ,ING-CABAI-MERAH-KERITING,reviewed
+ALS-3A2E21C17AE7,PIHPS BI,Cabai Rawit Hijau,ING-CABAI-RAWIT-HIJAU,reviewed
+ALS-4B8827743FA6,PIHPS BI,Cabai Rawit Merah,ING-CABAI-RAWIT-MERAH,reviewed
+ALS-FA340198D569,PIHPS BI,Daging Ayam Ras Segar,ING-DAGING-AYAM-RAS-SEGAR,reviewed
+ALS-3E1902360F5B,PIHPS BI,Daging Sapi Kualitas 1,ING-DAGING-SAPI-KUALITAS-1,reviewed
+ALS-6BEE24B2D6F2,PIHPS BI,Daging Sapi Kualitas 2,ING-DAGING-SAPI-KUALITAS-2,reviewed
+ALS-737519BBB8E9,PIHPS BI,Gula Pasir Kualitas Premium,ING-GULA-PASIR-KUALITAS-PREMIUM,reviewed
+ALS-9BAC5D4BF0FC,PIHPS BI,Gula Pasir Lokal,ING-GULA-PASIR-LOKAL,reviewed
+ALS-E321E30969A4,PIHPS BI,Minyak Goreng Curah,ING-MINYAK-GORENG-CURAH,reviewed
+ALS-16D75DB3D0FF,PIHPS BI,Minyak Goreng Kemasan Bermerk 1,ING-MINYAK-GORENG-KEMASAN-BERMERK-1,reviewed
+ALS-008F57D9F6B4,PIHPS BI,Minyak Goreng Kemasan Bermerk 2,ING-MINYAK-GORENG-KEMASAN-BERMERK-2,reviewed
+ALS-1105BAB520F3,PIHPS BI,Telur Ayam Ras Segar,ING-TELUR-AYAM-RAS-SEGAR,reviewed
+ALS-91BAAD30D67E,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Beras,ING-BERAS,reviewed
+ALS-80A2B778366E,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Tepung Terigu,ING-TEPUNG-TERIGU,reviewed
+ALS-DE1890452284,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Jagung Segar,ING-JAGUNG-SEGAR,reviewed
+ALS-E8DD20AFC851,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Beras Ketan,ING-BERAS-KETAN,reviewed
+ALS-8DB86C303BAB,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Jagung Pipil,ING-JAGUNG-PIPIL,reviewed
+ALS-E56CCFD36B64,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Kentang,ING-KENTANG,reviewed
+ALS-EE24E56DBBB1,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Singkong,ING-SINGKONG,reviewed
+ALS-9260BC7D8F29,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Ubi Jalar,ING-UBI-JALAR,reviewed
+ALS-EFB6FB7CB691,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Talas,ING-TALAS,reviewed
+ALS-F65EC81ACE03,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Sagu,ING-SAGU,reviewed
+ALS-4CFF3A36EB93,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Ikan Lele,ING-IKAN-LELE,reviewed
+ALS-D608154EAB98,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Ikan Bandeng,ING-IKAN-BANDENG,reviewed
+ALS-B167297BD6F4,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Ikan Mujair,ING-IKAN-MUJAIR,reviewed
+ALS-27A2D6EB75BB,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Ikan Tongkol,ING-IKAN-TONGKOL,reviewed
+ALS-2CFBF5C84958,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Ikan Kembung,ING-IKAN-KEMBUNG,reviewed
+ALS-1AB32F8D570E,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Ikan Tuna,ING-IKAN-TUNA,reviewed
+ALS-07B828677F5D,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Udang,ING-UDANG,reviewed
+ALS-4FCB5D155E7C,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Cumi,ING-CUMI,reviewed
+ALS-7A9137698C55,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Daging Ayam,ING-DAGING-AYAM,reviewed
+ALS-A693B2B761CA,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Daging Sapi,ING-DAGING-SAPI,reviewed
+ALS-088E92E0E509,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Daging Ayam Kampung,ING-DAGING-AYAM-KAMPUNG,reviewed
+ALS-E4697D4C9382,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Telur Ayam,ING-TELUR-AYAM,reviewed
+ALS-14EC1D839604,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Telur Ayam Kampung,ING-TELUR-AYAM-KAMPUNG,reviewed
+ALS-6860EEA1508E,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Telur Puyuh,ING-TELUR-PUYUH,reviewed
+ALS-F70970529CCE,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Susu Sapi Segar,ING-SUSU-SAPI-SEGAR,reviewed
+ALS-C9733813CE61,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Tomat,ING-TOMAT,reviewed
+ALS-3565EB6E2D5B,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Bayam,ING-BAYAM,reviewed
+ALS-ADA9BE850066,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Kangkung,ING-KANGKUNG,reviewed
+ALS-4218398ECBB7,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Kacang Panjang,ING-KACANG-PANJANG,reviewed
+ALS-020A6B9B9FC1,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Sawi Hijau,ING-SAWI-HIJAU,reviewed
+ALS-F28249A70080,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Terong,ING-TERONG,reviewed
+ALS-ECB686065BAE,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Buncis,ING-BUNCIS,reviewed
+ALS-1B51232EA901,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Tauge,ING-TAUGE,reviewed
+ALS-AA5C97954B20,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Daun Ketela Pohon,ING-DAUN-KETELA-POHON,reviewed
+ALS-A20DF196B326,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Pakcoy,ING-PAKCOY,reviewed
+ALS-42BC6C89A152,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Labu Siam,ING-LABU-SIAM,reviewed
+ALS-E515834DE196,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Kubis,ING-KUBIS,reviewed
+ALS-3B0C4C866A05,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Mentimun,ING-MENTIMUN,reviewed
+ALS-07A43D35FEF6,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Sawi Putih,ING-SAWI-PUTIH,reviewed
+ALS-582E4AC8050F,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Selada,ING-SELADA,reviewed
+ALS-D85FD859861B,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Wortel,ING-WORTEL,reviewed
+ALS-159EBF8653E1,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Jamur Tiram,ING-JAMUR-TIRAM,reviewed
+ALS-9450C05DC420,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Kembang Kol,ING-KEMBANG-KOL,reviewed
+ALS-2F06D14FC8C6,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Bawang Merah,ING-BAWANG-MERAH,reviewed
+ALS-EB26127CB282,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Cabe Merah,ING-CABE-MERAH,reviewed
+ALS-30A3370C3437,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Bawang Putih,ING-BAWANG-PUTIH,reviewed
+ALS-BDC0536E40BF,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Cabe Rawit,ING-CABE-RAWIT,reviewed
+ALS-834457EF0ACE,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Kacang Kedelai,ING-KACANG-KEDELAI,reviewed
+ALS-203BF203534E,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Kacang Tanah,ING-KACANG-TANAH,reviewed
+ALS-BF4E90FFE9C4,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Jeruk,ING-JERUK,reviewed
+ALS-74B69D59F2C1,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Pisang,ING-PISANG,reviewed
+ALS-580CF4FCCABF,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Apel,ING-APEL,reviewed
+ALS-7D24924286F6,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Pepaya,ING-PEPAYA,reviewed
+ALS-D3928A77D36B,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Semangka,ING-SEMANGKA,reviewed
+ALS-79F4AE2DCF84,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Salak,ING-SALAK,reviewed
+ALS-A80F32EAB0F1,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Mangga,ING-MANGGA,reviewed
+ALS-3B6B9BB6E45D,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Nanas Madu,ING-NANAS-MADU,reviewed
+ALS-1EBC2E3012A8,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Buah Naga,ING-BUAH-NAGA,reviewed
+ALS-CACBB7B00E74,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Jambu Biji,ING-JAMBU-BIJI,reviewed
+ALS-627A9620C075,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Melon,ING-MELON,reviewed
+ALS-952DC8EF0101,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Anggur Merah,ING-ANGGUR-MERAH,reviewed
+ALS-F13D95068082,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Minyak Goreng,ING-MINYAK-GORENG,reviewed
+ALS-502A603C8B57,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Kelapa,ING-KELAPA,reviewed
+ALS-9FE384A878F1,Badan Pangan Nasional - Komposisi Pangan Segar Indonesia,Minyak Kelapa,ING-MINYAK-KELAPA,reviewed
+ALS-E0159486DD4C,Nama katalog TAKARKUY,Beras,ING-BERAS,reviewed
+ALS-ED6E881D638E,Nama katalog TAKARKUY,Tepung Terigu,ING-TEPUNG-TERIGU,reviewed
+ALS-66DC2F90869D,Nama katalog TAKARKUY,Jagung Segar,ING-JAGUNG-SEGAR,reviewed
+ALS-4EA08FD268BA,Nama katalog TAKARKUY,Beras Ketan,ING-BERAS-KETAN,reviewed
+ALS-4796E33D2D8C,Nama katalog TAKARKUY,Jagung Pipil,ING-JAGUNG-PIPIL,reviewed
+ALS-291C32BFA3F4,Nama katalog TAKARKUY,Kentang,ING-KENTANG,reviewed
+ALS-5F4CAD8793DC,Nama katalog TAKARKUY,Singkong,ING-SINGKONG,reviewed
+ALS-5C6FA663FBDB,Nama katalog TAKARKUY,Ubi Jalar,ING-UBI-JALAR,reviewed
+ALS-99293B43D1D2,Nama katalog TAKARKUY,Talas,ING-TALAS,reviewed
+ALS-CA4F81EA589C,Nama katalog TAKARKUY,Sagu,ING-SAGU,reviewed
+ALS-66D8B71CB280,Nama katalog TAKARKUY,Ikan Lele,ING-IKAN-LELE,reviewed
+ALS-87E6F99C3B04,Nama katalog TAKARKUY,Ikan Bandeng,ING-IKAN-BANDENG,reviewed
+ALS-B4D4F81C71B3,Nama katalog TAKARKUY,Ikan Mujair,ING-IKAN-MUJAIR,reviewed
+ALS-A997F1013D59,Nama katalog TAKARKUY,Ikan Tongkol,ING-IKAN-TONGKOL,reviewed
+ALS-F4787452E17B,Nama katalog TAKARKUY,Ikan Kembung,ING-IKAN-KEMBUNG,reviewed
+ALS-12F436DBAB45,Nama katalog TAKARKUY,Ikan Tuna,ING-IKAN-TUNA,reviewed
+ALS-EE0DF5C97565,Nama katalog TAKARKUY,Udang,ING-UDANG,reviewed
+ALS-68EFDF99E838,Nama katalog TAKARKUY,Cumi,ING-CUMI,reviewed
+ALS-762D1330F90D,Nama katalog TAKARKUY,Daging Ayam,ING-DAGING-AYAM,reviewed
+ALS-8A7FD1B9C2D5,Nama katalog TAKARKUY,Daging Sapi,ING-DAGING-SAPI,reviewed
+ALS-1BEA1964C2F6,Nama katalog TAKARKUY,Daging Ayam Kampung,ING-DAGING-AYAM-KAMPUNG,reviewed
+ALS-3F854876B457,Nama katalog TAKARKUY,Telur Ayam,ING-TELUR-AYAM,reviewed
+ALS-C37BA2F63E24,Nama katalog TAKARKUY,Telur Ayam Kampung,ING-TELUR-AYAM-KAMPUNG,reviewed
+ALS-4834D9F56883,Nama katalog TAKARKUY,Telur Puyuh,ING-TELUR-PUYUH,reviewed
+ALS-0A75735757C6,Nama katalog TAKARKUY,Susu Sapi Segar,ING-SUSU-SAPI-SEGAR,reviewed
+ALS-7E7C52B7373B,Nama katalog TAKARKUY,Tomat,ING-TOMAT,reviewed
+ALS-C3577BFFEA0C,Nama katalog TAKARKUY,Bayam,ING-BAYAM,reviewed
+ALS-1FF833A0E5BA,Nama katalog TAKARKUY,Kangkung,ING-KANGKUNG,reviewed
+ALS-5DA6DE8B6809,Nama katalog TAKARKUY,Kacang Panjang,ING-KACANG-PANJANG,reviewed
+ALS-87C991914949,Nama katalog TAKARKUY,Sawi Hijau,ING-SAWI-HIJAU,reviewed
+ALS-65CD66B28775,Nama katalog TAKARKUY,Terong,ING-TERONG,reviewed
+ALS-C3F1840F2553,Nama katalog TAKARKUY,Buncis,ING-BUNCIS,reviewed
+ALS-FF88563716A1,Nama katalog TAKARKUY,Tauge,ING-TAUGE,reviewed
+ALS-059C54887E53,Nama katalog TAKARKUY,Daun Ketela Pohon,ING-DAUN-KETELA-POHON,reviewed
+ALS-20B33308BA24,Nama katalog TAKARKUY,Pakcoy,ING-PAKCOY,reviewed
+ALS-28F76350A24D,Nama katalog TAKARKUY,Labu Siam,ING-LABU-SIAM,reviewed
+ALS-093AA50C27E2,Nama katalog TAKARKUY,Kubis,ING-KUBIS,reviewed
+ALS-401A6AE9E2F3,Nama katalog TAKARKUY,Mentimun,ING-MENTIMUN,reviewed
+ALS-E2781E9120B7,Nama katalog TAKARKUY,Sawi Putih,ING-SAWI-PUTIH,reviewed
+ALS-B1371C5D7EC6,Nama katalog TAKARKUY,Selada,ING-SELADA,reviewed
+ALS-2E4462232E3A,Nama katalog TAKARKUY,Wortel,ING-WORTEL,reviewed
+ALS-022BA31B49B5,Nama katalog TAKARKUY,Jamur Tiram,ING-JAMUR-TIRAM,reviewed
+ALS-B5A289BBDE8F,Nama katalog TAKARKUY,Kembang Kol,ING-KEMBANG-KOL,reviewed
+ALS-0BBF6F47F1F7,Nama katalog TAKARKUY,Bawang Merah,ING-BAWANG-MERAH,reviewed
+ALS-652ABBE80436,Nama katalog TAKARKUY,Cabe Merah,ING-CABE-MERAH,reviewed
+ALS-A9324C69E6F6,Nama katalog TAKARKUY,Bawang Putih,ING-BAWANG-PUTIH,reviewed
+ALS-AD1A7925D38A,Nama katalog TAKARKUY,Cabe Rawit,ING-CABE-RAWIT,reviewed
+ALS-F6F9D0ACFE4B,Nama katalog TAKARKUY,Kacang Kedelai,ING-KACANG-KEDELAI,reviewed
+ALS-081F4C60BDDE,Nama katalog TAKARKUY,Kacang Tanah,ING-KACANG-TANAH,reviewed
+ALS-B9A52D5A3C82,Nama katalog TAKARKUY,Jeruk,ING-JERUK,reviewed
+ALS-62064DBD2479,Nama katalog TAKARKUY,Pisang,ING-PISANG,reviewed
+ALS-4CAD151B0F0F,Nama katalog TAKARKUY,Apel,ING-APEL,reviewed
+ALS-483A4D904928,Nama katalog TAKARKUY,Pepaya,ING-PEPAYA,reviewed
+ALS-933493E19803,Nama katalog TAKARKUY,Semangka,ING-SEMANGKA,reviewed
+ALS-0DA8A595606B,Nama katalog TAKARKUY,Salak,ING-SALAK,reviewed
+ALS-EB22B3C76B6A,Nama katalog TAKARKUY,Mangga,ING-MANGGA,reviewed
+ALS-BC8FD3BCB4E6,Nama katalog TAKARKUY,Nanas Madu,ING-NANAS-MADU,reviewed
+ALS-9607810CC7FC,Nama katalog TAKARKUY,Buah Naga,ING-BUAH-NAGA,reviewed
+ALS-DA841DE2DE2F,Nama katalog TAKARKUY,Jambu Biji,ING-JAMBU-BIJI,reviewed
+ALS-D17C3A43A931,Nama katalog TAKARKUY,Melon,ING-MELON,reviewed
+ALS-F79E764568F1,Nama katalog TAKARKUY,Anggur Merah,ING-ANGGUR-MERAH,reviewed
+ALS-814EA77E9EA4,Nama katalog TAKARKUY,Minyak Goreng,ING-MINYAK-GORENG,reviewed
+ALS-B63D23E74151,Nama katalog TAKARKUY,Kelapa,ING-KELAPA,reviewed
+ALS-C9E761BA946B,Nama katalog TAKARKUY,Minyak Kelapa,ING-MINYAK-KELAPA,reviewed
+ALS-CDC7C41B0DF2,Nama katalog TAKARKUY,Tahu Putih,ING-TAHU-PUTIH,reviewed
+ALS-7BDF4A5BEC02,Nama katalog TAKARKUY,Tempe,ING-TEMPE,reviewed
+ALS-64FDF58AB779,Nama katalog TAKARKUY,Garam,ING-GARAM,reviewed
+ALS-1237B9EC7DE0,Nama katalog TAKARKUY,Gula Pasir,ING-GULA-PASIR,reviewed
+ALS-CCB54378D94D,Nama katalog TAKARKUY,Gula Merah,ING-GULA-MERAH,reviewed
+ALS-CAA39A966D94,Nama katalog TAKARKUY,Bawang Bombay,ING-BAWANG-BOMBAY,reviewed
+ALS-F7ED72BB8A28,Nama katalog TAKARKUY,Kacang Hijau,ING-KACANG-HIJAU,reviewed
+ALS-45A1B821E7EE,Nama katalog TAKARKUY,Air,ING-AIR,reviewed
+ALS-7CE03F8F74B7,Nama katalog TAKARKUY,Beras Premium,ING-BERAS-PREMIUM,reviewed
+ALS-7E4EC3140608,Nama katalog TAKARKUY,Beras Medium,ING-BERAS-MEDIUM,reviewed
+ALS-9505882ED1C1,Nama katalog TAKARKUY,Beras Termahal,ING-BERAS-TERMAHAL,reviewed
+ALS-53F9DE9968B1,Nama katalog TAKARKUY,Beras Termurah (Non Bulog),ING-BERAS-TERMURAH-NON-BULOG,reviewed
+ALS-2716B7BF18A2,Nama katalog TAKARKUY,Gula Pasir Dalam Negeri,ING-GULA-PASIR-DALAM-NEGERI,reviewed
+ALS-157E7208E1D8,Nama katalog TAKARKUY,Minyak Goreng Bimoli Kemasan,ING-MINYAK-GORENG-BIMOLI-KEMASAN,reviewed
+ALS-C3C6FE6502B9,Nama katalog TAKARKUY,Minyak Goreng Curah,ING-MINYAK-GORENG-CURAH,reviewed
+ALS-7F306FFB3E66,Nama katalog TAKARKUY,Minyak Goreng Kemasan Sederhana,ING-MINYAK-GORENG-KEMASAN-SEDERHANA,reviewed
+ALS-E203D5A5590E,Nama katalog TAKARKUY,Daging Ayam Broiler,ING-DAGING-AYAM-BROILER,reviewed
+ALS-DD3FAA41A6E4,Nama katalog TAKARKUY,Telur Ayam Broiler,ING-TELUR-AYAM-BROILER,reviewed
+ALS-936841C3440A,Nama katalog TAKARKUY,Susu Kental Manis Merk bendera,ING-SUSU-KENTAL-MANIS-MERK-BENDERA,reviewed
+ALS-99E18E2400D0,Nama katalog TAKARKUY,Susu Kental Manis Merk Indomilk,ING-SUSU-KENTAL-MANIS-MERK-INDOMILK,reviewed
+ALS-7F5626D84259,Nama katalog TAKARKUY,Susu Bubuk Dancow,ING-SUSU-BUBUK-DANCOW,reviewed
+ALS-BF21054F18E9,Nama katalog TAKARKUY,Susu Bubuk Indomilk,ING-SUSU-BUBUK-INDOMILK,reviewed
+ALS-02A5E8F82731,Nama katalog TAKARKUY,Jagung Pipilan,ING-JAGUNG-PIPILAN,reviewed
+ALS-410E537B1E59,Nama katalog TAKARKUY,Garam Beryodium Bata,ING-GARAM-BERYODIUM-BATA,reviewed
+ALS-6DBA7D75C2E8,Nama katalog TAKARKUY,Garam Beryodium Halus,ING-GARAM-BERYODIUM-HALUS,reviewed
+ALS-34DE4EAC41C7,Nama katalog TAKARKUY,Tepung Terigu Cap Segitiga Biru,ING-TEPUNG-TERIGU-CAP-SEGITIGA-BIRU,reviewed
+ALS-EC7FA4779D5B,Nama katalog TAKARKUY,Tepung Terigu Cap Cakra Kembar,ING-TEPUNG-TERIGU-CAP-CAKRA-KEMBAR,reviewed
+ALS-38C674336F57,Nama katalog TAKARKUY,Tepung Terigu Cap Kunci,ING-TEPUNG-TERIGU-CAP-KUNCI,reviewed
+ALS-465DD2F2317E,Nama katalog TAKARKUY,Kacang Kedelai Impor,ING-KACANG-KEDELAI-IMPOR,reviewed
+ALS-026461676282,Nama katalog TAKARKUY,Mie Instan,ING-MIE-INSTAN,reviewed
+ALS-48019D222020,Nama katalog TAKARKUY,Cabe Merah Keriting,ING-CABAI-MERAH-KERITING,reviewed
+ALS-B278D7DA5245,Nama katalog TAKARKUY,Cabe Merah Biasa,ING-CABE-MERAH-BIASA,reviewed
+ALS-F73B28F2F2F7,Nama katalog TAKARKUY,Cabe Rawit Hijau,ING-CABAI-RAWIT-HIJAU,reviewed
+ALS-EF9E8C87E4CD,Nama katalog TAKARKUY,Cabe Rawit Merah,ING-CABAI-RAWIT-MERAH,reviewed
+ALS-DAFF8586B3D3,Nama katalog TAKARKUY,Ikan Asin Teri No. 2,ING-IKAN-ASIN-TERI-NO-2,reviewed
+ALS-531941318C25,Nama katalog TAKARKUY,Jagung Manis,ING-JAGUNG-MANIS,reviewed
+ALS-9024BB6C9CFE,Nama katalog TAKARKUY,Tepung Terigu Curah,ING-TEPUNG-TERIGU-CURAH,reviewed
+ALS-35314EF1B6D0,Nama katalog TAKARKUY,Ikan Segar Tongkol/Tuna/Cakalang,ING-IKAN-SEGAR-TONGKOL-TUNA-CAKALANG,reviewed
+ALS-5C22A32ABCBA,Nama katalog TAKARKUY,Cabe Hijau Biasa,ING-CABE-HIJAU-BIASA,reviewed
+ALS-E64CA88F4E82,Nama katalog TAKARKUY,Tomat Hijau,ING-TOMAT-HIJAU,reviewed
+ALS-B66DC181C893,Nama katalog TAKARKUY,Minyak Kita,ING-MINYAK-KITA,reviewed
+ALS-16428EB69B4A,Nama katalog TAKARKUY,Ikan Mas,ING-IKAN-MAS,reviewed
+ALS-482AA26CD812,Nama katalog TAKARKUY,Ubi Jalar Putih,ING-UBI-JALAR-PUTIH,reviewed
+ALS-B8680B08DB62,Nama katalog TAKARKUY,Susu Balita SGM 400Gr,ING-SUSU-BALITA-SGM-400GR,reviewed
+ALS-B4FF884436CA,Nama katalog TAKARKUY,"Daging Sapi, Lokal, Tetelan",ING-DAGING-SAPI-LOKAL-TETELAN,reviewed
+ALS-3CAF2BDFD429,Nama katalog TAKARKUY,"Daging Sapi, Lokal, Paha Depan",ING-DAGING-SAPI-LOKAL-PAHA-DEPAN,reviewed
+ALS-E3F3C250CA7B,Nama katalog TAKARKUY,"Daging Sapi, Lokal, Paha Belakang",ING-DAGING-SAPI-LOKAL-PAHA-BELAKANG,reviewed
+ALS-F949C1A41147,Nama katalog TAKARKUY,"Daging Sapi, Lokal, Has Dalam",ING-DAGING-SAPI-LOKAL-HAS-DALAM,reviewed
+ALS-2F1581ACF303,Nama katalog TAKARKUY,"Daging Sapi, Lokal, Has Luar",ING-DAGING-SAPI-LOKAL-HAS-LUAR,reviewed
+ALS-BD70C12D03E4,Nama katalog TAKARKUY,Susu Kotak,ING-SUSU-KOTAK,reviewed
+ALS-7EB65C3CFE54,Nama katalog TAKARKUY,Anggur,ING-ANGGUR,reviewed
+ALS-BE4E9679CF1A,Nama katalog TAKARKUY,Leci,ING-LECI,reviewed
+ALS-4F4B00E11FFE,Nama katalog TAKARKUY,Lengkeng,ING-LENGKENG,reviewed
+ALS-E91165059883,Nama katalog TAKARKUY,Ikan Dori,ING-IKAN-DORI,reviewed
+ALS-CF1346DC576D,Nama katalog TAKARKUY,Kol,ING-KOL,reviewed
+ALS-26DBB1B5C535,Nama katalog TAKARKUY,Timun,ING-TIMUN,reviewed
+ALS-53EB38D61ECB,Nama katalog TAKARKUY,Roti,ING-ROTI,reviewed
+ALS-97D92D88EEDB,Nama katalog TAKARKUY,Tahu Mentah / pcs,ING-TAHU-MENTAH-PCS,reviewed
+ALS-4240B3229973,Nama katalog TAKARKUY,Tempe / pcs,ING-TEMPE-PCS,reviewed
+ALS-B1D8A7B06018,Nama katalog TAKARKUY,Bawang Merah Ukuran Sedang,ING-BAWANG-MERAH-UKURAN-SEDANG,reviewed
+ALS-5D40A2B10F19,Nama katalog TAKARKUY,Bawang Putih Ukuran Sedang,ING-BAWANG-PUTIH-UKURAN-SEDANG,reviewed
+ALS-25BAAE381682,Nama katalog TAKARKUY,Beras Kualitas Bawah I,ING-BERAS-KUALITAS-BAWAH-I,reviewed
+ALS-B8D0C727AFD6,Nama katalog TAKARKUY,Beras Kualitas Bawah II,ING-BERAS-KUALITAS-BAWAH-II,reviewed
+ALS-7E60DD75D62A,Nama katalog TAKARKUY,Beras Kualitas Medium I,ING-BERAS-KUALITAS-MEDIUM-I,reviewed
+ALS-95CE6DF8AD91,Nama katalog TAKARKUY,Beras Kualitas Medium II,ING-BERAS-KUALITAS-MEDIUM-II,reviewed
+ALS-BEED40C1D78F,Nama katalog TAKARKUY,Beras Kualitas Super I,ING-BERAS-KUALITAS-SUPER-I,reviewed
+ALS-617F5DD6C77A,Nama katalog TAKARKUY,Beras Kualitas Super II,ING-BERAS-KUALITAS-SUPER-II,reviewed
+ALS-8050E297148F,Nama katalog TAKARKUY,Cabai Merah Besar,ING-CABAI-MERAH-BESAR,reviewed
+ALS-C2C3DCF0093B,Nama katalog TAKARKUY,Daging Ayam Ras Segar,ING-DAGING-AYAM-RAS-SEGAR,reviewed
+ALS-348F7CEA10B3,Nama katalog TAKARKUY,Daging Sapi Kualitas 1,ING-DAGING-SAPI-KUALITAS-1,reviewed
+ALS-BF9FB538F995,Nama katalog TAKARKUY,Daging Sapi Kualitas 2,ING-DAGING-SAPI-KUALITAS-2,reviewed
+ALS-3032F5974685,Nama katalog TAKARKUY,Gula Pasir Kualitas Premium,ING-GULA-PASIR-KUALITAS-PREMIUM,reviewed
+ALS-AF7E5A603FF7,Nama katalog TAKARKUY,Gula Pasir Lokal,ING-GULA-PASIR-LOKAL,reviewed
+ALS-A8248388475D,Nama katalog TAKARKUY,Minyak Goreng Kemasan Bermerk 1,ING-MINYAK-GORENG-KEMASAN-BERMERK-1,reviewed
+ALS-B5F638ADBAD8,Nama katalog TAKARKUY,Minyak Goreng Kemasan Bermerk 2,ING-MINYAK-GORENG-KEMASAN-BERMERK-2,reviewed
+ALS-FB8FED8DFC52,Nama katalog TAKARKUY,Telur Ayam Ras Segar,ING-TELUR-AYAM-RAS-SEGAR,reviewed
+ALS-086C70F88670,Kaggle - aturan kurasi TAKARKUY,bayam hijau,ING-BAYAM,manual_curated
+ALS-AAF7E5EC1386,Kaggle - aturan kurasi TAKARKUY,tofu putih,ING-TAHU-PUTIH,manual_curated
+ALS-CFBDC4CA0F16,Kaggle - aturan kurasi TAKARKUY,cabe rawit merah,ING-CABAI-RAWIT-MERAH,manual_curated
+ALS-3E0905A56F7B,Kaggle - aturan kurasi TAKARKUY,cabai rawit merah,ING-CABAI-RAWIT-MERAH,manual_curated
+ALS-2177BD751EB1,Kaggle - aturan kurasi TAKARKUY,bawang bombai,ING-BAWANG-BOMBAY,manual_curated
+ALS-836B042FBB4E,Kaggle - aturan kurasi TAKARKUY,kol,ING-KUBIS,manual_curated
+ALS-2B7B9DB77C25,Kaggle - aturan kurasi TAKARKUY,timun,ING-MENTIMUN,manual_curated
+ALS-907B03AAC60A,Kaggle - aturan kurasi TAKARKUY,ayam broiler,ING-DAGING-AYAM-BROILER,manual_curated
+ALS-52F79A9627EA,Kaggle - aturan kurasi TAKARKUY,telur ayam ras,ING-TELUR-AYAM-BROILER,manual_curated
+ALS-6C9F2A4520F7,Kaggle - aturan kurasi TAKARKUY,beras putih,ING-BERAS,manual_curated
+ALS-9820726486FB,Kaggle - aturan kurasi TAKARKUY,tauge,ING-TAUGE,manual_curated
+ALS-37D4761865ED,Kaggle - aturan kurasi TAKARKUY,toge,ING-TAUGE,manual_curated
