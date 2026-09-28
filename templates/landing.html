@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TAKARKUY membantu Anda mengatur budget makan dan menghabiskan stok pantry tanpa sisa.">
+  <title>TAKARKUY — Makan enak, hemat, tanpa sisa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #007452;
+      --green-dark: #005b40;
+      --mint: #c9f8e5;
+      --ink: #172235;
+      --muted: #4b5563;
+      --line: #e4eaf2;
+      --canvas: #f7f9fe;
+      --panel: #ecf2ff;
+      --gold: #ecaa00;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "DM Sans", Arial, sans-serif;
+      background: var(--canvas);
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .site-header {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(24px, 4vw, 54px);
+      background: rgba(255, 255, 255, .9);
+      border-bottom: 1px solid #edf0f5;
+      box-shadow: 0 3px 14px rgba(28, 40, 62, .04);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font: 700 17px "Plus Jakarta Sans", sans-serif; color: var(--green-dark); }
+    .brand-mark {
+      display: grid; place-items: center; width: 31px; height: 31px; color: white;
+      background: var(--green); border-radius: 9px; transform: rotate(-6deg);
+      box-shadow: 0 4px 10px rgba(0, 116, 82, .17);
+    }
+    .brand-mark svg { transform: rotate(6deg); width: 19px; }
+    .nav-links { display: flex; position: absolute; left: 50%; align-items: center; gap: clamp(22px, 3.4vw, 42px); margin: 0; transform: translateX(-50%); }
+    .nav-links a, .header-actions a { font-size: 14px; font-weight: 600; color: #26312e; }
+    .nav-links a:hover, .login-link:hover { color: var(--green); }
+    .header-actions { display: flex; align-items: center; gap: 17px; }
+    .login-link { color: var(--green) !important; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0;
+      border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .2s, background .2s;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button.button-primary { min-height: 40px; padding: 0 18px; color: #fff; background: var(--green); box-shadow: 0 5px 10px rgba(0, 93, 66, .17); }
+    .button-primary:hover { background: var(--green-dark); }
+    .profile-button { width: 32px; height: 32px; padding: 0; border-radius: 50%; color: white; background: var(--green-dark); }
+
+    .hero { max-width: 1120px; margin: 0 auto; padding: 93px 24px 28px; text-align: center; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 7px; padding: 5px 17px;
+      color: var(--green-dark); background: #dce9ff; border-radius: 999px; font-size: 12px; font-weight: 600;
+    }
+    .leaf { width: 12px; height: 12px; position: relative; display: inline-block; background: var(--green); border-radius: 12px 0 12px 0; transform: rotate(-42deg); }
+    .leaf::after { content: ""; position: absolute; width: 1px; height: 11px; background: white; left: 5px; top: 2px; transform: rotate(45deg); opacity: .8; }
+    h1 { max-width: 850px; margin: 21px auto 14px; font: 800 clamp(36px, 4.35vw, 55px)/1.14 "Plus Jakarta Sans", sans-serif; letter-spacing: -2.8px; }
+    .accent { color: var(--green); text-decoration: underline; text-decoration-color: #65e7bb; text-decoration-thickness: 4px; text-underline-offset: 8px; }
+    .intro { max-width: 665px; margin: 0 auto; color: #4f555d; font-size: 16px; line-height: 1.6; }
+    .hero-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 23px; }
+    .hero-actions .button { min-height: 43px; padding: 0 23px; }
+    .button-secondary { color: var(--green); background: white; box-shadow: 0 1px 3px rgba(24, 37, 58, .08); }
+    .play-icon { display: grid; place-items: center; width: 16px; height: 16px; color: white; background: var(--green); border-radius: 50%; font-size: 8px; }
+    .proof { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 17px; margin-top: 27px; color: #525a5b; font-size: 13px; }
+    .stars { color: var(--gold); font-size: 18px; letter-spacing: -1px; }
+    .proof strong { color: var(--ink); margin-left: 7px; }
+    .dot { width: 4px; height: 4px; border-radius: 50%; background: #afc7bc; }
+    .badge-check { display: inline-grid; place-items: center; width: 15px; height: 15px; margin-right: 5px; border-radius: 50%; border: 1.5px solid var(--green); color: var(--green); font-size: 10px; }
+
+    .dashboard-shell { max-width: 1162px; margin: 5px auto 26px; padding: 35px; border-radius: 15px; background: var(--panel); box-shadow: 0 9px 19px rgba(35, 52, 84, .16); text-align: left; }
+    .browser-bar { height: 47px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: white; border-radius: 9px; font-size: 12px; }
+    .traffic { display: flex; gap: 7px; align-items: center; }
+    .traffic span { width: 12px; height: 12px; border-radius: 50%; }
+    .traffic span:nth-child(1) { background: #e64635; }.traffic span:nth-child(2) { background: #f3a712; }.traffic span:nth-child(3) { background: #61d5a5; }
+    .week { margin-left: 11px; color: #37413f; font-weight: 600; }
+    .calendar { color: var(--green); margin-right: 6px; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 15px; }
+    .stat-card { min-height: 169px; padding: 23px 16px 15px; background: white; border-radius: 13px; box-shadow: 0 1px 2px rgba(40, 52, 74, .03); }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; color: #475052; font-size: 12px; }
+    .stat-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; color: var(--green); background: #e2ecff; font-size: 16px; }
+    .alert .stat-top { color: #a95c00; }.alert .stat-icon { color: #c37a00; background: #fff1c8; }
+    .stat-card h3 { margin: 10px 0 3px; font: 700 20px "Plus Jakarta Sans", sans-serif; letter-spacing: -1px; }
+    .stat-card p { margin: 0; color: #4d5657; font-size: 11px; line-height: 1.45; }
+    .green-text { color: var(--green); font-weight: 700; }.warm { color: #af5e00; }
+    .progress { height: 8px; overflow: hidden; margin: 23px 0 8px; border-radius: 10px; background: #dce9ff; }.progress span { display: block; width: 52%; height: 100%; border-radius: inherit; background: var(--green); }
+    .small-row { display: flex; justify-content: space-between; color: #4f5657; font-size: 10px; }.small-row strong { color: var(--green); }
+    .expiry { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 5px 7px; color: #be6800; background: #fff8e5; border-radius: 8px; font-size: 10px; }.expiry strong { color: var(--green); text-decoration: underline; }
+    .recommendation h3 { font-size: 17px; }.price { display: block; margin-top: 27px; color: var(--green); font-size: 13px; font-weight: 700; }.match { float: right; padding: 3px 5px; color: var(--green); background: #e6f8f1; border-radius: 6px; font-size: 10px; }
+    .saved { color: white; background: #007659; }.saved .stat-top, .saved p { color: white; }.saved .stat-icon { color: white; background: #0b916e; }.saved h3 { margin-top: 15px; color: white; font-size: 22px; }.saved p { font-size: 11px; }.saved-foot { margin-top: 22px; color: #c8f6e2; font-size: 10px; }
+    .schedule { margin-top: 15px; padding: 17px 15px 15px; border-radius: 13px; background: white; }.schedule-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 11px; }.schedule h2 { margin: 0; font: 700 17px "Plus Jakarta Sans", sans-serif; letter-spacing: -.6px; }.schedule a { color: var(--green); font-size: 11px; font-weight: 700; }
+    .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }.day { min-height: 67px; padding: 8px 4px; border-radius: 8px; text-align: center; background: #eaf0ff; }.day.today { background: #d1fae7; }.day-name { display: block; color: #40484b; font-size: 9px; font-weight: 700; }.today .day-name { color: var(--green); }.meal { display: block; margin-top: 3px; color: #192638; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.day small { color: var(--green); font-size: 10px; }.day:last-child small { color: #526063; }
+
+    @media (max-width: 850px) { .nav-links { display: none; }.stats { grid-template-columns: repeat(2, 1fr); }.dashboard-shell { margin-inline: 18px; padding: 18px; }.days { grid-template-columns: repeat(4, 1fr); }.day { min-height: 58px; } }
+    @media (max-width: 550px) { .site-header { padding: 0 18px; }.brand { font-size: 15px; }.header-actions .login-link, .profile-button { display: none; }.button-primary { padding: 0 12px; }.hero { padding-top: 62px; } h1 { letter-spacing: -1.7px; }.intro { font-size: 14px; }.stats { grid-template-columns: 1fr; gap: 10px; }.stat-card { min-height: 142px; }.browser-bar { padding: 0 9px; }.days { grid-template-columns: repeat(2, 1fr); }.dashboard-shell { padding: 12px; }.schedule-head { align-items: flex-start; gap: 12px; }.schedule h2 { font-size: 14px; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="TAKARKUY beranda">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13c4-7 10-8 14-8-1 7-5 13-12 13-1 0-2-.2-3-.5 3.6-1.1 6.2-3.2 8.3-6.2-2.5 2.1-4.9 3.2-7.3 3.7Z" fill="currentColor"/><path d="M5 18c2-3 4.6-5.4 8-7" stroke="#007452" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+      <span>TAKARKUY</span>
+    </a>
+    <nav class="nav-links" aria-label="Navigasi utama">
+      <a href="#fitur">Fitur Utama</a><a href="#cara-kerja">Cara Kerja</a><a href="#keunggulan">Keunggulan</a><a href="#faq">FAQ</a>
+    </nav>
+    <div class="header-actions">
+      <a class="button button-primary" href="#masuk">Mulai Sekarang</a>
+    </div>
+  </header>
+
+  <main id="home">
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title">Masak Enak Sesuai Budget,<br><span class="accent">Habiskan Stok Kulkas</span> Tanpa Sisa.</h1>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/modul1/">Coba Gratis Sekarang <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="proof" aria-label="Ulasan dan manfaat">
+        <span><span class="stars">★★★★★</span><strong>4.9/5</strong></span><span class="dot" aria-hidden="true"></span><span><span class="badge-check">✓</span>Hemat s.d. 30% pengeluaran dapur &amp; zero food waste.</span>
+      </div>
+    </section>
+
+    <section class="dashboard-shell" id="demo" aria-label="Preview dashboard TAKARKUY">
+      <div class="browser-bar"><div class="traffic"><span></span><span></span><span></span></div></div>
+      <div class="stats">
+        <article class="stat-card"><div class="stat-top"><span>Budget Mingguan</span><span class="stat-icon">▣</span></div><h3>Rp 350.000</h3><p>Terpakai: <span class="green-text">Rp 182.000</span> (52%)</p><div class="progress"><span></span></div><div class="small-row"><span>Sisa Rp 168.000</span><strong>Aman (4 hari lagi)</strong></div></article>
+        <article class="stat-card alert"><div class="stat-top"><span>Virtual Pantry Alert</span><span class="stat-icon">⚠</span></div><h3>2 Bahan Mendesak</h3><p>Bayam (1 ikat) &amp; Tahu Putih (1 pack)<br>harus diolah sebelum besok.</p><div class="expiry"><span>◴ &nbsp;&lt;24 jam tersisa</span><strong>Pakai Sekarang</strong></div></article>
+        <article class="stat-card recommendation"><div class="stat-top"><span>Rekomendasi Hari Ini</span><span class="stat-icon">♨</span></div><h3>Sup Bening Bayam Tahu</h3><p>Memanfaatkan stok bayam &amp; tahu yang<br>mendekati kedaluwarsa.</p><span class="price">Rp 12.000<span class="match">◎ 100% Cocok</span><small>/porsi</small></span></article>
+        <article class="stat-card saved"><div class="stat-top"><span>Estimasi Terhemat</span><span class="stat-icon">♧</span></div><h3>+Rp 420.000</h3><p>Bulan ini (penghematan food waste &amp;<br>substitusi bahan terencana).</p><div class="saved-foot">↗ &nbsp;28% lebih hemat dari rata-rata</div></article>
+      </div>
+      <section class="schedule" aria-labelledby="schedule-title"><div class="schedule-head"><h2 id="schedule-title">Jadwal Masak Terencana Pekan Ini</h2><a href="#kalender">Kelola Kalender →</a></div><div class="days">
+        <div class="day"><span class="day-name">Senin</span><span class="meal">Tumis Kangkung</span><small>Rp 9k/porsi</small></div><div class="day"><span class="day-name">Selasa</span><span class="meal">Ayam Ungkep Kecap</span><small>Rp 18k/porsi</small></div><div class="day"><span class="day-name">Rabu</span><span class="meal">Sayur Lodeh Labu</span><small>Rp 11k/porsi</small></div><div class="day today"><span class="day-name">Kamis (Hari Ini)</span><span class="meal">Sup Bayam Tahu</span><small>Rp 12k/porsi</small></div><div class="day"><span class="day-name">Jumat</span><span class="meal">Tempe Mendoan &amp; S...</span><small>Rp 8k/porsi</small></div><div class="day"><span class="day-name">Sabtu</span><span class="meal">Nasi Goreng Kulkas</span><small>Rp 7k/porsi</small></div><div class="day"><span class="day-name">Minggu</span><span class="meal">Restock &amp; Meal Prep</span><small>Review</small></div>
+      </div></section>
+    </section>
+  </main>
+</body>
+</html>
