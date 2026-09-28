@@ -1,0 +1,82 @@
+{% load static planner_format %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coba perencana anggaran makan TAKARKUY dengan katalog resep dan harga bahan.">
+  <title>Rencana Makan — TAKARKUY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{% url 'landing' %}"><span class="brand-icon">✳</span> TAKARKUY</a>
+    <span class="header-label">Smart Budget Meal Planner <span>·</span> Modul 1</span>
+    <a class="back-link" href="{% url 'landing' %}">← Kembali ke beranda</a>
+  </header>
+
+  <main class="page">
+    <div class="page-heading"><div><p class="kicker">SIMULASI MODUL 1</p><h1>Coba rencana makan</h1></div></div>
+
+    <section class="input-card" aria-labelledby="input-title">
+      <div class="section-heading"><div><h2 id="input-title">Input perencanaan</h2></div><span class="auto-label">Kalkulasi otomatis</span></div>
+      <form method="post" action="{% url 'modul1' %}#hasil" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="input-grid">
+          <div class="field budget-field"><label for="{{ form.budget.id_for_label }}"><span class="field-number">01</span> Batas budget belanja</label><div class="currency-input"><span>Rp</span>{{ form.budget }}</div>{{ form.budget.errors }}</div>
+          <div class="planning-fields"><div class="field"><label for="{{ form.days.id_for_label }}"><span class="field-number">02</span> Durasi rencana makan</label><div class="number-input">{{ form.days }}<span>hari</span></div>{{ form.days.errors }}<p class="field-note">Masukkan angka 1 sampai 7.</p></div><div class="field"><label for="{{ form.servings.id_for_label }}"><span class="field-number">03</span> Jumlah porsi per menu</label><div class="number-input">{{ form.servings }}<span>orang</span></div>{{ form.servings.errors }}<p class="field-note">Masukkan angka 1 sampai 10.</p></div><fieldset class="field"><legend>Waktu makan per hari</legend><div class="choice-row meal-options">{{ form.meal_types }}</div>{{ form.meal_types.errors }}<p class="field-note">Pilih satu, dua, atau ketiganya.</p></fieldset></div>
+          <div class="preference-column"><fieldset class="field preference-field"><legend><span class="field-number">04</span> Target gizi &amp; preferensi</legend><div class="choice-row target-row">{{ form.target }}</div>{{ form.target.errors }}<label class="sub-label" for="{{ form.exclude_ingredients.id_for_label }}">Bahan yang ingin dihindari (opsional)</label><div class="excluded-input">{{ form.exclude_ingredients }}</div>{{ form.exclude_ingredients.errors }}<p class="field-note">Contoh: udang, telur</p></fieldset><button type="submit" class="calculate-button">Hitung Rencana Makan <span aria-hidden="true">→</span></button></div>
+        </div>
+      </form>
+    </section>
+
+    <section id="hasil" class="results" aria-live="polite">
+      {% if error %}
+        <div class="notice error-notice"><strong>Rencana belum bisa dihitung.</strong><p>{{ error }}</p></div>
+      {% elif form.errors %}
+        <div class="notice error-notice"><strong>Input belum valid.</strong><p>Periksa kembali kolom di atas, termasuk pilihan waktu makan.</p></div>
+      {% elif result %}
+        <div class="results-heading"><div><p class="kicker">HASIL SIMULASI</p><h2>Rencana makan {{ form.cleaned_data.days }} hari</h2></div></div>
+        <p class="selection-note">Waktu makan: {{ result.meal_labels|join:", " }} ({{ result.meal_count }} menu per hari).{% if result.excluded_ingredients %} Dikecualikan: {{ result.excluded_ingredients|join:", " }}.{% endif %}</p>
+        {% if result.missing_meal_labels %}<div class="notice error-notice"><strong>Rencana parsial:</strong><span>Belum ada resep yang cocok untuk {{ result.missing_meal_labels|join:", " }} dengan bahan/pantangan saat ini. Menu waktu makan lain tetap ditampilkan; katalog untuk bagian yang kosong perlu ditambah.</span></div>{% endif %}
+        {% if result.unmatched_exclusions %}<div class="notice error-notice"><strong>Istilah belum ditemukan:</strong><span>{{ result.unmatched_exclusions|join:", " }}. Tidak ada nama bahan resep yang cocok; filter tersebut belum mengubah pilihan menu.</span></div>{% endif %}
+        {% if result.within_budget %}
+          {% if result.within_target_range %}
+            <div class="notice success-notice"><strong>Estimasi dalam rentang target</strong><span>Hasil {{ result.total|rupiah }} berada di rentang {{ result.target_minimum|rupiah }}–{{ form.cleaned_data.budget|rupiah }}. Sisa budget {{ result.difference|rupiah }}.</span></div>
+          {% endif %}
+        {% else %}
+          <div class="infeasible-panel"><p class="kicker">BELUM FEASIBLE</p><h3>Budget belum cukup untuk {{ form.cleaned_data.days }} hari × {{ form.cleaned_data.servings }} orang.</h3><p>Untuk {{ result.meal_count }} waktu makan per hari yang dipilih, biaya bahan paling rendah diperkirakan <strong>{{ result.minimum_budget|rupiah }}</strong>. Perlu tambahan sekitar <strong>{{ result.difference|rupiah }}</strong>.</p><div class="suggestion-list"><div><strong>Tambah budget</strong><span>Naikkan menjadi minimal {{ result.minimum_budget|rupiah }}.</span></div><div><strong>Kurangi hari</strong><span>{% if result.feasible_days %}Dengan budget saat ini, coba {{ result.feasible_days }} hari.{% elif form.cleaned_data.days == 1 %}Durasi sudah minimum 1 hari.{% else %}Mengurangi ke 1 hari saja belum cukup.{% endif %}</span></div><div><strong>Kurangi porsi</strong><span>{% if result.feasible_servings %}Dengan budget saat ini, coba {{ result.feasible_servings }} orang.{% elif form.cleaned_data.servings == 1 %}Porsi sudah minimum 1 orang.{% else %}Mengurangi ke 1 orang saja belum cukup.{% endif %}</span></div></div>{% if not result.feasible_days and not result.feasible_servings %}<p class="minimum-note">Sebagai pembanding, 1 hari untuk 1 orang dengan pilihan waktu makan yang sama perlu sekitar {{ result.smallest_scenario_budget|rupiah }}.</p>{% endif %}</div>
+        {% endif %}
+
+        {% if result.within_budget %}
+        <div class="result-grid">
+          <div class="result-main">
+            <section class="panel"><div class="panel-heading"><div><p class="kicker">OUTPUT REKOMENDASI</p><h3>Daftar Belanja Terhitung</h3></div><span class="verified">● Katalog terkurasi</span></div><div class="total-box"><span>Estimasi biaya bahan terpakai</span><strong>{{ result.total|rupiah }}</strong><div class="budget-track"><span style="width:{% widthratio result.total form.cleaned_data.budget 100 %}%;max-width:100%"></span></div><small>Budget {{ form.cleaned_data.budget|rupiah }} · {{ form.cleaned_data.servings }} porsi per menu</small></div><div class="shopping-groups">{% for group in result.shopping_groups %}<div class="shopping-group"><h4>{{ group.name }}</h4>{% for item in group.items %}<div class="shopping-item"><div><strong>{{ item.name }}</strong><small>{{ item.quantity }} g untuk seluruh rencana</small></div><span>{{ item.cost|rupiah }}</span></div>{% endfor %}</div>{% endfor %}{% if result.rounding_adjustment %}<div class="shopping-item rounding-item"><div><strong>Pembulatan total</strong><small>Ke atas sampai kelipatan Rp 500</small></div><span>{{ result.rounding_adjustment|rupiah }}</span></div>{% endif %}</div></section>
+          </div>
+          <div class="result-side">
+            <section class="panel schedule-panel"><div class="panel-heading"><div><p class="kicker">MENU HARIAN</p><h3>Jadwal Masak</h3></div><span class="day-count">{{ form.cleaned_data.days }} hari</span></div>{% for day in result.schedule %}<div class="schedule-day"><h4>Hari ke-{{ day.number }}</h4>{% for meal in day.meals %}<div class="meal-row"><span class="meal-label">{{ meal.label }}</span><div><strong>{{ meal.name }}</strong><small>{{ meal.cost|rupiah }} / {{ form.cleaned_data.servings }} porsi · {{ meal.calories }} kkal / porsi</small></div></div>{% endfor %}</div>{% endfor %}</section>
+            <section class="panel nutrition-panel"><p class="kicker">RERATA MENU TERPILIH · PER HARI · PER ORANG</p><h3>Estimasi Gizi</h3><div class="nutrition-grid"><div><strong>{{ result.nutrition.calories }}</strong><span>kkal</span></div><div><strong>{{ result.nutrition.protein }}g</strong><span>protein</span></div><div><strong>{{ result.nutrition.carbs }}g</strong><span>karbo</span></div><div><strong>{{ result.nutrition.fat }}g</strong><span>lemak</span></div></div><p>Hanya menghitung waktu makan yang dipilih. Belum termasuk air, garam, susut masak, harga kemasan utuh, dan ongkos belanja.</p></section>
+          </div>
+        </div>
+        {% endif %}
+      {% else %}
+        <div class="empty-state"><span>✦</span><h2>Rencanamu akan muncul di sini</h2><p>Isi input di atas lalu tekan “Hitung Rencana Makan” untuk mencoba kalkulasi dari dataset katalog.</p></div>
+      {% endif %}
+    </section>
+  </main>
+  <script>
+    document.querySelectorAll(".js-rupiah-input").forEach((input) => {
+      const format = () => {
+        const digits = input.value.replace(/\D/g, "");
+        input.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      };
+      input.addEventListener("input", format);
+      format();
+    });
+  </script>
+</body>
+</html>

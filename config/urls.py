@@ -17,9 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
+from apps.budget_planner.views import planner_page
 
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='landing.html'), name='landing'),
+    path('modul1/', planner_page, name='modul1'),
     path("admin/", admin.site.urls),
 ]
