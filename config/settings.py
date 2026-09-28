@@ -38,6 +38,9 @@ ALLOWED_HOSTS = [
 ]
 PRODUCTION = os.getenv("PRODUCTION", "False").lower() == "true"
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://alfredo-nathaniel-takarkuy.pws.cs.ui.ac.id",
+]
 
 # Application definition
 
