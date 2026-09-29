@@ -117,16 +117,22 @@ class AccountFlowTests(TestCase):
         self.assertNotContains(response, "Masak Enak Sesuai Budget")
 
     def test_module_home_links_follow_login_state(self):
-        for page_name in ("modul1", "modul2"):
+        for page_name in ("modul1", "modul2", "modul4"):
             with self.subTest(page=page_name, authenticated=False):
                 response = self.client.get(reverse(page_name))
                 self.assertContains(response, f'href="{reverse("landing")}"', count=2)
 
         self.client.post(reverse("signup"), self.signup_data())
-        for page_name in ("modul1", "modul2"):
+        for page_name in ("modul1", "modul2", "modul4"):
             with self.subTest(page=page_name, authenticated=True):
                 response = self.client.get(reverse(page_name))
                 self.assertContains(response, f'href="{reverse("modul5")}"', count=2)
+
+    def test_modul4_is_header_only(self):
+        response = self.client.get(reverse("modul4"))
+        self.assertContains(response, "TAKARKUY")
+        self.assertContains(response, "Kembali ke beranda")
+        self.assertContains(response, "<main></main>", html=True)
 
     def test_signup_and_login_post_require_csrf(self):
         client = Client(enforce_csrf_checks=True)
