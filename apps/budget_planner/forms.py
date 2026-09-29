@@ -32,12 +32,22 @@ class PlannerForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         error_messages={"required": "Pilih minimal satu waktu makan."},
     )
-    target = forms.ChoiceField(choices=TARGET_CHOICES, widget=forms.RadioSelect)
+    targets = forms.MultipleChoiceField(
+        choices=TARGET_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        error_messages={"required": "Pilih minimal satu target gizi."},
+    )
     exclude_ingredients = forms.CharField(
         required=False,
         max_length=250,
         widget=forms.TextInput(attrs={"placeholder": "Contoh: udang, telur, kacang", "autocomplete": "off"}),
     )
+
+    def clean_targets(self):
+        targets = self.cleaned_data["targets"]
+        if "seimbang" in targets and len(targets) > 1:
+            raise forms.ValidationError("Seimbang tidak bisa digabung dengan target gizi lain.")
+        return targets
 
     def clean_exclude_ingredients(self):
         terms = [part.strip().casefold() for part in self.cleaned_data["exclude_ingredients"].split(",")]

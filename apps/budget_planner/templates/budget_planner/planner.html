@@ -29,7 +29,7 @@
         <div class="input-grid">
           <div class="field budget-field"><label for="{{ form.budget.id_for_label }}"><span class="field-number">01</span> Budget Belanja</label><div class="currency-input"><span>Rp</span>{{ form.budget }}</div>{{ form.budget.errors }}</div>
           <div class="planning-fields"><div class="field"><label for="{{ form.days.id_for_label }}"><span class="field-number">02</span> Durasi Rencana Makan</label><div class="number-input">{{ form.days }}<span>hari</span></div>{{ form.days.errors }}<p class="field-note">Pilih durasi antara 1–7 hari.</p></div><div class="field"><label for="{{ form.servings.id_for_label }}"><span class="field-number">03</span> Jumlah Orang / Porsi</label><div class="number-input">{{ form.servings }}<span>orang</span></div>{{ form.servings.errors }}<p class="field-note">Bisa diisi untuk 1–10 porsi.</p></div><fieldset class="field"><legend>Jadwal Makan per Hari</legend><div class="choice-row meal-options">{{ form.meal_types }}</div>{{ form.meal_types.errors }}<p class="field-note">Bisa pilih lebih dari satu</p></fieldset></div>
-          <div class="preference-column"><fieldset class="field preference-field"><legend><span class="field-number">04</span> Target gizi &amp; preferensi</legend><div class="choice-row target-row">{{ form.target }}</div>{{ form.target.errors }}<label class="sub-label" for="{{ form.exclude_ingredients.id_for_label }}">Alergi / Pantangan Bahan (Opsional)</label><div class="excluded-input">{{ form.exclude_ingredients }}</div>{{ form.exclude_ingredients.errors }}<p class="field-note">Kosongkan jika tidak ada pantangan</p></fieldset><button type="submit" class="calculate-button">Buat Rencana Makan <span aria-hidden="true">→</span></button></div>
+          <div class="preference-column"><fieldset class="field preference-field"><legend><span class="field-number">04</span> Target gizi &amp; preferensi</legend><div class="choice-row target-row">{{ form.targets }}</div>{{ form.targets.errors }}<p class="field-note">Mode rendah kalori membatasi tiga waktu makan hingga 1.150 kkal per orang. Ini ambang simulasi, bukan anjuran kebutuhan harian.</p><label class="sub-label" for="{{ form.exclude_ingredients.id_for_label }}">Alergi / Pantangan Bahan (Opsional)</label><div class="excluded-input">{{ form.exclude_ingredients }}</div>{{ form.exclude_ingredients.errors }}<p class="field-note">Kosongkan jika tidak ada pantangan</p></fieldset><button type="submit" class="calculate-button">Buat Rencana Makan <span aria-hidden="true">→</span></button></div>
         </div>
       </form>
     </section>
@@ -42,6 +42,9 @@
       {% elif result %}
         <div class="results-heading"><div><p class="kicker">HASIL SIMULASI</p><h2>Rencana makan {{ form.cleaned_data.days }} hari</h2></div></div>
         <p class="selection-note">Waktu makan: {{ result.meal_labels|join:", " }} ({{ result.meal_count }} menu per hari).{% if result.excluded_ingredients %} Dikecualikan: {{ result.excluded_ingredients|join:", " }}.{% endif %}</p>
+        {% if result.protein_floor or result.calorie_cap %}<p class="selection-note">Target per orang untuk waktu makan terpilih setiap hari: {% if result.protein_floor %}minimal {{ result.protein_floor }} g protein{% endif %}{% if result.protein_floor and result.calorie_cap %} · {% endif %}{% if result.calorie_cap %}maksimal {{ result.calorie_cap }} kkal{% endif %}. Angka ini adalah ambang simulasi, bukan kebutuhan gizi pribadi.</p>{% endif %}
+        {% if result.calorie_cap %}<p class="selection-note">Perhatian: jika tiga waktu makan dipilih, batas 1.150 kkal/hari berada di bawah 1.200 kkal. Jangan gunakan hasil ini sebagai resep diet pribadi tanpa konsultasi tenaga kesehatan.</p>{% endif %}
+        {% if result.repeated_recipes %}<p class="selection-note">Beberapa menu diulang karena variasi resep yang memenuhi target saat ini terbatas.</p>{% endif %}
         {% if result.missing_meal_labels %}<div class="notice error-notice"><strong>Rencana parsial:</strong><span>Belum ada resep yang cocok untuk {{ result.missing_meal_labels|join:", " }} dengan bahan/pantangan saat ini. Menu waktu makan lain tetap ditampilkan; katalog untuk bagian yang kosong perlu ditambah.</span></div>{% endif %}
         {% if result.unmatched_exclusions %}<div class="notice error-notice"><strong>Istilah belum ditemukan:</strong><span>{{ result.unmatched_exclusions|join:", " }}. Tidak ada nama bahan resep yang cocok; filter tersebut belum mengubah pilihan menu.</span></div>{% endif %}
         {% if result.within_budget %}
@@ -58,8 +61,8 @@
             <section class="panel"><div class="panel-heading"><div><p class="kicker">HASIL REKOMENDASI</p><h3>Daftar Belanja Terhitung</h3></div><span class="verified">● Katalog terkurasi</span></div><div class="total-box"><span>Estimasi biaya bahan terpakai</span><strong>{{ result.total|rupiah }}</strong><div class="budget-track"><span style="width:{% widthratio result.total form.cleaned_data.budget 100 %}%;max-width:100%"></span></div><small>Budget {{ form.cleaned_data.budget|rupiah }} · {{ form.cleaned_data.servings }} porsi per menu</small></div><div class="shopping-groups">{% for group in result.shopping_groups %}<div class="shopping-group"><h4>{{ group.name }}</h4>{% for item in group.items %}<div class="shopping-item"><div><strong>{{ item.name }}</strong><small>{{ item.quantity }} g · Total untuk {{ form.cleaned_data.days }} hari</small></div><span>{{ item.cost|rupiah }}</span></div>{% endfor %}</div>{% endfor %}{% if result.rounding_adjustment %}<div class="shopping-item rounding-item"><div><strong>Pembulatan total</strong><small>Ke atas sampai kelipatan Rp 500</small></div><span>{{ result.rounding_adjustment|rupiah }}</span></div>{% endif %}</div></section>
           </div>
           <div class="result-side">
-            <section class="panel schedule-panel"><div class="panel-heading"><div><p class="kicker">MENU HARIAN</p><h3>Jadwal Masak</h3></div><span class="day-count">{{ form.cleaned_data.days }} hari</span></div>{% for day in result.schedule %}<div class="schedule-day"><h4>Hari ke-{{ day.number }}</h4>{% for meal in day.meals %}<div class="meal-row"><span class="meal-label">{{ meal.label }}</span><div><strong>{{ meal.name|title }}</strong><small>{{ meal.cost|rupiah }} / {{ form.cleaned_data.servings }} porsi · {{ meal.calories }} kkal / porsi</small></div></div>{% endfor %}</div>{% endfor %}</section>
-            <section class="panel nutrition-panel"><p class="kicker">ESTIMASI ASUPAN HARIAN (PER ORANG)</p><h3>Estimasi Gizi</h3><div class="nutrition-grid"><div><strong>{{ result.nutrition.calories }} kkal</strong><span>Kalori</span></div><div><strong>{{ result.nutrition.protein }} g</strong><span>Protein</span></div><div><strong>{{ result.nutrition.carbs }} g</strong><span>Karbohidrat</span></div><div><strong>{{ result.nutrition.fat }} g</strong><span>Lemak</span></div></div><p>Perhitungan berdasarkan waktu makan yang dipilih. Belum memperhitungkan bumbu dapur dasar (air, garam), penyusutan saat dimasak, serta biaya kemasan dan ongkir.</p></section>
+            <section class="panel schedule-panel"><div class="panel-heading"><div><p class="kicker">MENU HARIAN</p><h3>Jadwal Masak</h3></div><span class="day-count">{{ form.cleaned_data.days }} hari</span></div>{% for day in result.schedule %}<div class="schedule-day"><h4>Hari ke-{{ day.number }}</h4>{% if result.protein_floor or result.calorie_cap %}<small>{{ day.protein }} g protein · {{ day.calories }} kkal / orang (waktu makan terpilih)</small>{% endif %}{% for meal in day.meals %}<div class="meal-row"><span class="meal-label">{{ meal.label }}</span><div><strong>{{ meal.name|title }}</strong><small>{{ meal.cost|rupiah }} / {{ form.cleaned_data.servings }} porsi · {{ meal.calories }} kkal / porsi</small></div></div>{% endfor %}</div>{% endfor %}</section>
+            <section class="panel nutrition-panel"><p class="kicker">ESTIMASI GIZI WAKTU MAKAN TERPILIH (PER ORANG / HARI)</p><h3>Estimasi Gizi</h3><div class="nutrition-grid"><div><strong>{{ result.nutrition.calories }} kkal</strong><span>Kalori</span></div><div><strong>{{ result.nutrition.protein }} g</strong><span>Protein</span></div><div><strong>{{ result.nutrition.carbs }} g</strong><span>Karbohidrat</span></div><div><strong>{{ result.nutrition.fat }} g</strong><span>Lemak</span></div></div><p>Perhitungan berdasarkan waktu makan yang dipilih. Belum memperhitungkan bumbu dapur dasar (air, garam), penyusutan saat dimasak, serta biaya kemasan dan ongkir.</p></section>
           </div>
         </div>
         {% endif %}
@@ -77,6 +80,21 @@
       input.addEventListener("input", format);
       format();
     });
+
+    const targetOptions = document.querySelectorAll('input[name="targets"]');
+    const balancedOption = Array.from(targetOptions).find((input) => input.value === "seimbang");
+    const specialOptions = Array.from(targetOptions).filter((input) => input.value !== "seimbang");
+    if (balancedOption) {
+      const syncTargets = (changedOption) => {
+        if (changedOption === balancedOption && balancedOption.checked) {
+          specialOptions.forEach((input) => { input.checked = false; });
+        } else {
+          balancedOption.checked = !specialOptions.some((input) => input.checked);
+        }
+      };
+      targetOptions.forEach((input) => input.addEventListener("change", () => syncTargets(input)));
+      syncTargets();
+    }
   </script>
 </body>
 </html>
