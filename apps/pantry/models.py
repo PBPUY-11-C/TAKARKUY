@@ -1,0 +1,67 @@
+from django.db import models
+
+
+class PantryItem(models.Model):
+    MANUAL_CATEGORY_CHOICES = [
+        ("sayur_buah", "Sayur & Buah"),
+        ("daging_seafood", "Daging & Seafood"),
+        ("tahu_tempe_kacang", "Tahu, Tempe & Kacang"),
+        ("beras_karbohidrat", "Beras & Karbohidrat"),
+        ("bumbu_minyak", "Bumbu & Minyak"),
+        ("lainnya", "Lainnya"),
+    ]
+    CATEGORY_CHOICES = MANUAL_CATEGORY_CHOICES + [
+        ("sayuran", "Sayuran (kategori lama)"),
+        ("buah", "Buah (kategori lama)"),
+        ("protein_hewani", "Protein Hewani (kategori lama)"),
+        ("protein_nabati", "Protein Nabati (kategori lama)"),
+        ("bahan_pokok", "Bahan Pokok (kategori lama)"),
+    ]
+    UNIT_CHOICES = [
+        ("g", "g"), ("kg", "kg"), ("ml", "ml"), ("liter", "liter"),
+        ("buah", "buah"), ("ikat", "ikat"), ("butir", "butir"),
+        ("papan", "papan"), ("kotak", "kotak"), ("bungkus", "bungkus"),
+        ("botol", "botol"), ("pak", "pak"), ("pack", "pack / bungkus"),
+    ]
+    MANUAL_UNIT_CHOICES = [
+        ("g", "gram (g)"), ("kg", "kilogram (kg)"),
+        ("ml", "milliliter (ml)"), ("liter", "liter"),
+        ("buah", "buah"), ("butir", "butir"), ("ikat", "ikat"),
+        ("pack", "pack / bungkus"), ("botol", "botol"),
+    ]
+    LOCATION_CHOICES = [
+        ("chiller", "Kulkas Bawah (Chiller)"),
+        ("freezer", "Freezer"),
+        ("suhu_ruang", "Suhu Ruang"),
+        ("lemari_kering", "Lemari Kering"),
+    ]
+    SOURCE_CHOICES = [("ocr", "Struk"), ("manual", "Manual")]
+
+    session_id = models.CharField(max_length=32, db_index=True)
+    name = models.CharField(max_length=255)
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, blank=True, default="")
+    quantity = models.DecimalField(max_digits=10, decimal_places=3)
+    unit = models.CharField(max_length=20, choices=UNIT_CHOICES)
+    location = models.CharField(max_length=20, choices=LOCATION_CHOICES, blank=True, default="")
+    shelf_life_days = models.PositiveSmallIntegerField(null=True, blank=True)
+    estimated_expires_on = models.DateField(null=True, blank=True)
+    source = models.CharField(max_length=10, choices=SOURCE_CHOICES)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["estimated_expires_on", "id"]
+
+
+class PantryNameCorrection(models.Model):
+    """An OCR spelling explicitly corrected in one browser session."""
+
+    session_id = models.CharField(max_length=32, db_index=True)
+    raw_name = models.CharField(max_length=255)
+    normalized_name = models.CharField(max_length=255)
+    ingredient = models.ForeignKey("catalog.Ingredient", on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(
+            fields=["session_id", "normalized_name"], name="pantry_session_ocr_name_unique"
+        )]
