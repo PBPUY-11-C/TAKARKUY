@@ -1,0 +1,27 @@
+{% extends "accounts/base.html" %}
+{% block title %}Masuk{% endblock %}
+{% block content %}
+<main class="auth-card login">
+  <a class="brand" href="{% url 'landing' %}"><span class="brand-mark" aria-hidden="true">✳</span><span>TAKARKUY</span></a>
+  <h1>Selamat Datang Kembali</h1>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    {% if form.non_field_errors %}<ul class="form-errors">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    <div class="field">
+      <div class="field-top"><label for="{{ form.username.id_for_label }}">Email atau Username</label></div>
+      {{ form.username }}
+      {% if form.username.errors %}<ul class="field-errors">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    <div class="field">
+      <div class="field-top"><label for="{{ form.password.id_for_label }}">Kata Sandi</label></div>
+      <div class="input-wrap">{{ form.password }}<button class="toggle-password" type="button" data-password-toggle="{{ form.password.id_for_label }}" aria-label="Tampilkan kata sandi">Tampilkan</button></div>
+      {% if form.password.errors %}<ul class="field-errors">{% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    <label class="remember"><input type="checkbox" name="remember_me" value="1"> Ingat saya di perangkat ini</label>
+    <button class="submit" type="submit">Masuk ke TAKARKUY →</button>
+  </form>
+  <p class="switch-page">Belum punya akun TAKARKUY? <a href="{% url 'signup' %}">Daftar sekarang</a></p>
+</main>
+{% endblock %}

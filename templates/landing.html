@@ -125,7 +125,13 @@
       <a href="#demo">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#faq">FAQ</a>
     </nav>
     <div class="header-actions">
-      <a class="button button-primary" href="#masuk">Mulai Sekarang</a>
+      {% if user.is_authenticated %}
+      <span>Hai, {{ user.first_name|default:user.username }}</span>
+      <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="button button-primary" type="submit">Keluar</button></form>
+      {% else %}
+      <a class="login-link" href="{% url 'login' %}">Masuk</a>
+      <a class="button button-primary" href="{% url 'signup' %}">Mulai Sekarang</a>
+      {% endif %}
     </div>
   </header>
 

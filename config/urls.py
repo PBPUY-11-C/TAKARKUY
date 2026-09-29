@@ -15,19 +15,28 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.urls import path
 from django.views.generic import TemplateView
+from django.contrib.auth.views import LogoutView
+from apps.accounts.forms import EmailOrUsernameAuthenticationForm
+from apps.accounts.views import AccountLoginView, signup_view
 from apps.budget_planner.views import planner_page
 from apps.pantry.views import delete_pantry_item, pantry_page, save_pantry_items, suggest_receipt_items, update_pantry_details
 
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='landing.html'), name='landing'),
+    path('signup/', signup_view, name='signup'),
+    path('login/', AccountLoginView.as_view(authentication_form=EmailOrUsernameAuthenticationForm), name='login'),
+    path('logout/', LogoutView.as_view(next_page='landing'), name='logout'),
     path('modul1/', planner_page, name='modul1'),
     path('modul2/', pantry_page, name='modul2'),
     path('modul2/items/', save_pantry_items, name='modul2-items'),
     path('modul2/suggestions/', suggest_receipt_items, name='modul2-suggestions'),
     path('modul2/items/<int:item_id>/', update_pantry_details, name='modul2-item-details'),
     path('modul2/items/<int:item_id>/delete/', delete_pantry_item, name='modul2-item-delete'),
+    path('modul4/', TemplateView.as_view(template_name='modul4.html'), name='modul4'),
+    path('modul5/', login_required(TemplateView.as_view(template_name='modul5.html')), name='modul5'),
     path("admin/", admin.site.urls),
 ]
