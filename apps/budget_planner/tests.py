@@ -2,13 +2,26 @@ from decimal import Decimal
 
 from django.test import TestCase
 
-from apps.catalog.models import Recipe
+from apps.catalog.models import Ingredient, Recipe
 from .forms import PlannerForm
 from .planner import MEALS, budget_target_minimum, build_plan
 
 
 class PlannerCatalogTests(TestCase):
     fixtures = ["catalog_seed"]
+
+    def test_kubis_is_grouped_as_vegetable_even_with_old_catalog_category(self):
+        kubis = Ingredient.objects.get(pk="ING-KUBIS")
+        self.assertEqual(kubis.category, "sayur")
+        kubis.category = "karbohidrat"
+        kubis.save(update_fields=["category"])
+        result = build_plan(
+            budget=Decimal("1000000"), days=7, servings=2, meal_types=MEALS,
+            target="seimbang", exclude_ingredients=[],
+        )
+        kubis_groups = [group["name"] for group in result["shopping_groups"]
+                        if any(item["name"] == "Kubis" for item in group["items"])]
+        self.assertEqual(kubis_groups, ["Sayur"])
 
     def test_budget_accepts_indonesian_thousands_separator(self):
         form = PlannerForm({

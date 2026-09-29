@@ -652,7 +652,7 @@
     "pk": "ING-KUBIS",
     "fields": {
       "name": "Kubis",
-      "category": "karbohidrat",
+      "category": "sayur",
       "base_unit": "g",
       "calories_per_100g": "10.12",
       "protein_per_100g": "0.11",

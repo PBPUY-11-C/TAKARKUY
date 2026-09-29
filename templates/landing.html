@@ -109,7 +109,7 @@
     .recommendation h3 { font-size: 17px; }.price { display: block; margin-top: 27px; color: var(--green); font-size: 13px; font-weight: 700; }.match { float: right; padding: 3px 5px; color: var(--green); background: #e6f8f1; border-radius: 6px; font-size: 10px; }
     .saved { color: white; background: #007659; }.saved .stat-top, .saved p { color: white; }.saved .stat-icon { color: white; background: #0b916e; }.saved h3 { margin-top: 15px; color: white; font-size: 22px; }.saved p { font-size: 11px; }.saved-foot { margin-top: 22px; color: #c8f6e2; font-size: 10px; }
     .schedule { margin-top: 15px; padding: 17px 15px 15px; border-radius: 13px; background: white; }.schedule-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 11px; }.schedule h2 { margin: 0; font: 700 17px "Plus Jakarta Sans", sans-serif; letter-spacing: -.6px; }.schedule a { color: var(--green); font-size: 11px; font-weight: 700; }
-    .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }.day { min-height: 67px; padding: 8px 4px; border-radius: 8px; text-align: center; background: #eaf0ff; }.day.today { background: #d1fae7; }.day-name { display: block; color: #40484b; font-size: 9px; font-weight: 700; }.today .day-name { color: var(--green); }.meal { display: block; margin-top: 3px; color: #192638; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.day small { color: var(--green); font-size: 10px; }.day:last-child small { color: #526063; }
+    .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }.day { min-height: 67px; padding: 8px 4px; border-radius: 8px; text-align: center; background: #eaf0ff; }.day.today { background: #d1fae7; }.day-name { display: block; color: #40484b; font-size: 9px; font-weight: 700; }.today .day-name { color: var(--green); }.meal { display: block; margin-top: 3px; color: #192638; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.day:last-child .meal { white-space: normal; }.day small { color: var(--green); font-size: 10px; }.day:last-child small { color: #526063; }
 
     @media (max-width: 850px) { .nav-links { display: none; }.stats { grid-template-columns: repeat(2, 1fr); }.dashboard-shell { margin-inline: 18px; padding: 18px; }.days { grid-template-columns: repeat(4, 1fr); }.day { min-height: 58px; } }
     @media (max-width: 550px) { .site-header { padding: 0 18px; }.brand { font-size: 15px; }.header-actions .login-link, .profile-button { display: none; }.button-primary { padding: 0 12px; }.hero { padding-top: 62px; } h1 { letter-spacing: -1.7px; }.intro { font-size: 14px; }.stats { grid-template-columns: 1fr; gap: 10px; }.stat-card { min-height: 142px; }.browser-bar { padding: 0 9px; }.days { grid-template-columns: repeat(2, 1fr); }.dashboard-shell { padding: 12px; }.schedule-head { align-items: flex-start; gap: 12px; }.schedule h2 { font-size: 14px; } }
@@ -122,7 +122,7 @@
       <span>TAKARKUY</span>
     </a>
     <nav class="nav-links" aria-label="Navigasi utama">
-      <a href="#fitur">Fitur Utama</a><a href="#cara-kerja">Cara Kerja</a><a href="#keunggulan">Keunggulan</a><a href="#faq">FAQ</a>
+      <a href="#demo">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#faq">FAQ</a>
     </nav>
     <div class="header-actions">
       <a class="button button-primary" href="#masuk">Mulai Sekarang</a>
@@ -131,12 +131,12 @@
 
   <main id="home">
     <section class="hero" aria-labelledby="hero-title">
-      <h1 id="hero-title">Masak Enak Sesuai Budget,<br><span class="accent">Habiskan Stok Kulkas</span> Tanpa Sisa.</h1>
+      <h1 id="hero-title">Masak Enak Sesuai Budget,<br><span class="accent">Habiskan Stok Kulkas</span> Tanpa Sisa</h1>
       <div class="hero-actions">
         <a class="button button-primary" href="/modul1/">Coba Gratis Sekarang <span aria-hidden="true">→</span></a>
       </div>
       <div class="proof" aria-label="Ulasan dan manfaat">
-        <span><span class="stars">★★★★★</span><strong>4.9/5</strong></span><span class="dot" aria-hidden="true"></span><span><span class="badge-check">✓</span>Hemat s.d. 30% pengeluaran dapur &amp; zero food waste.</span>
+        <span><span class="stars">★★★★★</span><strong>4.9/5</strong></span><span class="dot" aria-hidden="true"></span><span><span class="badge-check">✓</span>Dapur Hemat, Bebas Sampah Makanan</span>
       </div>
     </section>
 
@@ -144,12 +144,12 @@
       <div class="browser-bar"><div class="traffic"><span></span><span></span><span></span></div></div>
       <div class="stats">
         <article class="stat-card"><div class="stat-top"><span>Budget Mingguan</span><span class="stat-icon">▣</span></div><h3>Rp 350.000</h3><p>Terpakai: <span class="green-text">Rp 182.000</span> (52%)</p><div class="progress"><span></span></div><div class="small-row"><span>Sisa Rp 168.000</span><strong>Aman (4 hari lagi)</strong></div></article>
-        <article class="stat-card alert"><div class="stat-top"><span>Virtual Pantry Alert</span><span class="stat-icon">⚠</span></div><h3>2 Bahan Mendesak</h3><p>Bayam (1 ikat) &amp; Tahu Putih (1 pack)<br>harus diolah sebelum besok.</p><div class="expiry"><span>◴ &nbsp;&lt;24 jam tersisa</span><strong>Pakai Sekarang</strong></div></article>
+        <article class="stat-card alert"><div class="stat-top"><span>Virtual Pantry Alert</span><span class="stat-icon">⚠</span></div><h3>2 Bahan Mendesak</h3><p>Bayam (1 ikat) &amp; Tahu Putih (1 pack)<br>harus diolah sebelum besok.</p><div class="expiry"><span>◴ &nbsp;&lt;24 jam tersisa</span><strong>Olah Sekarang →</strong></div></article>
         <article class="stat-card recommendation"><div class="stat-top"><span>Rekomendasi Hari Ini</span><span class="stat-icon">♨</span></div><h3>Sup Bening Bayam Tahu</h3><p>Memanfaatkan stok bayam &amp; tahu yang<br>mendekati kedaluwarsa.</p><span class="price">Rp 12.000<span class="match">◎ 100% Cocok</span><small>/porsi</small></span></article>
-        <article class="stat-card saved"><div class="stat-top"><span>Estimasi Terhemat</span><span class="stat-icon">♧</span></div><h3>+Rp 420.000</h3><p>Bulan ini (penghematan food waste &amp;<br>substitusi bahan terencana).</p><div class="saved-foot">↗ &nbsp;28% lebih hemat dari rata-rata</div></article>
+        <article class="stat-card saved"><div class="stat-top"><span>Estimasi Terhemat</span><span class="stat-icon">♧</span></div><h3>Rp 420.000</h3><p>Total penghematan bulan ini dari cegah food waste &amp; belanja terencana.</p><div class="saved-foot">↗ &nbsp;28% lebih hemat dari rata-rata</div></article>
       </div>
       <section class="schedule" aria-labelledby="schedule-title"><div class="schedule-head"><h2 id="schedule-title">Jadwal Masak Terencana Pekan Ini</h2><a href="#kalender">Kelola Kalender →</a></div><div class="days">
-        <div class="day"><span class="day-name">Senin</span><span class="meal">Tumis Kangkung</span><small>Rp 9k/porsi</small></div><div class="day"><span class="day-name">Selasa</span><span class="meal">Ayam Ungkep Kecap</span><small>Rp 18k/porsi</small></div><div class="day"><span class="day-name">Rabu</span><span class="meal">Sayur Lodeh Labu</span><small>Rp 11k/porsi</small></div><div class="day today"><span class="day-name">Kamis (Hari Ini)</span><span class="meal">Sup Bayam Tahu</span><small>Rp 12k/porsi</small></div><div class="day"><span class="day-name">Jumat</span><span class="meal">Tempe Mendoan &amp; S...</span><small>Rp 8k/porsi</small></div><div class="day"><span class="day-name">Sabtu</span><span class="meal">Nasi Goreng Kulkas</span><small>Rp 7k/porsi</small></div><div class="day"><span class="day-name">Minggu</span><span class="meal">Restock &amp; Meal Prep</span><small>Review</small></div>
+        <div class="day"><span class="day-name">Senin</span><span class="meal">Tumis Kangkung</span><small>Rp 9k/porsi</small></div><div class="day"><span class="day-name">Selasa</span><span class="meal">Ayam Ungkep Kecap</span><small>Rp 18k/porsi</small></div><div class="day"><span class="day-name">Rabu</span><span class="meal">Sayur Lodeh Labu</span><small>Rp 11k/porsi</small></div><div class="day today"><span class="day-name">Kamis (Hari Ini)</span><span class="meal">Sup Bayam Tahu</span><small>Rp 12k/porsi</small></div><div class="day"><span class="day-name">Jumat</span><span class="meal">Tempe Mendoan &amp; S...</span><small>Rp 8k/porsi</small></div><div class="day"><span class="day-name">Sabtu</span><span class="meal">Nasi Goreng Kulkas</span><small>Rp 7k/porsi</small></div><div class="day"><span class="day-name">Minggu</span><span class="meal">Belanja Stok &amp; Evaluasi</span><small>Rencana pekan depan</small></div>
       </div></section>
     </section>
   </main>

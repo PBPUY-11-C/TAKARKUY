@@ -41,6 +41,7 @@ def fmt(x):return '' if x is None else ('%.2f'%x).rstrip('0').rstrip('.')
 
 def category(s):
     s=s.lower()
+    if s in ('kubis', 'kol', 'kembang kol'):return 'sayur'
     if any(x in s for x in ('beras','tepung','jagung','kentang','singkong','ubi','sagu','talas','roti','mie')):return 'karbohidrat'
     if any(x in s for x in ('ikan','udang','cumi','daging','telur','tahu','tempe','kacang','susu')):return 'protein'
     if any(x in s for x in ('bawang','cabe','cabai','garam','gula')):return 'bumbu'

@@ -340,7 +340,8 @@ def build_plan(*, budget, days, servings, meal_types, target, exclude_ingredient
             for link in item["ingredients"]:
                 code = link.ingredient_id
                 if code not in shopping:
-                    shopping[code] = {"name": link.ingredient.name, "category": link.ingredient.category,
+                    shopping[code] = {"name": link.ingredient.name,
+                                      "category": "sayur" if code == "ING-KUBIS" else link.ingredient.category,
                                       "quantity": Decimal("0"), "cost": 0}
                 shopping[code]["quantity"] += Decimal(str(link.quantity)) * item["scale"]
                 shopping[code]["cost"] += item["ingredient_costs"][link.recipe_ingredient_code]

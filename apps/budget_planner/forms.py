@@ -36,7 +36,7 @@ class PlannerForm(forms.Form):
     exclude_ingredients = forms.CharField(
         required=False,
         max_length=250,
-        widget=forms.TextInput(attrs={"placeholder": "Contoh: udang, telur", "autocomplete": "off"}),
+        widget=forms.TextInput(attrs={"placeholder": "Contoh: udang, telur, kacang", "autocomplete": "off"}),
     )
 
     def clean_exclude_ingredients(self):
