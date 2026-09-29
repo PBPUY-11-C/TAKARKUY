@@ -1,0 +1,35 @@
+{% extends "accounts/base.html" %}
+{% block title %}Daftar{% endblock %}
+{% block content %}
+<main class="auth-card signup">
+  <a class="brand" href="{% url 'landing' %}"><span class="brand-mark" aria-hidden="true">✳</span><span>TAKARKUY</span></a>
+  <h1>Mulai Masak Hemat dengan <span>TAKARKUY</span></h1>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<ul class="form-errors">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    <div class="field">
+      <div class="field-top"><label for="{{ form.full_name.id_for_label }}">Nama Lengkap</label></div>
+      {{ form.full_name }}
+      {% if form.full_name.errors %}<ul class="field-errors">{% for error in form.full_name.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    <div class="field">
+      <div class="field-top"><label for="{{ form.email.id_for_label }}">Alamat Email</label></div>
+      {{ form.email }}
+      {% if form.email.errors %}<ul class="field-errors">{% for error in form.email.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    <div class="field">
+      <div class="field-top"><label for="{{ form.password1.id_for_label }}">Kata Sandi</label><span class="password-hint" id="password-help">Min. 8 karakter · kapital, angka, simbol</span></div>
+      <div class="input-wrap">{{ form.password1 }}<button class="toggle-password" type="button" data-password-toggle="{{ form.password1.id_for_label }}" aria-label="Tampilkan kata sandi">Tampilkan</button></div>
+      {% if form.password1.errors %}<ul class="field-errors">{% for error in form.password1.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    <div class="field">
+      <div class="field-top"><label for="{{ form.password2.id_for_label }}">Konfirmasi Kata Sandi</label></div>
+      <div class="input-wrap">{{ form.password2 }}<button class="toggle-password" type="button" data-password-toggle="{{ form.password2.id_for_label }}" aria-label="Tampilkan kata sandi">Tampilkan</button></div>
+      {% if form.password2.errors %}<ul class="field-errors">{% for error in form.password2.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    <button class="submit" type="submit">Jadi Penakar →</button>
+  </form>
+  <p class="switch-page">Sudah memiliki akun? <a href="{% url 'login' %}">Masuk di sini</a></p>
+</main>
+{% endblock %}

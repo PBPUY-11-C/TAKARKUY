@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 
 load_dotenv()
@@ -25,19 +26,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ganti-dengan-secret-key-produksi-sebelum-deployment'
+PRODUCTION = os.getenv("PRODUCTION", "False").lower() == "true"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    if PRODUCTION:
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY wajib diatur di environment PWS.")
+    SECRET_KEY = "django-insecure-hanya-untuk-pengembangan-lokal"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not PRODUCTION
+SESSION_COOKIE_SECURE = PRODUCTION
+CSRF_COOKIE_SECURE = PRODUCTION
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "modul5"
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "alfredo-nathaniel-takarkuy.pws.cs.ui.ac.id",
 ]
-PRODUCTION = os.getenv("PRODUCTION", "False").lower() == "true"
-
 CSRF_TRUSTED_ORIGINS = [
     "https://alfredo-nathaniel-takarkuy.pws.cs.ui.ac.id",
 ]
@@ -45,6 +51,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'apps.accounts',
     'apps.catalog',
     'apps.budget_planner',
     'apps.pantry',
@@ -126,6 +133,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+    {
+        'NAME': 'apps.accounts.validators.UppercaseNumberSymbolValidator',
     },
 ]
 
