@@ -8,7 +8,7 @@ from .planner import MEALS, build_plan
 
 
 def planner_page(request):
-    initial = {"budget": 150000, "days": 3, "servings": 2, "meal_types": MEALS, "target": "seimbang"}
+    initial = {"budget": 150000, "days": 3, "servings": 2, "meal_types": MEALS, "targets": ["seimbang"]}
     form = PlannerForm(request.POST if request.method == "POST" else None, initial=initial)
     result = None
     error = None
