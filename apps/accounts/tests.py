@@ -35,7 +35,7 @@ class AccountFlowTests(TestCase):
         self.assertEqual(user.first_name, "Dina")
         self.assertEqual(user.last_name, "Putri")
         self.assertTrue(user.check_password("AmanSekali!827"))
-        self.assertTrue(self.client.get(reverse("landing")).wsgi_request.user.is_authenticated)
+        self.assertRedirects(self.client.get(reverse("landing")), reverse("modul5"))
 
     def test_signup_rejects_duplicate_email_and_mismatched_password(self):
         self.client.post(reverse("signup"), self.signup_data())
@@ -71,7 +71,7 @@ class AccountFlowTests(TestCase):
             "username": "DINA@EXAMPLE.COM", "password": "AmanSekali!827",
         })
         self.assertRedirects(login, reverse("modul5"))
-        self.assertTrue(self.client.get(reverse("landing")).wsgi_request.user.is_authenticated)
+        self.assertRedirects(self.client.get(reverse("landing")), reverse("modul5"))
         self.assertEqual(self.client.get(reverse("logout")).status_code, 405)
         self.assertRedirects(self.client.post(reverse("logout")), reverse("landing"))
         self.assertFalse(self.client.get(reverse("landing")).wsgi_request.user.is_authenticated)
@@ -115,6 +115,18 @@ class AccountFlowTests(TestCase):
             self.assertContains(response, label)
         self.assertContains(response, 'action="/logout/"')
         self.assertNotContains(response, "Masak Enak Sesuai Budget")
+
+    def test_module_home_links_follow_login_state(self):
+        for page_name in ("modul1", "modul2"):
+            with self.subTest(page=page_name, authenticated=False):
+                response = self.client.get(reverse(page_name))
+                self.assertContains(response, f'href="{reverse("landing")}"', count=2)
+
+        self.client.post(reverse("signup"), self.signup_data())
+        for page_name in ("modul1", "modul2"):
+            with self.subTest(page=page_name, authenticated=True):
+                response = self.client.get(reverse(page_name))
+                self.assertContains(response, f'href="{reverse("modul5")}"', count=2)
 
     def test_signup_and_login_post_require_csrf(self):
         client = Client(enforce_csrf_checks=True)

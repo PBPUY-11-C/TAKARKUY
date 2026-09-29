@@ -20,13 +20,13 @@ from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
 from apps.accounts.forms import EmailOrUsernameAuthenticationForm
-from apps.accounts.views import AccountLoginView, signup_view
+from apps.accounts.views import AccountLoginView, landing_view, signup_view
 from apps.budget_planner.views import planner_page
 from apps.pantry.views import delete_pantry_item, pantry_page, save_pantry_items, suggest_receipt_items, update_pantry_details
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='landing.html'), name='landing'),
+    path('', landing_view, name='landing'),
     path('signup/', signup_view, name='signup'),
     path('login/', AccountLoginView.as_view(authentication_form=EmailOrUsernameAuthenticationForm), name='login'),
     path('logout/', LogoutView.as_view(next_page='landing'), name='logout'),
