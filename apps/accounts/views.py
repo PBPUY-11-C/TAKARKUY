@@ -7,6 +7,12 @@ from django.views.decorators.http import require_http_methods
 from .forms import SignUpForm
 
 
+def landing_view(request):
+    if request.user.is_authenticated:
+        return redirect("modul5")
+    return render(request, "landing.html")
+
+
 @require_http_methods(["GET", "POST"])
 def signup_view(request):
     if request.user.is_authenticated:
