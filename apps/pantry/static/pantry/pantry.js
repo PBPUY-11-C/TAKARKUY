@@ -1,0 +1,414 @@
+import { parseReceiptText } from "./receipt_parser.mjs";
+
+const fileInput = document.getElementById("receipt-file");
+const preview = document.getElementById("receipt-preview");
+const receiptName = document.getElementById("receipt-name");
+const receiptCount = document.getElementById("receipt-count");
+const scanProgress = document.getElementById("scan-progress");
+const scanFeedback = document.getElementById("scan-feedback");
+const receiptDate = document.getElementById("receipt-date");
+const draftEmpty = document.getElementById("draft-empty");
+const draftTableWrap = document.getElementById("draft-table-wrap");
+const draftRows = document.getElementById("draft-rows");
+const draftCount = document.getElementById("draft-count");
+const saveDraftButton = document.getElementById("save-draft");
+const manualForm = document.getElementById("manual-form");
+const manualFeedback = document.getElementById("manual-feedback");
+const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+let previewUrl = null;
+let workerPromise = null;
+let hasUploaded = false;
+let scanVersion = 0;
+
+function feedback(element, message, isError = false) {
+  element.textContent = message;
+  element.classList.toggle("error", isError);
+}
+
+function draftElements() {
+  return [...draftRows.querySelectorAll("tr[data-draft]")];
+}
+
+function refreshDraftCount() {
+  const count = draftElements().length;
+  draftCount.textContent = `${count} bahan`;
+  receiptCount.textContent = `${count} Item Terdeteksi`;
+  draftTableWrap.hidden = !count;
+  draftEmpty.hidden = !!count;
+  draftEmpty.querySelector("p").textContent = hasUploaded
+    ? "Belum ada bahan yang terbaca. Coba unggah struk lain atau tambah baris manual."
+    : "Belum ada struk yang diunggah. Unggah struk untuk mendeteksi bahan makanan secara otomatis.";
+}
+
+function addControlCell(row, control) {
+  const cell = document.createElement("td");
+  cell.append(control);
+  row.append(cell);
+}
+
+function addInput(row, field, type, value, label) {
+  const input = document.createElement("input");
+  input.dataset.field = field;
+  input.type = type;
+  input.value = value || "";
+  input.required = true;
+  input.setAttribute("aria-label", label);
+  if (type === "number") {
+    input.min = field === "shelf_life_days" ? "1" : "0.001";
+    input.step = field === "shelf_life_days" ? "1" : "0.001";
+    if (field === "shelf_life_days") input.max = "3650";
+  }
+  if (field === "name") input.maxLength = 255;
+  addControlCell(row, input);
+}
+
+function addSelect(row, field, sourceId, value, label) {
+  const source = document.getElementById(sourceId);
+  const select = document.createElement("select");
+  select.dataset.field = field;
+  select.required = true;
+  select.setAttribute("aria-label", label);
+  for (const option of source.options) select.append(option.cloneNode(true));
+  select.value = value || "";
+  addControlCell(row, select);
+}
+
+function addDraftRow(item = {}) {
+  const row = document.createElement("tr");
+  row.dataset.draft = "";
+  row.dataset.originalName = item.name || "";
+  if (item.rawLine) row.title = `Teks struk: ${item.rawLine}`;
+  addInput(row, "name", "text", item.name, "Nama bahan");
+  const nameInput = row.querySelector('[data-field="name"]');
+  const suggestion = document.createElement("div");
+  suggestion.className = "name-suggestion";
+  suggestion.hidden = true;
+  nameInput.parentElement.append(suggestion);
+  nameInput.addEventListener("input", () => {
+    row.dataset.userEdited = "true";
+    delete row.dataset.ingredientCode;
+    delete row.dataset.location;
+    delete row.dataset.minDays;
+    suggestion.hidden = true;
+  });
+  addInput(row, "quantity", "number", item.quantity, "Jumlah bahan");
+  addSelect(row, "unit", "ocr-unit-options", item.unit, "Satuan bahan");
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "remove-row";
+  remove.textContent = "Hapus";
+  remove.setAttribute("aria-label", `Hapus baris ${item.name || "bahan"}`);
+  remove.addEventListener("click", () => {
+    row.remove();
+    refreshDraftCount();
+  });
+  addControlCell(row, remove);
+  draftRows.append(row);
+  refreshDraftCount();
+  return row;
+}
+
+async function suggestRows(rows, version) {
+  const draft = draftElements();
+  try {
+    const response = await fetch("/modul2/suggestions/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
+      credentials: "same-origin",
+      body: JSON.stringify({ names: rows.map((row) => row.name) }),
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    if (version !== scanVersion) return;
+    data.suggestions.forEach((result, index) => {
+      const row = draft[index];
+      if (!row || !row.isConnected || !result.suggested_name || row.dataset.originalName !== result.raw_name) return;
+      const nameInput = row.querySelector('[data-field="name"]');
+      // A late response must not overwrite a correction the user has already typed.
+      if (row.dataset.userEdited || nameInput.value !== result.raw_name) return;
+      const box = row.querySelector(".name-suggestion");
+      const details = result.storage
+        ? ` · ${result.storage.location === "chiller" ? "Kulkas" : "Suhu ruang"} · referensi ${result.storage.min_days}–${result.storage.max_days} hari sejak ${result.storage.starting_event === "mulai_disimpan" ? "mulai disimpan" : "dibeli"}`
+        : " · data lama simpan belum tersedia";
+      nameInput.value = result.suggested_name;
+      row.dataset.ingredientCode = result.ingredient_code;
+      if (result.storage) {
+        row.dataset.location = result.storage.location;
+        row.dataset.minDays = String(result.storage.min_days);
+      }
+      box.textContent = result.raw_name === result.suggested_name
+        ? `Cocok dengan katalog${details}`
+        : `Diperbaiki otomatis${result.method === "ai_perlu_periksa" ? " dengan AI" : ""} dari “${result.raw_name}”${details}. Periksa dan ubah jika keliru.`;
+      box.hidden = false;
+    });
+  } catch (_) {
+    // OCR and manual correction still work when recommendation service is unavailable.
+  }
+}
+
+function showParsedRows(text) {
+  const rows = parseReceiptText(text);
+  draftRows.replaceChildren();
+  rows.forEach(addDraftRow);
+  if (rows.length) suggestRows(rows, scanVersion);
+  refreshDraftCount();
+  feedback(scanFeedback, rows.length
+    ? `${rows.length} calon bahan ditemukan. Periksa dan koreksi baris yang keliru.`
+    : "Belum ada barang yang terbaca dengan yakin. Coba struk lain atau tambahkan baris manual.",
+    !rows.length);
+  return rows.length;
+}
+
+async function prepareReceiptImage(file, enhance = false) {
+  if (typeof createImageBitmap !== "function") return { image: file, width: null };
+  let bitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+    const widthBefore = bitmap.width;
+    if (!enhance && widthBefore >= 600) return { image: file, width: widthBefore };
+    const scale = Math.max(1, Math.min(1400 / bitmap.width, 6000 / bitmap.height, 6));
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = width + 32;
+    canvas.height = height + 32;
+    const context = canvas.getContext("2d");
+    if (!context) return { image: file, width: widthBefore };
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+    context.filter = "grayscale(1) contrast(1.3)";
+    context.drawImage(bitmap, 16, 16, width, height);
+    const enlarged = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    return { image: enlarged || file, width: widthBefore };
+  } catch (_) {
+    // Canvas conversion is optional; do not block OCR if a browser cannot do it.
+    return { image: file, width: bitmap?.width || null };
+  } finally {
+    bitmap?.close();
+  }
+}
+
+async function getWorker() {
+  if (!window.Tesseract) throw new Error("Pustaka OCR gagal dimuat. Periksa koneksi internet lalu muat ulang halaman.");
+  if (!workerPromise) {
+    workerPromise = window.Tesseract.createWorker(["ind", "eng"], 1, {
+      logger: (event) => {
+        if (event.status === "recognizing text") {
+          scanProgress.textContent = `Memindai struk… ${Math.round((event.progress || 0) * 100)}%`;
+        }
+      },
+    }).catch((error) => {
+      workerPromise = null;
+      throw error;
+    });
+  }
+  return workerPromise;
+}
+
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files?.[0];
+  if (!file) return;
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 10 * 1024 * 1024) {
+    feedback(scanFeedback, "Pilih gambar JPG, PNG, atau WebP berukuran maksimal 10 MB.", true);
+    return;
+  }
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl = URL.createObjectURL(file);
+  preview.src = previewUrl;
+  preview.hidden = false;
+  receiptName.textContent = `Struk: ${file.name}`;
+  scanVersion += 1;
+  hasUploaded = true;
+  draftRows.replaceChildren();
+  refreshDraftCount();
+  feedback(scanFeedback, "Menyiapkan pemindaian…");
+  scanProgress.textContent = "Memuat mesin OCR…";
+  fileInput.disabled = true;
+  try {
+    const prepared = await prepareReceiptImage(file);
+    const worker = await getWorker();
+    const result = await worker.recognize(prepared.image);
+    let rawText = result.data.text || "";
+    let parsedCount = parseReceiptText(rawText).length;
+    if (parsedCount < 2) {
+      const retryImage = prepared.image === file
+        ? (await prepareReceiptImage(file, true)).image
+        : file;
+      if (retryImage !== prepared.image) {
+        try {
+          scanProgress.textContent = "Mencoba pembacaan kedua…";
+          const retry = await worker.recognize(retryImage);
+          const retryText = retry.data.text || "";
+          const retryCount = parseReceiptText(retryText).length;
+          if (retryCount > parsedCount || (retryCount === parsedCount && retryText.length > rawText.length)) {
+            rawText = retryText;
+            parsedCount = retryCount;
+          }
+        } catch (_) {
+          // Keep the first OCR result when an optional second pass fails.
+        }
+      }
+    }
+    const found = showParsedRows(rawText);
+    if (prepared.width && prepared.width < 600) {
+      feedback(scanFeedback, found
+        ? `Foto kecil (${prepared.width} piksel) telah dipindai; ${found} calon bahan ditemukan. Periksa nama, jumlah, dan satuannya.`
+        : rawText.trim()
+          ? `Sebagian teks terbaca, tetapi barang belum dikenali. Lebar foto hanya ${prepared.width} piksel; coba foto asli yang lebih tajam.`
+          : `Teks belum terbaca dari foto ${prepared.width} piksel. Gunakan foto asli, bukan gambar pratinjau kecil.`,
+      !found);
+    } else if (!found) {
+      feedback(scanFeedback, rawText.trim()
+        ? "Teks struk terbaca, tetapi baris barang belum dikenali. Coba foto yang lebih terang dan lurus."
+        : "Teks struk belum terbaca. Coba foto yang lebih terang, fokus, dan memenuhi bingkai.", true);
+    }
+    scanProgress.textContent = "Pemindaian selesai. Tidak ada item yang disimpan otomatis.";
+  } catch (error) {
+    feedback(scanFeedback, `Pemindaian gagal: ${error.message}. Kamu masih bisa menambah baris secara manual.`, true);
+    scanProgress.textContent = "Pemindaian belum berhasil.";
+  } finally {
+    fileInput.disabled = false;
+    fileInput.value = "";
+  }
+});
+
+document.getElementById("add-draft-row").addEventListener("click", () => {
+  const row = addDraftRow();
+  row.querySelector('[data-field="name"]').focus();
+});
+
+async function saveItems(items, source) {
+  const response = await fetch("/modul2/items/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
+    credentials: "same-origin",
+    body: JSON.stringify({ source, items }),
+  });
+  const data = await response.json().catch(() => {
+    throw new Error("Sesi tidak valid atau server sedang bermasalah. Muat ulang halaman lalu coba lagi.");
+  });
+  if (!response.ok) {
+    const firstRow = Object.values(data.rows || {})[0] || {};
+    const firstFieldErrors = Object.values(firstRow)[0] || [];
+    throw new Error(firstFieldErrors[0]?.message || data.error || "Gagal menyimpan bahan.");
+  }
+  return data;
+}
+
+saveDraftButton.addEventListener("click", async () => {
+  const rows = draftElements();
+  if (!rows.length) {
+    feedback(scanFeedback, "Belum ada bahan untuk disimpan.", true);
+    return;
+  }
+  for (const row of rows) {
+    const invalid = [...row.querySelectorAll("input, select")].find((control) => !control.checkValidity());
+    if (invalid) {
+      invalid.reportValidity();
+      feedback(scanFeedback, "Lengkapi nama, jumlah, dan satuan setiap baris.", true);
+      return;
+    }
+  }
+  const items = rows.map((row) => Object.fromEntries(
+    [...row.querySelectorAll("[data-field]")].map((control) => [control.dataset.field, control.value])
+  ));
+  if (receiptDate.value && !receiptDate.checkValidity()) {
+    receiptDate.reportValidity();
+    return;
+  }
+  items.forEach((item, index) => {
+    const row = rows[index];
+    item.original_name = row.dataset.originalName || "";
+    if (row.dataset.ingredientCode) {
+      item.ingredient_code = row.dataset.ingredientCode;
+      if (row.dataset.location) item.location = row.dataset.location;
+      if (row.dataset.minDays && receiptDate.value) {
+        item.shelf_life_days = row.dataset.minDays;
+        item.starting_on = receiptDate.value;
+      }
+    }
+  });
+  saveDraftButton.disabled = true;
+  feedback(scanFeedback, "Menyimpan stok…");
+  try {
+    await saveItems(items, "ocr");
+    window.location.reload();
+  } catch (error) {
+    feedback(scanFeedback, error.message, true);
+    saveDraftButton.disabled = false;
+  }
+});
+
+manualForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!manualForm.reportValidity()) return;
+  const item = Object.fromEntries(new FormData(manualForm).entries());
+  delete item.csrfmiddlewaretoken;
+  const submit = manualForm.querySelector('button[type="submit"]');
+  submit.disabled = true;
+  feedback(manualFeedback, "Menyimpan stok…");
+  try {
+    await saveItems([item], "manual");
+    window.location.reload();
+  } catch (error) {
+    feedback(manualFeedback, error.message, true);
+    submit.disabled = false;
+  }
+});
+
+document.querySelectorAll("[data-pantry-item]").forEach((row) => {
+  const button = row.querySelector(".save-pantry-details");
+  const deleteButton = row.querySelector(".delete-pantry-item");
+  const rowFeedback = row.querySelector(".row-feedback");
+  button.addEventListener("click", async () => {
+    const location = row.querySelector("[data-pantry-location]").value;
+    const expiryInput = row.querySelector("[data-pantry-expiry]");
+    if (!expiryInput.checkValidity()) {
+      expiryInput.reportValidity();
+      return;
+    }
+    button.disabled = true;
+    feedback(rowFeedback, "Menyimpan…");
+    try {
+      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
+        credentials: "same-origin",
+        body: JSON.stringify({ location, estimated_expires_on: expiryInput.value }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Gagal menyimpan perubahan.");
+      feedback(rowFeedback, "Tersimpan");
+    } catch (error) {
+      feedback(rowFeedback, error.message || "Gagal menyimpan perubahan.", true);
+    } finally {
+      button.disabled = false;
+    }
+  });
+  deleteButton.addEventListener("click", async () => {
+    if (!window.confirm(`Hapus ${deleteButton.dataset.itemName} dari stok pantry?`)) return;
+    deleteButton.disabled = true;
+    feedback(rowFeedback, "Menghapus…");
+    try {
+      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/delete/`, {
+        method: "DELETE",
+        headers: { "X-CSRFToken": csrfToken },
+        credentials: "same-origin",
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Gagal menghapus bahan.");
+      row.remove();
+      if (!document.querySelector("[data-pantry-item]")) window.location.reload();
+    } catch (error) {
+      feedback(rowFeedback, error.message || "Gagal menghapus bahan.", true);
+      deleteButton.disabled = false;
+    }
+  });
+});
+
+window.addEventListener("pagehide", () => {
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  if (workerPromise) workerPromise.then((worker) => worker.terminate()).catch(() => {});
+});

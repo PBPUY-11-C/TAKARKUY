@@ -47,6 +47,7 @@ CSRF_TRUSTED_ORIGINS = [
 INSTALLED_APPS = [
     'apps.catalog',
     'apps.budget_planner',
+    'apps.pantry',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

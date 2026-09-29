@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Pindai struk dan catat stok dapur TAKARKUY.">
+  <title>Smart Pantry — TAKARKUY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #172235;
+      --muted: #56646b;
+      --green: #007653;
+      --green-dark: #005d42;
+      --blue: #eef3ff;
+      --line: #dce6f0;
+      --canvas: #f7f9fe;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: "DM Sans", Arial, sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button:disabled { cursor: not-allowed; }
+    .site-header {
+      min-height: 74px; padding: 15px clamp(20px, 4vw, 56px); display: flex;
+      align-items: center; justify-content: space-between; gap: 20px;
+      background: #fff; border-bottom: 1px solid #e7edf4;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--green-dark); font: 800 17px "Plus Jakarta Sans", sans-serif; }
+    .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--green); color: #fff; font-size: 22px; }
+    .back-link { color: var(--green); font-size: 13px; font-weight: 700; }
+    .back-link:hover { text-decoration: underline; }
+    .page { max-width: 1380px; margin: 0 auto; padding: 30px 24px 80px; }
+    .page-intro { margin-bottom: 18px; }
+    .eyebrow { margin: 0 0 5px; color: var(--green); font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 0; font: 800 26px/1.2 "Plus Jakarta Sans", sans-serif; letter-spacing: -.8px; }
+    .panel-grid { display: grid; grid-template-columns: minmax(0, 1.38fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+    .panel { min-width: 0; padding: 22px; border: 1px solid #e9eef5; border-radius: 16px; background: #fff; box-shadow: 0 4px 18px rgba(25, 48, 70, .04); }
+    .panel-top { min-height: 85px; display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .panel-heading { min-width: 0; display: flex; align-items: flex-start; gap: 12px; }
+    .icon { width: 48px; height: 48px; flex: 0 0 48px; display: grid; place-items: center; border-radius: 13px; background: #eaf3f8; color: #006b8f; }
+    .icon.green { background: #e7f4ef; color: var(--green); }
+    .icon svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .panel h2 { margin: 0 0 5px; font: 800 clamp(18px, 1.7vw, 24px)/1.24 "Plus Jakarta Sans", sans-serif; letter-spacing: -.025em; }
+    .panel-subtitle { margin: 0; color: #4b5c58; font-size: 13px; line-height: 1.5; }
+    .preview-badge { flex: 0 0 auto; margin-top: 5px; padding: 7px 11px; border-radius: 8px; background: #e8f5ef; color: var(--green-dark); font-size: 12px; font-weight: 700; }
+    .receipt-summary { display: flex; align-items: center; gap: 14px; margin: 23px 0 19px; padding: 15px; border-radius: 15px; background: var(--blue); }
+    .receipt-icon { width: 58px; height: 58px; flex: 0 0 58px; display: grid; place-items: center; border-radius: 12px; background: #dce9ff; color: var(--green); font-size: 28px; }
+    .receipt-copy { min-width: 0; flex: 1; }
+    .receipt-copy strong { display: block; overflow-wrap: anywhere; font-size: 14px; }
+    .receipt-copy p { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .receipt-count { align-self: flex-start; flex: 0 0 auto; color: var(--green); font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .button { min-height: 41px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid #d7e2e8; border-radius: 10px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 700; }
+    .button:disabled { opacity: .72; }
+    .button.primary { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 0 5px 12px rgba(0, 116, 82, .12); }
+    .button.secondary { border-color: #d6e5ff; background: #dce9ff; }
+    .table-wrap { overflow-x: auto; border: 1px solid #e2e9f4; border-radius: 14px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; text-align: left; }
+    thead { background: var(--blue); }
+    th, td { padding: 13px 15px; border-bottom: 1px solid var(--line); font-size: 13px; }
+    th { color: #4b5b5b; font-weight: 700; }
+    td { background: #fff; }
+    tr:last-child td { border-bottom: 0; }
+    .draft-table { min-width: 450px; table-layout: auto; }
+    .draft-table th, .draft-table td { padding: 9px 7px; }
+    .draft-table th:first-child, .draft-table td:first-child { padding-left: 13px; min-width: 155px; }
+    .draft-table th:nth-child(2) { min-width: 82px; }
+    .draft-table th:nth-child(3) { min-width: 110px; }
+    .draft-table th:nth-child(4) { min-width: 80px; }
+    .draft-table input, .draft-table select { width: 100%; height: 36px; padding: 5px 7px; border: 1px solid #cbd9e4; border-radius: 7px; background: #fff; color: var(--ink); font-size: 12px; }
+    .draft-table input:focus, .draft-table select:focus { outline: 2px solid #91d9b8; }
+    .draft-table .remove-row { min-height: 34px; padding: 5px 9px; border: 1px solid #eed5d5; border-radius: 7px; background: #fff8f8; color: #9a3131; cursor: pointer; }
+    .name-suggestion { margin-top: 7px; color: #4d645e; font-size: 11px; line-height: 1.4; }
+    .empty-draft { display: grid; justify-items: center; gap: 8px; padding: 36px 18px; border: 1px dashed #c9d9e7; border-radius: 14px; background: #f8fbff; color: #667782; text-align: center; font-size: 13px; line-height: 1.5; }
+    .empty-draft-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: #e4f4ed; color: var(--green); font-size: 24px; }
+    .empty-draft p { max-width: 360px; margin: 0; }
+    .sample-note { margin: 10px 0 0; color: #68767e; font-size: 11px; }
+    .feedback { min-height: 18px; margin: 11px 0 0; color: var(--green-dark); font-size: 12px; font-weight: 600; line-height: 1.5; }
+    .feedback.error { color: #a43d32; }
+    .scan-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+    .scan-controls input[type="file"] { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .scan-controls input[type="file"]:focus-visible + label { outline: 3px solid #91d9b8; outline-offset: 3px; }
+    .receipt-date { display: grid; gap: 5px; color: #4b5b5b; font-size: 12px; font-weight: 700; }
+    .receipt-date input { height: 41px; padding: 7px 10px; border: 1px solid #cbd9e4; border-radius: 9px; background: #fff; color: var(--ink); }
+    .receipt-preview { display: block; max-width: 100%; max-height: 260px; margin: 14px auto; border: 1px solid var(--line); border-radius: 9px; object-fit: contain; }
+    .panel-footer { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .total-label { color: #53615f; font-size: 12px; font-weight: 700; }
+    .total-value { display: block; margin-top: 2px; font: 800 23px "Plus Jakarta Sans", sans-serif; }
+    .footer-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .manual-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 12px; margin-top: 20px; padding: 20px; border: 1px solid #d8e6ff; border-radius: 16px; background: var(--blue); }
+    .manual-panel .panel-top { min-height: 0; }
+    .manual-panel .panel-footer { justify-content: flex-end; margin-top: 20px; }
+    #manual-feedback:empty { display: none; }
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { display: block; margin-bottom: 6px; color: #394a49; font-size: 12px; font-weight: 700; }
+    .field input, .field select { width: 100%; height: 42px; padding: 0 11px; border: 1px solid #bed0c7; border-radius: 9px; background: #fff; color: var(--ink); font-size: 13px; outline: none; }
+    .field input::placeholder { color: #9aa6b3; }
+    .field input:focus, .field select:focus { border-color: var(--green); box-shadow: 0 0 0 3px #d5f2e5; }
+    #ingredient-quantity { appearance: textfield; -moz-appearance: textfield; }
+    #ingredient-quantity::-webkit-inner-spin-button, #ingredient-quantity::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
+    .pantry-list { margin-top: 20px; }
+    .pantry-list h2 { margin: 0 0 14px; font: 800 20px "Plus Jakarta Sans", sans-serif; }
+    .saved-table { min-width: 810px; table-layout: auto; }
+    .saved-table th, .saved-table td { text-align: left; }
+    .saved-table th:last-child, .saved-table td:last-child { text-align: left; }
+    .saved-table select, .saved-table input[type="date"] { width: 100%; min-width: 145px; height: 37px; padding: 6px 9px; border: 1px solid #cbd9e4; border-radius: 8px; background: #fff; color: var(--ink); font-size: 12px; }
+    .saved-table .button { min-height: 37px; white-space: nowrap; }
+    .saved-table .button.danger { margin-top: 5px; border-color: #efcece; color: #9a3131; }
+    .row-feedback { display: block; margin-top: 5px; color: var(--green-dark); font-size: 11px; }
+    .row-feedback.error { color: #a43d32; }
+    .saved-empty { padding: 20px; border: 1px dashed #cad7e3; border-radius: 12px; color: var(--muted); background: #fff; font-size: 13px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 1120px) {
+      .panel-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 650px) {
+      .page { padding: 24px 14px 48px; }
+      .panel { padding: 18px; }
+      .panel-top { flex-wrap: wrap; }
+      .receipt-summary { align-items: flex-start; flex-wrap: wrap; }
+      .receipt-count { margin-left: 72px; }
+      .receipt-summary > .button { margin-left: auto; }
+      .manual-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 16px; }
+      .manual-fields .field:nth-child(2) { grid-column: 1 / -1; }
+      .footer-actions, .footer-actions .button { width: 100%; }
+      th, td { padding: 11px 9px; font-size: 11px; }
+      .draft-table th, .draft-table td { padding: 8px 6px; }
+    }
+    @media (max-width: 410px) {
+      .manual-fields { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .manual-fields .field:nth-child(2) { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{% url 'landing' %}"><span class="brand-mark" aria-hidden="true">✳</span> TAKARKUY</a>
+    <a class="back-link" href="{% url 'landing' %}">← Kembali ke beranda</a>
+  </header>
+
+  <main class="page">
+    <div class="page-intro">
+      <p class="eyebrow">SIMULASI MODUL 2</p>
+      <h1>Kelola Stok Dapur</h1>
+    </div>
+
+    <div class="panel-grid">
+      <section class="panel" aria-labelledby="scan-title">
+        <div class="panel-top">
+          <div class="panel-heading">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v17l-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
+            <div><h2 id="scan-title">Pindai Struk Belanja Kasir / Pasar</h2><p class="panel-subtitle">Hasil pemindaian otomatis struk. Periksa kembali item sebelum disimpan.</p></div>
+          </div>
+          <span class="preview-badge">Pindai &amp; Periksa</span>
+        </div>
+
+        <div class="receipt-summary">
+          <span class="receipt-icon" aria-hidden="true">▤</span>
+          <div class="receipt-copy"><strong id="receipt-name">Belum ada struk dipilih</strong><p id="scan-progress">Pilih foto struk yang jelas untuk mulai memindai.</p></div>
+          <span id="receipt-count" class="receipt-count">0 Item Terdeteksi</span>
+        </div>
+        <div class="scan-controls">
+          <input id="receipt-file" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" aria-label="Foto struk belanja">
+          <label class="button primary" for="receipt-file">📷 Unggah Struk Belanja</label>
+          <label class="receipt-date" for="receipt-date">Tanggal belanja / mulai simpan (opsional)<input id="receipt-date" type="date" max="{{ today|date:'Y-m-d' }}"></label>
+        </div>
+        <img id="receipt-preview" class="receipt-preview" alt="Foto struk yang dipilih" hidden>
+        <p id="scan-feedback" class="feedback" role="status" aria-live="polite"></p>
+
+        <div id="draft-empty" class="empty-draft"><span class="empty-draft-icon" aria-hidden="true">▤</span><p>Belum ada struk yang diunggah. Unggah struk untuk mendeteksi bahan makanan secara otomatis.</p></div>
+        <div id="draft-table-wrap" class="table-wrap" hidden>
+          <table class="draft-table">
+            <thead><tr><th scope="col">Nama Bahan</th><th scope="col">Jumlah</th><th scope="col">Satuan</th><th scope="col">Aksi</th></tr></thead>
+            <tbody id="draft-rows"></tbody>
+          </table>
+        </div>
+        <p class="sample-note">💡 Periksa kembali nama dan jumlah bahan sebelum disimpan ke pantry.</p>
+        <div class="panel-footer">
+          <div><span class="total-label">Baris siap diperiksa</span><strong id="draft-count" class="total-value">0 bahan</strong></div>
+          <div class="footer-actions"><button id="add-draft-row" class="button secondary" type="button">+ Tambah Baris</button><button id="save-draft" class="button primary" type="button">Simpan ke Pantry</button></div>
+        </div>
+      </section>
+
+      <section class="panel manual-panel" aria-labelledby="manual-title">
+        <div class="panel-top">
+          <div class="panel-heading">
+            <span class="icon green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h10M5 10h10M5 14h7"/><path d="m14 18 5-5 2 2-5 5-3 1z"/></svg></span>
+            <div><h2 id="manual-title">Input Manual Bahan Dapur</h2><p class="panel-subtitle">Tambah stok bahan dapur secara manual ke dalam sistem.</p></div>
+          </div>
+          <span class="preview-badge">Tanpa Struk</span>
+        </div>
+
+        <form id="manual-form" novalidate>
+          {% csrf_token %}
+          <div class="manual-fields">
+            <div class="field full"><label for="ingredient-name">Nama Bahan Makanan</label><input id="ingredient-name" name="name" type="text" maxlength="255" placeholder="Contoh: tempe, tomat merah" autocomplete="off" required></div>
+            <div class="field"><label for="ingredient-category">Kategori</label><select id="ingredient-category" name="category" required><option value="">Pilih kategori</option>{% for value, label in category_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="field"><label for="ingredient-quantity">Jumlah</label><input id="ingredient-quantity" name="quantity" type="number" min="0.001" step="0.001" placeholder="2" inputmode="decimal" required></div>
+            <div class="field"><label for="ingredient-unit">Satuan</label><select id="ingredient-unit" name="unit" required><option value="">Pilih satuan</option>{% for value, label in manual_unit_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+          </div>
+          <p id="manual-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div class="panel-footer">
+            <button class="button primary" type="submit">+ Tambah ke Pantry</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <select id="ocr-unit-options" hidden aria-hidden="true" tabindex="-1"><option value="">Pilih satuan</option>{% for value, label in manual_unit_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+
+    <section class="panel pantry-list" aria-labelledby="pantry-title">
+      <h2 id="pantry-title">Stok Pantry Saat Ini</h2>
+      {% if pantry_items %}
+      <div class="table-wrap"><table class="saved-table"><thead><tr><th scope="col">Bahan</th><th scope="col">Jumlah</th><th scope="col">Kategori</th><th scope="col">Lokasi Simpan</th><th scope="col">Perkiraan kedaluwarsa</th><th scope="col">Sumber</th><th scope="col">Aksi</th></tr></thead><tbody>
+        {% for item in pantry_items %}
+        <tr data-pantry-item="{{ item.pk }}">
+          <td>{{ item.name }}</td>
+          <td>{{ item.quantity|floatformat:"-3" }} {{ item.get_unit_display }}</td>
+          <td>{% if item.category %}{{ item.get_category_display }}{% else %}Belum ditentukan{% endif %}</td>
+          <td><select data-pantry-location aria-label="Lokasi simpan {{ item.name }}"><option value="">Pilih lokasi</option>{% for value, label in location_choices %}<option value="{{ value }}"{% if item.location == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></td>
+          <td><input type="date" data-pantry-expiry value="{{ item.estimated_expires_on|date:'Y-m-d' }}" aria-label="Perkiraan kedaluwarsa {{ item.name }}"></td>
+          <td>{{ item.get_source_display }}</td>
+          <td><button type="button" class="button save-pantry-details">Simpan</button><button type="button" class="button danger delete-pantry-item" data-item-name="{{ item.name }}">Hapus</button><span class="row-feedback" role="status" aria-live="polite"></span></td>
+        </tr>
+        {% endfor %}
+      </tbody></table></div>
+      {% else %}<p class="saved-empty">Belum ada bahan tersimpan. Pindai struk atau masukkan bahan secara manual.</p>{% endif %}
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js" defer></script>
+  <script type="module" src="{% static 'pantry/pantry.js' %}"></script>
+</body>
+</html>
