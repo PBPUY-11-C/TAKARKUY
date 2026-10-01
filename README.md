@@ -90,10 +90,11 @@ Daftar CRUD dan model yang direncanakan tidak semuanya sudah diimplementasikan; 
 
 **PIC:** Rajendra Akbar Mahdiansyah
 
-- **Input bahan:** OCR struk melalui **Tesseract.js di browser** atau form manual berisi nama, kategori, jumlah, dan satuan. Lokasi/tanggal kedaluwarsa dapat diisi setelah stok tersimpan; tidak wajib pada input awal. Hasil OCR dapat dikoreksi, ditambah baris, atau dihapus sebelum disimpan.
+- **Input bahan:** OCR struk melalui **Tesseract.js di browser** atau form manual berisi nama, kategori, jumlah, dan satuan. Keduanya memakai suhu ruang sebagai lokasi awal jika pengguna belum memilih lokasi. Hasil OCR dapat dikoreksi, ditambah baris, atau dihapus sebelum disimpan.
 - **Fallback OCR:** bila confidence Tesseract kurang dari 80%, tidak tersedia, tidak ada item terbaca, atau OCR gagal, foto dikirim ke backend untuk dibaca Gemini jika dikonfigurasi. Foto JPG/PNG/WebP maksimal 10 MB. Jika fallback gagal, pengguna tetap dapat memeriksa hasil awal atau memasukkan bahan manual.
 - **Saran nama:** koreksi pribadi → nama/alias katalog → fuzzy matching → Gemini untuk memilih kandidat katalog yang tersedia. Hasil Gemini tidak otomatis menambahkan bahan baru ke katalog global.
 - **Virtual Pantry:** saran lokasi dan rentang masa simpan berasal dari tabel lokal `IngredientShelfLife` berbasis referensi FoodKeeper, **bukan tanggal kedaluwarsa yang ditebak Gemini**. Saran awal bisa dikoreksi; gunakan tanggal label kemasan jika tersedia. Integrasi Open-Meteo belum dibuat.
+- **Perkiraan otomatis:** bahan manual maupun OCR yang dikenali mendapat tanggal dari batas minimum acuan **lokasi yang dipilih**. Mengganti lokasi memperbarui tanggal di tabel; tekan **Simpan** untuk menyimpan perubahan. Tanggal belanja (OCR) atau tanggal ditambahkan (manual) tetap menjadi dasar, bukan tanggal saat lokasi diganti. Jika acuan lokasi tidak ada, tanggal tetap kosong dan dapat diisi manual; acuan kulkas tidak dipakai untuk suhu ruang. Suhu ruang sebagai default UI bukan anjuran menyimpan bahan mudah rusak di luar kulkas. Mengubah lokasi tidak membalikkan kerusakan atau riwayat suhu bahan; lihat [panduan FoodSafety.gov](https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety).
 - **Privasi dan batas:** foto serta teks mentah tidak disimpan oleh aplikasi, tetapi foto dikirim ke layanan Google saat fallback foto digunakan. Fallback foto dan pencocokan nama masing-masing dibatasi 10 percobaan per sesi browser per hari; ini bukan pembatas biaya global/akun.
 - **Integrasi yang direncanakan:** `pantry_service.kurangi_stok()` untuk aksi **Sudah Masak** Modul 4; belum tersedia.
 - **Data yang dipegang:** `PantryItem` dan `PantryNameCorrection`, masih berbasis sesi browser, bukan kepemilikan akun lintas perangkat.
@@ -273,16 +274,18 @@ Build memerlukan snapshot/arsip sumber yang tersedia di `data/raw/` dan `data/sc
 python manage.py check
 python manage.py makemigrations --check --dry-run
 python manage.py test
-node --test apps/pantry/tests_js/receipt_parser.test.mjs
+node --test apps/pantry/tests_js/*.test.mjs
 ```
 
-Tes parser JavaScript memerlukan Node.js. Audit 1 Oktober 2026 meloloskan **106 tes Django dan 9 tes JavaScript**; tes Gemini memakai respons mock, bukan membuktikan key, kuota, atau akurasi API live. Perapian Python memakai aturan `ruff.toml`; Ruff adalah alat pengembangan opsional, bukan dependensi runtime.
+Tes JavaScript memerlukan Node.js. Verifikasi 1 Oktober 2026 setelah pembaruan alur masa simpan dan perapian tabel meloloskan **118 tes Django dan 12 tes JavaScript**; tes Gemini memakai respons mock, bukan membuktikan key, kuota, atau akurasi API live. Perapian Python memakai aturan `ruff.toml`; Ruff adalah alat pengembangan opsional, bukan dependensi runtime.
 
 ## Catatan Deployment PWS
 
 - Atur environment PWS terpisah dari `.env` lokal: `PRODUCTION=True`, `DJANGO_SECRET_KEY` yang kuat, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, serta `SCHEMA` sesuai schema yang diberikan. Variabel Gemini opsional sama seperti contoh lokal.
 - `PRODUCTION=True` memakai PostgreSQL dan cookie secure; gunakan domain HTTPS yang sudah diizinkan dalam `config/settings.py`. Jangan menggunakan konfigurasi produksi untuk akses HTTP lokal.
 - Jalankan `python manage.py migrate --noinput` sebelum impor fixture terbaru, termasuk migrasi `catalog.0002_ingredient_calories_method_text` agar catatan sumber gizi panjang diterima PostgreSQL.
+- Alur tanggal otomatis pantry memerlukan migrasi `pantry.0006_pantryitem_ingredient_pantryitem_starting_on_and_more`, yang menambahkan referensi bahan dan tanggal awal. Stok lama tidak dihapus; tanggal ditambahkan digunakan jika tanggal awal belum tercatat.
+- Pilihan lokasi pantry hanya **Kulkas, Freezer, dan Suhu Ruang**. Migrasi `pantry.0007_simplify_storage_locations` memindahkan lokasi Lemari Kering lama ke Suhu Ruang tanpa menghapus stok/tanggal yang sudah tersimpan.
 - Jalankan `python manage.py collectstatic --noinput` dalam alur deployment. Untuk memperbarui katalog, cadangkan database dan gunakan perintah impor fixture lengkap di atas.
 - Audit lokal belum memverifikasi PWS, koneksi database produksi, atau Gemini live. Pemeriksaan produksi menemukan peringatan HSTS/pengalihan HTTPS; periksa konfigurasi reverse proxy PWS sebelum mengaktifkannya di Django agar tidak menimbulkan redirect loop.
 - Jangan menghapus database/schema sebagai langkah pertama saat deployment gagal. Periksa log aplikasi dan migrasi; reset schema dapat menghapus seluruh akun dan stok pada schema tersebut.

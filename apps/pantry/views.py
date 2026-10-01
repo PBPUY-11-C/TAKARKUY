@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import date, timedelta
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
@@ -21,6 +21,18 @@ from .recommendations import (
     normalize_name,
     resolve_names,
 )
+from .storage import DEFAULT_LOCATION, expiry_estimate, storage_options
+
+
+def _local_codes(names, session_id):
+    if not names:
+        return []
+    suggestions, _ = resolve_names(names, session_id, allow_llm=False)
+    return [suggestion["ingredient_code"] for suggestion in suggestions]
+
+
+def _starting_on(item):
+    return item.starting_on or timezone.localdate(item.added_at, timezone=ZoneInfo("Asia/Jakarta"))
 
 
 def _session_id(request):
@@ -31,11 +43,35 @@ def _session_id(request):
 
 def pantry_page(request):
     session_id = _session_id(request)
+    items = list(PantryItem.objects.filter(session_id=session_id))
+    unmatched = [item for item in items if not item.ingredient_id]
+    legacy_codes = dict(
+        zip(
+            (item.pk for item in unmatched),
+            _local_codes([item.name for item in unmatched], session_id),
+        )
+    )
+    references = {}
+    estimates = {}
+    for item in items:
+        code = item.ingredient_id or legacy_codes.get(item.pk)
+        if code not in references:
+            references[code] = storage_options(code)
+        options = references[code]
+        location = item.location or DEFAULT_LOCATION
+        item.display_location = location
+        state = expiry_estimate(options, location, _starting_on(item))
+        item.storage_message = state["message"]
+        estimates[str(item.pk)] = {
+            "location": location,
+            "options": {key: expiry_estimate(options, key, _starting_on(item)) for key in options},
+        }
     return render(
         request,
         "modul2.html",
         {
-            "pantry_items": PantryItem.objects.filter(session_id=session_id),
+            "pantry_items": items,
+            "pantry_storage": estimates,
             "category_choices": PantryItem.MANUAL_CATEGORY_CHOICES,
             "manual_unit_choices": PantryItem.MANUAL_UNIT_CHOICES,
             "location_choices": PantryItem.LOCATION_CHOICES,
@@ -160,21 +196,35 @@ def save_pantry_items(request):
                 accepted.append(("", None))
     session_id = _session_id(request)
     today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
+    local_codes = _local_codes([form.cleaned_data["name"] for form in forms], session_id)
+    references = {}
     with transaction.atomic():
-        items = [
-            PantryItem.objects.create(
-                session_id=session_id,
-                source=source,
-                estimated_expires_on=(
-                    (form.cleaned_data["starting_on"] or today)
-                    + timedelta(days=form.cleaned_data["shelf_life_days"])
-                    if form.cleaned_data["shelf_life_days"] is not None
-                    else None
-                ),
-                **{key: value for key, value in form.cleaned_data.items() if key != "starting_on"},
+        items = []
+        for index, form in enumerate(forms):
+            fields = form.cleaned_data.copy()
+            starting_on = fields.pop("starting_on") or today
+            fields["location"] = fields["location"] or DEFAULT_LOCATION
+            code = (accepted[index][1] if source == "ocr" else None) or local_codes[index]
+            if code not in references:
+                references[code] = storage_options(code)
+            estimate = expiry_estimate(references[code], fields["location"], starting_on)
+            if fields["shelf_life_days"] is None:
+                fields["shelf_life_days"] = estimate["shelf_life_days"]
+            expires_on = (
+                starting_on + timedelta(days=fields["shelf_life_days"])
+                if fields["shelf_life_days"] is not None
+                else None
             )
-            for form in forms
-        ]
+            items.append(
+                PantryItem.objects.create(
+                    session_id=session_id,
+                    source=source,
+                    ingredient_id=code,
+                    starting_on=starting_on,
+                    estimated_expires_on=expires_on,
+                    **fields,
+                )
+            )
         if source == "ocr":
             for raw, code in accepted:
                 if raw and code and normalize_name(raw):
@@ -210,16 +260,49 @@ def update_pantry_details(request, item_id):
             status=400,
         )
 
-    item.location = form.cleaned_data["location"]
-    item.estimated_expires_on = form.cleaned_data["estimated_expires_on"]
-    if item.estimated_expires_on:
-        today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
-        days = (item.estimated_expires_on - today).days
-        item.shelf_life_days = days if 1 <= days <= 3650 else None
+    location = form.cleaned_data["location"] or DEFAULT_LOCATION
+    mode = form.cleaned_data["expiry_mode"]
+    automatic = mode == "auto" or (mode != "manual" and location != item.location)
+    if not item.ingredient_id:
+        item.ingredient_id = _local_codes([item.name], item.session_id)[0]
+    item.starting_on = _starting_on(item)
+    options = storage_options(item.ingredient_id)
+    estimate = expiry_estimate(options, location, item.starting_on)
+    item.location = location
+    if automatic:
+        item.shelf_life_days = estimate["shelf_life_days"]
+        item.estimated_expires_on = (
+            date.fromisoformat(estimate["estimated_expires_on"])
+            if estimate["estimated_expires_on"]
+            else None
+        )
     else:
-        item.shelf_life_days = None
-    item.save(update_fields=["location", "estimated_expires_on", "shelf_life_days"])
-    return JsonResponse({"saved": True})
+        item.estimated_expires_on = form.cleaned_data["estimated_expires_on"]
+        days = (
+            (item.estimated_expires_on - item.starting_on).days if item.estimated_expires_on else -1
+        )
+        item.shelf_life_days = days if 0 <= days <= 3650 else None
+    item.save(
+        update_fields=[
+            "location",
+            "estimated_expires_on",
+            "shelf_life_days",
+            "ingredient",
+            "starting_on",
+        ]
+    )
+    return JsonResponse(
+        {
+            "saved": True,
+            "location": item.location,
+            "estimated_expires_on": item.estimated_expires_on.isoformat()
+            if item.estimated_expires_on
+            else "",
+            "message": estimate["message"]
+            if automatic
+            else "Tanggal diisi manual; utamakan label kemasan.",
+        }
+    )
 
 
 @require_http_methods(["DELETE"])

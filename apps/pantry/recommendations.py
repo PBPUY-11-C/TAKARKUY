@@ -6,10 +6,11 @@ from difflib import SequenceMatcher
 
 from django.db.models import Count
 
-from apps.catalog.models import Ingredient, IngredientAlias, IngredientShelfLife
+from apps.catalog.models import Ingredient, IngredientAlias
 
 from .gemini import GeminiUnavailable, gemini_ready, generate_json
 from .models import PantryNameCorrection
+from .storage import DEFAULT_LOCATION, storage_options
 
 
 def normalize_name(value):
@@ -44,12 +45,18 @@ def everyday_ingredient_name(name):
 
 def _catalog_entries():
     entries = {}
+    everyday = {}
     for ingredient in Ingredient.objects.all().only("ingredient_code", "name"):
         entries.setdefault(normalize_name(ingredient.name), set()).add(ingredient.ingredient_code)
+        everyday.setdefault(normalize_name(everyday_ingredient_name(ingredient.name)), set()).add(
+            ingredient.ingredient_code
+        )
     for alias in IngredientAlias.objects.filter(
         mapping_status__in=["reviewed", "manual_curated"]
     ).only("raw_name", "ingredient_id"):
         entries.setdefault(normalize_name(alias.raw_name), set()).add(alias.ingredient_id)
+    for name, codes in everyday.items():
+        entries.setdefault(name, codes)
     return entries
 
 
@@ -92,21 +99,7 @@ def _gemini_choices(pending):
 
 
 def _storage(ingredient_code):
-    records = list(IngredientShelfLife.objects.filter(ingredient_id=ingredient_code))
-    usable = [record for record in records if record.storage_location in {"kulkas", "suhu_ruang"}]
-    if not usable:
-        return None
-    # Recommend refrigeration when both room-temperature and refrigerated guidance exists.
-    record = min(usable, key=lambda row: (row.storage_location != "kulkas", row.min_days))
-    return {
-        "location": "chiller" if record.storage_location == "kulkas" else "suhu_ruang",
-        "min_days": record.min_days,
-        "max_days": record.max_days,
-        "starting_event": record.starting_event,
-        "source": record.source,
-        "source_url": record.source_url,
-        "status": record.shelf_life_status,
-    }
+    return storage_options(ingredient_code).get(DEFAULT_LOCATION)
 
 
 def resolve_names(names, session_id, *, allow_llm=True):

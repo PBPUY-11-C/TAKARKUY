@@ -56,8 +56,8 @@ class PantryRecommendationTests(TestCase):
         result = response.json()["suggestions"][0]
         self.assertEqual(result["ingredient_code"], "ING-BAYAM")
         self.assertEqual(result["method"], "katalog")
-        self.assertEqual(result["storage"]["location"], "chiller")
-        self.assertEqual(result["storage"]["min_days"], 3)
+        # A refrigerated reference must never be reused for default room storage.
+        self.assertIsNone(result["storage"])
         llm.assert_not_called()
 
     @patch("apps.pantry.recommendations._gemini_choices")

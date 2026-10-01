@@ -105,14 +105,18 @@
     #ingredient-quantity::-webkit-inner-spin-button, #ingredient-quantity::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
     .pantry-list { margin-top: 20px; }
     .pantry-list h2 { margin: 0 0 14px; font: 800 20px "Plus Jakarta Sans", sans-serif; }
-    .saved-table { min-width: 810px; table-layout: auto; }
-    .saved-table th, .saved-table td { text-align: left; }
+    .pantry-list .sample-note { margin: 0 0 12px; line-height: 1.5; }
+    .saved-table { min-width: 980px; table-layout: fixed; }
+    .saved-table th, .saved-table td { text-align: left; vertical-align: top; }
     .saved-table th:last-child, .saved-table td:last-child { text-align: left; }
+    .pantry-value { min-height: 37px; display: flex; align-items: center; line-height: 1.4; overflow-wrap: anywhere; }
     .saved-table select, .saved-table input[type="date"] { width: 100%; min-width: 145px; height: 37px; padding: 6px 9px; border: 1px solid #cbd9e4; border-radius: 8px; background: #fff; color: var(--ink); font-size: 12px; }
-    .saved-table .button { min-height: 37px; white-space: nowrap; }
-    .saved-table .button.danger { margin-top: 5px; border-color: #efcece; color: #9a3131; }
+    .saved-table .button { min-height: 37px; padding-inline: 10px; white-space: nowrap; }
+    .pantry-actions { display: flex; align-items: center; gap: 8px; }
+    .saved-table .button.danger { margin-top: 0; border-color: #efcece; color: #9a3131; }
     .row-feedback { display: block; margin-top: 5px; color: var(--green-dark); font-size: 11px; }
     .row-feedback.error { color: #a43d32; }
+    .storage-feedback { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; font-weight: 400; line-height: 1.45; overflow-wrap: anywhere; }
     .saved-empty { padding: 20px; border: 1px dashed #cad7e3; border-radius: 12px; color: var(--muted); background: #fff; font-size: 13px; }
     [hidden] { display: none !important; }
     @media (max-width: 1120px) {
@@ -217,23 +221,24 @@
 
     <section class="panel pantry-list" aria-labelledby="pantry-title">
       <h2 id="pantry-title">Stok Pantry Saat Ini</h2>
+      <p class="sample-note">Lokasi awal: suhu ruang. Perkiraan mengikuti lokasi dan tanggal belanja/ditambahkan, bukan jaminan keamanan. Bahan mudah rusak perlu segera disimpan dingin; pindah ke kulkas tidak membuat bahan kembali segar.</p>
       {% if pantry_items %}
-      <div class="table-wrap"><table class="saved-table"><thead><tr><th scope="col">Bahan</th><th scope="col">Jumlah</th><th scope="col">Kategori</th><th scope="col">Lokasi Simpan</th><th scope="col">Perkiraan kedaluwarsa</th><th scope="col">Sumber</th><th scope="col">Aksi</th></tr></thead><tbody>
+      <div class="table-wrap"><table class="saved-table"><colgroup><col style="width:14%"><col style="width:12%"><col style="width:17%"><col style="width:18%"><col style="width:21%"><col style="width:18%"></colgroup><thead><tr><th scope="col">Bahan</th><th scope="col">Jumlah</th><th scope="col">Kategori</th><th scope="col">Lokasi Simpan</th><th scope="col">Perkiraan kedaluwarsa</th><th scope="col">Aksi</th></tr></thead><tbody>
         {% for item in pantry_items %}
         <tr data-pantry-item="{{ item.pk }}">
-          <td>{{ item.name }}</td>
-          <td>{{ item.quantity|floatformat:"-3" }} {{ item.get_unit_display }}</td>
-          <td>{% if item.category %}{{ item.get_category_display }}{% else %}Belum ditentukan{% endif %}</td>
-          <td><select data-pantry-location aria-label="Lokasi simpan {{ item.name }}"><option value="">Pilih lokasi</option>{% for value, label in location_choices %}<option value="{{ value }}"{% if item.location == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></td>
-          <td><input type="date" data-pantry-expiry value="{{ item.estimated_expires_on|date:'Y-m-d' }}" aria-label="Perkiraan kedaluwarsa {{ item.name }}"></td>
-          <td>{{ item.get_source_display }}</td>
-          <td><button type="button" class="button save-pantry-details">Simpan</button><button type="button" class="button danger delete-pantry-item" data-item-name="{{ item.name }}">Hapus</button><span class="row-feedback" role="status" aria-live="polite"></span></td>
+          <td><span class="pantry-value">{{ item.name }}</span></td>
+          <td><span class="pantry-value">{{ item.quantity|floatformat:"-3" }} {{ item.get_unit_display }}</span></td>
+          <td><span class="pantry-value">{% if item.category %}{{ item.get_category_display }}{% else %}Belum ditentukan{% endif %}</span></td>
+          <td><select data-pantry-location aria-label="Lokasi simpan {{ item.name }}">{% for value, label in location_choices %}<option value="{{ value }}"{% if item.display_location == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></td>
+          <td><input type="date" data-pantry-expiry value="{{ item.estimated_expires_on|date:'Y-m-d' }}" aria-label="Perkiraan kedaluwarsa {{ item.name }}"><span class="storage-feedback" data-storage-feedback>{{ item.storage_message }}</span></td>
+          <td><div class="pantry-actions"><button type="button" class="button save-pantry-details">Simpan</button><button type="button" class="button danger delete-pantry-item" data-item-name="{{ item.name }}">Hapus</button></div><span class="row-feedback" role="status" aria-live="polite"></span></td>
         </tr>
         {% endfor %}
       </tbody></table></div>
       {% else %}<p class="saved-empty">Belum ada bahan tersimpan. Pindai struk atau masukkan bahan secara manual.</p>{% endif %}
     </section>
   </main>
+  {{ pantry_storage|json_script:"pantry-storage-data" }}
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js" defer></script>
   <script type="module" src="{% static 'pantry/pantry.js' %}"></script>
 </body>
