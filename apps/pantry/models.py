@@ -18,16 +18,30 @@ class PantryItem(models.Model):
         ("bahan_pokok", "Bahan Pokok (kategori lama)"),
     ]
     UNIT_CHOICES = [
-        ("g", "g"), ("kg", "kg"), ("ml", "ml"), ("liter", "liter"),
-        ("buah", "buah"), ("ikat", "ikat"), ("butir", "butir"),
-        ("papan", "papan"), ("kotak", "kotak"), ("bungkus", "bungkus"),
-        ("botol", "botol"), ("pak", "pak"), ("pack", "pack / bungkus"),
+        ("g", "g"),
+        ("kg", "kg"),
+        ("ml", "ml"),
+        ("liter", "liter"),
+        ("buah", "buah"),
+        ("ikat", "ikat"),
+        ("butir", "butir"),
+        ("papan", "papan"),
+        ("kotak", "kotak"),
+        ("bungkus", "bungkus"),
+        ("botol", "botol"),
+        ("pak", "pak"),
+        ("pack", "pack / bungkus"),
     ]
     MANUAL_UNIT_CHOICES = [
-        ("g", "gram (g)"), ("kg", "kilogram (kg)"),
-        ("ml", "milliliter (ml)"), ("liter", "liter"),
-        ("buah", "buah"), ("butir", "butir"), ("ikat", "ikat"),
-        ("pack", "pack / bungkus"), ("botol", "botol"),
+        ("g", "gram (g)"),
+        ("kg", "kilogram (kg)"),
+        ("ml", "milliliter (ml)"),
+        ("liter", "liter"),
+        ("buah", "buah"),
+        ("butir", "butir"),
+        ("ikat", "ikat"),
+        ("pack", "pack / bungkus"),
+        ("botol", "botol"),
     ]
     LOCATION_CHOICES = [
         ("chiller", "Kulkas Bawah (Chiller)"),
@@ -62,6 +76,8 @@ class PantryNameCorrection(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints = [models.UniqueConstraint(
-            fields=["session_id", "normalized_name"], name="pantry_session_ocr_name_unique"
-        )]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["session_id", "normalized_name"], name="pantry_session_ocr_name_unique"
+            )
+        ]

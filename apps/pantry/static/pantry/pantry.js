@@ -1,4 +1,4 @@
-import { parseReceiptText } from "./receipt_parser.mjs";
+import { needsGeminiFallback, parseReceiptText } from "./receipt_parser.mjs";
 
 const fileInput = document.getElementById("receipt-file");
 const preview = document.getElementById("receipt-preview");
@@ -15,6 +15,7 @@ const saveDraftButton = document.getElementById("save-draft");
 const manualForm = document.getElementById("manual-form");
 const manualFeedback = document.getElementById("manual-feedback");
 const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+const geminiFallbackEnabled = fileInput.dataset.geminiFallback === "true";
 let previewUrl = null;
 let workerPromise = null;
 let hasUploaded = false;
@@ -146,17 +147,27 @@ async function suggestRows(rows, version) {
   }
 }
 
-function showParsedRows(text) {
-  const rows = parseReceiptText(text);
+function showDraftItems(rows) {
   draftRows.replaceChildren();
   rows.forEach(addDraftRow);
   if (rows.length) suggestRows(rows, scanVersion);
   refreshDraftCount();
-  feedback(scanFeedback, rows.length
-    ? `${rows.length} calon bahan ditemukan. Periksa dan koreksi baris yang keliru.`
-    : "Belum ada barang yang terbaca dengan yakin. Coba struk lain atau tambahkan baris manual.",
-    !rows.length);
   return rows.length;
+}
+
+async function readWithGemini(file) {
+  const form = new FormData();
+  form.append("image", file);
+  const response = await fetch("/modul2/ocr-fallback/", {
+    method: "POST",
+    headers: { "X-CSRFToken": csrfToken },
+    credentials: "same-origin",
+    body: form,
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Pemindaian cadangan gagal.");
+  if (!Array.isArray(data.items)) throw new Error("Hasil pemindaian cadangan tidak valid.");
+  return data.items;
 }
 
 async function prepareReceiptImage(file, enhance = false) {
@@ -228,31 +239,71 @@ fileInput.addEventListener("change", async () => {
   fileInput.disabled = true;
   try {
     const prepared = await prepareReceiptImage(file);
-    const worker = await getWorker();
-    const result = await worker.recognize(prepared.image);
-    let rawText = result.data.text || "";
-    let parsedCount = parseReceiptText(rawText).length;
-    if (parsedCount < 2) {
-      const retryImage = prepared.image === file
-        ? (await prepareReceiptImage(file, true)).image
-        : file;
-      if (retryImage !== prepared.image) {
-        try {
-          scanProgress.textContent = "Mencoba pembacaan kedua…";
-          const retry = await worker.recognize(retryImage);
-          const retryText = retry.data.text || "";
-          const retryCount = parseReceiptText(retryText).length;
-          if (retryCount > parsedCount || (retryCount === parsedCount && retryText.length > rawText.length)) {
-            rawText = retryText;
-            parsedCount = retryCount;
+    let rawText = "";
+    let confidence = null;
+    let ocrError = null;
+    try {
+      const worker = await getWorker();
+      const result = await worker.recognize(prepared.image);
+      rawText = result.data.text || "";
+      confidence = result.data.confidence;
+      let parsedCount = parseReceiptText(rawText).length;
+      if (parsedCount < 2 || needsGeminiFallback(confidence, parsedCount)) {
+        const retryImage = prepared.image === file
+          ? (await prepareReceiptImage(file, true)).image
+          : file;
+        if (retryImage !== prepared.image) {
+          try {
+            scanProgress.textContent = "Mencoba pembacaan kedua…";
+            const retry = await worker.recognize(retryImage);
+            const retryText = retry.data.text || "";
+            const retryCount = parseReceiptText(retryText).length;
+            const retryConfidence = retry.data.confidence;
+            if (retryCount > parsedCount || (retryCount === parsedCount && Number.isFinite(retryConfidence)
+              && (!Number.isFinite(confidence) || retryConfidence > confidence))) {
+              rawText = retryText;
+              parsedCount = retryCount;
+              confidence = retryConfidence;
+            }
+          } catch (_) {
+            // Keep the first OCR result when an optional second pass fails.
           }
-        } catch (_) {
-          // Keep the first OCR result when an optional second pass fails.
         }
       }
+    } catch (error) {
+      ocrError = error;
     }
-    const found = showParsedRows(rawText);
-    if (prepared.width && prepared.width < 600) {
+    let rows = parseReceiptText(rawText);
+    let usedGemini = false;
+    let fallbackEmpty = false;
+    let fallbackError = null;
+    if (geminiFallbackEnabled && (ocrError || needsGeminiFallback(confidence, rows.length))) {
+      scanProgress.textContent = "Mencoba pembacaan cadangan dengan AI…";
+      try {
+        const aiRows = await readWithGemini(file);
+        if (aiRows.length) {
+          rows = aiRows;
+          usedGemini = true;
+        } else {
+          fallbackEmpty = true;
+        }
+      } catch (error) {
+        fallbackError = error;
+      }
+    }
+    if (ocrError && !usedGemini) throw ocrError;
+    const found = showDraftItems(rows);
+    if (usedGemini) {
+      feedback(scanFeedback, `${found} calon bahan dibaca ulang dengan AI. Periksa nama, jumlah, dan satuannya sebelum menyimpan.`);
+    } else if (fallbackError) {
+      feedback(scanFeedback, `${fallbackError.message} ${found ? `${found} hasil OCR awal masih tersedia untuk diperiksa.` : "Tambahkan baris manual atau coba foto lain."}`, !found);
+    } else if (fallbackEmpty) {
+      feedback(scanFeedback, found
+        ? `AI belum menemukan bahan tambahan; ${found} hasil OCR awal masih tersedia untuk diperiksa.`
+        : "OCR dan AI belum menemukan bahan. Coba foto lain atau tambah baris manual.", !found);
+    } else if (Number.isFinite(confidence) && confidence < 80 && found) {
+      feedback(scanFeedback, `Pembacaan struk kurang yakin (${Math.round(confidence)}%). Periksa ${found} calon bahan dengan teliti.`);
+    } else if (prepared.width && prepared.width < 600) {
       feedback(scanFeedback, found
         ? `Foto kecil (${prepared.width} piksel) telah dipindai; ${found} calon bahan ditemukan. Periksa nama, jumlah, dan satuannya.`
         : rawText.trim()
@@ -263,6 +314,8 @@ fileInput.addEventListener("change", async () => {
       feedback(scanFeedback, rawText.trim()
         ? "Teks struk terbaca, tetapi baris barang belum dikenali. Coba foto yang lebih terang dan lurus."
         : "Teks struk belum terbaca. Coba foto yang lebih terang, fokus, dan memenuhi bingkai.", true);
+    } else {
+      feedback(scanFeedback, `${found} calon bahan ditemukan. Periksa dan koreksi baris yang keliru.`);
     }
     scanProgress.textContent = "Pemindaian selesai. Tidak ada item yang disimpan otomatis.";
   } catch (error) {

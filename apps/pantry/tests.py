@@ -37,8 +37,10 @@ class PantryFlowTests(TestCase):
         self.assertEqual(item.name, "Bayam Hijau")
         self.assertEqual(item.quantity, Decimal("1"))
         self.assertEqual(item.source, "ocr")
-        self.assertEqual(item.estimated_expires_on,
-                         timezone.localdate(timezone=ZoneInfo("Asia/Jakarta")) + timedelta(days=3))
+        self.assertEqual(
+            item.estimated_expires_on,
+            timezone.localdate(timezone=ZoneInfo("Asia/Jakarta")) + timedelta(days=3),
+        )
         self.assertContains(self.client.get(reverse("modul2")), "Bayam Hijau")
 
     def test_manual_item_uses_same_pantry_without_price_or_store(self):
@@ -61,8 +63,8 @@ class PantryFlowTests(TestCase):
         page = self.client.get(reverse("modul2"))
         self.assertContains(page, "Tahu Putih")
         self.assertContains(page, "Belum ditentukan", count=1)
-        self.assertContains(page, 'data-pantry-location')
-        self.assertContains(page, 'data-pantry-expiry')
+        self.assertContains(page, "data-pantry-location")
+        self.assertContains(page, "data-pantry-expiry")
 
     def test_manual_item_needs_category_but_not_location_or_expiry(self):
         simple_item = {"name": "Tahu Putih", "quantity": "2", "unit": "kotak"}
@@ -75,33 +77,65 @@ class PantryFlowTests(TestCase):
 
     def test_manual_pack_unit_is_accepted_and_legacy_ocr_units_remain(self):
         page = self.client.get(reverse("modul2"))
-        manual_select = page.content.decode().split('<select id="ingredient-unit"', 1)[1].split('</select>', 1)[0]
-        ocr_select = page.content.decode().split('<select id="ocr-unit-options"', 1)[1].split('</select>', 1)[0]
+        manual_select = (
+            page.content.decode()
+            .split('<select id="ingredient-unit"', 1)[1]
+            .split("</select>", 1)[0]
+        )
+        ocr_select = (
+            page.content.decode()
+            .split('<select id="ocr-unit-options"', 1)[1]
+            .split("</select>", 1)[0]
+        )
         self.assertIn('<option value="pack">pack / bungkus</option>', manual_select)
         self.assertNotIn('<option value="papan">', manual_select)
-        self.assertEqual(ocr_select.count('<option value='), 10)  # placeholder + nine units
+        self.assertEqual(ocr_select.count("<option value="), 10)  # placeholder + nine units
         self.assertIn('<option value="pack">pack / bungkus</option>', ocr_select)
         self.assertNotIn('<option value="papan">', ocr_select)
         self.assertNotIn('<option value="kotak">', ocr_select)
-        response = self.post_items([{
-            "name": "Roti", "category": "bahan_pokok", "quantity": "1", "unit": "pack",
-        }], source="manual")
+        response = self.post_items(
+            [
+                {
+                    "name": "Roti",
+                    "category": "bahan_pokok",
+                    "quantity": "1",
+                    "unit": "pack",
+                }
+            ],
+            source="manual",
+        )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(PantryItem.objects.get().unit, "pack")
 
     def test_manual_category_dropdown_has_six_clear_options(self):
         page = self.client.get(reverse("modul2"))
-        category_select = page.content.decode().split('<select id="ingredient-category"', 1)[1].split('</select>', 1)[0]
-        self.assertEqual(category_select.count('<option value='), 7)  # placeholder + six categories
+        category_select = (
+            page.content.decode()
+            .split('<select id="ingredient-category"', 1)[1]
+            .split("</select>", 1)[0]
+        )
+        self.assertEqual(category_select.count("<option value="), 7)  # placeholder + six categories
         for label in (
-            "Sayur &amp; Buah", "Daging &amp; Seafood", "Tahu, Tempe &amp; Kacang",
-            "Beras &amp; Karbohidrat", "Bumbu &amp; Minyak", "Lainnya",
+            "Sayur &amp; Buah",
+            "Daging &amp; Seafood",
+            "Tahu, Tempe &amp; Kacang",
+            "Beras &amp; Karbohidrat",
+            "Bumbu &amp; Minyak",
+            "Lainnya",
         ):
             self.assertIn(label, category_select)
         self.assertNotIn('value="protein_hewani"', category_select)
-        response = self.post_items([{
-            "name": "Bawang Merah", "category": "bumbu_minyak", "quantity": "1", "unit": "kg",
-        }], source="manual")
+        response = self.post_items(
+            [
+                {
+                    "name": "Bawang Merah",
+                    "category": "bumbu_minyak",
+                    "quantity": "1",
+                    "unit": "kg",
+                }
+            ],
+            source="manual",
+        )
         self.assertEqual(response.status_code, 201)
 
     def test_location_and_expiry_can_be_set_after_saving(self):
@@ -186,8 +220,12 @@ class PantryFlowTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(client.delete(reverse("modul2-item-delete", args=[item.pk])).status_code, 403)
+        self.assertEqual(
+            client.delete(reverse("modul2-item-delete", args=[item.pk])).status_code, 403
+        )
 
     def test_get_and_wrong_content_type_cannot_save(self):
         self.assertEqual(self.client.get(reverse("modul2-items")).status_code, 405)
-        self.assertEqual(self.client.post(reverse("modul2-items"), data={"items": []}).status_code, 415)
+        self.assertEqual(
+            self.client.post(reverse("modul2-items"), data={"items": []}).status_code, 415
+        )
