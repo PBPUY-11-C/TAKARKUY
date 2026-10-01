@@ -2,6 +2,7 @@ import json
 from datetime import date
 from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -9,9 +10,13 @@ from apps.catalog.models import Ingredient, IngredientAlias, IngredientShelfLife
 
 from .models import PantryNameCorrection
 from .recommendations import resolve_names
+from .test_helpers import authenticate
 
 
 class PantryRecommendationTests(TestCase):
+    def setUp(self):
+        self.user = authenticate(self.client)
+
     @classmethod
     def setUpTestData(cls):
         cls.bayam = Ingredient.objects.create(
@@ -144,15 +149,21 @@ class PantryRecommendationTests(TestCase):
         self.assertEqual(result["method"], "koreksi_anda")
         llm.assert_not_called()
 
-    def test_other_session_does_not_get_private_correction(self):
+    @patch("apps.pantry.recommendations._gemini_choices", return_value={})
+    def test_other_account_does_not_get_private_correction(self, llm):
         self.client.get(reverse("modul2"))
         session_id = self.client.session["pantry_session_id"]
         PantryNameCorrection.objects.create(
-            session_id=session_id, raw_name="BXYM", normalized_name="bxym", ingredient=self.bayam
+            user=self.user,
+            session_id=session_id,
+            raw_name="BXYM",
+            normalized_name="bxym",
+            ingredient=self.bayam,
         )
         from django.test import Client
 
         other = Client()
+        authenticate(other, "other")
         response = other.post(
             reverse("modul2-suggestions"),
             data=json.dumps({"names": ["BXYM"]}),
@@ -165,6 +176,7 @@ class PantryRecommendationTests(TestCase):
         for index in range(5):
             PantryNameCorrection.objects.create(
                 session_id=f"session-{index}",
+                user=get_user_model().objects.create_user(username=f"voter-{index}"),
                 raw_name="BXYM",
                 normalized_name="bxym",
                 ingredient=self.bayam,
@@ -179,12 +191,14 @@ class PantryRecommendationTests(TestCase):
         for index in range(5):
             PantryNameCorrection.objects.create(
                 session_id=f"session-{index}",
+                user=get_user_model().objects.create_user(username=f"voter-{index}"),
                 raw_name="BXYM",
                 normalized_name="bxym",
                 ingredient=self.bayam,
             )
         PantryNameCorrection.objects.create(
             session_id="conflicting",
+            user=get_user_model().objects.create_user(username="conflicting"),
             raw_name="BXYM",
             normalized_name="bxym",
             ingredient=self.sawi,
@@ -224,6 +238,7 @@ class PantryRecommendationTests(TestCase):
 
     def test_suggestions_require_csrf(self):
         client = Client(enforce_csrf_checks=True)
+        client.force_login(self.user)
         client.get(reverse("modul2"))
         response = client.post(
             reverse("modul2-suggestions"),

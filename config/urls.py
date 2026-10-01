@@ -49,7 +49,9 @@ urlpatterns = [
     path("modul2/ocr-fallback/", fallback_receipt_ocr, name="modul2-ocr-fallback"),
     path("modul2/items/<int:item_id>/", update_pantry_details, name="modul2-item-details"),
     path("modul2/items/<int:item_id>/delete/", delete_pantry_item, name="modul2-item-delete"),
-    path("modul4/", TemplateView.as_view(template_name="modul4.html"), name="modul4"),
+    path(
+        "modul4/", login_required(TemplateView.as_view(template_name="modul4.html")), name="modul4"
+    ),
     path(
         "modul5/", login_required(TemplateView.as_view(template_name="modul5.html")), name="modul5"
     ),

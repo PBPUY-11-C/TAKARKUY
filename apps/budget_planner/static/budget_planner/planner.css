@@ -59,3 +59,7 @@ button,input { font:inherit; }
 
 .empty-state { display:flex; min-height:260px; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:32px 24px; }
 .empty-state h2 { margin:0; }
+
+.trial-banner { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; padding:20px 24px; border:1px solid #cce8dc; border-radius:16px; background:#edf8f3; color:#1d5140; }
+.trial-banner small { display:block; margin-top:6px; font-size:12px; }
+.calculate-button:disabled { opacity:.55; cursor:not-allowed; }

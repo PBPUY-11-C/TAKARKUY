@@ -11,6 +11,7 @@ from apps.catalog.models import Ingredient, IngredientShelfLife
 
 from .models import PantryItem
 from .storage import storage_options
+from .test_helpers import authenticate
 
 
 class PantryStorageTests(TestCase):
@@ -37,6 +38,7 @@ class PantryStorageTests(TestCase):
             )
 
     def setUp(self):
+        self.user = authenticate(self.client)
         self.today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
         self.client.get(reverse("modul2"))
 
@@ -142,6 +144,7 @@ class PantryStorageTests(TestCase):
     def test_legacy_item_uses_added_date_without_writing_on_get(self):
         session_id = self.client.session["pantry_session_id"]
         item = PantryItem.objects.create(
+            user=self.user,
             session_id=session_id,
             name="Bahan Uji",
             category="lainnya",
@@ -206,10 +209,12 @@ class PantryStorageTests(TestCase):
         self.assertEqual(item.estimated_expires_on, expiry)
         self.assertEqual(PantryItem.objects.count(), 1)
 
-    def test_other_session_cannot_trigger_recalculation(self):
+    def test_other_account_cannot_trigger_recalculation(self):
         self.add()
         item = PantryItem.objects.get()
-        response = Client().patch(
+        other = Client()
+        authenticate(other, "other")
+        response = other.patch(
             reverse("modul2-item-details", args=[item.pk]),
             content_type="application/json",
             data=json.dumps({"location": "chiller", "expiry_mode": "auto"}),
@@ -224,6 +229,7 @@ class PantryStorageCatalogTests(TestCase):
 
     def test_tempe_matches_local_catalogue_and_has_no_room_estimate(self):
         client = Client()
+        authenticate(client)
         response = client.post(
             reverse("modul2-items"),
             content_type="application/json",

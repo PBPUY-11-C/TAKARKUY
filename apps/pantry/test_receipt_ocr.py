@@ -9,9 +9,13 @@ from django.urls import reverse
 
 from .models import PantryItem
 from .receipt_ocr import clean_items, gemini_read_receipt, image_mime
+from .test_helpers import authenticate
 
 
 class ReceiptOCRFallbackTests(TestCase):
+    def setUp(self):
+        self.user = authenticate(self.client)
+
     @patch.dict(os.environ, {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
     def test_page_discloses_conditional_photo_fallback(self):
         response = self.client.get(reverse("modul2"))
@@ -117,6 +121,7 @@ class ReceiptOCRFallbackTests(TestCase):
     @patch.dict(os.environ, {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
     def test_fallback_requires_csrf(self):
         client = Client(enforce_csrf_checks=True)
+        client.force_login(self.user)
         client.get(reverse("modul2"))
         upload = SimpleUploadedFile("receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg")
         self.assertEqual(

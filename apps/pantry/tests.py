@@ -8,10 +8,12 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .models import PantryItem
+from .test_helpers import authenticate
 
 
 class PantryFlowTests(TestCase):
     def setUp(self):
+        self.user = authenticate(self.client)
         self.client.get(reverse("modul2"))
         self.item = {
             "name": "  Bayam   Hijau ",
@@ -181,10 +183,11 @@ class PantryFlowTests(TestCase):
         item.refresh_from_db()
         self.assertEqual(item.location, "chiller")
 
-    def test_other_browser_cannot_edit_pantry_item(self):
+    def test_other_account_cannot_edit_pantry_item(self):
         self.post_items([self.item])
         item = PantryItem.objects.get()
         other_client = Client()
+        authenticate(other_client, "other")
         response = other_client.patch(
             reverse("modul2-item-details", args=[item.pk]),
             data=json.dumps({"location": "freezer", "estimated_expires_on": ""}),
@@ -192,17 +195,19 @@ class PantryFlowTests(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_pantry_item_can_be_deleted_by_its_browser_session(self):
+    def test_pantry_item_can_be_deleted_by_its_owner(self):
         self.post_items([self.item])
         item = PantryItem.objects.get()
         response = self.client.delete(reverse("modul2-item-delete", args=[item.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(PantryItem.objects.count(), 0)
 
-    def test_other_browser_cannot_delete_pantry_item(self):
+    def test_other_account_cannot_delete_pantry_item(self):
         self.post_items([self.item])
         item = PantryItem.objects.get()
-        response = Client().delete(reverse("modul2-item-delete", args=[item.pk]))
+        other = Client()
+        authenticate(other, "other")
+        response = other.delete(reverse("modul2-item-delete", args=[item.pk]))
         self.assertEqual(response.status_code, 404)
         self.assertTrue(PantryItem.objects.filter(pk=item.pk).exists())
 
@@ -212,9 +217,10 @@ class PantryFlowTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(PantryItem.objects.count(), 0)
 
-    def test_pantry_items_are_private_to_browser_session(self):
+    def test_pantry_items_are_private_to_account(self):
         self.post_items([self.item])
         other_client = Client()
+        authenticate(other_client, "other")
         response = other_client.get(reverse("modul2"))
         self.assertNotContains(response, "Bayam Hijau")
         self.assertEqual(self.post_items([self.item], client=other_client).status_code, 201)
@@ -222,6 +228,7 @@ class PantryFlowTests(TestCase):
 
     def test_csrf_is_required_for_save(self):
         client = Client(enforce_csrf_checks=True)
+        client.force_login(self.user)
         client.get(reverse("modul2"))
         response = self.post_items([self.item], client=client)
         self.assertEqual(response.status_code, 403)

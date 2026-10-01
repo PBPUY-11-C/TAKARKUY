@@ -1,14 +1,16 @@
 import json
 from datetime import date, timedelta
-from uuid import uuid4
+from uuid import NAMESPACE_URL, uuid5
 from zoneinfo import ZoneInfo
 
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
 
+from apps.accounts.access import api_login_required
 from apps.catalog.models import Ingredient
 
 from .forms import PantryDetailsForm, PantryItemForm, PantryOCRItemForm
@@ -24,10 +26,10 @@ from .recommendations import (
 from .storage import DEFAULT_LOCATION, expiry_estimate, storage_options
 
 
-def _local_codes(names, session_id):
+def _local_codes(names, session_id, user):
     if not names:
         return []
-    suggestions, _ = resolve_names(names, session_id, allow_llm=False)
+    suggestions, _ = resolve_names(names, session_id, user=user, allow_llm=False)
     return [suggestion["ingredient_code"] for suggestion in suggestions]
 
 
@@ -36,19 +38,22 @@ def _starting_on(item):
 
 
 def _session_id(request):
-    if "pantry_session_id" not in request.session:
-        request.session["pantry_session_id"] = uuid4().hex
-    return request.session["pantry_session_id"]
+    # Compatibility column only: all authorization queries use the user FK.
+    scope = uuid5(NAMESPACE_URL, f"takarkuy:pantry-user:{request.user.pk}").hex
+    if request.session.get("pantry_session_id") != scope:
+        request.session["pantry_session_id"] = scope
+    return scope
 
 
+@login_required
 def pantry_page(request):
     session_id = _session_id(request)
-    items = list(PantryItem.objects.filter(session_id=session_id))
+    items = list(PantryItem.objects.filter(user=request.user))
     unmatched = [item for item in items if not item.ingredient_id]
     legacy_codes = dict(
         zip(
             (item.pk for item in unmatched),
-            _local_codes([item.name for item in unmatched], session_id),
+            _local_codes([item.name for item in unmatched], session_id, request.user),
         )
     )
     references = {}
@@ -81,6 +86,7 @@ def pantry_page(request):
     )
 
 
+@api_login_required
 @require_POST
 def fallback_receipt_ocr(request):
     if not gemini_ready():
@@ -118,6 +124,7 @@ def fallback_receipt_ocr(request):
     return JsonResponse({"items": items})
 
 
+@api_login_required
 @require_POST
 def suggest_receipt_items(request):
     if request.content_type != "application/json":
@@ -140,13 +147,16 @@ def suggest_receipt_items(request):
     llm_date = request.session.get("pantry_llm_date")
     llm_count = request.session.get("pantry_llm_count", 0) if llm_date == today else 0
     allow_llm = llm_count < 10
-    suggestions, llm_attempted = resolve_names(names, _session_id(request), allow_llm=allow_llm)
+    suggestions, llm_attempted = resolve_names(
+        names, _session_id(request), user=request.user, allow_llm=allow_llm
+    )
     if llm_attempted:
         request.session["pantry_llm_date"] = today
         request.session["pantry_llm_count"] = llm_count + 1
     return JsonResponse({"suggestions": suggestions})
 
 
+@api_login_required
 @require_POST
 def save_pantry_items(request):
     if request.content_type != "application/json":
@@ -196,7 +206,9 @@ def save_pantry_items(request):
                 accepted.append(("", None))
     session_id = _session_id(request)
     today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
-    local_codes = _local_codes([form.cleaned_data["name"] for form in forms], session_id)
+    local_codes = _local_codes(
+        [form.cleaned_data["name"] for form in forms], session_id, request.user
+    )
     references = {}
     with transaction.atomic():
         items = []
@@ -217,6 +229,7 @@ def save_pantry_items(request):
             )
             items.append(
                 PantryItem.objects.create(
+                    user=request.user,
                     session_id=session_id,
                     source=source,
                     ingredient_id=code,
@@ -229,13 +242,14 @@ def save_pantry_items(request):
             for raw, code in accepted:
                 if raw and code and normalize_name(raw):
                     PantryNameCorrection.objects.update_or_create(
-                        session_id=session_id,
+                        user=request.user,
                         normalized_name=normalize_name(raw),
-                        defaults={"raw_name": raw, "ingredient_id": code},
+                        defaults={"session_id": session_id, "raw_name": raw, "ingredient_id": code},
                     )
     return JsonResponse({"saved": len(items), "ids": [item.pk for item in items]}, status=201)
 
 
+@api_login_required
 @require_http_methods(["PATCH"])
 def update_pantry_details(request, item_id):
     if request.content_type != "application/json":
@@ -249,7 +263,7 @@ def update_pantry_details(request, item_id):
     if not isinstance(payload, dict):
         return JsonResponse({"error": "Data bahan tidak valid."}, status=400)
 
-    item = get_object_or_404(PantryItem, pk=item_id, session_id=_session_id(request))
+    item = get_object_or_404(PantryItem, pk=item_id, user=request.user)
     form = PantryDetailsForm(payload)
     if not form.is_valid():
         return JsonResponse(
@@ -264,7 +278,7 @@ def update_pantry_details(request, item_id):
     mode = form.cleaned_data["expiry_mode"]
     automatic = mode == "auto" or (mode != "manual" and location != item.location)
     if not item.ingredient_id:
-        item.ingredient_id = _local_codes([item.name], item.session_id)[0]
+        item.ingredient_id = _local_codes([item.name], item.session_id, request.user)[0]
     item.starting_on = _starting_on(item)
     options = storage_options(item.ingredient_id)
     estimate = expiry_estimate(options, location, item.starting_on)
@@ -305,8 +319,9 @@ def update_pantry_details(request, item_id):
     )
 
 
+@api_login_required
 @require_http_methods(["DELETE"])
 def delete_pantry_item(request, item_id):
-    item = get_object_or_404(PantryItem, pk=item_id, session_id=_session_id(request))
+    item = get_object_or_404(PantryItem, pk=item_id, user=request.user)
     item.delete()
     return JsonResponse({"deleted": True})

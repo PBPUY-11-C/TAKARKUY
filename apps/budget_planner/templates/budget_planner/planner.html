@@ -21,6 +21,14 @@
   <main class="page">
     <div class="page-heading"><div><p class="kicker">SIMULASI MODUL 1</p><h1>Simulasi Meal Plan</h1></div></div>
 
+    {% if trial %}
+    <aside class="trial-banner" aria-label="Kuota percobaan gratis">
+      <div><strong>Sisa percobaan: {{ trial.remaining }} dari {{ trial.limit }}</strong>
+        {% if trial.reset_at %}<small>Kuota diperbarui {{ trial.reset_label }} WIB.</small>{% endif %}
+      </div>
+    </aside>
+    {% endif %}
+
     <section class="input-card" aria-labelledby="input-title">
       <div class="section-heading"><div><h2 id="input-title">Atur Parameter Belanja &amp; Makan</h2></div><span class="auto-label">⚡ Terkalkulasi Otomatis</span></div>
       <form method="post" action="{% url 'modul1' %}#hasil" novalidate>
@@ -29,12 +37,13 @@
         <div class="input-grid">
           <div class="field budget-field"><label for="{{ form.budget.id_for_label }}"><span class="field-number">01</span> Budget Belanja</label><div class="currency-input"><span>Rp</span>{{ form.budget }}</div>{{ form.budget.errors }}</div>
           <div class="planning-fields"><div class="field"><label for="{{ form.days.id_for_label }}"><span class="field-number">02</span> Durasi Rencana Makan</label><div class="number-input">{{ form.days }}<span>hari</span></div>{{ form.days.errors }}<p class="field-note">Pilih durasi antara 1–7 hari.</p></div><div class="field"><label for="{{ form.servings.id_for_label }}"><span class="field-number">03</span> Jumlah Orang / Porsi</label><div class="number-input">{{ form.servings }}<span>orang</span></div>{{ form.servings.errors }}<p class="field-note">Bisa diisi untuk 1–10 porsi.</p></div><fieldset class="field"><legend>Jadwal Makan per Hari</legend><div class="choice-row meal-options">{{ form.meal_types }}</div>{{ form.meal_types.errors }}<p class="field-note">Bisa pilih lebih dari satu</p></fieldset></div>
-          <div class="preference-column"><fieldset class="field preference-field"><legend><span class="field-number">04</span> Target gizi &amp; preferensi</legend><div class="choice-row target-row">{{ form.targets }}</div>{{ form.targets.errors }}<p class="field-note">Mode rendah kalori membatasi tiga waktu makan hingga 1.150 kkal per orang. Ini ambang simulasi, bukan anjuran kebutuhan harian.</p><label class="sub-label" for="{{ form.exclude_ingredients.id_for_label }}">Alergi / Pantangan Bahan (Opsional)</label><div class="excluded-input">{{ form.exclude_ingredients }}</div>{{ form.exclude_ingredients.errors }}<p class="field-note">Kosongkan jika tidak ada pantangan</p></fieldset><button type="submit" class="calculate-button">Buat Rencana Makan <span aria-hidden="true">→</span></button></div>
+          <div class="preference-column"><fieldset class="field preference-field"><legend><span class="field-number">04</span> Target gizi &amp; preferensi</legend><div class="choice-row target-row">{{ form.targets }}</div>{{ form.targets.errors }}<p class="field-note">Mode rendah kalori membatasi tiga waktu makan hingga 1.150 kkal per orang. Ini ambang simulasi, bukan anjuran kebutuhan harian.</p><label class="sub-label" for="{{ form.exclude_ingredients.id_for_label }}">Alergi / Pantangan Bahan (Opsional)</label><div class="excluded-input">{{ form.exclude_ingredients }}</div>{{ form.exclude_ingredients.errors }}<p class="field-note">Kosongkan jika tidak ada pantangan</p></fieldset><button type="submit" class="calculate-button"{% if trial and trial.remaining == 0 %} disabled{% endif %}>Buat Rencana Makan <span aria-hidden="true">→</span></button></div>
         </div>
       </form>
     </section>
 
     <section id="hasil" class="results" aria-live="polite">
+      {% if trial_blocked or trial and trial.remaining == 0 %}<div class="notice error-notice"><strong>Kuota percobaan sudah habis.</strong><p>Masuk atau daftar untuk melanjutkan tanpa batas trial. Hasil terakhir tetap tersedia; kamu juga bisa menunggu kuota diperbarui.</p></div>{% endif %}
       {% if error %}
         <div class="notice error-notice"><strong>Rencana belum bisa dihitung.</strong><p>{{ error }}</p></div>
       {% elif form.errors %}
