@@ -166,11 +166,12 @@
           <span id="receipt-count" class="receipt-count">0 Item Terdeteksi</span>
         </div>
         <div class="scan-controls">
-          <input id="receipt-file" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" aria-label="Foto struk belanja">
+          <input id="receipt-file" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" aria-label="Foto struk belanja" data-gemini-fallback="{{ gemini_receipt_fallback|yesno:'true,false' }}">
           <label class="button primary" for="receipt-file">📷 Unggah Struk Belanja</label>
           <label class="receipt-date" for="receipt-date">Tanggal belanja / mulai simpan (opsional)<input id="receipt-date" type="date" max="{{ today|date:'Y-m-d' }}"></label>
         </div>
         <img id="receipt-preview" class="receipt-preview" alt="Foto struk yang dipilih" hidden>
+        {% if gemini_receipt_fallback %}<p class="sample-note">Jika hasil pindai kurang yakin, foto struk dikirim ke Gemini untuk dibaca ulang. Foto tidak disimpan di pantry.</p>{% endif %}
         <p id="scan-feedback" class="feedback" role="status" aria-live="polite"></p>
 
         <div id="draft-empty" class="empty-draft"><span class="empty-draft-icon" aria-hidden="true">▤</span><p>Belum ada struk yang diunggah. Unggah struk untuk mendeteksi bahan makanan secara otomatis.</p></div>

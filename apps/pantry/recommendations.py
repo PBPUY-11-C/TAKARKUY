@@ -1,16 +1,14 @@
 """Conservative catalogue matching and storage suggestions for receipt items."""
 
 import json
-import os
 import re
 from difflib import SequenceMatcher
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
 from django.db.models import Count
 
 from apps.catalog.models import Ingredient, IngredientAlias, IngredientShelfLife
 
+from .gemini import GeminiUnavailable, gemini_ready, generate_json
 from .models import PantryNameCorrection
 
 
@@ -20,7 +18,10 @@ def normalize_name(value):
 
 def everyday_ingredient_name(name):
     """Use a familiar pantry label without changing the matched catalogue item."""
-    if name.startswith("Beras Kualitas ") or name in {"Beras Termahal", "Beras Termurah (Non Bulog)"}:
+    if name.startswith("Beras Kualitas ") or name in {
+        "Beras Termahal",
+        "Beras Termurah (Non Bulog)",
+    }:
         return "Beras"
     if name.startswith("Daging Sapi, Lokal, "):
         return "Daging Sapi " + name.removeprefix("Daging Sapi, Lokal, ")
@@ -45,9 +46,9 @@ def _catalog_entries():
     entries = {}
     for ingredient in Ingredient.objects.all().only("ingredient_code", "name"):
         entries.setdefault(normalize_name(ingredient.name), set()).add(ingredient.ingredient_code)
-    for alias in IngredientAlias.objects.filter(mapping_status__in=["reviewed", "manual_curated"]).only(
-        "raw_name", "ingredient_id"
-    ):
+    for alias in IngredientAlias.objects.filter(
+        mapping_status__in=["reviewed", "manual_curated"]
+    ).only("raw_name", "ingredient_id"):
         entries.setdefault(normalize_name(alias.raw_name), set()).add(alias.ingredient_id)
     return entries
 
@@ -71,10 +72,7 @@ def _candidates(name, entries):
 
 
 def _gemini_choices(pending):
-    if os.getenv("PANTRY_LLM_PROVIDER", "").lower() != "gemini" or not os.getenv("GEMINI_API_KEY"):
-        return {}
-    model = os.getenv("PANTRY_LLM_MODEL", "gemini-3.5-flash-lite")
-    if not re.fullmatch(r"[a-zA-Z0-9._-]+", model):
+    if not gemini_ready():
         return {}
     prompt = (
         "Cocokkan nama barang OCR bahasa Indonesia dengan kandidat katalog. "
@@ -83,26 +81,13 @@ def _gemini_choices(pending):
         "Pilih HANYA ingredient_code yang diberikan, atau null jika tidak yakin, "
         "barang bukan bahan makanan, atau merek/jenis produk berbeda. "
         "Jangan tebak lokasi atau masa simpan. Balas JSON object dengan key berupa indeks string "
-        "dan value ingredient_code atau null.\n"
-        + json.dumps(pending, ensure_ascii=False)
-    )
-    body = json.dumps({
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"responseMimeType": "application/json", "temperature": 0},
-    }).encode()
-    request = Request(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
-        data=body,
-        headers={"Content-Type": "application/json", "x-goog-api-key": os.environ["GEMINI_API_KEY"]},
-        method="POST",
+        "dan value ingredient_code atau null.\n" + json.dumps(pending, ensure_ascii=False)
     )
     try:
-        with urlopen(request, timeout=5) as response:
-            result = json.load(response)
-        answer = result["candidates"][0]["content"]["parts"][0]["text"]
-        choices = json.loads(answer)
-        return choices if isinstance(choices, dict) else {}
-    except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError, OSError):
+        return generate_json(
+            [{"text": prompt}], timeout=5, generation_config={"maxOutputTokens": 1000}
+        )
+    except GeminiUnavailable:
         return {}
 
 
@@ -132,9 +117,11 @@ def resolve_names(names, session_id, *, allow_llm=True):
     }
     normalized_names = {normalize_name(name) for name in names}
     community = {}
-    votes = PantryNameCorrection.objects.filter(normalized_name__in=normalized_names).values(
-        "normalized_name", "ingredient_id"
-    ).annotate(sessions=Count("session_id", distinct=True))
+    votes = (
+        PantryNameCorrection.objects.filter(normalized_name__in=normalized_names)
+        .values("normalized_name", "ingredient_id")
+        .annotate(sessions=Count("session_id", distinct=True))
+    )
     for vote in votes:
         community.setdefault(vote["normalized_name"], []).append(vote)
     codes = {}
@@ -156,25 +143,33 @@ def resolve_names(names, session_id, *, allow_llm=True):
             codes[index], methods[index] = votes_for_name[0]["ingredient_id"], "koreksi_bersama"
             continue
         candidates, scores = _candidates(normalized, entries)
-        if candidates and scores[candidates[0]] >= 0.90 and (
-            len(candidates) == 1 or scores[candidates[0]] - scores[candidates[1]] >= 0.12
+        if (
+            candidates
+            and scores[candidates[0]] >= 0.90
+            and (len(candidates) == 1 or scores[candidates[0]] - scores[candidates[1]] >= 0.12)
         ):
             codes[index], methods[index] = candidates[0], "ejaan_mirip"
         elif candidates:
             pending[index] = candidates
 
-    llm_attempted = (allow_llm and bool(pending)
-                     and os.getenv("PANTRY_LLM_PROVIDER", "").lower() == "gemini"
-                     and bool(os.getenv("GEMINI_API_KEY")))
+    llm_attempted = allow_llm and bool(pending) and gemini_ready()
     if llm_attempted:
         candidate_codes = {code for choices in pending.values() for code in choices}
         ingredients = Ingredient.objects.in_bulk(candidate_codes)
         prompts = [
-            {"index": str(index), "ocr": names[index], "candidates": [
-                {"ingredient_code": code, "name": ingredients[code].name,
-                 "nama_sehari_hari": everyday_ingredient_name(ingredients[code].name)}
-                for code in choices if code in ingredients
-            ]}
+            {
+                "index": str(index),
+                "ocr": names[index],
+                "candidates": [
+                    {
+                        "ingredient_code": code,
+                        "name": ingredients[code].name,
+                        "nama_sehari_hari": everyday_ingredient_name(ingredients[code].name),
+                    }
+                    for code in choices
+                    if code in ingredients
+                ],
+            }
             for index, choices in list(pending.items())[:8]
         ]
         llm_choices = _gemini_choices(prompts)
@@ -187,11 +182,13 @@ def resolve_names(names, session_id, *, allow_llm=True):
     results = []
     for index, raw in enumerate(names):
         ingredient = ingredients.get(codes.get(index))
-        results.append({
-            "raw_name": raw,
-            "ingredient_code": ingredient.ingredient_code if ingredient else None,
-            "suggested_name": everyday_ingredient_name(ingredient.name) if ingredient else None,
-            "method": methods.get(index, "tidak_cocok"),
-            "storage": _storage(ingredient.ingredient_code) if ingredient else None,
-        })
+        results.append(
+            {
+                "raw_name": raw,
+                "ingredient_code": ingredient.ingredient_code if ingredient else None,
+                "suggested_name": everyday_ingredient_name(ingredient.name) if ingredient else None,
+                "method": methods.get(index, "tidak_cocok"),
+                "storage": _storage(ingredient.ingredient_code) if ingredient else None,
+            }
+        )
     return results, llm_attempted

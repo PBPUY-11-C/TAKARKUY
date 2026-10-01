@@ -6,6 +6,12 @@ const UNIT_ALIASES = {
   bks: "pack", botol: "botol", pack: "pack", pak: "pack",
 };
 
+// Tesseract reports page confidence on a 0–100 scale. An absent score is
+// treated as uncertain, and a confident page may still contain no parsed items.
+export function needsGeminiFallback(confidence, itemCount) {
+  return !Number.isFinite(confidence) || confidence < 80 || itemCount === 0;
+}
+
 export function parseReceiptText(text) {
   if (typeof text !== "string") return [];
   const result = [];

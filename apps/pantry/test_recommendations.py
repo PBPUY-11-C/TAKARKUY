@@ -21,20 +21,31 @@ class PantryRecommendationTests(TestCase):
             ingredient_code="ING-SAWI", name="Sawi", category="sayur", base_unit="g"
         )
         IngredientAlias.objects.create(
-            alias_code="ALS-BAYAM-HIJAU", source="test", raw_name="Bayam Hijau",
-            ingredient=cls.bayam, mapping_status="reviewed",
+            alias_code="ALS-BAYAM-HIJAU",
+            source="test",
+            raw_name="Bayam Hijau",
+            ingredient=cls.bayam,
+            mapping_status="reviewed",
         )
         IngredientShelfLife.objects.create(
-            shelf_life_code="SHF-BAYAM", ingredient=cls.bayam,
-            storage_location="kulkas", min_days=3, max_days=7, warning_days=1,
-            starting_event="tanggal_pembelian", source="FoodKeeper test",
-            source_url="https://example.org/bayam", source_duration="3-7 days",
-            days_conversion_method="direct", shelf_life_status="referensi_perlu_verifikasi_lokal",
+            shelf_life_code="SHF-BAYAM",
+            ingredient=cls.bayam,
+            storage_location="kulkas",
+            min_days=3,
+            max_days=7,
+            warning_days=1,
+            starting_event="tanggal_pembelian",
+            source="FoodKeeper test",
+            source_url="https://example.org/bayam",
+            source_duration="3-7 days",
+            days_conversion_method="direct",
+            shelf_life_status="referensi_perlu_verifikasi_lokal",
         )
 
     def post_suggestions(self, names):
         return self.client.post(
-            reverse("modul2-suggestions"), data=json.dumps({"names": names}),
+            reverse("modul2-suggestions"),
+            data=json.dumps({"names": names}),
             content_type="application/json",
         )
 
@@ -52,8 +63,10 @@ class PantryRecommendationTests(TestCase):
     @patch("apps.pantry.recommendations._gemini_choices")
     def test_short_pantry_name_keeps_catalogue_match_and_can_be_saved(self, llm):
         Ingredient.objects.create(
-            ingredient_code="ING-BERAS-SUPER", name="Beras Kualitas Super I",
-            category="padi", base_unit="g",
+            ingredient_code="ING-BERAS-SUPER",
+            name="Beras Kualitas Super I",
+            category="padi",
+            base_unit="g",
         )
         result = self.post_suggestions(["Beras Kualitas Super I"]).json()["suggestions"][0]
         self.assertEqual(result["suggested_name"], "Beras")
@@ -62,14 +75,25 @@ class PantryRecommendationTests(TestCase):
 
         response = self.client.post(
             reverse("modul2-items"),
-            data=json.dumps({"source": "ocr", "items": [{
-                "name": result["suggested_name"], "original_name": result["raw_name"],
-                "ingredient_code": result["ingredient_code"], "quantity": "1", "unit": "kg",
-            }]}),
+            data=json.dumps(
+                {
+                    "source": "ocr",
+                    "items": [
+                        {
+                            "name": result["suggested_name"],
+                            "original_name": result["raw_name"],
+                            "ingredient_code": result["ingredient_code"],
+                            "quantity": "1",
+                            "unit": "kg",
+                        }
+                    ],
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
         from .models import PantryItem
+
         self.assertEqual(PantryItem.objects.get().name, "Beras")
 
     @patch("apps.pantry.recommendations._gemini_choices", return_value={"0": "ING-SAWI"})
@@ -95,10 +119,22 @@ class PantryRecommendationTests(TestCase):
         self.client.get(reverse("modul2"))
         response = self.client.post(
             reverse("modul2-items"),
-            data=json.dumps({"source": "ocr", "items": [{
-                "name": "Bayam", "original_name": "BYM HIJAU", "ingredient_code": "ING-BAYAM",
-                "quantity": "1", "unit": "ikat", "location": "chiller", "shelf_life_days": 3,
-            }]}),
+            data=json.dumps(
+                {
+                    "source": "ocr",
+                    "items": [
+                        {
+                            "name": "Bayam",
+                            "original_name": "BYM HIJAU",
+                            "ingredient_code": "ING-BAYAM",
+                            "quantity": "1",
+                            "unit": "ikat",
+                            "location": "chiller",
+                            "shelf_life_days": 3,
+                        }
+                    ],
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
@@ -115,9 +151,11 @@ class PantryRecommendationTests(TestCase):
             session_id=session_id, raw_name="BXYM", normalized_name="bxym", ingredient=self.bayam
         )
         from django.test import Client
+
         other = Client()
         response = other.post(
-            reverse("modul2-suggestions"), data=json.dumps({"names": ["BXYM"]}),
+            reverse("modul2-suggestions"),
+            data=json.dumps({"names": ["BXYM"]}),
             content_type="application/json",
         )
         self.assertNotEqual(response.json()["suggestions"][0]["method"], "koreksi_anda")
@@ -126,7 +164,9 @@ class PantryRecommendationTests(TestCase):
     def test_five_consistent_corrections_become_shared_suggestion(self, llm):
         for index in range(5):
             PantryNameCorrection.objects.create(
-                session_id=f"session-{index}", raw_name="BXYM", normalized_name="bxym",
+                session_id=f"session-{index}",
+                raw_name="BXYM",
+                normalized_name="bxym",
                 ingredient=self.bayam,
             )
         result, attempted = resolve_names(["BXYM"], "another-session")
@@ -138,11 +178,15 @@ class PantryRecommendationTests(TestCase):
     def test_conflicting_community_corrections_are_not_trusted(self):
         for index in range(5):
             PantryNameCorrection.objects.create(
-                session_id=f"session-{index}", raw_name="BXYM", normalized_name="bxym",
+                session_id=f"session-{index}",
+                raw_name="BXYM",
+                normalized_name="bxym",
                 ingredient=self.bayam,
             )
         PantryNameCorrection.objects.create(
-            session_id="conflicting", raw_name="BXYM", normalized_name="bxym",
+            session_id="conflicting",
+            raw_name="BXYM",
+            normalized_name="bxym",
             ingredient=self.sawi,
         )
         result, _ = resolve_names(["BXYM"], "another-session", allow_llm=False)
@@ -156,21 +200,34 @@ class PantryRecommendationTests(TestCase):
     def test_estimated_date_uses_supplied_purchase_date(self):
         response = self.client.post(
             reverse("modul2-items"),
-            data=json.dumps({"source": "ocr", "items": [{
-                "name": "Bayam", "quantity": "1", "unit": "ikat", "location": "chiller",
-                "shelf_life_days": 3, "starting_on": "2026-09-27",
-            }]}),
+            data=json.dumps(
+                {
+                    "source": "ocr",
+                    "items": [
+                        {
+                            "name": "Bayam",
+                            "quantity": "1",
+                            "unit": "ikat",
+                            "location": "chiller",
+                            "shelf_life_days": 3,
+                            "starting_on": "2026-09-27",
+                        }
+                    ],
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
         from .models import PantryItem
+
         self.assertEqual(PantryItem.objects.get().estimated_expires_on, date(2026, 9, 30))
 
     def test_suggestions_require_csrf(self):
         client = Client(enforce_csrf_checks=True)
         client.get(reverse("modul2"))
         response = client.post(
-            reverse("modul2-suggestions"), data=json.dumps({"names": ["Bayam"]}),
+            reverse("modul2-suggestions"),
+            data=json.dumps({"names": ["Bayam"]}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 403)

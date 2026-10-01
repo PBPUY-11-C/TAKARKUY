@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { parseReceiptText } from "../static/pantry/receipt_parser.mjs";
+import { needsGeminiFallback, parseReceiptText } from "../static/pantry/receipt_parser.mjs";
+
+test("Gemini fallback uses the 80 percent boundary and empty-result guard", () => {
+  assert.equal(needsGeminiFallback(79.99, 2), true);
+  assert.equal(needsGeminiFallback(80, 2), false);
+  assert.equal(needsGeminiFallback(90, 0), true);
+  assert.equal(needsGeminiFallback(undefined, 1), true);
+});
 
 test("reads a simple item with explicit weight and skips total", () => {
   assert.deepEqual(parseReceiptText("DAGING AYAM FILLET 350 GR 24.500\nTOTAL 24.500"), [
