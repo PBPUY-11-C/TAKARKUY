@@ -78,6 +78,20 @@ Sumber asli berada di `raw/openfoodfacts_indonesia_sample.json`, `scratch/mendel
 
 ## Gap sebelum fitur yang diinginkan siap penuh
 
+### Perkiraan masa simpan pada pantry
+
+Input manual dan OCR memakai suhu ruang jika lokasi tidak dipilih. Backend mencocokkan nama ke katalog lokal (tanpa panggilan Gemini tambahan saat menyimpan), menyimpan referensi bahan dan tanggal awal, lalu memakai batas minimum acuan lokasi yang sesuai. Pilihan lokasi hanya **Kulkas, Freezer, dan Suhu Ruang**: kulkas (`chiller`) dipetakan ke `kulkas`, freezer ke `freezer`, dan suhu ruang memakai acuan `suhu_ruang`. Tanggal kosong jika acuan lokasi tidak ada; tempe pada snapshot ini hanya punya acuan kulkas/freezer, bukan suhu ruang. Tidak ada durasi baru yang dikarang untuk mengisi gap itu.
+
+Saat lokasi diganti, perkiraan langsung diperbarui di tabel dan disimpan lewat tombol **Simpan**. Hitungan tetap memakai tanggal belanja atau tanggal ditambahkan, sehingga pergantian lokasi tidak mereset usia bahan. Tanggal label kemasan dapat diisi manual. Ini estimasi, bukan jaminan keamanan dan bukan bukti bahan yang sudah rusak dapat dipulihkan dengan pendinginan. Default suhu ruang hanya perilaku input, bukan rekomendasi penyimpanan bahan mudah rusak; lihat [panduan FoodSafety.gov](https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety).
+
+Migrasi `pantry.0006_pantryitem_ingredient_pantryitem_starting_on_and_more` menambahkan referensi bahan dan tanggal awal tanpa menghapus stok lama. Pada stok lama, pencocokan/tanggal awal dipulihkan saat pengguna menyimpan perubahan; membuka halaman tidak mengubah data.
+
+Migrasi `pantry.0007_simplify_storage_locations` mengganti lokasi lama `lemari_kering` menjadi `suhu_ruang`, tanpa menghapus stok atau mengubah tanggal yang sudah tersimpan. Nama tampilan `chiller` disederhanakan menjadi **Kulkas**; ID lokasi kulkas tetap sama.
+
+Verifikasi setelah perubahan ini: **118 tes Django dan 12 tes JavaScript** lolos, termasuk default manual/OCR, pergantian lokasi, acuan yang kosong, tanggal belanja lama, override tanggal manual, isolasi sesi, serta penyederhanaan lokasi dan tabel. Migrasi diterapkan lokal; deployment PWS belum diverifikasi. Tabel menyembunyikan kolom Sumber tetapi data asal stok tetap disimpan; informasi masa simpan tampil kecil di bawah input tanggal.
+
+### Pekerjaan lanjutan
+
 1. **Bahan dan produk.** Belum ada master nasional seluruh bahan/varian pasar. Contoh `Mie Instan` sudah ada tetapi gizinya kosong; `Kerang` dan `Pasta` belum menjadi bahan aktif. Barcode produk tidak boleh otomatis disamakan dengan bahan generik: `Indomie` dapat menjadi kandidat stok mi instan, tetapi bumbu, bobot bersih, dan gizi produk harus tetap spesifik per SKU. Perlu tabel produk ↔ bahan yang direview dan konversi berat kemasan sebelum planner memakai stoknya.
 2. **Resep.** Resep kerang, burger, dan spaghetti tersedia sebagai kandidat, tetapi belum punya relasi bahan, satuan gram, harga, dan gizi yang lolos validasi planner. Kurasi bertahap berdasarkan bahan yang sering muncul lebih aman daripada memasukkan semua 1.500 resep sekaligus.
 3. **Penyimpanan.** Lama simpan bergantung pada bentuk bahan, kondisi awal, kemasan, suhu, dan tanggal label. FoodKeeper dapat memberi saran awal, bukan memutuskan makanan aman atau tanggal kedaluwarsa pasti. Bahan/produk yang belum terpetakan tetap perlu input atau persetujuan pengguna.

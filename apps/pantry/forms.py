@@ -36,3 +36,6 @@ class PantryOCRItemForm(PantryItemForm):
 class PantryDetailsForm(forms.Form):
     location = forms.ChoiceField(choices=PantryItem.LOCATION_CHOICES, required=False)
     estimated_expires_on = forms.DateField(required=False, input_formats=["%Y-%m-%d"])
+    expiry_mode = forms.ChoiceField(
+        choices=[("auto", "Auto"), ("manual", "Manual")], required=False
+    )

@@ -44,10 +44,9 @@ class PantryItem(models.Model):
         ("botol", "botol"),
     ]
     LOCATION_CHOICES = [
-        ("chiller", "Kulkas Bawah (Chiller)"),
+        ("chiller", "Kulkas"),
         ("freezer", "Freezer"),
         ("suhu_ruang", "Suhu Ruang"),
-        ("lemari_kering", "Lemari Kering"),
     ]
     SOURCE_CHOICES = [("ocr", "Struk"), ("manual", "Manual")]
 
@@ -56,7 +55,13 @@ class PantryItem(models.Model):
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, blank=True, default="")
     quantity = models.DecimalField(max_digits=10, decimal_places=3)
     unit = models.CharField(max_length=20, choices=UNIT_CHOICES)
-    location = models.CharField(max_length=20, choices=LOCATION_CHOICES, blank=True, default="")
+    location = models.CharField(
+        max_length=20, choices=LOCATION_CHOICES, blank=True, default="suhu_ruang"
+    )
+    ingredient = models.ForeignKey(
+        "catalog.Ingredient", null=True, blank=True, on_delete=models.PROTECT
+    )
+    starting_on = models.DateField(null=True, blank=True)
     shelf_life_days = models.PositiveSmallIntegerField(null=True, blank=True)
     estimated_expires_on = models.DateField(null=True, blank=True)
     source = models.CharField(max_length=10, choices=SOURCE_CHOICES)

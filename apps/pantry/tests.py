@@ -51,13 +51,24 @@ class PantryFlowTests(TestCase):
         self.assertNotIn("store", fields)
         self.assertEqual(PantryItem.objects.get().source, "manual")
 
+    def test_inventory_hides_source_and_places_small_information_under_expiry(self):
+        self.post_items([self.item], source="manual")
+        page = self.client.get(reverse("modul2"))
+        self.assertNotContains(page, '<th scope="col">Sumber</th>')
+        self.assertContains(page, 'class="pantry-actions"')
+        self.assertContains(page, 'class="storage-feedback" data-storage-feedback')
+        html = page.content.decode()
+        expiry_cell = html.split("data-pantry-expiry", 1)[1].split("</td>", 1)[0]
+        self.assertIn("data-storage-feedback", expiry_cell)
+        self.assertEqual(PantryItem.objects.get().source, "manual")
+
     def test_ocr_can_save_without_category_location_or_expiry(self):
         simple_item = {"name": "Tahu Putih", "quantity": "2", "unit": "kotak"}
         response = self.post_items([simple_item])
         self.assertEqual(response.status_code, 201)
         item = PantryItem.objects.get()
         self.assertEqual(item.category, "")
-        self.assertEqual(item.location, "")
+        self.assertEqual(item.location, "suhu_ruang")
         self.assertIsNone(item.shelf_life_days)
         self.assertIsNone(item.estimated_expires_on)
         page = self.client.get(reverse("modul2"))
@@ -143,7 +154,13 @@ class PantryFlowTests(TestCase):
         item = PantryItem.objects.get()
         response = self.client.patch(
             reverse("modul2-item-details", args=[item.pk]),
-            data=json.dumps({"location": "chiller", "estimated_expires_on": "2026-10-02"}),
+            data=json.dumps(
+                {
+                    "location": "chiller",
+                    "estimated_expires_on": "2026-10-02",
+                    "expiry_mode": "manual",
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)

@@ -1,4 +1,5 @@
 import { needsGeminiFallback, parseReceiptText } from "./receipt_parser.mjs";
+import { storagePreview } from "./storage_preview.mjs";
 
 const fileInput = document.getElementById("receipt-file");
 const preview = document.getElementById("receipt-preview");
@@ -130,13 +131,9 @@ async function suggestRows(rows, version) {
       const box = row.querySelector(".name-suggestion");
       const details = result.storage
         ? ` · ${result.storage.location === "chiller" ? "Kulkas" : "Suhu ruang"} · referensi ${result.storage.min_days}–${result.storage.max_days} hari sejak ${result.storage.starting_event === "mulai_disimpan" ? "mulai disimpan" : "dibeli"}`
-        : " · data lama simpan belum tersedia";
+        : " · acuan masa simpan suhu ruang belum tersedia";
       nameInput.value = result.suggested_name;
       row.dataset.ingredientCode = result.ingredient_code;
-      if (result.storage) {
-        row.dataset.location = result.storage.location;
-        row.dataset.minDays = String(result.storage.min_days);
-      }
       box.textContent = result.raw_name === result.suggested_name
         ? `Cocok dengan katalog${details}`
         : `Diperbaiki otomatis${result.method === "ai_perlu_periksa" ? " dengan AI" : ""} dari “${result.raw_name}”${details}. Periksa dan ubah jika keliru.`;
@@ -376,12 +373,8 @@ saveDraftButton.addEventListener("click", async () => {
     item.original_name = row.dataset.originalName || "";
     if (row.dataset.ingredientCode) {
       item.ingredient_code = row.dataset.ingredientCode;
-      if (row.dataset.location) item.location = row.dataset.location;
-      if (row.dataset.minDays && receiptDate.value) {
-        item.shelf_life_days = row.dataset.minDays;
-        item.starting_on = receiptDate.value;
-      }
     }
+    if (receiptDate.value) item.starting_on = receiptDate.value;
   });
   saveDraftButton.disabled = true;
   feedback(scanFeedback, "Menyimpan stok…");
@@ -411,33 +404,56 @@ manualForm.addEventListener("submit", async (event) => {
   }
 });
 
+const pantryStorage = JSON.parse(document.getElementById("pantry-storage-data").textContent);
 document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   const button = row.querySelector(".save-pantry-details");
   const deleteButton = row.querySelector(".delete-pantry-item");
   const rowFeedback = row.querySelector(".row-feedback");
+  const locationInput = row.querySelector("[data-pantry-location]");
+  const expiryInput = row.querySelector("[data-pantry-expiry]");
+  const storageFeedback = row.querySelector("[data-storage-feedback]");
+  let expiryMode = "";
+  locationInput.addEventListener("change", () => {
+    const estimate = storagePreview(pantryStorage[row.dataset.pantryItem], locationInput.value);
+    expiryMode = "auto";
+    expiryInput.value = estimate.estimated_expires_on;
+    storageFeedback.textContent = estimate.message;
+    feedback(rowFeedback, "Perkiraan diperbarui. Tekan Simpan untuk menyimpan perubahan.");
+  });
+  expiryInput.addEventListener("input", () => {
+    expiryMode = "manual";
+    storageFeedback.textContent = "Tanggal diisi manual; utamakan label kemasan.";
+  });
   button.addEventListener("click", async () => {
-    const location = row.querySelector("[data-pantry-location]").value;
-    const expiryInput = row.querySelector("[data-pantry-expiry]");
+    const location = locationInput.value;
     if (!expiryInput.checkValidity()) {
       expiryInput.reportValidity();
       return;
     }
     button.disabled = true;
+    locationInput.disabled = true;
+    expiryInput.disabled = true;
     feedback(rowFeedback, "Menyimpan…");
     try {
       const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
         credentials: "same-origin",
-        body: JSON.stringify({ location, estimated_expires_on: expiryInput.value }),
+        body: JSON.stringify({ location, estimated_expires_on: expiryInput.value, expiry_mode: expiryMode }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Gagal menyimpan perubahan.");
+      locationInput.value = data.location;
+      expiryInput.value = data.estimated_expires_on;
+      storageFeedback.textContent = data.message;
+      expiryMode = "";
       feedback(rowFeedback, "Tersimpan");
     } catch (error) {
       feedback(rowFeedback, error.message || "Gagal menyimpan perubahan.", true);
     } finally {
       button.disabled = false;
+      locationInput.disabled = false;
+      expiryInput.disabled = false;
     }
   });
   deleteButton.addEventListener("click", async () => {
