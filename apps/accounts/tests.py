@@ -4,6 +4,17 @@ from django.urls import reverse
 
 
 class AccountFlowTests(TestCase):
+    def test_login_and_signup_have_explicit_link_back_to_landing(self):
+        for page_name in ("login", "signup"):
+            with self.subTest(page=page_name):
+                response = self.client.get(reverse(page_name))
+                self.assertContains(
+                    response,
+                    f'<a class="back-home" href="{reverse("landing")}">← Kembali ke beranda</a>',
+                    html=True,
+                )
+        self.assertEqual(self.client.get(reverse("landing")).status_code, 200)
+
     def signup_data(self, **changes):
         return {
             "full_name": "Dina Putri",
@@ -151,7 +162,7 @@ class AccountFlowTests(TestCase):
         self.assertNotContains(response, "Masak Enak Sesuai Budget")
 
     def test_module_home_links_follow_login_state(self):
-        for page_name in ("modul1", "modul2", "modul4"):
+        for page_name in ("modul1",):
             with self.subTest(page=page_name, authenticated=False):
                 response = self.client.get(reverse(page_name))
                 self.assertContains(response, f'href="{reverse("landing")}"', count=2)
@@ -163,6 +174,7 @@ class AccountFlowTests(TestCase):
                 self.assertContains(response, f'href="{reverse("modul5")}"', count=2)
 
     def test_modul4_is_header_only(self):
+        self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("modul4"))
         self.assertContains(response, "TAKARKUY")
         self.assertContains(response, "Kembali ke beranda")

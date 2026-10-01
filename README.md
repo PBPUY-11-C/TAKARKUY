@@ -8,8 +8,8 @@ Snapshot kode dan dataset: **1 Oktober 2026**. Bagian visi, perbandingan, CRUD, 
 
 | Bagian | Sudah tersedia | Belum tersedia |
 | --- | --- | --- |
-| Modul 1 | Simulasi budget, kombinasi target gizi, pantangan, jadwal menu, daftar belanja, dan estimasi gizi/biaya dari katalog lokal. | CRUD card rencana tersimpan dan integrasi stok pantry. |
-| Modul 2 | OCR Tesseract.js, fallback foto Gemini, koreksi tabel, input manual, saran nama/penyimpanan, tabel stok, ubah lokasi/tanggal kedaluwarsa, dan hapus stok. | Stok milik akun lintas perangkat, edit seluruh kolom stok setelah disimpan, pengingat otomatis, dan integrasi cuaca/pengurangan stok saat memasak. |
+| Modul 1 | Simulasi budget, kombinasi target gizi, pantangan, jadwal menu, daftar belanja, estimasi gizi/biaya, dan trial guest 3 rencana berhasil per 24 jam per browser. | CRUD card rencana tersimpan dan integrasi stok pantry. |
+| Modul 2 | OCR Tesseract.js, fallback foto Gemini, koreksi tabel, input manual, saran nama/penyimpanan, stok milik akun lintas perangkat, ubah lokasi/tanggal kedaluwarsa, dan hapus stok. | Edit seluruh kolom stok setelah disimpan, pengingat otomatis, dan integrasi cuaca/pengurangan stok saat memasak. |
 | Modul 3 | Landing, daftar akun, login/logout, validasi kata sandi, dan Django Admin. | Username pilihan pengguna, Google OAuth, serta halaman profil/preferensi. |
 | Modul 4 | Template halaman dengan header dan tautan kembali ke beranda. | Recipe book, favorit, dan cooking tracker. |
 | Modul 5 | Beranda setelah login dengan navigasi Budget Meal Planner, Smart Pantry, dan Recipe Book. | Statistik penghematan, ulasan makanan, dan market locator. |
@@ -97,7 +97,7 @@ Daftar CRUD dan model yang direncanakan tidak semuanya sudah diimplementasikan; 
 - **Perkiraan otomatis:** bahan manual maupun OCR yang dikenali mendapat tanggal dari batas minimum acuan **lokasi yang dipilih**. Mengganti lokasi memperbarui tanggal di tabel; tekan **Simpan** untuk menyimpan perubahan. Tanggal belanja (OCR) atau tanggal ditambahkan (manual) tetap menjadi dasar, bukan tanggal saat lokasi diganti. Jika acuan lokasi tidak ada, tanggal tetap kosong dan dapat diisi manual; acuan kulkas tidak dipakai untuk suhu ruang. Suhu ruang sebagai default UI bukan anjuran menyimpan bahan mudah rusak di luar kulkas. Mengubah lokasi tidak membalikkan kerusakan atau riwayat suhu bahan; lihat [panduan FoodSafety.gov](https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety).
 - **Privasi dan batas:** foto serta teks mentah tidak disimpan oleh aplikasi, tetapi foto dikirim ke layanan Google saat fallback foto digunakan. Fallback foto dan pencocokan nama masing-masing dibatasi 10 percobaan per sesi browser per hari; ini bukan pembatas biaya global/akun.
 - **Integrasi yang direncanakan:** `pantry_service.kurangi_stok()` untuk aksi **Sudah Masak** Modul 4; belum tersedia.
-- **Data yang dipegang:** `PantryItem` dan `PantryNameCorrection`, masih berbasis sesi browser, bukan kepemilikan akun lintas perangkat.
+- **Data yang dipegang:** `PantryItem` dan `PantryNameCorrection` milik akun melalui FK `user`. Akun yang sama dapat membuka stok/koreksi pribadi dari perangkat lain; akun lain tidak dapat membaca, mengubah, atau menghapus stok tersebut. Koreksi bersama memerlukan minimal 5 akun berbeda yang sepakat, bukan 5 sesi browser.
 - **Halaman:** 1 halaman berisi dua panel input dan tabel inventaris.
 
 **CRUD Virtual Pantry:**
@@ -232,13 +232,13 @@ Untuk database yang sudah berisi data, cadangkan dulu sebelum impor. Opsi `--syn
 | --- | --- |
 | `http://127.0.0.1:8000/` | Landing untuk guest; redirect ke Modul 5 setelah login. |
 | `/signup/`, `/login/` | Daftar dan masuk akun. |
-| `/modul1/` | Simulasi Meal Plan. |
-| `/modul2/` | Smart Pantry dan input struk/manual. |
-| `/modul4/` | Template Recipe Book; isi utama masih kosong. |
+| `/modul1/` | Simulasi Meal Plan; guest dibatasi 3 rencana berhasil per 24 jam per browser. |
+| `/modul2/` | Smart Pantry dan input struk/manual; halaman dan seluruh API wajib login. |
+| `/modul4/` | Template Recipe Book; wajib login, isi utama masih kosong. |
 | `/modul5/` | Beranda dengan header navigasi; wajib login. |
 | `/admin/` | Django Admin; wajib akun staff/superuser. |
 
-Modul 1, 2, dan template Modul 4 saat ini masih dapat diakses guest. Untuk membuat akun administrator lokal:
+Guest hanya dapat mengakses Modul 1 dengan batas trial. Modul 2/4/5 wajib login. Untuk membuat akun administrator lokal:
 
 ```bash
 python manage.py createsuperuser
@@ -277,7 +277,7 @@ python manage.py test
 node --test apps/pantry/tests_js/*.test.mjs
 ```
 
-Tes JavaScript memerlukan Node.js. Verifikasi 1 Oktober 2026 setelah pembaruan alur masa simpan dan perapian tabel meloloskan **118 tes Django dan 12 tes JavaScript**; tes Gemini memakai respons mock, bukan membuktikan key, kuota, atau akurasi API live. Perapian Python memakai aturan `ruff.toml`; Ruff adalah alat pengembangan opsional, bukan dependensi runtime.
+Tes JavaScript memerlukan Node.js. Verifikasi 1 Oktober 2026 setelah pembaruan otorisasi dan navigasi akun meloloskan **143 tes Django dan 12 tes JavaScript**, termasuk kuota trial, reset 24 jam, replay cookie/logout, ownership stok lintas perangkat, akses API guest, dan tautan kembali ke landing dari login/sign up. Tes Gemini memakai respons mock, bukan membuktikan key, kuota, atau akurasi API live. Perapian Python memakai aturan `ruff.toml`; Ruff adalah alat pengembangan opsional, bukan dependensi runtime.
 
 ## Catatan Deployment PWS
 
@@ -286,19 +286,24 @@ Tes JavaScript memerlukan Node.js. Verifikasi 1 Oktober 2026 setelah pembaruan a
 - Jalankan `python manage.py migrate --noinput` sebelum impor fixture terbaru, termasuk migrasi `catalog.0002_ingredient_calories_method_text` agar catatan sumber gizi panjang diterima PostgreSQL.
 - Alur tanggal otomatis pantry memerlukan migrasi `pantry.0006_pantryitem_ingredient_pantryitem_starting_on_and_more`, yang menambahkan referensi bahan dan tanggal awal. Stok lama tidak dihapus; tanggal ditambahkan digunakan jika tanggal awal belum tercatat.
 - Pilihan lokasi pantry hanya **Kulkas, Freezer, dan Suhu Ruang**. Migrasi `pantry.0007_simplify_storage_locations` memindahkan lokasi Lemari Kering lama ke Suhu Ruang tanpa menghapus stok/tanggal yang sudah tersimpan.
+- Otorisasi memerlukan migrasi `budget_planner.0001_initial` (kuota guest) dan `pantry.0008_pantryitem_user_pantrynamecorrection_user_and_more` (pemilik stok/koreksi). Data sesi lama dipertahankan dengan `user=NULL`, tidak ditampilkan atau otomatis diklaim oleh akun yang login. Penetapan pemilik data lama harus dilakukan setelah verifikasi, bukan dari ID sesi yang dikirim pengguna.
 - Jalankan `python manage.py collectstatic --noinput` dalam alur deployment. Untuk memperbarui katalog, cadangkan database dan gunakan perintah impor fixture lengkap di atas.
 - Audit lokal belum memverifikasi PWS, koneksi database produksi, atau Gemini live. Pemeriksaan produksi menemukan peringatan HSTS/pengalihan HTTPS; periksa konfigurasi reverse proxy PWS sebelum mengaktifkannya di Django agar tidak menimbulkan redirect loop.
 - Jangan menghapus database/schema sebagai langkah pertama saat deployment gagal. Periksa log aplikasi dan migrasi; reset schema dapat menghapus seluruh akun dan stok pada schema tersebut.
 
-## Peran Pengguna yang Direncanakan
+## Otorisasi Saat Ini
 
-Hak akses berikut adalah target produk. Saat ini Modul 1/2 dapat dipakai guest, stok masih berbasis sesi, Modul 5 wajib login, dan Django Admin tersedia untuk akun staff dengan izin yang sesuai. Pengelolaan master katalog dilakukan melalui command impor; CRUD katalog di Django Admin belum didaftarkan.
+Pembatasan berlaku pada backend, bukan hanya tombol navigasi. Halaman Modul 2/4/5 mengarahkan guest ke login dengan `next`; API pantry mengembalikan JSON HTTP 401. CSRF tetap wajib untuk request perubahan data. CRUD katalog di Django Admin belum didaftarkan; pengelolaan master katalog dilakukan melalui command impor.
 
 | Peran | Hak Akses |
 | --- | --- |
-| Guest | Mengakses landing page dan informasi fitur, serta register/login. Simulasi kalkulator budget bersifat opsional. |
-| Registered User | Mengelola budget planner, daftar belanja, Virtual Pantry melalui OCR struk atau input manual, profil dan preferensi, serta resep favorit; melihat resep dan riwayat masak, mencatat **Sudah Masak**, serta mengakses Dashboard dan modal market locator. |
-| Administrator | Mengelola master bahan, harga referensi, serta database resep masakan Indonesia. |
+| Guest | Landing, register/login, dan trial Modul 1: 3 kalkulasi berhasil per 24 jam per browser. Tidak dapat mengakses Modul 2/4/5 atau API pantry/Gemini. |
+| Registered User | Modul 1 tanpa batas trial guest; Modul 2 untuk stok milik sendiri; template Modul 4 dan beranda Modul 5. Fitur resep, profil, ulasan, dan tracker yang belum dibuat tetap belum tersedia. |
+| Administrator | Django Admin hanya untuk staff dengan izin yang sesuai. Akun staff tidak otomatis mendapat akses stok akun lain melalui API pantry. |
+
+Kuota guest disimpan dalam tabel `GuestTrial`, dengan ID acak bertanda tangan pada cookie HttpOnly. Jendela 24 jam dimulai dari **kalkulasi berhasil pertama**; input tidak valid, error kalkulasi, dan budget belum cukup tidak mengurangi kuota. Pengambilan kuota memakai UPDATE bersyarat atomik sehingga request dengan pembacaan counter lama tidak mendapat slot keempat. Request keempat ditolak HTTP 429 sebelum kalkulasi jika kuota sudah habis. Hasil terakhir disimpan dalam sesi dan tetap dapat dilihat saat reload selama sesi tersebut masih ada. Refresh, logout, atau replay cookie lama tidak mereset kuota; cookie trial memakai Secure di produksi.
+
+**Batas trial:** ini bukan identitas per orang. Menghapus cookie, mode incognito, browser lain, atau menolak cookie bisa melewati batas. Belum ada rate limit IP/global atau pembersihan otomatis baris trial lama. Kuota Gemini masih per sesi/hari untuk pengguna login, bukan pembatas biaya global.
 
 ## Deployment dan Desain
 

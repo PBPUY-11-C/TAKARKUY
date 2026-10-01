@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -50,6 +51,10 @@ class PantryItem(models.Model):
     ]
     SOURCE_CHOICES = [("ocr", "Struk"), ("manual", "Manual")]
 
+    # Null is reserved for preserved legacy stock whose owner cannot be established.
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE
+    )
     session_id = models.CharField(max_length=32, db_index=True)
     name = models.CharField(max_length=255)
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, blank=True, default="")
@@ -72,8 +77,11 @@ class PantryItem(models.Model):
 
 
 class PantryNameCorrection(models.Model):
-    """An OCR spelling explicitly corrected in one browser session."""
+    """An OCR spelling explicitly corrected by one account."""
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE
+    )
     session_id = models.CharField(max_length=32, db_index=True)
     raw_name = models.CharField(max_length=255)
     normalized_name = models.CharField(max_length=255)
@@ -83,6 +91,9 @@ class PantryNameCorrection(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
+                fields=["user", "normalized_name"], name="pantry_user_ocr_name_unique"
+            ),
+            models.UniqueConstraint(
                 fields=["session_id", "normalized_name"], name="pantry_session_ocr_name_unique"
-            )
+            ),
         ]

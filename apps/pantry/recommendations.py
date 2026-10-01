@@ -102,18 +102,24 @@ def _storage(ingredient_code):
     return storage_options(ingredient_code).get(DEFAULT_LOCATION)
 
 
-def resolve_names(names, session_id, *, allow_llm=True):
+def resolve_names(names, session_id, *, user=None, allow_llm=True):
     entries = _catalog_entries()
-    learned = {
-        correction.normalized_name: correction.ingredient_id
-        for correction in PantryNameCorrection.objects.filter(session_id=session_id)
-    }
+    learned = (
+        {
+            correction.normalized_name: correction.ingredient_id
+            for correction in PantryNameCorrection.objects.filter(user=user)
+        }
+        if user is not None
+        else {}
+    )
     normalized_names = {normalize_name(name) for name in names}
     community = {}
     votes = (
-        PantryNameCorrection.objects.filter(normalized_name__in=normalized_names)
+        PantryNameCorrection.objects.filter(
+            normalized_name__in=normalized_names, user__isnull=False
+        )
         .values("normalized_name", "ingredient_id")
-        .annotate(sessions=Count("session_id", distinct=True))
+        .annotate(accounts=Count("user_id", distinct=True))
     )
     for vote in votes:
         community.setdefault(vote["normalized_name"], []).append(vote)
@@ -132,7 +138,7 @@ def resolve_names(names, session_id, *, allow_llm=True):
             codes[index], methods[index] = next(iter(exact)), "katalog"
             continue
         votes_for_name = community.get(normalized, [])
-        if len(votes_for_name) == 1 and votes_for_name[0]["sessions"] >= 5:
+        if len(votes_for_name) == 1 and votes_for_name[0]["accounts"] >= 5:
             codes[index], methods[index] = votes_for_name[0]["ingredient_id"], "koreksi_bersama"
             continue
         candidates, scores = _candidates(normalized, entries)
