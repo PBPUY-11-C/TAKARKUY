@@ -13,13 +13,15 @@ class Ingredient(models.Model):
     nutrition_source = models.CharField(max_length=255, blank=True)
     nutrition_source_id = models.CharField(max_length=100, blank=True)
     nutrition_verified = models.BooleanField(default=False)
-    calories_method = models.CharField(max_length=255, blank=True)
+    calories_method = models.TextField(blank=True)
     nutrition_source_url = models.URLField(max_length=600, blank=True)
 
 
 class IngredientPrice(models.Model):
     price_code = models.CharField(max_length=100, primary_key=True)
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT, db_column='ingredient_code')
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.PROTECT, db_column="ingredient_code"
+    )
     price_rupiah = models.DecimalField(max_digits=14, decimal_places=2)
     quantity = models.FloatField()
     unit = models.CharField(max_length=30)
@@ -33,12 +35,14 @@ class IngredientPrice(models.Model):
     price_status = models.CharField(max_length=50)
 
     class Meta:
-        indexes = [models.Index(fields=['ingredient', 'region', 'recorded_at'])]
+        indexes = [models.Index(fields=["ingredient", "region", "recorded_at"])]
 
 
 class IngredientShelfLife(models.Model):
     shelf_life_code = models.CharField(max_length=100, primary_key=True)
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT, db_column='ingredient_code')
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.PROTECT, db_column="ingredient_code"
+    )
     storage_location = models.CharField(max_length=30)
     min_days = models.PositiveIntegerField()
     max_days = models.PositiveIntegerField()
@@ -71,8 +75,10 @@ class Recipe(models.Model):
 
 class RecipeIngredient(models.Model):
     recipe_ingredient_code = models.CharField(max_length=100, primary_key=True)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column='recipe_code')
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT, db_column='ingredient_code')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column="recipe_code")
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.PROTECT, db_column="ingredient_code"
+    )
     quantity = models.FloatField(null=True, blank=True)
     unit = models.CharField(max_length=30)
     is_optional = models.BooleanField(default=False)
@@ -83,7 +89,7 @@ class RecipeIngredient(models.Model):
 
 class RecipeTag(models.Model):
     recipe_tag_code = models.CharField(max_length=100, primary_key=True)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column='recipe_code')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column="recipe_code")
     tag = models.CharField(max_length=100)
     source = models.CharField(max_length=255)
 
@@ -92,13 +98,17 @@ class IngredientAlias(models.Model):
     alias_code = models.CharField(max_length=100, primary_key=True)
     source = models.CharField(max_length=255)
     raw_name = models.CharField(max_length=255)
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT, db_column='ingredient_code')
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.PROTECT, db_column="ingredient_code"
+    )
     mapping_status = models.CharField(max_length=50)
 
 
 class UnitConversion(models.Model):
     conversion_code = models.CharField(max_length=100, primary_key=True)
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT, db_column='ingredient_code')
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.PROTECT, db_column="ingredient_code"
+    )
     unit = models.CharField(max_length=30)
     gram_equivalent = models.FloatField(null=True, blank=True)
     source = models.CharField(max_length=255)

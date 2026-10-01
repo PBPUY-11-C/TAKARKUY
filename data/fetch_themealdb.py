@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fetch raw TheMealDB candidates for human review; never publishes them to planner tables."""
+
 import csv
 import json
 from datetime import datetime, timezone
@@ -7,7 +8,6 @@ from pathlib import Path
 from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-
 
 ROOT = Path(__file__).resolve().parent
 RAW = ROOT / "raw" / "themealdb_breakfast_snapshot.json"
@@ -46,8 +46,17 @@ def main():
     RAW.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     STAGING.parent.mkdir(parents=True, exist_ok=True)
-    fields = ["source_id", "name", "area", "category", "source_url", "image_url",
-              "raw_ingredients_json", "instructions", "review_status"]
+    fields = [
+        "source_id",
+        "name",
+        "area",
+        "category",
+        "source_url",
+        "image_url",
+        "raw_ingredients_json",
+        "instructions",
+        "review_status",
+    ]
     with STAGING.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
@@ -58,17 +67,20 @@ def main():
                 measure = (meal.get(f"strMeasure{index}") or "").strip()
                 if ingredient:
                     raw_ingredients.append({"ingredient": ingredient, "measure": measure})
-            writer.writerow({
-                "source_id": meal.get("idMeal", ""),
-                "name": meal.get("strMeal", ""),
-                "area": meal.get("strArea", ""),
-                "category": meal.get("strCategory", ""),
-                "source_url": meal.get("strSource") or f"https://www.themealdb.com/meal/{meal.get('idMeal', '')}",
-                "image_url": meal.get("strMealThumb", ""),
-                "raw_ingredients_json": json.dumps(raw_ingredients, ensure_ascii=False),
-                "instructions": meal.get("strInstructions", ""),
-                "review_status": "needs_manual_mapping_and_rights_review",
-            })
+            writer.writerow(
+                {
+                    "source_id": meal.get("idMeal", ""),
+                    "name": meal.get("strMeal", ""),
+                    "area": meal.get("strArea", ""),
+                    "category": meal.get("strCategory", ""),
+                    "source_url": meal.get("strSource")
+                    or f"https://www.themealdb.com/meal/{meal.get('idMeal', '')}",
+                    "image_url": meal.get("strMealThumb", ""),
+                    "raw_ingredients_json": json.dumps(raw_ingredients, ensure_ascii=False),
+                    "instructions": meal.get("strInstructions", ""),
+                    "review_status": "needs_manual_mapping_and_rights_review",
+                }
+            )
     print(f"Fetched {len(details)} recipes; raw snapshot: {RAW}; review queue: {STAGING}")
 
 

@@ -13,3 +13,5 @@ staticfiles/
 # Environment and editor files
 .env*
 .vscode/
+.DS_Store
+.ruff_cache/

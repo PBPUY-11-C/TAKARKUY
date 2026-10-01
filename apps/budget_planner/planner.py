@@ -1,13 +1,15 @@
 """Deterministic planner over the curated local recipe and price catalog."""
 
+import json
 from collections import Counter, defaultdict
-from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP
-from itertools import combinations_with_replacement, product
+from decimal import ROUND_CEILING, ROUND_HALF_UP, Decimal, InvalidOperation
 from heapq import nsmallest
+from itertools import combinations_with_replacement, product
 from math import ceil
 
 from apps.catalog.models import IngredientPrice, Recipe
 
+from .purchase_units import load_fruit_rules, whole_fruit_quote
 
 REGION = "Kabupaten Garut"
 MEALS = ("sarapan", "makan_siang", "makan_malam")
@@ -30,13 +32,48 @@ CALORIE_LIMITS_BY_MEAL = {
 }
 
 
+def purchase_grams(link):
+    """Price whole chicken by gross mass without counting bones as eaten protein."""
+    edible = Decimal(str(link.quantity))
+    if link.quantity_status != "estimated":
+        return edible
+    try:
+        audit = json.loads(link.raw_text)
+    except (ValueError, TypeError):
+        return edible
+    if (
+        not isinstance(audit, list)
+        or not audit
+        or not all(
+            isinstance(row, dict) and row.get("purchase_quantity_g") not in ("", None)
+            for row in audit
+        )
+    ):
+        return edible
+    try:
+        gross = sum((Decimal(str(row["purchase_quantity_g"])) for row in audit), Decimal(0))
+        source_edible = sum((Decimal(str(row["quantity_g"])) for row in audit), Decimal(0))
+    except (InvalidOperation, KeyError, TypeError) as exc:
+        raise ValueError("Estimasi massa beli bahan tidak valid.") from exc
+    if (
+        not gross.is_finite()
+        or not source_edible.is_finite()
+        or source_edible <= 0
+        or gross < source_edible
+    ):
+        raise ValueError("Estimasi massa beli bahan tidak valid.")
+    return edible * gross / source_edible
+
+
 def money(value):
     return int(value.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
 def round_up_price(value, multiple):
     """Round a rupiah estimate up to the next Rp100 or Rp500."""
-    return int((Decimal(value) / Decimal(multiple)).to_integral_value(rounding=ROUND_CEILING) * multiple)
+    return int(
+        (Decimal(value) / Decimal(multiple)).to_integral_value(rounding=ROUND_CEILING) * multiple
+    )
 
 
 def budget_target_minimum(budget):
@@ -54,12 +91,20 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
         # recipe sets have the same total. Keep the best set for each count/cost.
         # Each candidate enters once, which also prevents repeat menus.
         states = [{} for _ in range(slots + 1)]
-        states[0][0] = ((), 0, 0, 0, 0)  # indexes, all-target hits, total hits, recent hits, prior hits
+        states[0][0] = (
+            (),
+            0,
+            0,
+            0,
+            0,
+        )  # indexes, all-target hits, total hits, recent hits, prior hits
         prior_codes = set(prior_slot_codes)
         for index, item in enumerate(candidates):
             code = item["recipe"].pk
             for count in range(min(slots, index + 1), 0, -1):
-                for cost, (indexes, all_hits, target_hits, recent_hits, prior_hits) in states[count - 1].items():
+                for cost, (indexes, all_hits, target_hits, recent_hits, prior_hits) in states[
+                    count - 1
+                ].items():
                     new_cost = cost + item["cost"]
                     matched = len(preferred_tags & item["tags"])
                     candidate = (
@@ -71,11 +116,15 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
                     )
                     old = states[count].get(new_cost)
                     if old is None or (-candidate[4], candidate[1], candidate[2], -candidate[3]) > (
-                        -old[4], old[1], old[2], -old[3]
+                        -old[4],
+                        old[1],
+                        old[2],
+                        -old[3],
                     ):
                         states[count][new_cost] = candidate
-        patterns = (tuple(candidates[index] for index in state[0])
-                    for state in states[slots].values())
+        patterns = (
+            tuple(candidates[index] for index in state[0]) for state in states[slots].values()
+        )
     else:
         patterns = combinations_with_replacement(candidates, slots)
     for pattern in patterns:
@@ -88,8 +137,11 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
         recipe_counts = Counter(item["recipe"].pk for item in pattern)
         spread = _spread(pattern, recent_codes, prior_slot_codes)
         pattern_score = (
-            -sum(1 for index, item in enumerate(spread)
-                 if index < len(prior_slot_codes) and prior_slot_codes[index] == item["recipe"].pk),
+            -sum(
+                1
+                for index, item in enumerate(spread)
+                if index < len(prior_slot_codes) and prior_slot_codes[index] == item["recipe"].pk
+            ),
             sum(preferred_tags <= item["tags"] for item in pattern),
             sum(len(preferred_tags & item["tags"]) for item in pattern),
             -sum(1 for item in pattern if item["recipe"].pk in recent_codes),
@@ -110,12 +162,15 @@ def _spread(pattern, recent_codes, prior_slot_codes=()):
     for day in range(sum(counts.values())):
         old_code = prior_slot_codes[day] if day < len(prior_slot_codes) else None
         available = [code for code in order if counts[code]]
-        selected = min(available, key=lambda code: (
-            code == old_code,
-            code in recent_codes,
-            by_code[code]["cost"],
-            code,
-        ))
+        selected = min(
+            available,
+            key=lambda code: (
+                code == old_code,
+                code in recent_codes,
+                by_code[code]["cost"],
+                code,
+            ),
+        )
         result.append(by_code[selected])
         counts[selected] -= 1
     return result
@@ -143,8 +198,10 @@ def _best_patterns_for_total(meals, meal_patterns, total):
                 best_rank, best_choice = rank, (first, second)
     else:
         last_group = groups[2]
-        upper_rank = tuple(sum(max(pattern["score"][i] for pattern in group.values())
-                               for group in groups) for i in range(5))
+        upper_rank = tuple(
+            sum(max(pattern["score"][i] for pattern in group.values()) for group in groups)
+            for i in range(5)
+        )
         checks = 0
         first_match_at = None
         for first_cost, first in groups[0].items():
@@ -158,8 +215,9 @@ def _best_patterns_for_total(meals, meal_patterns, total):
                     continue
                 if first_match_at is None:
                     first_match_at = checks
-                rank = tuple(first["score"][i] + second["score"][i] + third["score"][i]
-                             for i in range(5))
+                rank = tuple(
+                    first["score"][i] + second["score"][i] + third["score"][i] for i in range(5)
+                )
                 if best_rank is None or rank > best_rank:
                     best_rank, best_choice = rank, (first, second, third)
                     if rank == upper_rank:
@@ -167,18 +225,30 @@ def _best_patterns_for_total(meals, meal_patterns, total):
     return {meal: choice["items"] for meal, choice in zip(meals, best_choice)}
 
 
-def _nutrition_plan(candidates, meals, days, servings, targets, budget_limit,
-                    recent_codes, prior_slot_recipes):
+def _nutrition_plan(
+    candidates, meals, days, servings, targets, budget_limit, recent_codes, prior_slot_recipes
+):
     """Choose affordable day bundles; nutritional limits apply to each whole day."""
-    protein_floor = ((HIGH_PROTEIN_GRAMS_PER_DAY * len(meals) / Decimal(len(MEALS)))
-                     .quantize(Decimal("1"), rounding=ROUND_CEILING)
-                     if "tinggi_protein" in targets else None)
-    calorie_cap = (sum((CALORIE_LIMITS_BY_MEAL[meal] for meal in meals), Decimal(0))
-                   if "rendah_kalori" in targets else None)
+    protein_floor = (
+        (HIGH_PROTEIN_GRAMS_PER_DAY * len(meals) / Decimal(len(MEALS))).quantize(
+            Decimal("1"), rounding=ROUND_CEILING
+        )
+        if "tinggi_protein" in targets
+        else None
+    )
+    calorie_cap = (
+        sum((CALORIE_LIMITS_BY_MEAL[meal] for meal in meals), Decimal(0))
+        if "rendah_kalori" in targets
+        else None
+    )
     bundles = []
     for items in product(*(candidates[meal] for meal in meals)):
-        protein = sum((item["nutrition"]["protein"] / Decimal(servings) for item in items), Decimal(0))
-        calories = sum((item["nutrition"]["calories"] / Decimal(servings) for item in items), Decimal(0))
+        protein = sum(
+            (item["nutrition"]["protein"] / Decimal(servings) for item in items), Decimal(0)
+        )
+        calories = sum(
+            (item["nutrition"]["calories"] / Decimal(servings) for item in items), Decimal(0)
+        )
         if protein_floor is not None and protein < protein_floor:
             continue
         if calorie_cap is not None and calories > calorie_cap:
@@ -191,7 +261,8 @@ def _nutrition_plan(candidates, meals, days, servings, targets, budget_limit,
         if calorie_cap is not None:
             conditions.append(f"maksimal {money(calorie_cap)} kkal")
         raise ValueError(
-            "Belum ada kombinasi menu yang memenuhi " + " dan ".join(conditions)
+            "Belum ada kombinasi menu yang memenuhi "
+            + " dan ".join(conditions)
             + " per orang untuk waktu makan yang dipilih. Coba tambah variasi resep atau ubah pilihan waktu makan/pantangan."
         )
 
@@ -205,7 +276,9 @@ def _nutrition_plan(candidates, meals, days, servings, targets, budget_limit,
     if round_up_price(min_daily_cost * days, 500) > budget_limit:
         raise ValueError(
             f"Budget belum cukup untuk target gizi ini. Perkiraan batas bawah biaya "
-            f"{days} hari adalah Rp {round_up_price(min_daily_cost * days, 500):,}.".replace(",", ".")
+            f"{days} hari adalah Rp {round_up_price(min_daily_cost * days, 500):,}.".replace(
+                ",", "."
+            )
         )
 
     # A small beam preserves affordable alternatives when a high-cost choice
@@ -217,6 +290,7 @@ def _nutrition_plan(candidates, meals, days, servings, targets, budget_limit,
         for spent, selected, uses in states:
             remaining_budget = budget_limit - spent - remaining_days * min_daily_cost
             target_cost = (budget_limit - spent) / (remaining_days + 1)
+
             def rank_options(enforce_repeat_cap):
                 ranked = []
                 for cost, items in bundles:
@@ -251,21 +325,36 @@ def _nutrition_plan(candidates, meals, days, servings, targets, budget_limit,
                 "Belum ditemukan rencana bervariasi yang memenuhi target gizi dan budget. "
                 "Coba tambah budget, kurangi hari, atau longgarkan pantangan bahan."
             )
-        next_states.sort(key=lambda state: (
-            abs(state[0] - budget_limit * (day + 1) / days),
-            sum(max(0, count - 1) for count in state[2].values()),
-            -state[0],
-        ))
+        next_states.sort(
+            key=lambda state: (
+                abs(state[0] - budget_limit * (day + 1) / days),
+                sum(max(0, count - 1) for count in state[2].values()),
+                -state[0],
+            )
+        )
         states = next_states[:NUTRITION_BEAM_WIDTH]
-    spent, selected, _ = max(states, key=lambda state: (
-        state[0], -sum(max(0, count - 1) for count in state[2].values())
-    ))
-    return spent, {meal: [day_items[index] for day_items in selected]
-                   for index, meal in enumerate(meals)}, protein_floor, calorie_cap
+    spent, selected, _ = max(
+        states, key=lambda state: (state[0], -sum(max(0, count - 1) for count in state[2].values()))
+    )
+    return (
+        spent,
+        {meal: [day_items[index] for day_items in selected] for index, meal in enumerate(meals)},
+        protein_floor,
+        calorie_cap,
+    )
 
 
-def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredients,
-               recent_recipe_codes=(), prior_slot_recipes=None):
+def build_plan(
+    *,
+    budget,
+    days,
+    servings,
+    meal_types,
+    targets,
+    exclude_ingredients,
+    recent_recipe_codes=(),
+    prior_slot_recipes=None,
+):
     """Return the highest affordable total with varied recipes."""
     requested_meals = tuple(meal for meal in MEALS if meal in meal_types)
     if not requested_meals:
@@ -278,16 +367,37 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
     prior_slot_recipes = prior_slot_recipes or {}
     snapshot = (
         IngredientPrice.objects.filter(region=REGION, price_status="published", unit="kg")
-        .order_by("-recorded_at").values_list("recorded_at", flat=True).first()
+        .order_by("-recorded_at")
+        .values_list("recorded_at", flat=True)
+        .first()
     )
     if snapshot is None:
         raise ValueError("Data harga Kabupaten Garut belum tersedia. Impor katalog lebih dulu.")
 
-    prices = {}
+    prices, price_records = {}, {}
     for price in IngredientPrice.objects.filter(
         region=REGION, recorded_at=snapshot, price_status="published", unit="kg"
     ):
         prices[price.ingredient_id] = Decimal(price.price_rupiah) / Decimal(str(price.quantity))
+        price_records[price.ingredient_id] = price
+    # Supplement missing local ingredients only; make mixed provenance visible
+    # in the result instead of claiming every quote came from Garut.
+    for price in IngredientPrice.objects.filter(
+        price_status="retail_reference", unit="kg"
+    ).order_by("-recorded_at", "-price_code"):
+        if price.ingredient_id not in prices and price.quantity > 0:
+            prices[price.ingredient_id] = Decimal(price.price_rupiah) / Decimal(str(price.quantity))
+            price_records[price.ingredient_id] = price
+    fruit_rules = load_fruit_rules()
+
+    def ingredient_purchase_cost(ingredient_code, edible_grams):
+        if ingredient_code in fruit_rules:
+            return whole_fruit_quote(
+                edible_grams, prices[ingredient_code], fruit_rules[ingredient_code]
+            )["cost"]
+        return round_up_price(
+            Decimal(str(edible_grams)) * prices[ingredient_code] / Decimal("1000"), 100
+        )
 
     candidates = defaultdict(list)
     matched_terms, excluded_names = set(), set()
@@ -301,7 +411,8 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
         ingredients = list(recipe.recipeingredient_set.all())
         if any(
             term in link.ingredient.name.casefold()
-            for link in ingredients for term in exclude_ingredients
+            for link in ingredients
+            for term in exclude_ingredients
         ):
             for link in ingredients:
                 for term in exclude_ingredients:
@@ -310,40 +421,56 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
                         excluded_names.add(link.ingredient.name)
             continue
         if not ingredients or any(
-            link.unit != "g" or link.quantity is None or link.quantity <= 0
+            link.unit != "g"
+            or link.quantity is None
+            or link.quantity <= 0
             or link.ingredient_id not in prices
-            or any(getattr(link.ingredient, f"{nutrient}_per_100g") is None for nutrient in NUTRIENTS)
+            or any(
+                getattr(link.ingredient, f"{nutrient}_per_100g") is None for nutrient in NUTRIENTS
+            )
             for link in ingredients
         ):
             continue
 
         scale = Decimal(servings) / Decimal(recipe.base_servings)
         ingredient_costs = {
-            link.recipe_ingredient_code: round_up_price(
-                Decimal(str(link.quantity)) * scale * prices[link.ingredient_id] / Decimal("1000"), 100
+            link.recipe_ingredient_code: ingredient_purchase_cost(
+                link.ingredient_id, purchase_grams(link) * scale
             )
             for link in ingredients
         }
         nutrition = {
-            nutrient: sum((
-                Decimal(str(link.quantity)) * scale
-                * Decimal(str(getattr(link.ingredient, f"{nutrient}_per_100g"))) / Decimal("100")
-                for link in ingredients
-            ), Decimal("0"))
+            nutrient: sum(
+                (
+                    Decimal(str(link.quantity))
+                    * scale
+                    * Decimal(str(getattr(link.ingredient, f"{nutrient}_per_100g")))
+                    / Decimal("100")
+                    for link in ingredients
+                ),
+                Decimal("0"),
+            )
             for nutrient in NUTRIENTS
         }
-        candidates[recipe.meal_type].append({
-            "recipe": recipe, "tags": tags, "ingredients": ingredients,
-            "ingredient_costs": ingredient_costs, "scale": scale,
-            "cost": sum(ingredient_costs.values()), "nutrition": nutrition,
-        })
+        candidates[recipe.meal_type].append(
+            {
+                "recipe": recipe,
+                "tags": tags,
+                "ingredients": ingredients,
+                "ingredient_costs": ingredient_costs,
+                "scale": scale,
+                "cost": sum(ingredient_costs.values()),
+                "nutrition": nutrition,
+            }
+        )
 
     missing_meals = [meal for meal in requested_meals if not candidates[meal]]
     available_meals = tuple(meal for meal in requested_meals if candidates[meal])
     if not available_meals:
         requested_labels = ", ".join(MEAL_LABELS[meal].lower() for meal in requested_meals)
         raise ValueError(
-            "Belum ada resep siap hitung yang cocok untuk waktu makan: " + requested_labels
+            "Belum ada resep siap hitung yang cocok untuk waktu makan: "
+            + requested_labels
             + ". Coba kurangi bahan yang dihindari atau lengkapi katalog resep."
         )
 
@@ -351,8 +478,9 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
         candidates[meal].sort(key=lambda item: item["recipe"].pk)
         prior_codes = prior_slot_recipes.get(meal, [])
         if days == 1 and prior_codes and prior_codes[0]:
-            alternatives = [item for item in candidates[meal]
-                            if item["recipe"].pk != prior_codes[0]]
+            alternatives = [
+                item for item in candidates[meal] if item["recipe"].pk != prior_codes[0]
+            ]
             if alternatives:
                 candidates[meal] = alternatives
 
@@ -362,9 +490,14 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
             scaled_costs = []
             for item in candidates[meal]:
                 recipe_scale = Decimal(portions) / Decimal(item["recipe"].base_servings)
-                scaled_costs.append(sum(round_up_price(
-                    Decimal(str(link.quantity)) * recipe_scale * prices[link.ingredient_id] / Decimal("1000"), 100
-                ) for link in item["ingredients"]))
+                scaled_costs.append(
+                    sum(
+                        ingredient_purchase_cost(
+                            link.ingredient_id, purchase_grams(link) * recipe_scale
+                        )
+                        for link in item["ingredients"]
+                    )
+                )
             scaled_costs.sort()
             if len(scaled_costs) >= plan_days:
                 total += sum(scaled_costs[:plan_days])
@@ -377,15 +510,25 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
     protein_floor = calorie_cap = None
     if "tinggi_protein" in targets or "rendah_kalori" in targets:
         total, chosen_by_meal, protein_floor, calorie_cap = _nutrition_plan(
-            candidates, available_meals, days, servings, targets, budget_limit,
-            recent_recipe_codes, prior_slot_recipes,
+            candidates,
+            available_meals,
+            days,
+            servings,
+            targets,
+            budget_limit,
+            recent_recipe_codes,
+            prior_slot_recipes,
         )
         feasible = True
     else:
         preferred = {TARGET_TAGS[target] for target in targets}
         meal_patterns = {
             meal: _recipe_patterns(
-                candidates[meal], days, preferred, recent_recipe_codes, prior_slot_recipes.get(meal, [])
+                candidates[meal],
+                days,
+                preferred,
+                recent_recipe_codes,
+                prior_slot_recipes.get(meal, []),
             )
             for meal in available_meals
         }
@@ -409,7 +552,9 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
             total = (reachable.bit_length() - 1) * 100
             selected_patterns = _best_patterns_for_total(available_meals, meal_patterns, total)
             chosen_by_meal = {
-                meal: _spread(selected_patterns[meal], recent_recipe_codes, prior_slot_recipes.get(meal, []))
+                meal: _spread(
+                    selected_patterns[meal], recent_recipe_codes, prior_slot_recipes.get(meal, [])
+                )
                 for meal in available_meals
             }
         else:
@@ -417,7 +562,9 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
             chosen_by_meal = {}
             for meal in available_meals:
                 cheapest = meal_patterns[meal][min(meal_patterns[meal])]["items"]
-                chosen_by_meal[meal] = _spread(cheapest, recent_recipe_codes, prior_slot_recipes.get(meal, []))
+                chosen_by_meal[meal] = _spread(
+                    cheapest, recent_recipe_codes, prior_slot_recipes.get(meal, [])
+                )
 
     # Ceiling is the highest spend possible in this catalog while preserving
     # the same anti-repeat rule. It lets the UI explain large unused budgets.
@@ -439,11 +586,13 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
 
     min_total = minimum_plan_cost(servings, days)
     feasible_days = [
-        option for option in range(1, days)
+        option
+        for option in range(1, days)
         if round_up_price(minimum_plan_cost(servings, option), 500) <= budget
     ]
     feasible_servings = [
-        option for option in range(1, servings)
+        option
+        for option in range(1, servings)
         if round_up_price(minimum_plan_cost(option, days), 500) <= budget
     ]
     required_budget = round_up_price(min_total, 500)
@@ -462,29 +611,89 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
             for link in item["ingredients"]:
                 code = link.ingredient_id
                 if code not in shopping:
-                    shopping[code] = {"name": link.ingredient.name,
-                                      "category": "sayur" if code == "ING-KUBIS" else link.ingredient.category,
-                                      "quantity": Decimal("0"), "cost": 0}
-                shopping[code]["quantity"] += Decimal(str(link.quantity)) * item["scale"]
+                    shopping[code] = {
+                        "name": link.ingredient.name,
+                        "category": "sayur" if code == "ING-KUBIS" else link.ingredient.category,
+                        "quantity": Decimal("0"),
+                        "cost": 0,
+                    }
+                shopping[code]["quantity"] += purchase_grams(link) * item["scale"]
                 shopping[code]["cost"] += item["ingredient_costs"][link.recipe_ingredient_code]
-            meals.append({"type": meal, "label": MEAL_LABELS[meal], "recipe_code": item["recipe"].pk,
-                          "name": item["recipe"].name, "cost": item["cost"],
-                          "calories": money(item["nutrition"]["calories"] / Decimal(servings))})
-        schedule.append({"number": day + 1, "meals": meals,
-                         "protein": money(day_nutrition["protein"] / Decimal(servings)),
-                         "calories": money(day_nutrition["calories"] / Decimal(servings))})
+            meals.append(
+                {
+                    "type": meal,
+                    "label": MEAL_LABELS[meal],
+                    "recipe_code": item["recipe"].pk,
+                    "name": item["recipe"].name,
+                    "cost": item["cost"],
+                    "estimated_quantities": any(
+                        link.quantity_status == "estimated" for link in item["ingredients"]
+                    ),
+                    "calories": money(item["nutrition"]["calories"] / Decimal(servings)),
+                }
+            )
+        schedule.append(
+            {
+                "number": day + 1,
+                "meals": meals,
+                "protein": money(day_nutrition["protein"] / Decimal(servings)),
+                "calories": money(day_nutrition["calories"] / Decimal(servings)),
+            }
+        )
 
     groups = defaultdict(list)
-    for item in shopping.values():
-        groups[item["category"]].append({"name": item["name"], "quantity": money(item["quantity"]), "cost": item["cost"]})
+    for code, item in shopping.items():
+        fruit_purchase = None
+        if code in fruit_rules:
+            fruit_purchase = whole_fruit_quote(item["quantity"], prices[code], fruit_rules[code])
+            item["cost"] = fruit_purchase["cost"]
+        groups[item["category"]].append(
+            {
+                "name": item["name"],
+                "quantity": money(item["quantity"]),
+                "cost": item["cost"],
+                "purchase_units": fruit_purchase["units"] if fruit_purchase else None,
+                "purchase_unit": fruit_rules[code]["unit"] if fruit_purchase else None,
+                "purchase_gross_grams": money(fruit_purchase["gross_grams"])
+                if fruit_purchase
+                else None,
+                "leftover_edible_grams": money(fruit_purchase["leftover_edible_grams"])
+                if fruit_purchase
+                else None,
+                "price_reference": price_records[code].source
+                if price_records[code].price_status == "retail_reference"
+                else "",
+                "price_reference_url": price_records[code].source_url
+                if price_records[code].price_status == "retail_reference"
+                else "",
+            }
+        )
     shopping_groups = [
-        {"name": category.replace("_", " ").title(), "items": sorted(items, key=lambda item: item["name"])}
+        {
+            "name": category.replace("_", " ").title(),
+            "items": sorted(items, key=lambda item: item["name"]),
+        }
         for category, items in sorted(groups.items())
     ]
 
-    rounded_total = round_up_price(total, 500)
-    rounded_ceiling = round_up_price(catalog_ceiling, 500)
+    purchase_total = sum(item["cost"] for item in shopping.values())
+    rounded_total = round_up_price(purchase_total, 500)
+    # At a budget above every conservative recipe quote, the selected schedule
+    # is the catalog maximum found by the existing search. Re-quote that whole
+    # schedule rather than reporting the inflated sum of per-recipe fruit buys.
+    rounded_ceiling = (
+        rounded_total
+        if budget_limit >= catalog_ceiling
+        and "tinggi_protein" not in targets
+        and "rendah_kalori" not in targets
+        else round_up_price(catalog_ceiling, 500)
+    )
     target_minimum = budget_target_minimum(budget)
+    if not feasible and rounded_total <= budget:
+        # Several meals can share one fruit purchase. A conservative per-recipe
+        # search can reject a plan whose combined shopping quote still fits.
+        feasible = True
+    required_budget = min(required_budget, rounded_total)
     within_budget = feasible and rounded_total <= budget
     return {
         "schedule": schedule,
@@ -493,10 +702,40 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
         "missing_meal_labels": [MEAL_LABELS[meal] for meal in missing_meals],
         "excluded_ingredients": sorted(excluded_names),
         "unmatched_exclusions": [term for term in exclude_ingredients if term not in matched_terms],
-        "planned_recipe_codes": sorted({meal["recipe_code"] for day in schedule for meal in day["meals"]}),
+        "planned_recipe_codes": sorted(
+            {meal["recipe_code"] for day in schedule for meal in day["meals"]}
+        ),
         "shopping_groups": shopping_groups,
         "total": rounded_total,
-        "rounding_adjustment": rounded_total - total,
+        "rounding_adjustment": rounded_total - purchase_total,
+        "fruit_purchase_estimates": any(code in fruit_rules for code in shopping),
+        "estimated_quantities": any(
+            meal["estimated_quantities"] for day in schedule for meal in day["meals"]
+        ),
+        "nutrition_proxies": any(
+            "ESTIMASI PROKSI" in link.ingredient.calories_method
+            for meal in chosen_by_meal.values()
+            for item in meal
+            for link in item["ingredients"]
+        ),
+        "nutrition_proxy_names": sorted(
+            {
+                link.ingredient.name
+                for meal in chosen_by_meal.values()
+                for item in meal
+                for link in item["ingredients"]
+                if "ESTIMASI PROKSI" in link.ingredient.calories_method
+            }
+        ),
+        "purchase_yield_estimates": any(
+            purchase_grams(link) > Decimal(str(link.quantity))
+            for meal in chosen_by_meal.values()
+            for item in meal
+            for link in item["ingredients"]
+        ),
+        "retail_price_references": any(
+            price_records[code].price_status == "retail_reference" for code in shopping
+        ),
         "difference": (
             max(0, (int(budget) - rounded_total) // 100 * 100)
             if rounded_total <= budget
@@ -520,9 +759,8 @@ def build_plan(*, budget, days, servings, meal_types, targets, exclude_ingredien
         },
         "protein_floor": money(protein_floor) if protein_floor is not None else None,
         "calorie_cap": money(calorie_cap) if calorie_cap is not None else None,
-        "repeated_recipes": len({meal["recipe_code"] for day in schedule for meal in day["meals"]}) < sum(
-            len(day["meals"]) for day in schedule
-        ),
+        "repeated_recipes": len({meal["recipe_code"] for day in schedule for meal in day["meals"]})
+        < sum(len(day["meals"]) for day in schedule),
         "region": REGION,
         "snapshot": snapshot,
     }

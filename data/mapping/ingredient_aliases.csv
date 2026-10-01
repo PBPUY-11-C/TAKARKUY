@@ -86,7 +86,7 @@ ALS-1425FD74F33E,PIHPS BI,Beras Kualitas Medium II,ING-BERAS-KUALITAS-MEDIUM-II,
 ALS-F683740646E1,PIHPS BI,Beras Kualitas Super I,ING-BERAS-KUALITAS-SUPER-I,reviewed
 ALS-F8E2852586C0,PIHPS BI,Beras Kualitas Super II,ING-BERAS-KUALITAS-SUPER-II,reviewed
 ALS-74AB0E421FD6,PIHPS BI,Cabai Merah Besar,ING-CABAI-MERAH-BESAR,reviewed
-ALS-FC5C671146C7,PIHPS BI,Cabai Merah Keriting ,ING-CABAI-MERAH-KERITING,reviewed
+ALS-FC5C671146C7,PIHPS BI,Cabai Merah Keriting,ING-CABAI-MERAH-KERITING,reviewed
 ALS-3A2E21C17AE7,PIHPS BI,Cabai Rawit Hijau,ING-CABAI-RAWIT-HIJAU,reviewed
 ALS-4B8827743FA6,PIHPS BI,Cabai Rawit Merah,ING-CABAI-RAWIT-MERAH,reviewed
 ALS-FA340198D569,PIHPS BI,Daging Ayam Ras Segar,ING-DAGING-AYAM-RAS-SEGAR,reviewed
@@ -282,7 +282,7 @@ ALS-4F4B00E11FFE,Nama katalog TAKARKUY,Lengkeng,ING-LENGKENG,reviewed
 ALS-E91165059883,Nama katalog TAKARKUY,Ikan Dori,ING-IKAN-DORI,reviewed
 ALS-CF1346DC576D,Nama katalog TAKARKUY,Kol,ING-KOL,reviewed
 ALS-26DBB1B5C535,Nama katalog TAKARKUY,Timun,ING-TIMUN,reviewed
-ALS-53EB38D61ECB,Nama katalog TAKARKUY,Roti,ING-ROTI,reviewed
+ALS-68E1E8D5E4C9,Nama katalog TAKARKUY,Roti Putih,ING-ROTI,reviewed
 ALS-97D92D88EEDB,Nama katalog TAKARKUY,Tahu Mentah / pcs,ING-TAHU-MENTAH-PCS,reviewed
 ALS-4240B3229973,Nama katalog TAKARKUY,Tempe / pcs,ING-TEMPE-PCS,reviewed
 ALS-B1D8A7B06018,Nama katalog TAKARKUY,Bawang Merah Ukuran Sedang,ING-BAWANG-MERAH-UKURAN-SEDANG,reviewed
@@ -302,6 +302,53 @@ ALS-AF7E5A603FF7,Nama katalog TAKARKUY,Gula Pasir Lokal,ING-GULA-PASIR-LOKAL,rev
 ALS-A8248388475D,Nama katalog TAKARKUY,Minyak Goreng Kemasan Bermerk 1,ING-MINYAK-GORENG-KEMASAN-BERMERK-1,reviewed
 ALS-B5F638ADBAD8,Nama katalog TAKARKUY,Minyak Goreng Kemasan Bermerk 2,ING-MINYAK-GORENG-KEMASAN-BERMERK-2,reviewed
 ALS-FB8FED8DFC52,Nama katalog TAKARKUY,Telur Ayam Ras Segar,ING-TELUR-AYAM-RAS-SEGAR,reviewed
+ALS-1501F4B5380D,Nama katalog TAKARKUY,Kemiri,ING-KEMIRI,reviewed
+ALS-5EDA97AF9661,Nama katalog TAKARKUY,Kunyit Segar,ING-KUNYIT,reviewed
+ALS-E01EF8DAE883,Nama katalog TAKARKUY,Lengkuas Segar,ING-LENGKUAS,reviewed
+ALS-A7F35B5E190A,Nama katalog TAKARKUY,Kemangi Segar,ING-KEMANGI,reviewed
+ALS-15C52E2637EB,Nama katalog TAKARKUY,Jahe Segar,ING-JAHE,reviewed
+ALS-34A758AEA7E6,Nama katalog TAKARKUY,Serai Segar,ING-SERAI,reviewed
+ALS-573FB25DBC45,Nama katalog TAKARKUY,Merica Hitam,ING-MERICA,reviewed
+ALS-F98D3E764C73,Nama katalog TAKARKUY,Ketumbar Biji Kering,ING-KETUMBAR-BIJI,reviewed
+ALS-4BF1B1EC0DFD,Nama katalog TAKARKUY,Kunyit Bubuk,ING-KUNYIT-BUBUK,reviewed
+ALS-83655CA5AECE,Nama katalog TAKARKUY,Daun Ketumbar Segar,ING-DAUN-KETUMBAR,reviewed
+ALS-1B230C741A34,Nama katalog TAKARKUY,Parsley Segar,ING-PARSLEY,reviewed
+ALS-615B96A0D05D,Nama katalog TAKARKUY,Basil Segar,ING-BASIL,reviewed
+ALS-7AEE5F65D18F,Nama katalog TAKARKUY,Daun Bawang,ING-DAUN-BAWANG,reviewed
+ALS-199AE68FB8FA,Nama katalog TAKARKUY,Seledri,ING-SELEDRI,reviewed
+ALS-9F6CE9C00B3B,Nama katalog TAKARKUY,Jeruk Nipis (Daging/Jus),ING-JERUK-NIPIS,reviewed
+ALS-0A6B097A3841,Nama katalog TAKARKUY,Lemon Tanpa Kulit,ING-LEMON,reviewed
+ALS-BDE6747AF7A6,Nama katalog TAKARKUY,Maizena,ING-MAIZENA,reviewed
+ALS-26C0E9056337,Nama katalog TAKARKUY,Mentega,ING-MENTEGA,reviewed
+ALS-96138F4E5F94,Nama katalog TAKARKUY,Minyak Zaitun,ING-MINYAK-ZAITUN,reviewed
+ALS-3B6995287D75,Nama katalog TAKARKUY,Santan,ING-SANTAN,reviewed
+ALS-2556E0194960,Nama katalog TAKARKUY,Kecap Asin,ING-KECAP-ASIN,reviewed
+ALS-BB93AEF1975A,Nama katalog TAKARKUY,Paprika Merah,ING-PAPRIKA-MERAH,reviewed
+ALS-D033E2B5763F,Nama katalog TAKARKUY,Paprika Hijau,ING-PAPRIKA-HIJAU,reviewed
+ALS-E42C8D648F9F,Nama katalog TAKARKUY,Jintan,ING-CUMIN,reviewed
+ALS-C7382C6A209E,Nama katalog TAKARKUY,Paprika Bubuk,ING-PAPRIKA-BUBUK,reviewed
+ALS-5AFCD60D5299,Nama katalog TAKARKUY,Thyme Kering,ING-THYME,reviewed
+ALS-390C4C647692,Nama katalog TAKARKUY,Kayu Manis,ING-KAYU-MANIS,reviewed
+ALS-8758F70799FE,Nama katalog TAKARKUY,Pala,ING-PALA,reviewed
+ALS-C3DB8E492E85,Nama katalog TAKARKUY,Saus Tiram,ING-SAUS-TIRAM,reviewed
+ALS-AB7D8EDFA576,Nama katalog TAKARKUY,Saus Tomat,ING-SAUS-TOMAT,reviewed
+ALS-1EBD0FFC5AE5,Nama katalog TAKARKUY,Saus Teriyaki,ING-SAUS-TERIYAKI,reviewed
+ALS-A4A1B80F1808,Nama katalog TAKARKUY,Margarin,ING-MARGARIN,reviewed
+ALS-C2321835D729,Nama katalog TAKARKUY,Daun Mint Segar,ING-MINT,reviewed
+ALS-4B62030F6C35,Nama katalog TAKARKUY,Allspice Bubuk,ING-ALLSPICE,reviewed
+ALS-23E140EEB373,Nama katalog TAKARKUY,Cabai Bubuk,ING-CABAI-BUBUK,reviewed
+ALS-5324E33600A1,Nama katalog TAKARKUY,Wijen,ING-WIJEN,reviewed
+ALS-454AB055AB7F,Nama katalog TAKARKUY,Asam Jawa,ING-ASAM-JAWA,reviewed
+ALS-2F4A238BBC39,Nama katalog TAKARKUY,Bay Leaf Kering (Laurus),ING-BAY-LEAF,reviewed
+ALS-0988EE499E77,Nama katalog TAKARKUY,Keju Cheddar,ING-KEJU-CHEDDAR,reviewed
+ALS-7A8242F930BA,Nama katalog TAKARKUY,Puree Tomat Kalengan,ING-TOMAT-PUREE,reviewed
+ALS-B860AA3F34E6,Nama katalog TAKARKUY,Kaldu Ayam Bubuk (Proksi),ING-KALDU-AYAM-BUBUK,reviewed
+ALS-382E5DCE105C,Nama katalog TAKARKUY,Kecap Manis (Proksi Bango),ING-KECAP-MANIS,reviewed
+ALS-8E0176DD1F2E,Nama katalog TAKARKUY,Daun Jeruk,ING-DAUN-JERUK,reviewed
+ALS-0702C8F9CF86,Nama katalog TAKARKUY,Daun Salam Segar (Estimasi),ING-DAUN-SALAM,reviewed
+ALS-29699705D2BA,Nama katalog TAKARKUY,Minyak Wijen,ING-MINYAK-WIJEN,reviewed
+ALS-B24876CF053A,Nama katalog TAKARKUY,Tepung Panir / Roti Kering,ING-TEPUNG-PANIR,reviewed
+ALS-60C6B539492C,Nama katalog TAKARKUY,Tepung Tapioka,ING-TEPUNG-TAPIOKA,reviewed
 ALS-086C70F88670,Kaggle - aturan kurasi TAKARKUY,bayam hijau,ING-BAYAM,manual_curated
 ALS-AAF7E5EC1386,Kaggle - aturan kurasi TAKARKUY,tofu putih,ING-TAHU-PUTIH,manual_curated
 ALS-CFBDC4CA0F16,Kaggle - aturan kurasi TAKARKUY,cabe rawit merah,ING-CABAI-RAWIT-MERAH,manual_curated

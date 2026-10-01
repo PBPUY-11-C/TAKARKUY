@@ -102,7 +102,6 @@ TAG-5E0E17E77D1C,RCP-MVP-018,vegetarian,TAKARKUY aturan internal
 TAG-4749CCAFABBF,RCP-MVP-019,halal,TAKARKUY aturan internal
 TAG-CAD8F419CE88,RCP-MVP-019,makan_siang,TAKARKUY aturan internal
 TAG-E44CCB410D3C,RCP-MVP-019,rendah_kalori,TAKARKUY aturan internal
-TAG-8EAD91F2B630,RCP-MVP-019,seimbang_internal,TAKARKUY aturan internal
 TAG-38DD291151E6,RCP-MVP-019,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-B217760F2AEC,RCP-MVP-019,tinggi_protein,TAKARKUY aturan internal
 TAG-F1BABA6F2370,RCP-MVP-020,halal,TAKARKUY aturan internal
@@ -118,6 +117,30 @@ TAG-436B44A4ABA5,RCP-MVP-021,sarapan,TAKARKUY aturan internal
 TAG-13A1AA1F83C2,RCP-MVP-021,sarapan_ringan,TAKARKUY aturan internal
 TAG-19907878E896,RCP-MVP-021,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-8C396F20FA48,RCP-MVP-021,vegetarian,TAKARKUY aturan internal
+TAG-1AA668C2FD19,RCP-MVP-022,halal,TAKARKUY aturan internal
+TAG-6CF2A2D90F13,RCP-MVP-022,rendah_kalori,TAKARKUY aturan internal
+TAG-D764276A62D6,RCP-MVP-022,sarapan,TAKARKUY aturan internal
+TAG-56F124999EB7,RCP-MVP-022,sarapan_ringan,TAKARKUY aturan internal
+TAG-BE9D0EAC830F,RCP-MVP-022,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-555F341C8047,RCP-MVP-022,vegetarian,TAKARKUY aturan internal
+TAG-AB4B2D15EDB5,RCP-MVP-023,halal,TAKARKUY aturan internal
+TAG-3D715F02BB9A,RCP-MVP-023,rendah_kalori,TAKARKUY aturan internal
+TAG-6EC87D4C6525,RCP-MVP-023,sarapan,TAKARKUY aturan internal
+TAG-80FA787131C5,RCP-MVP-023,sarapan_ringan,TAKARKUY aturan internal
+TAG-2B9838045FAC,RCP-MVP-023,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-EB2498A7DCC1,RCP-MVP-023,vegetarian,TAKARKUY aturan internal
+TAG-DBE27545A24F,RCP-MVP-024,halal,TAKARKUY aturan internal
+TAG-FE34EBD4107F,RCP-MVP-024,rendah_kalori,TAKARKUY aturan internal
+TAG-49E0F2447DC5,RCP-MVP-024,sarapan,TAKARKUY aturan internal
+TAG-12CB70D0C064,RCP-MVP-024,sarapan_ringan,TAKARKUY aturan internal
+TAG-205CB6ADA6CD,RCP-MVP-024,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-4B468FA58071,RCP-MVP-024,vegetarian,TAKARKUY aturan internal
+TAG-8F594C25D9EB,RCP-MVP-025,halal,TAKARKUY aturan internal
+TAG-48CEBCCA90B0,RCP-MVP-025,rendah_kalori,TAKARKUY aturan internal
+TAG-484BF1C8050A,RCP-MVP-025,sarapan,TAKARKUY aturan internal
+TAG-BA01ECFF422F,RCP-MVP-025,sarapan_ringan,TAKARKUY aturan internal
+TAG-82057ACF9B31,RCP-MVP-025,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-B4A221919AAA,RCP-MVP-025,vegetarian,TAKARKUY aturan internal
 TAG-D3398C045AD5,RCP-MVP-026,halal,TAKARKUY aturan internal
 TAG-55A8F62A937C,RCP-MVP-026,mengandung_telur,TAKARKUY aturan internal
 TAG-2DA5A60C6055,RCP-MVP-026,rendah_kalori,TAKARKUY aturan internal
@@ -269,6 +292,7 @@ TAG-5B4812C2DEEE,RCP-MVP-050,mengandung_telur,TAKARKUY aturan internal
 TAG-7927689528AB,RCP-MVP-050,rendah_kalori,TAKARKUY aturan internal
 TAG-DB8C978A5F79,RCP-MVP-050,sarapan,TAKARKUY aturan internal
 TAG-5F182F2EFE5E,RCP-MVP-050,sarapan_ringan,TAKARKUY aturan internal
+TAG-614C12F60223,RCP-MVP-050,seimbang_internal,TAKARKUY aturan internal
 TAG-13E04A8DF66E,RCP-MVP-050,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-BB054384536E,RCP-MVP-051,halal,TAKARKUY aturan internal
 TAG-094784F76CA0,RCP-MVP-051,rendah_kalori,TAKARKUY aturan internal
@@ -346,6 +370,7 @@ TAG-655D111D4BA0,RCP-MVP-062,tinggi_protein,TAKARKUY aturan internal
 TAG-6DCFDAE6C101,RCP-MVP-063,halal,TAKARKUY aturan internal
 TAG-D945BC55BCB5,RCP-MVP-063,makan_siang,TAKARKUY aturan internal
 TAG-F9C05FE61CB4,RCP-MVP-063,rendah_kalori,TAKARKUY aturan internal
+TAG-9C8270D8CB38,RCP-MVP-063,seimbang_internal,TAKARKUY aturan internal
 TAG-1DE2861AB485,RCP-MVP-063,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-0C0D5A597058,RCP-MVP-063,tinggi_protein,TAKARKUY aturan internal
 TAG-75ACA5237232,RCP-MVP-064,halal,TAKARKUY aturan internal
@@ -387,6 +412,12 @@ TAG-1D85528DE006,RCP-MVP-069,rendah_kalori,TAKARKUY aturan internal
 TAG-9A2694A73B67,RCP-MVP-069,seimbang_internal,TAKARKUY aturan internal
 TAG-39712DCEB945,RCP-MVP-069,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-69CAF6E2D4DF,RCP-MVP-069,tinggi_protein,TAKARKUY aturan internal
+TAG-1C6766175B2C,RCP-MVP-070,halal,TAKARKUY aturan internal
+TAG-A857C918CF6B,RCP-MVP-070,makan_siang,TAKARKUY aturan internal
+TAG-606B6B11D0E5,RCP-MVP-070,mengandung_ikan,TAKARKUY aturan internal
+TAG-2799FFD05663,RCP-MVP-070,seimbang_internal,TAKARKUY aturan internal
+TAG-54055C0B32E0,RCP-MVP-070,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-013D3E4B311C,RCP-MVP-070,tinggi_protein,TAKARKUY aturan internal
 TAG-55318F2D53D3,RCP-MVP-071,halal,TAKARKUY aturan internal
 TAG-0F85308D5DE2,RCP-MVP-071,makan_siang,TAKARKUY aturan internal
 TAG-E1B1DCD2BEFF,RCP-MVP-071,seimbang_internal,TAKARKUY aturan internal
@@ -395,6 +426,7 @@ TAG-30811B1BB763,RCP-MVP-071,tinggi_protein,TAKARKUY aturan internal
 TAG-D98B204C09CB,RCP-MVP-072,halal,TAKARKUY aturan internal
 TAG-89A07DE06B77,RCP-MVP-072,makan_siang,TAKARKUY aturan internal
 TAG-AD21090E97D8,RCP-MVP-072,mengandung_telur,TAKARKUY aturan internal
+TAG-524A4A79A2F9,RCP-MVP-072,seimbang_internal,TAKARKUY aturan internal
 TAG-2B55FCFDF06C,RCP-MVP-072,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-057B8507B799,RCP-MVP-073,halal,TAKARKUY aturan internal
 TAG-AF1F414D97BE,RCP-MVP-073,makan_siang,TAKARKUY aturan internal
@@ -411,6 +443,7 @@ TAG-34BB458CF03C,RCP-MVP-074,tinggi_protein,TAKARKUY aturan internal
 TAG-BE64D18CB7A9,RCP-MVP-075,halal,TAKARKUY aturan internal
 TAG-D41140060A3D,RCP-MVP-075,makan_malam,TAKARKUY aturan internal
 TAG-1501460EB6BE,RCP-MVP-075,mengandung_kedelai,TAKARKUY aturan internal
+TAG-E5FA2951022F,RCP-MVP-075,seimbang_internal,TAKARKUY aturan internal
 TAG-67277B1C8F0F,RCP-MVP-075,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-0A265BB6F6D6,RCP-MVP-075,tinggi_protein,TAKARKUY aturan internal
 TAG-889BBC2BB955,RCP-MVP-075,vegetarian,TAKARKUY aturan internal
@@ -429,14 +462,12 @@ TAG-A0F1EEC52CF2,RCP-MVP-078,halal,TAKARKUY aturan internal
 TAG-6759FE711D1A,RCP-MVP-078,makan_malam,TAKARKUY aturan internal
 TAG-90C034A12286,RCP-MVP-078,mengandung_ikan,TAKARKUY aturan internal
 TAG-91EE2BFFBBDC,RCP-MVP-078,rendah_kalori,TAKARKUY aturan internal
-TAG-23248B565D0F,RCP-MVP-078,seimbang_internal,TAKARKUY aturan internal
 TAG-94632A3AC948,RCP-MVP-078,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-2765C752A341,RCP-MVP-078,tinggi_protein,TAKARKUY aturan internal
 TAG-26FC5249011D,RCP-MVP-079,halal,TAKARKUY aturan internal
 TAG-6A1BA4FE6553,RCP-MVP-079,makan_malam,TAKARKUY aturan internal
 TAG-ECCAF3BBA79A,RCP-MVP-079,mengandung_kedelai,TAKARKUY aturan internal
 TAG-6F836A7330D3,RCP-MVP-079,rendah_kalori,TAKARKUY aturan internal
-TAG-E9EACD0DA3EC,RCP-MVP-079,seimbang_internal,TAKARKUY aturan internal
 TAG-E8BDCC100820,RCP-MVP-079,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-6CEFA68F0BA9,RCP-MVP-079,vegetarian,TAKARKUY aturan internal
 TAG-2E47A0CD01CE,RCP-MVP-080,halal,TAKARKUY aturan internal
@@ -464,6 +495,12 @@ TAG-C15A3865BAF8,RCP-MVP-083,rendah_kalori,TAKARKUY aturan internal
 TAG-9E09178F8CB5,RCP-MVP-083,seimbang_internal,TAKARKUY aturan internal
 TAG-82EB0D1AD270,RCP-MVP-083,tanpa_garam_tambahan,TAKARKUY aturan internal
 TAG-461BD0ECDF63,RCP-MVP-083,vegetarian,TAKARKUY aturan internal
+TAG-9C7873ADB179,RCP-MVP-084,halal,TAKARKUY aturan internal
+TAG-B26567378977,RCP-MVP-084,makan_malam,TAKARKUY aturan internal
+TAG-0271E1ED8F6C,RCP-MVP-084,mengandung_ikan,TAKARKUY aturan internal
+TAG-006AC0991395,RCP-MVP-084,seimbang_internal,TAKARKUY aturan internal
+TAG-BCA9C8DF5F86,RCP-MVP-084,tanpa_garam_tambahan,TAKARKUY aturan internal
+TAG-FC9CFF501F8D,RCP-MVP-084,tinggi_protein,TAKARKUY aturan internal
 TAG-A69DF1CE8321,RCP-MVP-085,halal,TAKARKUY aturan internal
 TAG-4B4660DED8DB,RCP-MVP-085,makan_malam,TAKARKUY aturan internal
 TAG-6295D2CF7BA2,RCP-MVP-085,rendah_kalori,TAKARKUY aturan internal
@@ -483,9 +520,6 @@ TAG-50837219494F,RCP-MVP-087,mengandung_krustasea,TAKARKUY aturan internal
 TAG-95F17BA7F34E,RCP-MVP-087,rendah_kalori,TAKARKUY aturan internal
 TAG-432B7F948211,RCP-MVP-087,seimbang_internal,TAKARKUY aturan internal
 TAG-8008111DE724,RCP-MVP-087,tanpa_garam_tambahan,TAKARKUY aturan internal
-TAG-F358F6764F7D,RCP-KAGGLE-4473027,kategori_sumber_ayam,Kaggle file category
-TAG-E51081909818,RCP-KAGGLE-4471956,kategori_sumber_ayam,Kaggle file category
-TAG-0B256298DAEE,RCP-KAGGLE-4473057,kategori_sumber_ayam,Kaggle file category
 TAG-265A8E1D0AF0,RCP-KAGGLE-4473023,kategori_sumber_ayam,Kaggle file category
 TAG-CCDAFB666691,RCP-KAGGLE-4427438,kategori_sumber_ayam,Kaggle file category
 TAG-6AF706CBE600,RCP-KAGGLE-4472552,kategori_sumber_ayam,Kaggle file category
@@ -501,34 +535,23 @@ TAG-D02F88EFBC51,RCP-KAGGLE-4472498,kategori_sumber_ayam,Kaggle file category
 TAG-DB9DA73998AF,RCP-KAGGLE-4472409,kategori_sumber_ayam,Kaggle file category
 TAG-03CA82BD3DEA,RCP-KAGGLE-4472187,kategori_sumber_ayam,Kaggle file category
 TAG-2A58E11B78F0,RCP-KAGGLE-4472298,kategori_sumber_ayam,Kaggle file category
-TAG-7436CEDD5C0F,RCP-KAGGLE-4472222,kategori_sumber_ayam,Kaggle file category
-TAG-3A3382401E45,RCP-KAGGLE-4472482,kategori_sumber_ayam,Kaggle file category
-TAG-CD1264F723CF,RCP-KAGGLE-4472309,kategori_sumber_ayam,Kaggle file category
 TAG-19702B3A56C6,RCP-KAGGLE-4472258,kategori_sumber_ayam,Kaggle file category
 TAG-A0B02A7DF39E,RCP-KAGGLE-4472532,kategori_sumber_ayam,Kaggle file category
 TAG-129C9C7CCCC9,RCP-KAGGLE-4472100,kategori_sumber_ayam,Kaggle file category
 TAG-0C99ED8747F2,RCP-KAGGLE-4472201,kategori_sumber_ayam,Kaggle file category
 TAG-D1150DE67FA3,RCP-KAGGLE-4471980,kategori_sumber_ayam,Kaggle file category
 TAG-E3B404E54347,RCP-KAGGLE-4472141,kategori_sumber_ayam,Kaggle file category
-TAG-6B940D714AF1,RCP-KAGGLE-4472084,kategori_sumber_ayam,Kaggle file category
 TAG-2BBA0E909DC4,RCP-KAGGLE-4471847,kategori_sumber_ayam,Kaggle file category
-TAG-3E28033C931A,RCP-KAGGLE-4469586,kategori_sumber_ayam,Kaggle file category
 TAG-4CFCC3804A43,RCP-KAGGLE-4471776,kategori_sumber_ayam,Kaggle file category
-TAG-675EF319A11D,RCP-KAGGLE-4472147,kategori_sumber_ayam,Kaggle file category
-TAG-A0DCC11A9F82,RCP-KAGGLE-4466395,kategori_sumber_ayam,Kaggle file category
 TAG-401BF1F89829,RCP-KAGGLE-927515,kategori_sumber_ayam,Kaggle file category
-TAG-F0C2F31FEAE2,RCP-KAGGLE-4471637,kategori_sumber_ayam,Kaggle file category
 TAG-7961EBCDAB74,RCP-KAGGLE-4471748,kategori_sumber_ayam,Kaggle file category
-TAG-6BC66D6B641B,RCP-KAGGLE-4471738,kategori_sumber_ayam,Kaggle file category
 TAG-DD0FECC2DB9F,RCP-KAGGLE-4471771,kategori_sumber_ayam,Kaggle file category
 TAG-F1BB8DC58884,RCP-KAGGLE-4471802,kategori_sumber_ayam,Kaggle file category
 TAG-7886FB3DCA28,RCP-KAGGLE-4460035,kategori_sumber_ayam,Kaggle file category
 TAG-2DBD8235F6FC,RCP-KAGGLE-4471498,kategori_sumber_ayam,Kaggle file category
 TAG-FBF214615A3A,RCP-KAGGLE-4471625,kategori_sumber_ayam,Kaggle file category
 TAG-4A8CC42754CA,RCP-KAGGLE-4471418,kategori_sumber_ayam,Kaggle file category
-TAG-40595A7C2C64,RCP-KAGGLE-4471562,kategori_sumber_ayam,Kaggle file category
 TAG-DE27EFF84058,RCP-KAGGLE-4471258,kategori_sumber_ayam,Kaggle file category
-TAG-DB47E350E0A7,RCP-KAGGLE-4469261,kategori_sumber_ayam,Kaggle file category
 TAG-F900339CE48C,RCP-KAGGLE-4464881,kategori_sumber_ayam,Kaggle file category
 TAG-6E7CA8896968,RCP-KAGGLE-4471433,kategori_sumber_ayam,Kaggle file category
 TAG-4B3650A31019,RCP-KAGGLE-4471388,kategori_sumber_ayam,Kaggle file category
@@ -536,19 +559,13 @@ TAG-BC1B1CACDC04,RCP-KAGGLE-3452442,kategori_sumber_ayam,Kaggle file category
 TAG-B6A609B4D76A,RCP-KAGGLE-4471237,kategori_sumber_ayam,Kaggle file category
 TAG-088F1BD41793,RCP-KAGGLE-4466981,kategori_sumber_ayam,Kaggle file category
 TAG-9784ABCC0933,RCP-KAGGLE-4471032,kategori_sumber_ayam,Kaggle file category
-TAG-0BFCC7F25016,RCP-KAGGLE-4448850,kategori_sumber_ayam,Kaggle file category
 TAG-DEDBD7F98245,RCP-KAGGLE-4470916,kategori_sumber_ayam,Kaggle file category
 TAG-C22992D253B7,RCP-KAGGLE-4470142,kategori_sumber_ayam,Kaggle file category
-TAG-6490FEA9F7DC,RCP-KAGGLE-4470089,kategori_sumber_ayam,Kaggle file category
 TAG-212273E2D26D,RCP-KAGGLE-4470099,kategori_sumber_ayam,Kaggle file category
-TAG-A5744B8699E5,RCP-KAGGLE-3934445,kategori_sumber_ayam,Kaggle file category
 TAG-189CB2209A14,RCP-KAGGLE-4469858,kategori_sumber_ayam,Kaggle file category
 TAG-D94FFEA8CC93,RCP-TMDB-53430,kandidat_belum_dikurasi,TheMealDB API
 TAG-F96925F91893,RCP-TMDB-53430,slot_saran_sarapan,TAKARKUY; penempatan sementara
 TAG-B48B38D8D859,RCP-TMDB-53430,kategori_sumber_breakfast,TheMealDB API
-TAG-1296B4E3AB19,RCP-TMDB-53076,kandidat_belum_dikurasi,TheMealDB API
-TAG-6BCF61E4FC5F,RCP-TMDB-53076,slot_saran_sarapan,TAKARKUY; penempatan sementara
-TAG-C4D9BD7D6461,RCP-TMDB-53076,kategori_sumber_breakfast,TheMealDB API
 TAG-9E71C2FB5C27,RCP-TMDB-52965,kandidat_belum_dikurasi,TheMealDB API
 TAG-A4A6DCBC3097,RCP-TMDB-52965,slot_saran_sarapan,TAKARKUY; penempatan sementara
 TAG-42674CC62838,RCP-TMDB-52965,kategori_sumber_breakfast,TheMealDB API
@@ -603,9 +620,6 @@ TAG-7954A255D314,RCP-TMDB-53225,kategori_sumber_breakfast,TheMealDB API
 TAG-62B5995FF427,RCP-TMDB-53425,kandidat_belum_dikurasi,TheMealDB API
 TAG-EAB7788ABD60,RCP-TMDB-53425,slot_saran_sarapan,TAKARKUY; penempatan sementara
 TAG-24EB507423B7,RCP-TMDB-53425,kategori_sumber_dessert,TheMealDB API
-TAG-7FE26130508E,RCP-TMDB-53281,kandidat_belum_dikurasi,TheMealDB API
-TAG-6847EF6E65CE,RCP-TMDB-53281,slot_saran_makan_siang,TAKARKUY; penempatan sementara
-TAG-A7A4518132F3,RCP-TMDB-53281,kategori_sumber_beef,TheMealDB API
 TAG-3E56E8E17E4D,RCP-TMDB-53085,kandidat_belum_dikurasi,TheMealDB API
 TAG-A7C9C079EA13,RCP-TMDB-53085,slot_saran_makan_malam,TAKARKUY; penempatan sementara
 TAG-EBCF52803990,RCP-TMDB-53085,kategori_sumber_chicken,TheMealDB API
@@ -615,9 +629,6 @@ TAG-37D6232CA26F,RCP-TMDB-53483,kategori_sumber_seafood,TheMealDB API
 TAG-3456E86A4311,RCP-TMDB-53158,kandidat_belum_dikurasi,TheMealDB API
 TAG-85CE50F9FE31,RCP-TMDB-53158,slot_saran_makan_malam,TAKARKUY; penempatan sementara
 TAG-DC1144909526,RCP-TMDB-53158,kategori_sumber_vegetarian,TheMealDB API
-TAG-EAA1FD7C7343,RCP-TMDB-53092,kandidat_belum_dikurasi,TheMealDB API
-TAG-B0396F8D8841,RCP-TMDB-53092,slot_saran_makan_siang,TAKARKUY; penempatan sementara
-TAG-84E712EBF5A2,RCP-TMDB-53092,kategori_sumber_vegan,TheMealDB API
 TAG-EB4A2C7EDF58,RCP-TMDB-52839,kandidat_belum_dikurasi,TheMealDB API
 TAG-8FC651D39F67,RCP-TMDB-52839,slot_saran_makan_malam,TAKARKUY; penempatan sementara
 TAG-03D65FD74D1C,RCP-TMDB-52839,kategori_sumber_pasta,TheMealDB API
@@ -639,9 +650,6 @@ TAG-50D3CFAE89F8,RCP-TMDB-53050,kategori_sumber_chicken,TheMealDB API
 TAG-F5F44C68284C,RCP-TMDB-53495,kandidat_belum_dikurasi,TheMealDB API
 TAG-A45269703003,RCP-TMDB-53495,slot_saran_makan_malam,TAKARKUY; penempatan sementara
 TAG-BA161D2CE434,RCP-TMDB-53495,kategori_sumber_seafood,TheMealDB API
-TAG-BE2711670A3D,RCP-TMDB-53288,kandidat_belum_dikurasi,TheMealDB API
-TAG-D3477729FF62,RCP-TMDB-53288,slot_saran_makan_siang,TAKARKUY; penempatan sementara
-TAG-4DDE8FC12C5C,RCP-TMDB-53288,kategori_sumber_vegetarian,TheMealDB API
 TAG-5B215C7F9E97,RCP-TMDB-53150,kandidat_belum_dikurasi,TheMealDB API
 TAG-9348EE45A180,RCP-TMDB-53150,slot_saran_makan_malam,TAKARKUY; penempatan sementara
 TAG-F583AB188D92,RCP-TMDB-53150,kategori_sumber_vegan,TheMealDB API
@@ -843,3 +851,66 @@ TAG-E66C00D29500,RCP-TMDB-53257,kategori_sumber_lamb,TheMealDB API
 TAG-E385CE0C671B,RCP-TMDB-52997,kandidat_belum_dikurasi,TheMealDB API
 TAG-48776478E227,RCP-TMDB-52997,slot_saran_makan_malam,TAKARKUY; penempatan sementara
 TAG-12B49AEB9EF0,RCP-TMDB-52997,kategori_sumber_beef,TheMealDB API
+TAG-3CE7215BAF61,RCP-KAGGLE-4473027,takaran_estimasi,TAKARKUY estimasi v2
+TAG-E6AF81D7FF69,RCP-KAGGLE-4473027,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-BB98929146CB,RCP-KAGGLE-4473027,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-4B53884B8355,RCP-KAGGLE-4471956,takaran_estimasi,TAKARKUY estimasi v2
+TAG-8FDA9F4C5AAD,RCP-KAGGLE-4471956,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-746ABFF9ABBA,RCP-KAGGLE-4471956,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-2FF8ACBC908D,RCP-KAGGLE-4473057,takaran_estimasi,TAKARKUY estimasi v2
+TAG-A847DAF88951,RCP-KAGGLE-4473057,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-6D9DE7B710CA,RCP-KAGGLE-4473057,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-F441F1F93826,RCP-KAGGLE-4472222,takaran_estimasi,TAKARKUY estimasi v2
+TAG-218BEE29993C,RCP-KAGGLE-4472222,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-FED554D959F7,RCP-KAGGLE-4472222,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-829407C54D63,RCP-KAGGLE-4472482,takaran_estimasi,TAKARKUY estimasi v2
+TAG-124D002F33AB,RCP-KAGGLE-4472482,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-183CF2051DBC,RCP-KAGGLE-4472482,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-470AF61A55EE,RCP-KAGGLE-4472309,takaran_estimasi,TAKARKUY estimasi v2
+TAG-5299BA74C331,RCP-KAGGLE-4472309,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-02ABEB8FC63C,RCP-KAGGLE-4472309,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-A62E924E65A5,RCP-KAGGLE-4472084,takaran_estimasi,TAKARKUY estimasi v2
+TAG-228F52F6496A,RCP-KAGGLE-4472084,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-5F80437C109C,RCP-KAGGLE-4472084,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-F2F511C86226,RCP-KAGGLE-4469586,takaran_estimasi,TAKARKUY estimasi v2
+TAG-FAFB70D83F98,RCP-KAGGLE-4469586,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-E9B749E95D3B,RCP-KAGGLE-4469586,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-93737E306C8D,RCP-KAGGLE-4472147,takaran_estimasi,TAKARKUY estimasi v2
+TAG-CE3F54D4039D,RCP-KAGGLE-4472147,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-EA91734FBF28,RCP-KAGGLE-4472147,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-B2127B1A942A,RCP-KAGGLE-4466395,takaran_estimasi,TAKARKUY estimasi v2
+TAG-90986474F6E0,RCP-KAGGLE-4466395,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-87E1C4EF0387,RCP-KAGGLE-4466395,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-01816AE809DD,RCP-KAGGLE-4471637,takaran_estimasi,TAKARKUY estimasi v2
+TAG-D83B32D4AAD9,RCP-KAGGLE-4471637,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-1DCF47675ADC,RCP-KAGGLE-4471637,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-083B8B98AECF,RCP-KAGGLE-4471738,takaran_estimasi,TAKARKUY estimasi v2
+TAG-F512BB2D9A84,RCP-KAGGLE-4471738,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-A3C0F3937836,RCP-KAGGLE-4471738,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-FDF47A42DE43,RCP-KAGGLE-4471562,takaran_estimasi,TAKARKUY estimasi v2
+TAG-810AF9BC78BF,RCP-KAGGLE-4471562,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-7CD9074164C6,RCP-KAGGLE-4471562,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-24DF13EBE394,RCP-KAGGLE-4469261,takaran_estimasi,TAKARKUY estimasi v2
+TAG-7C16775E94ED,RCP-KAGGLE-4469261,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-6A7C4830AC9B,RCP-KAGGLE-4469261,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-FF7B7013179C,RCP-KAGGLE-4448850,takaran_estimasi,TAKARKUY estimasi v2
+TAG-B1328AF6B79C,RCP-KAGGLE-4448850,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-BBBD3C957A0E,RCP-KAGGLE-4448850,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-D79EB6A179B4,RCP-KAGGLE-4470089,takaran_estimasi,TAKARKUY estimasi v2
+TAG-6EB3B579BD09,RCP-KAGGLE-4470089,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-0C91F8FB3646,RCP-KAGGLE-4470089,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-88EABB1EA4AA,RCP-KAGGLE-3934445,takaran_estimasi,TAKARKUY estimasi v2
+TAG-A3EEFFF573D8,RCP-KAGGLE-3934445,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-8F1887754F04,RCP-KAGGLE-3934445,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-5175CB5579FC,RCP-TMDB-53076,takaran_estimasi,TAKARKUY estimasi v2
+TAG-BE5A1DB8BC74,RCP-TMDB-53076,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-66B96CC1F15E,RCP-TMDB-53076,sarapan,TAKARKUY heuristik daftar bahan estimasi
+TAG-2F459168B89B,RCP-TMDB-53281,takaran_estimasi,TAKARKUY estimasi v2
+TAG-3ACC17DD6247,RCP-TMDB-53281,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-A6A5DEA2E307,RCP-TMDB-53281,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-56BE5B9EDD7B,RCP-TMDB-53092,takaran_estimasi,TAKARKUY estimasi v2
+TAG-CA248B84043C,RCP-TMDB-53092,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-8BFE238AFA73,RCP-TMDB-53092,makan_siang,TAKARKUY heuristik daftar bahan estimasi
+TAG-F4C3770A5629,RCP-TMDB-53288,takaran_estimasi,TAKARKUY estimasi v2
+TAG-8A2E0C4AFA19,RCP-TMDB-53288,halal,TAKARKUY heuristik daftar bahan estimasi
+TAG-FA520636059C,RCP-TMDB-53288,makan_siang,TAKARKUY heuristik daftar bahan estimasi
