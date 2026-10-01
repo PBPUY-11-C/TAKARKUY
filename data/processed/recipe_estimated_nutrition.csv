@@ -1,0 +1,109 @@
+recipe_code,region,price_date,cost_total_rupiah,cost_per_serving_rupiah,calories_per_serving,protein_per_serving_g,carbs_per_serving_g,fat_per_serving_g,calculation_status
+RCP-MVP-001,Kabupaten Garut,2026-09-28,7984.22,3992.11,436.68,15.65,73.06,10.79,estimasi_bahan_mentah
+RCP-MVP-002,Kabupaten Garut,2026-09-28,14217.18,7108.59,517.88,33.96,74.21,10.74,estimasi_bahan_mentah
+RCP-MVP-003,Kabupaten Garut,2026-09-28,7689.87,3844.94,541.6,28.79,73.03,18,estimasi_bahan_mentah
+RCP-MVP-004,Kabupaten Garut,2026-09-28,8523.41,4261.71,441.39,19.2,68.12,13.55,estimasi_bahan_mentah
+RCP-MVP-005,Kabupaten Garut,2026-09-28,25828.7,12914.35,446.81,30.87,68.21,7.45,estimasi_bahan_mentah
+RCP-MVP-006,Kabupaten Garut,2026-09-28,18406.42,9203.21,522.62,37.23,66.55,13.13,estimasi_bahan_mentah
+RCP-MVP-007,Kabupaten Garut,2026-09-28,15967.95,7983.98,536.47,36.31,68.12,14.94,estimasi_bahan_mentah
+RCP-MVP-008,Kabupaten Garut,2026-09-28,37278.31,18639.16,467.32,32.68,68.65,8.08,estimasi_bahan_mentah
+RCP-MVP-009,Kabupaten Garut,2026-09-28,5387.78,2693.89,344.34,26.77,19.48,19.78,estimasi_bahan_mentah
+RCP-MVP-010,Kabupaten Garut,2026-09-28,4080.98,2040.49,199.85,13.95,13.08,13.98,estimasi_bahan_mentah
+RCP-MVP-011,Kabupaten Garut,2026-09-28,16715.86,8357.93,272.03,26.49,37.48,4.27,estimasi_bahan_mentah
+RCP-MVP-012,Kabupaten Garut,2026-09-28,23793.28,11896.64,209.71,25.35,27.21,3.48,estimasi_bahan_mentah
+RCP-MVP-013,Kabupaten Garut,2026-09-28,10352.01,5176.01,214.43,12.98,14.1,13.18,estimasi_bahan_mentah
+RCP-MVP-014,Kabupaten Garut,2026-09-28,7697.87,3848.93,209.78,11.34,13.56,13.17,estimasi_bahan_mentah
+RCP-MVP-015,Kabupaten Garut,2026-09-28,13278.98,6639.49,470.44,27.47,67.84,12.53,estimasi_bahan_mentah
+RCP-MVP-016,Kabupaten Garut,2026-09-28,7060.18,3530.09,284.73,14.09,44.77,8.17,estimasi_bahan_mentah
+RCP-MVP-017,Kabupaten Garut,2026-09-28,10478.68,5239.34,393.72,24.94,40.5,17.88,estimasi_bahan_mentah
+RCP-MVP-018,Kabupaten Garut,2026-09-28,7369.48,3684.74,200.7,11.01,13.35,12.82,estimasi_bahan_mentah
+RCP-MVP-019,Kabupaten Garut,2026-09-28,13972.17,6986.08,255.65,24.92,19.37,11.46,estimasi_bahan_mentah
+RCP-MVP-020,Kabupaten Garut,2026-09-28,7302.25,3651.12,375.38,31.63,14.73,23.96,estimasi_bahan_mentah
+RCP-MVP-021,Kabupaten Garut,2026-09-28,2635.2,1317.6,169.74,3.36,46.5,0.06,estimasi_bahan_mentah
+RCP-MVP-022,Kabupaten Garut,2026-09-28,7681.02,3840.51,165.2,4.28,43.94,0.76,estimasi_bahan_mentah
+RCP-MVP-023,Kabupaten Garut,2026-09-28,6241.02,3120.51,135.41,2.18,37.98,0.07,estimasi_bahan_mentah
+RCP-MVP-024,Kabupaten Garut,2026-09-28,10759.8,5379.9,96.93,2.43,26.12,0.75,estimasi_bahan_mentah
+RCP-MVP-025,Kabupaten Garut,2026-09-28,6792.64,3396.32,119.59,2.64,32.53,0.42,estimasi_bahan_mentah
+RCP-MVP-026,Kabupaten Garut,2026-09-28,5614.06,2807.03,348.3,12.8,61.05,6.99,estimasi_bahan_mentah
+RCP-MVP-027,Kabupaten Garut,2026-09-28,6735.37,3367.69,366.33,12.84,65.36,8.01,estimasi_bahan_mentah
+RCP-MVP-028,Kabupaten Garut,2026-09-28,8046,4023,208.5,9.02,27.82,7.88,estimasi_bahan_mentah
+RCP-MVP-029,Kabupaten Garut,2026-09-28,7679.78,3839.89,214.54,11.56,24.78,10.83,estimasi_bahan_mentah
+RCP-MVP-030,Kabupaten Garut,2026-09-28,6115.46,3057.73,456.64,23.73,64.66,13.7,estimasi_bahan_mentah
+RCP-MVP-031,Kabupaten Garut,2026-09-28,3998.24,1999.12,302.43,15.62,41.99,11.66,estimasi_bahan_mentah
+RCP-MVP-032,Kabupaten Garut,2026-09-28,4862.54,2431.27,342.92,9.06,59.68,10,estimasi_bahan_mentah
+RCP-MVP-033,Kabupaten Garut,2026-09-28,6521.97,3260.99,365.31,12.84,63.96,8.13,estimasi_bahan_mentah
+RCP-MVP-034,Kabupaten Garut,2026-09-28,12201.1,6100.55,476.95,28.33,75.18,9.81,estimasi_bahan_mentah
+RCP-MVP-035,Kabupaten Garut,2026-09-28,7319.8,3659.9,493.44,26.57,71.48,15.03,estimasi_bahan_mentah
+RCP-MVP-036,Kabupaten Garut,2026-09-28,7943.07,3971.53,410.07,14.53,71.57,9.8,estimasi_bahan_mentah
+RCP-MVP-037,Kabupaten Garut,2026-09-28,5096.42,2548.21,403.38,16.54,66.76,9.67,estimasi_bahan_mentah
+RCP-MVP-038,Kabupaten Garut,2026-09-28,26136.41,13068.2,421.94,24.26,73.55,5.37,estimasi_bahan_mentah
+RCP-MVP-039,Kabupaten Garut,2026-09-28,12271.12,6135.56,443.18,28.49,64.6,9.06,estimasi_bahan_mentah
+RCP-MVP-040,Kabupaten Garut,2026-09-28,11840.82,5920.41,445.35,26.36,71.06,8.6,estimasi_bahan_mentah
+RCP-MVP-041,Kabupaten Garut,2026-09-28,7060.73,3530.36,153.57,9.55,25.07,4.36,estimasi_bahan_mentah
+RCP-MVP-042,Kabupaten Garut,2026-09-28,11396.76,5698.38,442.66,26.35,68.8,8.74,estimasi_bahan_mentah
+RCP-MVP-043,Kabupaten Garut,2026-09-28,4876.43,2438.22,495.91,26.99,72.34,15.25,estimasi_bahan_mentah
+RCP-MVP-044,Kabupaten Garut,2026-09-28,7311.76,3655.88,412.47,15.84,70.38,10.05,estimasi_bahan_mentah
+RCP-MVP-045,Kabupaten Garut,2026-09-28,13575.22,6787.61,438.47,27.55,67.23,8.95,estimasi_bahan_mentah
+RCP-MVP-046,Kabupaten Garut,2026-09-28,6754.27,3377.14,468.65,22.19,72.46,12.94,estimasi_bahan_mentah
+RCP-MVP-047,Kabupaten Garut,2026-09-28,3983.9,1991.95,246.2,14.35,47.37,0.69,estimasi_bahan_mentah
+RCP-MVP-048,Kabupaten Garut,2026-09-28,4433.9,2216.95,260.07,10.19,43.7,6.79,estimasi_bahan_mentah
+RCP-MVP-049,Kabupaten Garut,2026-09-28,6673.02,3336.51,371.76,15.02,63.61,9.71,estimasi_bahan_mentah
+RCP-MVP-050,Kabupaten Garut,2026-09-28,7557.39,3778.69,195.52,9.28,22.91,8.65,estimasi_bahan_mentah
+RCP-MVP-051,Kabupaten Garut,2026-09-28,6813.76,3406.88,285.28,16.36,53.58,2.03,estimasi_bahan_mentah
+RCP-MVP-052,Kabupaten Garut,2026-09-28,4070.24,2035.12,252.92,12.97,52.61,0.59,estimasi_bahan_mentah
+RCP-MVP-053,Kabupaten Garut,2026-09-28,3660.26,1830.13,282.12,15.33,39.24,10.58,estimasi_bahan_mentah
+RCP-MVP-054,Kabupaten Garut,2026-09-28,6096.11,3048.06,345.24,12.3,59.17,8.09,estimasi_bahan_mentah
+RCP-MVP-055,Kabupaten Garut,2026-09-28,5293.86,2646.93,321.67,9.17,57.22,8.85,estimasi_bahan_mentah
+RCP-MVP-056,Kabupaten Garut,2026-09-28,4247.43,2123.71,188.39,7.82,29.09,6.38,estimasi_bahan_mentah
+RCP-MVP-057,Kabupaten Garut,2026-09-28,6670.56,3335.28,182.21,13.53,8.55,11.8,estimasi_bahan_mentah
+RCP-MVP-058,Kabupaten Garut,2026-09-28,3945.01,1972.5,254.01,11.45,54.02,1.16,estimasi_bahan_mentah
+RCP-MVP-059,Kabupaten Garut,2026-09-28,12501.09,6250.55,443.53,27.37,69.06,8.68,estimasi_bahan_mentah
+RCP-MVP-060,Kabupaten Garut,2026-09-28,18965.67,9482.84,393.73,22.5,69.27,5.37,estimasi_bahan_mentah
+RCP-MVP-061,Kabupaten Garut,2026-09-28,6921.44,3460.72,410.61,16.57,68.96,9.81,estimasi_bahan_mentah
+RCP-MVP-062,Kabupaten Garut,2026-09-28,12284,6142,451.07,29.33,65.34,9.75,estimasi_bahan_mentah
+RCP-MVP-063,Kabupaten Garut,2026-09-28,27056.4,13528.2,393.84,25.33,67.8,4.41,estimasi_bahan_mentah
+RCP-MVP-064,Kabupaten Garut,2026-09-28,13729.34,6864.67,423.96,27.95,64.34,8.04,estimasi_bahan_mentah
+RCP-MVP-065,Kabupaten Garut,2026-09-28,6580.48,3290.24,490.43,25.65,74.37,14.01,estimasi_bahan_mentah
+RCP-MVP-066,Kabupaten Garut,2026-09-28,6166.18,3083.09,379.48,14.97,67.36,8.48,estimasi_bahan_mentah
+RCP-MVP-067,Kabupaten Garut,2026-09-28,11249.68,5624.84,410.32,25.83,74.71,3.41,estimasi_bahan_mentah
+RCP-MVP-068,Kabupaten Garut,2026-09-28,6940.25,3470.12,486.03,26.16,67.52,14.61,estimasi_bahan_mentah
+RCP-MVP-069,Kabupaten Garut,2026-09-28,16690.52,8345.26,390.22,22.85,68.68,5.76,estimasi_bahan_mentah
+RCP-MVP-070,Kabupaten Garut,2026-09-28,13468.4,6734.2,426.24,23.04,64.59,10.1,estimasi_bahan_mentah
+RCP-MVP-071,Kabupaten Garut,2026-09-28,11600.58,5800.29,431.74,25.27,70.87,7.52,estimasi_bahan_mentah
+RCP-MVP-072,Kabupaten Garut,2026-09-28,8748.43,4374.21,416.09,15.15,74.1,8.78,estimasi_bahan_mentah
+RCP-MVP-073,Kabupaten Garut,2026-09-28,12634.33,6317.17,440.35,27.7,66.36,9.29,estimasi_bahan_mentah
+RCP-MVP-074,Kabupaten Garut,2026-09-28,12165.8,6082.9,197.42,20.95,25.09,3.48,estimasi_bahan_mentah
+RCP-MVP-075,Kabupaten Garut,2026-09-28,4662.53,2331.27,422.19,21.04,64.98,11.71,estimasi_bahan_mentah
+RCP-MVP-076,Kabupaten Garut,2026-09-28,19487.51,9743.76,144.64,17.54,11.88,4.42,estimasi_bahan_mentah
+RCP-MVP-077,Kabupaten Garut,2026-09-28,27278.28,13639.14,394.12,25.23,68.26,4.49,estimasi_bahan_mentah
+RCP-MVP-078,Kabupaten Garut,2026-09-28,12261.61,6130.8,183.83,22.85,7.28,8.22,estimasi_bahan_mentah
+RCP-MVP-079,Kabupaten Garut,2026-09-28,5694.6,2847.3,95.67,8.35,11.33,4.46,estimasi_bahan_mentah
+RCP-MVP-080,Kabupaten Garut,2026-09-28,9756.92,4878.46,459.61,25.61,78.4,7.94,estimasi_bahan_mentah
+RCP-MVP-081,Kabupaten Garut,2026-09-28,7530.78,3765.39,393.12,15.17,65.12,9.67,estimasi_bahan_mentah
+RCP-MVP-082,Kabupaten Garut,2026-09-28,16269.1,8134.55,364.03,21.55,62.95,4.44,estimasi_bahan_mentah
+RCP-MVP-083,Kabupaten Garut,2026-09-28,5412.56,2706.28,258.55,18.35,25.51,12.4,estimasi_bahan_mentah
+RCP-MVP-084,Kabupaten Garut,2026-09-28,13632.91,6816.45,408.33,21.27,64,9.79,estimasi_bahan_mentah
+RCP-MVP-085,Kabupaten Garut,2026-09-28,11747.98,5873.99,229.12,20.9,21.57,7.47,estimasi_bahan_mentah
+RCP-MVP-086,Kabupaten Garut,2026-09-28,6261.46,3130.73,470.4,24.35,71.99,13.48,estimasi_bahan_mentah
+RCP-MVP-087,Kabupaten Garut,2026-09-28,17899.34,8949.67,137.93,16.53,21.08,0.23,estimasi_bahan_mentah
+RCP-KAGGLE-4473027,Garut + referensi non-Garut,2026-10-01,78930.55,19732.64,273.78,37.88,22.1,4.51,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471956,Garut + referensi non-Garut,2026-10-01,44220.7,6317.24,240.93,30.79,8.96,9.29,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4473057,Garut + referensi non-Garut,2026-10-01,14363.28,7181.64,300.18,27.49,14.45,14.91,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472222,Garut + referensi non-Garut,2026-10-01,19003.69,6334.56,270.52,28.99,12.16,11.81,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472482,Garut + referensi non-Garut,2026-10-01,24620.27,8206.76,864.81,27.01,172.1,7.66,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472309,Garut + referensi non-Garut,2026-10-01,31856.63,15928.32,409.8,30.08,45.78,13.23,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472084,Garut + referensi non-Garut,2026-10-01,20792.92,6930.97,428.27,28.25,49.1,14.04,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4469586,Garut + referensi non-Garut,2026-10-01,36926.97,9231.74,273.61,27.89,15.98,11.01,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472147,Garut + referensi non-Garut,2026-10-01,27814.36,6953.59,220.74,28.21,10.28,7.46,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4466395,Garut + referensi non-Garut,2026-10-01,20706.65,10353.33,174.55,12.73,30.7,2.23,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471637,Garut + referensi non-Garut,2026-10-01,76358.38,6941.67,237.07,31.32,11.86,7.4,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471738,Garut + referensi non-Garut,2026-10-01,30619.58,6123.92,240.75,31.68,6.55,9.79,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471562,Garut + referensi non-Garut,2026-10-01,24284.84,6071.21,301.81,30.95,31.07,6.25,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4469261,Garut + referensi non-Garut,2026-10-01,41490.98,5927.28,199.21,30.3,7.31,5.47,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4448850,Garut + referensi non-Garut,2026-10-01,49645.96,6205.75,436.36,34.84,55.13,9.37,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4470089,Garut + referensi non-Garut,2026-10-01,54569.79,13642.45,323.79,33.84,31.44,7.3,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-3934445,Garut + referensi non-Garut,2026-10-01,63815.07,5801.37,202.98,29.98,7.54,5.94,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-TMDB-53076,Garut + referensi non-Garut,2026-10-01,4091.41,2045.7,139.05,8.18,15.87,4.68,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-TMDB-53281,Garut + referensi non-Garut,2026-10-01,73227.5,18306.87,148.58,26.86,11.37,0.39,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-TMDB-53092,Garut + referensi non-Garut,2026-10-01,37400.96,18700.48,271.3,3.33,10.16,27.51,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-TMDB-53288,Garut + referensi non-Garut,2026-10-01,36347.91,18173.96,109.19,2.33,12.18,7.09,estimasi_takaran_porsi_dan_bahan_mentah

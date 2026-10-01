@@ -28,6 +28,14 @@
     "sha256": "749496a12074246168690d166757b77f8182959cd9a01a8963a43951dfed6b89"
   },
   {
+    "file": "openfoodfacts_indonesia_sample.json",
+    "source_url": "https://world.openfoodfacts.org/api/v2/search",
+    "retrieved_at": "2026-10-01",
+    "bytes": 605802,
+    "sha256": "dad2ce1adbc288330e72d373d26b080dfae6a1c9c1ab144a968c6017b1c2d6e9",
+    "scope": "200 most-popular Indonesia-tagged results plus 38 Indomie-brand-tagged results, deduplicated by barcode; review-only"
+  },
+  {
     "file": "pihps_prices_2026-09-28.json",
     "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget",
     "retrieved_at": "2026-09-28",

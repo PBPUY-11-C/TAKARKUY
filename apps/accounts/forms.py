@@ -6,18 +6,41 @@ from django.core.exceptions import ValidationError
 
 
 class SignUpForm(forms.Form):
-    full_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={
-        "autocomplete": "name", "placeholder": "Nama lengkap Anda",
-    }))
-    email = forms.EmailField(max_length=150, widget=forms.EmailInput(attrs={
-        "autocomplete": "email", "placeholder": "contoh@email.com",
-    }))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={
-        "autocomplete": "new-password", "placeholder": "Buat kata sandi", "aria-describedby": "password-help",
-    }))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={
-        "autocomplete": "new-password", "placeholder": "Ketik ulang kata sandi",
-    }))
+    full_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(
+            attrs={
+                "autocomplete": "name",
+                "placeholder": "Nama lengkap Anda",
+            }
+        ),
+    )
+    email = forms.EmailField(
+        max_length=150,
+        widget=forms.EmailInput(
+            attrs={
+                "autocomplete": "email",
+                "placeholder": "contoh@email.com",
+            }
+        ),
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": "Buat kata sandi",
+                "aria-describedby": "password-help",
+            }
+        )
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": "Ketik ulang kata sandi",
+            }
+        )
+    )
 
     def clean_full_name(self):
         return " ".join(self.cleaned_data["full_name"].split())
@@ -25,9 +48,10 @@ class SignUpForm(forms.Form):
     def clean_email(self):
         email = self.cleaned_data["email"].strip().lower()
         user_model = get_user_model()
-        if user_model.objects.filter(email__iexact=email).exists() or user_model.objects.filter(
-            username__iexact=email
-        ).exists():
+        if (
+            user_model.objects.filter(email__iexact=email).exists()
+            or user_model.objects.filter(username__iexact=email).exists()
+        ):
             raise forms.ValidationError("Email ini sudah terdaftar. Silakan masuk.")
         return email
 
@@ -39,8 +63,10 @@ class SignUpForm(forms.Form):
         if password and cleaned.get("email"):
             first_name, _, last_name = cleaned.get("full_name", "").partition(" ")
             candidate = get_user_model()(
-                username=cleaned["email"], email=cleaned["email"],
-                first_name=first_name, last_name=last_name,
+                username=cleaned["email"],
+                email=cleaned["email"],
+                first_name=first_name,
+                last_name=last_name,
             )
             try:
                 validate_password(password, user=candidate)
@@ -53,8 +79,11 @@ class SignUpForm(forms.Form):
             raise ValueError("Formulir pendaftaran belum valid.")
         first_name, _, last_name = self.cleaned_data["full_name"].partition(" ")
         return get_user_model().objects.create_user(
-            username=self.cleaned_data["email"], email=self.cleaned_data["email"],
-            password=self.cleaned_data["password1"], first_name=first_name, last_name=last_name,
+            username=self.cleaned_data["email"],
+            email=self.cleaned_data["email"],
+            password=self.cleaned_data["password1"],
+            first_name=first_name,
+            last_name=last_name,
         )
 
 
@@ -63,12 +92,22 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
         "invalid_login": "Email/username atau kata sandi salah.",
         "inactive": "Akun ini dinonaktifkan.",
     }
-    username = forms.CharField(widget=forms.TextInput(attrs={
-        "autocomplete": "username", "placeholder": "Email atau username",
-    }))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
-        "autocomplete": "current-password", "placeholder": "Kata sandi",
-    }))
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "autocomplete": "username",
+                "placeholder": "Email atau username",
+            }
+        )
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "current-password",
+                "placeholder": "Kata sandi",
+            }
+        )
+    )
 
     def clean_username(self):
         identifier = self.cleaned_data["username"].strip()

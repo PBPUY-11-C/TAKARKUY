@@ -6,8 +6,11 @@ from django.urls import reverse
 class AccountFlowTests(TestCase):
     def signup_data(self, **changes):
         return {
-            "full_name": "Dina Putri", "email": "Dina@example.com",
-            "password1": "AmanSekali!827", "password2": "AmanSekali!827", **changes,
+            "full_name": "Dina Putri",
+            "email": "Dina@example.com",
+            "password1": "AmanSekali!827",
+            "password2": "AmanSekali!827",
+            **changes,
         }
 
     def test_landing_cta_opens_signup_and_pages_link_to_each_other(self):
@@ -20,7 +23,9 @@ class AccountFlowTests(TestCase):
         self.assertContains(signup, "Min. 8 karakter · kapital, angka, simbol")
         self.assertNotContains(signup, '<ul class="field-errors">')
         self.assertNotContains(signup, "Pendaftaran pengguna")
-        self.assertNotContains(signup, "Buat akun gratis untuk mengatur rencana makan dan stok dapur.")
+        self.assertNotContains(
+            signup, "Buat akun gratis untuk mengatur rencana makan dan stok dapur."
+        )
         self.assertContains(signup, f'href="{reverse("login")}"')
         self.assertContains(login, "Selamat Datang Kembali")
         self.assertContains(login, f'href="{reverse("signup")}"')
@@ -42,34 +47,50 @@ class AccountFlowTests(TestCase):
         self.client.post(reverse("logout"))
         duplicate = self.client.post(reverse("signup"), self.signup_data(email="DINA@EXAMPLE.COM"))
         self.assertContains(duplicate, "Email ini sudah terdaftar")
-        mismatch = self.client.post(reverse("signup"), self.signup_data(
-            email="new@example.com", password2="BerbedaSekali!827",
-        ))
+        mismatch = self.client.post(
+            reverse("signup"),
+            self.signup_data(
+                email="new@example.com",
+                password2="BerbedaSekali!827",
+            ),
+        )
         self.assertContains(mismatch, "Konfirmasi kata sandi tidak cocok")
         self.assertEqual(get_user_model().objects.count(), 1)
 
     def test_signup_requires_uppercase_number_and_symbol(self):
         for password in ("demodemo1.", "Demodemo!", "Demodemo1"):
             with self.subTest(password=password):
-                response = self.client.post(reverse("signup"), self.signup_data(
-                    password1=password, password2=password,
-                ))
+                response = self.client.post(
+                    reverse("signup"),
+                    self.signup_data(
+                        password1=password,
+                        password2=password,
+                    ),
+                )
                 self.assertContains(response, "huruf kapital, angka, dan simbol")
         self.assertEqual(get_user_model().objects.count(), 0)
 
     def test_example_password_is_accepted(self):
-        response = self.client.post(reverse("signup"), self.signup_data(
-            password1="Demodemo1.", password2="Demodemo1.",
-        ))
+        response = self.client.post(
+            reverse("signup"),
+            self.signup_data(
+                password1="Demodemo1.",
+                password2="Demodemo1.",
+            ),
+        )
         self.assertRedirects(response, reverse("modul5"))
         self.assertTrue(get_user_model().objects.get().check_password("Demodemo1."))
 
     def test_login_accepts_email_case_insensitively_and_logout_requires_post(self):
         self.client.post(reverse("signup"), self.signup_data())
         self.client.post(reverse("logout"))
-        login = self.client.post(reverse("login"), {
-            "username": "DINA@EXAMPLE.COM", "password": "AmanSekali!827",
-        })
+        login = self.client.post(
+            reverse("login"),
+            {
+                "username": "DINA@EXAMPLE.COM",
+                "password": "AmanSekali!827",
+            },
+        )
         self.assertRedirects(login, reverse("modul5"))
         self.assertRedirects(self.client.get(reverse("landing")), reverse("modul5"))
         self.assertEqual(self.client.get(reverse("logout")).status_code, 405)
@@ -79,29 +100,42 @@ class AccountFlowTests(TestCase):
     def test_remember_me_controls_session_expiry(self):
         self.client.post(reverse("signup"), self.signup_data())
         self.client.post(reverse("logout"))
-        self.client.post(reverse("login"), {
-            "username": "dina@example.com", "password": "AmanSekali!827",
-        })
+        self.client.post(
+            reverse("login"),
+            {
+                "username": "dina@example.com",
+                "password": "AmanSekali!827",
+            },
+        )
         self.assertTrue(self.client.session.get_expire_at_browser_close())
         self.client.post(reverse("logout"))
-        self.client.post(reverse("login"), {
-            "username": "dina@example.com", "password": "AmanSekali!827", "remember_me": "1",
-        })
+        self.client.post(
+            reverse("login"),
+            {
+                "username": "dina@example.com",
+                "password": "AmanSekali!827",
+                "remember_me": "1",
+            },
+        )
         self.assertFalse(self.client.session.get_expire_at_browser_close())
 
     def test_wrong_password_does_not_authenticate(self):
         self.client.post(reverse("signup"), self.signup_data())
         self.client.post(reverse("logout"))
-        response = self.client.post(reverse("login"), {
-            "username": "dina@example.com", "password": "wrong",
-        })
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "dina@example.com",
+                "password": "wrong",
+            },
+        )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
     def test_modul5_requires_login_and_only_shows_module_header(self):
         self.assertRedirects(
             self.client.get(reverse("modul5")),
-            f'{reverse("login")}?next={reverse("modul5")}',
+            f"{reverse('login')}?next={reverse('modul5')}",
         )
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("modul5"))
@@ -137,6 +171,13 @@ class AccountFlowTests(TestCase):
     def test_signup_and_login_post_require_csrf(self):
         client = Client(enforce_csrf_checks=True)
         self.assertEqual(client.post(reverse("signup"), self.signup_data()).status_code, 403)
-        self.assertEqual(client.post(reverse("login"), {
-            "username": "dina@example.com", "password": "AmanSekali!827",
-        }).status_code, 403)
+        self.assertEqual(
+            client.post(
+                reverse("login"),
+                {
+                    "username": "dina@example.com",
+                    "password": "AmanSekali!827",
+                },
+            ).status_code,
+            403,
+        )
