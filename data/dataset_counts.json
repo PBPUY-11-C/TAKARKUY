@@ -1,14 +1,14 @@
 {
-  "processed/ingredients.csv": 187,
-  "processed/ingredient_prices.csv": 143,
+  "processed/ingredients.csv": 201,
+  "processed/ingredient_prices.csv": 163,
   "processed/ingredient_shelf_life.csv": 149,
-  "processed/recipes.csv": 247,
-  "processed/recipe_ingredients.csv": 625,
-  "processed/recipe_tags.csv": 915,
-  "mapping/ingredient_aliases.csv": 362,
-  "mapping/unit_conversions.csv": 570,
-  "plannable_recipes": 108,
-  "priced_plannable_ingredients": 67,
-  "estimated_plannable_recipes": 21,
-  "ingredients_with_four_macros": 146
+  "processed/recipes.csv": 434,
+  "processed/recipe_ingredients.csv": 2973,
+  "processed/recipe_tags.csv": 2140,
+  "mapping/ingredient_aliases.csv": 376,
+  "mapping/unit_conversions.csv": 612,
+  "plannable_recipes": 296,
+  "priced_plannable_ingredients": 97,
+  "estimated_plannable_recipes": 209,
+  "ingredients_with_four_macros": 163
 }

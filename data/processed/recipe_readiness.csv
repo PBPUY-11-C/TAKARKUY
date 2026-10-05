@@ -1,33 +1,33 @@
 recipe_code,name,source,is_plannable,base_servings,quantity_status,missing_data_reason
-RCP-MVP-001,Nasi telur tomat,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-002,Nasi ayam bawang,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-003,Nasi tempe cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-004,Nasi tahu buncis,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-005,Nasi udang tomat,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-006,Nasi kembung cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-007,Nasi bandeng tomat,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-008,Nasi sapi cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-009,Tumis kangkung tempe,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-010,Tumis bayam tahu,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-011,Sup ayam wortel kentang,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-012,Sup udang jagung,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-013,Orak-arik telur buncis,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-014,Dadar telur pakcoy,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-015,Singkong ayam cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-016,Ubi panggang telur,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-017,Kentang tempe tumis,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-018,Sawi putih tahu tumis,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-019,Kubis ayam wortel,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-020,Tahu tempe cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
-RCP-MVP-021,Pisang segar,TAKARKUY kurasi internal,true,2,curated,
-RCP-MVP-022,Pisang dan jeruk,TAKARKUY kurasi internal,true,2,curated,
-RCP-MVP-023,Melon dan pisang,TAKARKUY kurasi internal,true,2,curated,
-RCP-MVP-024,Jeruk dan melon,TAKARKUY kurasi internal,true,2,curated,
-RCP-MVP-025,"Pisang, jeruk, dan melon",TAKARKUY kurasi internal,true,2,curated,
+RCP-MVP-001,Nasi Telur Tomat,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-002,Nasi Ayam Bawang,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-003,Nasi Tempe Cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-004,Nasi Tahu Buncis,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-005,Nasi Udang Tomat,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-006,Nasi Kembung Cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-007,Nasi Bandeng Tomat,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-008,Nasi Sapi Cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-009,Tumis Kangkung Tempe,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-010,Tumis Bayam Tahu,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-011,Sup Ayam Wortel Kentang,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-012,Sup Udang Jagung,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-013,Orak-Arik Telur Buncis,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-014,Dadar Telur Pakcoy,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-015,Singkong Ayam Cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-016,Ubi Panggang Telur,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-017,Kentang Tempe Tumis,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-018,Sawi Putih Tahu Tumis,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-019,Kubis Ayam Wortel,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-020,Tahu Tempe Cabai,TAKARKUY kurasi MVP; inspirasi Kaggle,true,2,curated,
+RCP-MVP-021,Pisang Segar,TAKARKUY kurasi internal,true,2,curated,
+RCP-MVP-022,Pisang dan Jeruk,TAKARKUY kurasi internal,true,2,curated,
+RCP-MVP-023,Melon dan Pisang,TAKARKUY kurasi internal,true,2,curated,
+RCP-MVP-024,Jeruk dan Melon,TAKARKUY kurasi internal,true,2,curated,
+RCP-MVP-025,"Pisang, Jeruk, dan Melon",TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-026,Bubur Nasi Telur,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-027,Nasi Goreng Sayur Telur,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-028,Kentang Tumis Telur,TAKARKUY kurasi internal,true,2,curated,
-RCP-MVP-029,Jagung Orak-arik Telur,TAKARKUY kurasi internal,true,2,curated,
+RCP-MVP-029,Jagung Orak-Arik Telur,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-030,Nasi Tempe Telur,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-031,Ubi Tumis Tempe,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-032,Singkong Telur Bawang,TAKARKUY kurasi internal,true,2,curated,
@@ -79,7 +79,7 @@ RCP-MVP-077,Nasi Sapi Tomat Buncis,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-078,Tumis Ikan Kembung Kubis,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-079,Sup Tahu Buncis Wortel,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-080,Nasi Ayam Ubi Tumis Bayam,TAKARKUY kurasi internal,true,2,curated,
-RCP-MVP-081,Nasi Telur Orak-arik Pakcoy,TAKARKUY kurasi internal,true,2,curated,
+RCP-MVP-081,Nasi Telur Orak-Arik Pakcoy,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-082,Nasi Udang Tomat Kangkung,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-083,Kentang Tempe Bayam Kukus,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-084,Nasi Ikan Dori Kubis Wortel,TAKARKUY kurasi internal,true,2,curated,
@@ -87,162 +87,349 @@ RCP-MVP-085,Tumis Ayam Sawi Putih Kentang,TAKARKUY kurasi internal,true,2,curate
 RCP-MVP-086,Nasi Tempe Jagung Tomat,TAKARKUY kurasi internal,true,2,curated,
 RCP-MVP-087,Sup Udang Kentang Kubis,TAKARKUY kurasi internal,true,2,curated,
 RCP-KAGGLE-4473027,Ayam Woku Manado,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
-RCP-KAGGLE-4471956,Ayam goreng tulang lunak,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,7,estimated,
-RCP-KAGGLE-4473057,Ayam cabai kawin,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,2,estimated,
-RCP-KAGGLE-4473023,Ayam Geprek,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 50-100 gr tepung ayam serbaguna
-RCP-KAGGLE-4427438,Minyak Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,"padanan bahan: 400 gr kulit ayam & lemaknya; bumbu/minyak olahan, bukan menu utama"
-RCP-KAGGLE-4472552,Nasi Bakar Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,"padanan bahan: 1 piring nasi; takaran ¹/⁴ fillet ayam, potong kotak, cuci bersih: satuan/format belum dipetakan: fillet ayam, potong kotak, cuci bersih; takaran 3 cm serai, memarkan: satuan/format belum dipetakan: cm serai, memarkan; padanan bahan: 1 blok kaldu ayam (aku biasa pake maggy) pake royco, masako"
-RCP-KAGGLE-4437475,Ayam Saus Hintalu Jaruk,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: 2 Butir Hintalu Jaruk; takaran 1 bks Merica bubuk: satuan/format belum dipetakan: bks merica bubuk
-RCP-KAGGLE-4472877,Ayam saos teriyaki Lada Hitam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: Ayam bagian dada dan tulang; takaran 1 bungkus saos teriyaki (2 sdm): satuan/format belum dipetakan: bungkus saos teriyaki (2 sdm); padanan bahan: 1 bungkus royco ayam
-RCP-KAGGLE-4472822,Steak ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,3,estimated,padanan bahan: 1/4 sdt kaldu jamur; padanan bahan: 20 gr keju parut; padanan bahan: secukupnya garam & kaldu jamur
-RCP-KAGGLE-4472901,Ayam Saos Asam Manis Simple,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 1 Bungkus tepung bumbu ayam instan uk besar + campur sedikit tepung terigu; padanan bahan: 3 sdm saos sambal
-RCP-KAGGLE-4472541,Mie Ayam Homemade by suami😂😂😂,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,14,estimated,takaran 3 sendok minyak goreng: satuan/format belum dipetakan: sendok minyak goreng; harga gram belum tersedia: ING-SAWI-HIJAU; padanan bahan: Bawang goreng(me gak pakai lupa)
-RCP-KAGGLE-4472362,Ayam Bakar Pedas Manis Resep :Nila Sari,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,6,estimated,takaran 1 Bungkus Santan Kara: satuan/format belum dipetakan: bungkus santan kara
-RCP-KAGGLE-4472563,Semur Ayam Kentang Ala Mama Kirana,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: Kapulaga
-RCP-KAGGLE-4471653,Ayam suwir,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 300 gram Ayam suwir (sudah direbus/Goreng); padanan bahan: 1/2 sdt terasi
-RCP-KAGGLE-4472498,Ayam goreng tepung,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 5 sdm tepung bumbu serbaguna; padanan bahan: Minya goreng secukupnya untuk menggoreng
-RCP-KAGGLE-4472409,Tulang Ayam Pedas Manis,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 1/2 kg tulang ayam bersihkan lalu potong
-RCP-KAGGLE-4472187,Ayam penyet rumahan,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,"padanan bahan: 1 ekr ayam negri cuci bersih ptng beri air jeruk nipis cuci lagi; padanan bahan: Bumbu ayam goreng jd,yg bsah. bisa beli di pasar,aku beli 3rb"
-RCP-KAGGLE-4472298,Sop ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,7,estimated,padanan bahan: 1/2 kg ceker ayam bersihkan; padanan bahan: 1 mangkok makaroni (rebus); harga gram belum tersedia: ING-SELEDRI
-RCP-KAGGLE-4472222,Ayam suwir,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,3,estimated,
-RCP-KAGGLE-4472482,Nugget Ayam Home Made,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,3,estimated,
+RCP-KAGGLE-4471956,Ayam Goreng Tulang Lunak,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,7,estimated,
+RCP-KAGGLE-4473057,Ayam Cabai Kawin,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,2,estimated,
+RCP-KAGGLE-4473023,Ayam Geprek,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 50-100 gr tepung ayam serbaguna
+RCP-KAGGLE-4427438,Minyak Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,"padanan bahan: 400 gr kulit ayam & lemaknya; bumbu/minyak olahan, bukan menu utama"
+RCP-KAGGLE-4472552,Nasi Bakar Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,"padanan bahan: 1 piring nasi; takaran ¹/⁴ fillet ayam, potong kotak, cuci bersih: satuan/format belum dipetakan: fillet ayam, potong kotak, cuci bersih; takaran 3 cm serai, memarkan: satuan/format belum dipetakan: cm serai, memarkan; padanan bahan: 1 blok kaldu ayam (aku biasa pake maggy) pake royco, masako"
+RCP-KAGGLE-4437475,Ayam Saus Hintalu Jaruk,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: 2 Butir Hintalu Jaruk; takaran 1 bks Merica bubuk: satuan/format belum dipetakan: bks merica bubuk
+RCP-KAGGLE-4472877,Ayam saos teriyaki Lada Hitam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: Ayam bagian dada dan tulang; takaran 1 bungkus saos teriyaki (2 sdm): satuan/format belum dipetakan: bungkus saos teriyaki (2 sdm); padanan bahan: 1 bungkus royco ayam
+RCP-KAGGLE-4472822,Steak ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,3,curated,padanan bahan: 1/4 sdt kaldu jamur; padanan bahan: 20 gr keju parut; padanan bahan: secukupnya garam & kaldu jamur
+RCP-KAGGLE-4472901,Ayam Saos Asam Manis Simple,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 1 Bungkus tepung bumbu ayam instan uk besar + campur sedikit tepung terigu; padanan bahan: 3 sdm saos sambal
+RCP-KAGGLE-4472541,Mie Ayam Homemade by suami😂😂😂,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,14,curated,takaran 3 sendok minyak goreng: satuan/format belum dipetakan: sendok minyak goreng; harga gram belum tersedia: ING-SAWI-HIJAU; padanan bahan: Bawang goreng(me gak pakai lupa)
+RCP-KAGGLE-4472362,Ayam Bakar Pedas Manis Resep :Nila Sari,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,6,curated,takaran 1 Bungkus Santan Kara: satuan/format belum dipetakan: bungkus santan kara
+RCP-KAGGLE-4472563,Semur Ayam Kentang Ala Mama Kirana,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: Kapulaga
+RCP-KAGGLE-4471653,Ayam suwir,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 300 gram Ayam suwir (sudah direbus/Goreng); padanan bahan: 1/2 sdt terasi
+RCP-KAGGLE-4472498,Ayam goreng tepung,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 5 sdm tepung bumbu serbaguna; padanan bahan: Minya goreng secukupnya untuk menggoreng
+RCP-KAGGLE-4472409,Tulang Ayam Pedas Manis,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 1/2 kg tulang ayam bersihkan lalu potong
+RCP-KAGGLE-4472187,Ayam penyet rumahan,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,"padanan bahan: 1 ekr ayam negri cuci bersih ptng beri air jeruk nipis cuci lagi; padanan bahan: Bumbu ayam goreng jd,yg bsah. bisa beli di pasar,aku beli 3rb"
+RCP-KAGGLE-4472298,Sop ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,7,curated,padanan bahan: 1/2 kg ceker ayam bersihkan; padanan bahan: 1 mangkok makaroni (rebus)
+RCP-KAGGLE-4472222,Ayam Suwir,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,3,estimated,
+RCP-KAGGLE-4472482,Nugget Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,3,estimated,
 RCP-KAGGLE-4472309,Ayam Koloke,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,2,estimated,
-RCP-KAGGLE-4472258,Mie tulang ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 1/4 kg tulang ayam; padanan bahan: 1 bungkus kecil mie burung dara; harga gram belum tersedia: ING-SELEDRI; padanan bahan: 2 sdm saos cabe
-RCP-KAGGLE-4472532,Ayam Suir Bali (bemesere bali),TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: 1 sdt terasi bakar; padanan bahan: 1/2 perasan jeruk limo
-RCP-KAGGLE-4472100,Pindang ayam jadul,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: 1 sdt terasi bangka panggang
-RCP-KAGGLE-4472201,Ayam Kacang Panjang Saos Hoisin,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,"padanan bahan: 1 sdm kecap asin, arak beras, tapioka; padanan bahan: 1 ikat Kacang panjang; padanan bahan: 1 sdm saos hoisin; padanan bahan: 0.5 sdt micin; padanan bahan: Larutan tapioka"
-RCP-KAGGLE-4471980,Tongseng ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: Bawang goreng untuk taburan
-RCP-KAGGLE-4472141,Ayam penyet sambel kemangi,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,3,estimated,padanan bahan: 1 bungkus bumbu racik tempe; padanan bahan: secukupnya terasi
+RCP-KAGGLE-4472258,Mie tulang ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 1/4 kg tulang ayam; padanan bahan: 1 bungkus kecil mie burung dara; padanan bahan: 2 sdm saos cabe
+RCP-KAGGLE-4472532,Ayam Suir Bali (bemesere bali),TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: 1 sdt terasi bakar; padanan bahan: 1/2 perasan jeruk limo
+RCP-KAGGLE-4472100,Pindang ayam jadul,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: 1 sdt terasi bangka panggang
+RCP-KAGGLE-4472201,Ayam Kacang Panjang Saos Hoisin,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,"padanan bahan: 1 sdm kecap asin, arak beras, tapioka; padanan bahan: 1 ikat Kacang panjang; padanan bahan: 1 sdm saos hoisin; padanan bahan: 0.5 sdt micin; padanan bahan: Larutan tapioka"
+RCP-KAGGLE-4471980,Tongseng ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: Bawang goreng untuk taburan
+RCP-KAGGLE-4472141,Ayam penyet sambel kemangi,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,3,curated,padanan bahan: 1 bungkus bumbu racik tempe; padanan bahan: secukupnya terasi
 RCP-KAGGLE-4472084,Nugget Ayam Wortel,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,3,estimated,
-RCP-KAGGLE-4471847,Ayam goreng pedas gila ala Kfc,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: 3 bungkus tepung bumbu uk 80 g yg pedas (aku pke sajiku)
-RCP-KAGGLE-4469586,Chicken Teriyaki,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
-RCP-KAGGLE-4471776,Ayam Kecap Pedas Jeruk Limao,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: 3 buah jeruk limao
-RCP-KAGGLE-4472147,Resep Ayam Kecap Rumahan,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
-RCP-KAGGLE-4466395,Sop Ayam Garang Asam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,2,estimated,
-RCP-KAGGLE-927515,Ayam goreng krutuk,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: ayam (yg sudah direbus sebelumnya)
-RCP-KAGGLE-4471637,Ayam panggang saos kecap,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,11,estimated,
-RCP-KAGGLE-4471748,Soto ayam kuah santan,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,"takaran 2 bungkus santan kara: satuan/format belum dipetakan: bungkus santan kara; padanan bahan: Penyedap : gula,garam royko ayam; harga gram belum tersedia: ING-SELEDRI; padanan bahan: Bihun (rebus dulu); padanan bahan: Bawang goreng; padanan bahan: Kerupuk; padanan bahan: Sambal (cabe rawit,bawang putih/merah di rebus dulu, diulek)"
+RCP-KAGGLE-4471847,Ayam goreng pedas gila ala Kfc,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: 3 bungkus tepung bumbu uk 80 g yg pedas (aku pke sajiku)
+RCP-KAGGLE-4469586,Ayam Teriyaki,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
+RCP-KAGGLE-4471776,Ayam Kecap Pedas Jeruk Limao,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: 3 buah jeruk limao
+RCP-KAGGLE-4472147,Ayam Kecap,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
+RCP-KAGGLE-4466395,Sup Ayam Garang Asem,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,2,estimated,
+RCP-KAGGLE-927515,Ayam goreng krutuk,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: ayam (yg sudah direbus sebelumnya)
+RCP-KAGGLE-4471637,Ayam Panggang Saus Kecap,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,11,estimated,
+RCP-KAGGLE-4471748,Soto ayam kuah santan,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,"takaran 2 bungkus santan kara: satuan/format belum dipetakan: bungkus santan kara; padanan bahan: Penyedap : gula,garam royko ayam; padanan bahan: Bihun (rebus dulu); padanan bahan: Bawang goreng; padanan bahan: Kerupuk; padanan bahan: Sambal (cabe rawit,bawang putih/merah di rebus dulu, diulek)"
 RCP-KAGGLE-4471738,Ayam Goreng Bumbu Kuning,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,5,estimated,
-RCP-KAGGLE-4471771,Mie Geprek (Mie + ayam geprek),TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 1 bungkus mie burung dara; padanan bahan: royco sapi; padanan bahan: ebi
-RCP-KAGGLE-4471802,Seblak Mie Tulang Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 1 bungkus mie burung dara; padanan bahan: 1/4 tulang ayam sisa filet (jadi masih ada daging2ny😁); harga gram belum tersedia: ING-SAWI-HIJAU; padanan bahan: Sawi putih; padanan bahan: 1 ruas jari kencur
-RCP-KAGGLE-4460035,Sweet Buffalo Chicken 🐔,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,9,estimated,padanan bahan: 4 sdm Saus sambal; harga gram belum tersedia: ING-WIJEN
-RCP-KAGGLE-4471498,Ayam Garang Asem,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,takaran 1 santan kara kecil: satuan/format belum dipetakan: santan kara kecil; padanan bahan: 👉garam gulpas air minyak goreng
-RCP-KAGGLE-4471625,Ayam Geprek,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: Tepung bumbu kriuk; padanan bahan: secukupnya kaldu jamur
-RCP-KAGGLE-4471418,Ayam Asam Manis Rumahan citarasa Resto,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,"padanan bahan: Sedikit nanas, potong dadu; padanan bahan: Saos asam manis:; padanan bahan: 1 sdm saos sambal; padanan bahan: 1/2 sdt saos lea perrins; padanan bahan: 1 sdt kaldu ayam; padanan bahan: 3 sdm kecap Inggris; padanan bahan: 1 sdm maggie seasoning; padanan bahan: 1 sdm saos raja rasa"
-RCP-KAGGLE-4471562,Ayam goreng tepung simple,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
-RCP-KAGGLE-4471258,Sop Balungan Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,"padanan bahan: Tulang dari 1 ekor ayam jowo, rebus dg api kecil; padanan bahan: 2 cengkeh; padanan bahan: 1/2 sdt kaldu jamur; padanan bahan: Bahan sayur :; padanan bahan: 1 bonggol sawi sendok; harga gram belum tersedia: ING-SELEDRI"
-RCP-KAGGLE-4469261,Ayam goreng lepas tulang lembut,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,7,estimated,
-RCP-KAGGLE-4464881,Sayap Goreng Bumbu Ngo Hiang,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,7,estimated,padanan bahan: 1 sdm bumbu ngo hiang; padanan bahan: 3 tetes suclarose/stevia drop (boleh skip)
-RCP-KAGGLE-4471433,Semur ayam kampung,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,harga gram belum tersedia: ING-KUNYIT-BUBUK
-RCP-KAGGLE-4471388,Ayam Tepung KFC super gurih,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: 1 Sdt air lemon; padanan bahan: Secukupnya black papper; padanan bahan: Bahan pelapis :; padanan bahan: 1 Sdt oregano; padanan bahan: 1 Sdt masako ayam; padanan bahan: Bahan pencelup :
-RCP-KAGGLE-3452442,Soto Ayam Surabaya,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,3,estimated,padanan bahan: Tauge; padanan bahan: Sambal Rebus
-RCP-KAGGLE-4471237,Ayam Suwir ala Bali / Ayam Sisit,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: 1 sdm kecap ikan; padanan bahan: 1 sdm unsalted butter untuk menumis; padanan bahan: 1 ruas jari kencur
-RCP-KAGGLE-4466981,Risoles rogut ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,"padanan bahan: Bahan isian:; padanan bahan: 100 ml susu cair; padanan bahan: 50 gram keju cheddar parut; padanan bahan: Bahan kulit:; padanan bahan: 3 sdm margarine, dicairkan"
-RCP-KAGGLE-4471032,Ayam masak kicap ala malay,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,estimated,padanan bahan: 1 buah tomato; padanan bahan: 1 sdm saos sambal; harga gram belum tersedia: ING-KUNYIT-BUBUK; padanan bahan: 1/2 sdt kaldu bubuk totole (skip boleh/ ganti kaldu bubul lain)
-RCP-KAGGLE-4448850,Ayam tepung,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,8,estimated,
-RCP-KAGGLE-4470916,Ayam goreng bakar kecap,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,7,estimated,biaya massa beli belum lengkap: Secukupnya minyak untuk menggoreng
-RCP-KAGGLE-4470142,Somay ayam bumbu kacang,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,3,estimated,padanan bahan: Kulit lumpia instan; padanan bahan: 1 sachet royco; padanan bahan: Bumbu kacang; padanan bahan: 250 gr kacang; padanan bahan: Gubis
-RCP-KAGGLE-4470089,.Ayam Kecap Cabe Ijo,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
-RCP-KAGGLE-4470099,Ayam Masak Kluwek,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,estimated,padanan bahan: 6 kluwek; takaran 5 sayap ayam: satuan/format belum dipetakan: sayap ayam; padanan bahan: 1 keping asam kering
+RCP-KAGGLE-4471771,Mie Geprek (Mie + ayam geprek),TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 1 bungkus mie burung dara; padanan bahan: royco sapi; padanan bahan: ebi
+RCP-KAGGLE-4471802,Seblak Mie Tulang Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 1 bungkus mie burung dara; padanan bahan: 1/4 tulang ayam sisa filet (jadi masih ada daging2ny😁); harga gram belum tersedia: ING-SAWI-HIJAU; padanan bahan: Sawi putih; padanan bahan: 1 ruas jari kencur
+RCP-KAGGLE-4460035,Sweet Buffalo Chicken 🐔,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,9,curated,padanan bahan: 4 sdm Saus sambal; harga gram belum tersedia: ING-WIJEN
+RCP-KAGGLE-4471498,Ayam Garang Asem,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,takaran 1 santan kara kecil: satuan/format belum dipetakan: santan kara kecil; padanan bahan: 👉garam gulpas air minyak goreng
+RCP-KAGGLE-4471625,Ayam Geprek,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: Tepung bumbu kriuk; padanan bahan: secukupnya kaldu jamur
+RCP-KAGGLE-4471418,Ayam Asam Manis Rumahan citarasa Resto,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,"padanan bahan: Sedikit nanas, potong dadu; padanan bahan: Saos asam manis:; padanan bahan: 1 sdm saos sambal; padanan bahan: 1/2 sdt saos lea perrins; padanan bahan: 1 sdt kaldu ayam; padanan bahan: 3 sdm kecap Inggris; padanan bahan: 1 sdm maggie seasoning; padanan bahan: 1 sdm saos raja rasa"
+RCP-KAGGLE-4471562,Ayam Dada Goreng Tepung,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
+RCP-KAGGLE-4471258,Sop Balungan Ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,"padanan bahan: Tulang dari 1 ekor ayam jowo, rebus dg api kecil; padanan bahan: 2 cengkeh; padanan bahan: 1/2 sdt kaldu jamur; padanan bahan: Bahan sayur :; padanan bahan: 1 bonggol sawi sendok"
+RCP-KAGGLE-4469261,Ayam Goreng Tanpa Tulang,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,7,estimated,
+RCP-KAGGLE-4464881,Sayap Goreng Bumbu Ngo Hiang,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,7,curated,padanan bahan: 1 sdm bumbu ngo hiang; padanan bahan: 3 tetes suclarose/stevia drop (boleh skip)
+RCP-KAGGLE-4471433,Semur Ayam Kampung,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
+RCP-KAGGLE-4471388,Ayam Tepung KFC super gurih,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: 1 Sdt air lemon; padanan bahan: Secukupnya black papper; padanan bahan: Bahan pelapis :; padanan bahan: 1 Sdt oregano; padanan bahan: 1 Sdt masako ayam; padanan bahan: Bahan pencelup :
+RCP-KAGGLE-3452442,Soto Ayam Surabaya,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,3,curated,padanan bahan: Tauge; padanan bahan: Sambal Rebus
+RCP-KAGGLE-4471237,Ayam Suwir ala Bali / Ayam Sisit,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: 1 sdm kecap ikan; padanan bahan: 1 sdm unsalted butter untuk menumis; padanan bahan: 1 ruas jari kencur
+RCP-KAGGLE-4466981,Risoles rogut ayam,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,"padanan bahan: Bahan isian:; padanan bahan: 100 ml susu cair; padanan bahan: 50 gram keju cheddar parut; padanan bahan: Bahan kulit:; padanan bahan: 3 sdm margarine, dicairkan"
+RCP-KAGGLE-4471032,Ayam masak kicap ala malay,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,4,curated,padanan bahan: 1 buah tomato; padanan bahan: 1 sdm saos sambal; padanan bahan: 1/2 sdt kaldu bubuk totole (skip boleh/ ganti kaldu bubul lain)
+RCP-KAGGLE-4448850,Ayam Goreng Tepung,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,8,estimated,
+RCP-KAGGLE-4470916,Ayam goreng bakar kecap,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,7,curated,biaya massa beli belum lengkap: Secukupnya minyak untuk menggoreng
+RCP-KAGGLE-4470142,Somay ayam bumbu kacang,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,3,curated,padanan bahan: Kulit lumpia instan; padanan bahan: 1 sachet royco; padanan bahan: Bumbu kacang; padanan bahan: 250 gr kacang; padanan bahan: Gubis
+RCP-KAGGLE-4470089,Ayam Kecap Cabai Hijau,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,4,estimated,
+RCP-KAGGLE-4470099,Ayam Masak Kluwek,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,2,curated,padanan bahan: 6 kluwek; takaran 5 sayap ayam: satuan/format belum dipetakan: sayap ayam; padanan bahan: 1 keping asam kering
 RCP-KAGGLE-3934445,Ayam Goreng Telur,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,true,11,estimated,
-RCP-KAGGLE-4469858,Ayam Goreng Pemalas,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,7,estimated,padanan bahan: 1 bks bumbu ayam goreng sajiku
-RCP-TMDB-53430,Antiguan Breakfast (Chop Up and ‘Saltfish’),TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Callaloo; padanan bahan: Pumpkin
-RCP-TMDB-53076,Bread omelette,TheMealDB API; estimasi takaran/porsi,true,2,estimated,
-RCP-TMDB-52965,Breakfast Potatoes,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Bacon; takaran Garlic Clove: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Maple Syrup; harga gram belum tersedia: ING-ALLSPICE
-RCP-TMDB-53379,Dutch poffertjes (mini pancakes),TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Buckwheat Flour; takaran Butter: satuan/format belum dipetakan: knob; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Yeast; padanan bahan: vanilla sugar; padanan bahan: Icing Sugar
-RCP-TMDB-52895,English Breakfast,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Sausages; padanan bahan: Bacon; padanan bahan: Mushrooms; padanan bahan: Black Pudding
-RCP-TMDB-53413,Flija Layered Pancake / Crepe,TheMealDB API; estimasi takaran/porsi,false,14,estimated,padanan bahan: Greek Yogurt; padanan bahan: Clotted Cream; padanan bahan: Sour Cream
-RCP-TMDB-52957,Fruit and Cream Cheese Breakfast Pastries,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Cream Cheese; padanan bahan: Vanilla Extract; padanan bahan: Puff Pastry; padanan bahan: Strawberries; padanan bahan: Raspberries; padanan bahan: Blackberries
-RCP-TMDB-52896,Full English Breakfast,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Sausages; padanan bahan: Bacon; padanan bahan: Mushrooms; padanan bahan: Black Pudding; padanan bahan: Baked Beans
-RCP-TMDB-53450,Grits,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Grits
-RCP-TMDB-52967,Home-made Mandazi,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Self-raising Flour; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR
-RCP-TMDB-53363,Jamaican Cornmeal Porridge,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Fine Yellow Cornmeal; padanan bahan: Vanilla Extract; harga gram belum tersedia: ING-ALLSPICE; padanan bahan: Sweetened Condensed Milk
-RCP-TMDB-53331,Oatmeal pancakes,TheMealDB API; estimasi takaran/porsi,false,2,estimated,harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Baking Powder; padanan bahan: Vanilla Extract; padanan bahan: Ground Oats; padanan bahan: Sugar Syrup; padanan bahan: Strawberries
-RCP-TMDB-53118,Rømmegrøt – Norwegian Sour Cream Porridge,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Full fat sour cream; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR
-RCP-TMDB-52962,Salmon Eggs Eggs Benedict,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: White Wine Vinegar; padanan bahan: English Muffins; padanan bahan: Smoked Salmon; takaran Egg: satuan/format belum dipetakan: yolkes
-RCP-TMDB-52964,Smoked Haddock Kedgeree,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Cardamom; takaran Bay Leaf: takaran belum dapat diperkirakan dengan aturan bahan; harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Basmati Rice; padanan bahan: Chicken Stock; padanan bahan: Smoked Haddock
-RCP-TMDB-53415,Torrijas,TheMealDB API; estimasi takaran/porsi,false,2,estimated,harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Dry sherry; padanan bahan: Baguette; padanan bahan: Honey
-RCP-TMDB-53165,Torrijas with sherry,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Double Cream; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Sweet Sherry; takaran Bread: satuan/format belum dipetakan: thick slices; padanan bahan: Icing Sugar; padanan bahan: Creme Fraiche
-RCP-TMDB-53114,Ugali – Kenyan cornmeal,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: White Cornmeal; belum ada bahan dengan takaran gram
-RCP-TMDB-53225,Yemeni Lahsa (Elite Shakshuka),TheMealDB API; estimasi takaran/porsi,false,2,estimated,harga gram belum tersedia: ING-ALLSPICE; padanan bahan: Liquid Cheese
-RCP-TMDB-53425,Authentic Laos Tapioca Pudding with Bananas,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Tapioca; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53281,Algerian Kefta (Meatballs),TheMealDB API; estimasi takaran/porsi,true,4,estimated,
-RCP-TMDB-53085,15-minute chicken & halloumi burgers,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Hotsauce; padanan bahan: Buns; padanan bahan: Cheese; padanan bahan: Mayonnaise; padanan bahan: Sour Cream; padanan bahan: Lettuce
-RCP-TMDB-53483,Acaraje black-eyed pea fritters with shrimp filling,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Black Eyed Peas; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Baking Powder; takaran Lime: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-53158,Air fryer patatas bravas,TheMealDB API; estimasi takaran/porsi,false,2,estimated,harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: Tinned Tomatos; harga gram belum tersedia: ING-BASIL
-RCP-TMDB-53092,Fasoliyyeh Bi Z-Zayt (Syrian Green Beans with Olive Oil),TheMealDB API; estimasi takaran/porsi,true,2,estimated,
-RCP-TMDB-52839,Chilli prawn linguine,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Linguine Pasta; padanan bahan: Sugar Snap Peas; takaran King Prawns: satuan/format belum dipetakan: skinned; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; takaran Basil Leaves: takaran belum dapat diperkirakan dengan aturan bahan; harga gram belum tersedia: ING-BASIL; padanan bahan: Lettuce; padanan bahan: Fromage Frais; takaran Lime: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-53527,Achiote Oil (Aceite Achiotado) Recipe,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Achiote Seeds; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53262,Adana kebab,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Romano Pepper; padanan bahan: Lamb Mince; padanan bahan: Red Pepper Paste; padanan bahan: Pul Biber; padanan bahan: Sunflower Oil; belum ada bahan dengan takaran gram
-RCP-TMDB-53354,Jamaican Curry Goat,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Goat Meat; padanan bahan: Jamaican Curry Powder; padanan bahan: Ground Ginger; padanan bahan: All-purpose Seasoning; harga gram belum tersedia: ING-ALLSPICE; takaran Thyme: satuan/format belum dipetakan: sprigs; padanan bahan: Scotch Bonnet
-RCP-TMDB-53334,Arepa Pabellón,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Corn Arepa Filled With Mozarella Cheese; padanan bahan: Fried Ripe Bananas; padanan bahan: Black Beans; padanan bahan: Pico De Gallo Sauce; padanan bahan: Shredded Meat
-RCP-TMDB-53050,Ayam Percik,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Chicken Thighs; padanan bahan: Challots; takaran Cayenne Pepper: satuan/format belum dipetakan: ; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Fennel; padanan bahan: Tamarind Paste; takaran Coconut Milk: satuan/format belum dipetakan: can
-RCP-TMDB-53495,Amok Trey – Cambodian Fish Curry,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Fish fillet; takaran Coconut Milk: satuan/format belum dipetakan: can; padanan bahan: Red Curry Paste; padanan bahan: Fish Sauce; padanan bahan: Brown Sugar; padanan bahan: Chicken Stock; padanan bahan: Kaffir Lime Leaves; padanan bahan: Banana Leaves
-RCP-TMDB-53288,Algerian Flafla (Bell Pepper Salad),TheMealDB API; estimasi takaran/porsi,true,2,estimated,
-RCP-TMDB-53150,Padron peppers,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Padron peppers
-RCP-TMDB-53064,Fettuccine Alfredo,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Fettuccine; padanan bahan: Heavy Cream; padanan bahan: Parmesan
-RCP-TMDB-53525,Ají de Aguacate Recipe (Colombian Spicy Avocado Sauce),TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Avocado; padanan bahan: Habanero Pepper; takaran Lime: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Vinegar; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53265,Chilli ginger lamb chops,TheMealDB API; estimasi takaran/porsi,false,2,estimated,harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Lamb Loin Chops
-RCP-TMDB-52968,Mbuzi Choma (Roasted Goat),TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Goat Meat; takaran Coriander Leaves: satuan/format belum dipetakan: bunch
-RCP-TMDB-53329,Arepa pelua,TheMealDB API; estimasi takaran/porsi,false,4,estimated,padanan bahan: Oregano; padanan bahan: Beef Stock; padanan bahan: Cheese
-RCP-TMDB-53466,Belgian Waterzooi Chicken,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Chicken Legs; padanan bahan: Leek; harga gram belum tersedia: ING-SELEDRI; padanan bahan: Rosemary; padanan bahan: Cream; harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Egg Yolks
-RCP-TMDB-53147,Arroz con gambas y calamar,TheMealDB API; estimasi takaran/porsi,false,2,estimated,harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Saffron; padanan bahan: Paella Rice; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: White Wine; padanan bahan: Seafood stock; padanan bahan: Squid
-RCP-TMDB-53278,Aubergine & hummus grills,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Hummus; padanan bahan: Walnuts; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan; takaran Extra Virgin Olive Oil: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-53115,Red onion pickle,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Cider Vinegar; harga gram belum tersedia: ING-BAY-LEAF
-RCP-TMDB-52835,Fettucine alfredo,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Clotted Cream; padanan bahan: Parmesan Cheese; takaran Nutmeg: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Fettuccine
-RCP-TMDB-52848,Bean & Sausage Hotpot,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Sausages; padanan bahan: Tomato Sauce; padanan bahan: Butter Beans; padanan bahan: Black Treacle; padanan bahan: English Mustard; belum ada bahan dengan takaran gram; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53289,"Chorba Hamra bel Frik (Algerian Lamb, Tomato, and Freekeh Soup)",TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Freekeh; padanan bahan: Lamb; takaran Cilantro: satuan/format belum dipetakan: bunch; takaran Mint: satuan/format belum dipetakan: bunch; harga gram belum tersedia: ING-SELEDRI; padanan bahan: Chickpeas; padanan bahan: Zucchini; harga gram belum tersedia: ING-TOMAT-PUREE
-RCP-TMDB-53133,Asado,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Mixed Beef Cuts; padanan bahan: Chorizo; padanan bahan: Morcilla
-RCP-TMDB-53453,Bengali Chicken Curry with Potatoes,TheMealDB API; estimasi takaran/porsi,false,4,estimated,padanan bahan: Ginger Garlic Paste; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Curry Powder; padanan bahan: Garam Masala; harga gram belum tersedia: ING-KUNYIT-BUBUK
-RCP-TMDB-53481,Bahia-style Moqueca prawn stew,TheMealDB API; estimasi takaran/porsi,false,3,estimated,padanan bahan: Coconut Oil; padanan bahan: Chilli Flakes
-RCP-TMDB-53267,Aubergine couscous salad,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Couscous; padanan bahan: Vegetable Stock; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; takaran Mint: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Goats Cheese; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-52942,Roast fennel and aubergine paella,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Fennel; takaran Red Pepper: satuan/format belum dipetakan: thinly sliced; padanan bahan: Courgettes; padanan bahan: Paella Rice; padanan bahan: Saffron; padanan bahan: White Wine; padanan bahan: Vegetable Stock; padanan bahan: Frozen Peas; takaran Parsley: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-52829,Grilled Mac and Cheese Sandwich,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Macaroni; padanan bahan: Mustard Powder; padanan bahan: Garlic powder; harga gram belum tersedia: ING-CABAI-BUBUK; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Heavy Cream; padanan bahan: Monterey Jack Cheese; padanan bahan: garlic powder; takaran Cheddar Cheese: satuan/format belum dipetakan: slices mild; padanan bahan: Colby Jack Cheese
-RCP-TMDB-53438,Bolita di Keshi,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Feta; takaran Eggs: satuan/format belum dipetakan: beaten; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53123,Fårikål (Norwegian National Dish),TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Lamb
-RCP-TMDB-53099,Aussie Burgers,TheMealDB API; estimasi takaran/porsi,false,4,estimated,padanan bahan: Cooked Beetroot; padanan bahan: Naan Bread; padanan bahan: Rocket; padanan bahan: Soured cream and chive dip
-RCP-TMDB-52940,Brown Stew Chicken,TheMealDB API; estimasi takaran/porsi,false,2,estimated,takaran Chicken: satuan/format belum dipetakan: whole; harga gram belum tersedia: ING-ALLSPICE
-RCP-TMDB-52959,Baked salmon with fennel & tomatoes,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Fennel; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; padanan bahan: Salmon; padanan bahan: Black Olives
-RCP-TMDB-53107,Avocado dip with new potatoes,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Avocado; padanan bahan: Natural Yoghurt; takaran Lime: takaran belum dapat diperkirakan dengan aturan bahan; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Hot Chilli Powder; padanan bahan: Tortillas
-RCP-TMDB-53250,Vegan banh mi,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Raw Vegetables; padanan bahan: Vegan White Wine Vinegar; padanan bahan: Baguette; padanan bahan: Hummus; takaran Coriander: takaran belum dapat diperkirakan dengan aturan bahan; takaran Mint: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Hotsauce
-RCP-TMDB-52987,Lasagna Sandwiches,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Sour Cream; padanan bahan: Dried Oregano; padanan bahan: Bacon; padanan bahan: Mozzarella
-RCP-TMDB-52939,Callaloo Jamaican Style,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Kale; padanan bahan: Bacon; takaran Thyme: satuan/format belum dipetakan: sprig; takaran Vegetable Oil: takaran belum dapat diperkirakan dengan aturan bahan; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53258,Hot cumin lamb wrap with crunchy slaw & spicy mayo,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Lamb Leg; padanan bahan: White Wine Vinegar; padanan bahan: Sweet Peppadew Peppers; padanan bahan: Mayonnaise; padanan bahan: Pita Bread
-RCP-TMDB-53457,Barbados Pepperpot,TheMealDB API; estimasi takaran/porsi,false,7,estimated,padanan bahan: Pigs Trotters; padanan bahan: Oxtail; takaran Lime juice: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Scotch Bonnet; padanan bahan: Cloves; harga gram belum tersedia: ING-BASIL
-RCP-TMDB-53016,Chick-Fil-A Sandwich,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Pickle Juice; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Icing Sugar; padanan bahan: Garlic Powder; padanan bahan: Celery Salt; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Sesame Seed Burger Buns
-RCP-TMDB-53440,Balchi di Pisca,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Salt Cod; padanan bahan: Tobasco Sauce
-RCP-TMDB-52807,Baingan Bharta,TheMealDB API; estimasi takaran/porsi,false,2,estimated,harga gram belum tersedia: ING-CABAI-BUBUK
-RCP-TMDB-52794,Vegan Chocolate Cake,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Self-raising Flour; padanan bahan: coco sugar; padanan bahan: cacao; padanan bahan: baking powder; padanan bahan: flax eggs; padanan bahan: almond milk; padanan bahan: vanilla; belum ada bahan dengan takaran gram
-RCP-TMDB-52844,Lasagne,TheMealDB API; estimasi takaran/porsi,false,4,estimated,padanan bahan: Bacon; harga gram belum tersedia: ING-SELEDRI; takaran Tomato Puree: satuan/format belum dipetakan: tbls; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: Chopped Tomatoes; padanan bahan: Honey; padanan bahan: Lasagne Sheets; padanan bahan: Creme Fraiche; padanan bahan: Mozzarella Balls; padanan bahan: Parmesan Cheese; takaran Basil Leaves: takaran belum dapat diperkirakan dengan aturan bahan; harga gram belum tersedia: ING-BASIL
-RCP-TMDB-52969,Chakchouka,TheMealDB API; estimasi takaran/porsi,false,2,estimated,harga gram belum tersedia: ING-CABAI-BUBUK; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53253,Imam bayildi with BBQ lamb & tzatziki,TheMealDB API; estimasi takaran/porsi,false,2,estimated,takaran Parsley: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Lamb Loin Chops; padanan bahan: Greek Yogurt
-RCP-TMDB-53366,Beef and Broccoli Stir-Fry,TheMealDB API; estimasi takaran/porsi,false,4,estimated,padanan bahan: Dry sherry; padanan bahan: Chicken Stock; padanan bahan: Broccoli
-RCP-TMDB-53161,Chicken & chorizo rice pot,TheMealDB API; estimasi takaran/porsi,false,6,estimated,takaran Chicken: satuan/format belum dipetakan: whole; padanan bahan: Chorizo; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: White Wine; padanan bahan: Chicken Stock
-RCP-TMDB-53239,Bang bang prawn salad,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Rice Noodles; padanan bahan: Peanut Butter; padanan bahan: sweet chilli sauce; padanan bahan: Bean Sprouts
-RCP-TMDB-53307,Beetroot & red cabbage sauerkraut,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Beetroot; padanan bahan: Red Cabbage; padanan bahan: Caraway Seed
-RCP-TMDB-52775,Vegan Lasagna,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: green red lentils; padanan bahan: zucchini; takaran coriander: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: lasagne sheets; padanan bahan: vegan butter; padanan bahan: soya milk; padanan bahan: mustard; padanan bahan: vinegar
-RCP-TMDB-53461,Macaroni Pie,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Macaroni; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Ground Onion; padanan bahan: Mustard; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Breadcrumbs
-RCP-TMDB-53446,Clear Soup with Semolina Dumplings,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Semolina; takaran Oil: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Beef Stock; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-52769,Kapsalon,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Fries; padanan bahan: Doner Meat; padanan bahan: Garlic sauce; padanan bahan: Hotsauce; padanan bahan: Lettuce; takaran Cucumber: satuan/format belum dipetakan: rd; padanan bahan: Gouda cheese
-RCP-TMDB-52874,Beef and Mustard Pie,TheMealDB API; estimasi takaran/porsi,false,7,estimated,padanan bahan: Rapeseed Oil; padanan bahan: Red Wine; padanan bahan: Beef Stock; takaran Onion: satuan/format belum dipetakan: finely sliced; takaran Thyme: satuan/format belum dipetakan: sprigs; padanan bahan: Mustard; padanan bahan: Egg Yolks; padanan bahan: Puff Pastry
-RCP-TMDB-52846,Chicken & mushroom Hotpot,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Mushrooms; padanan bahan: Chicken Stock Cube; padanan bahan: Mustard Powder; padanan bahan: Sweetcorn; takaran Butter: satuan/format belum dipetakan: knob
-RCP-TMDB-53451,Bangladeshi fish curry with daikon,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: White Fish; padanan bahan: Daikon Radish; harga gram belum tersedia: ING-KUNYIT-BUBUK; harga gram belum tersedia: ING-CABAI-BUBUK; takaran Coriander Leaves: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-53313,Beetroot latkes,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Rapeseed Oil; padanan bahan: Greek Yogurt; takaran Mint: satuan/format belum dipetakan: bag; padanan bahan: Rocket; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; padanan bahan: Beetroot; takaran Egg: satuan/format belum dipetakan: beaten; padanan bahan: Caraway Seed; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-53504,Macaroni Pudding,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Macaroni; padanan bahan: Evaporated Milk; padanan bahan: Raisins; padanan bahan: Vanilla
-RCP-TMDB-52907,Duck Confit,TheMealDB API; estimasi takaran/porsi,false,2,estimated,takaran Sea Salt: takaran belum dapat diperkirakan dengan aturan bahan; harga gram belum tersedia: ING-BAY-LEAF; takaran Thyme: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Duck Legs; padanan bahan: White Wine; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53449,Kelem dolmasi,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Lamb Mince; padanan bahan: Dill; padanan bahan: Chickpeas; padanan bahan: Lamb Fat; harga gram belum tersedia: ING-TOMAT-PUREE
-RCP-TMDB-52878,Beef and Oyster pie,TheMealDB API; estimasi takaran/porsi,false,6,estimated,padanan bahan: Bacon; harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Stout; padanan bahan: Beef Stock; padanan bahan: Oysters; takaran Eggs: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-52796,Chicken Alfredo Primavera,TheMealDB API; estimasi takaran/porsi,false,2,estimated,takaran Chicken: satuan/format belum dipetakan: boneless; padanan bahan: Squash; padanan bahan: Broccoli; padanan bahan: mushrooms; takaran Pepper: satuan/format belum dipetakan: red; padanan bahan: red pepper flakes; padanan bahan: white wine; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: heavy cream; padanan bahan: Parmesan cheese; padanan bahan: bowtie pasta
-RCP-TMDB-53103,Barramundi with Moroccan spices,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: barramundi; harga gram belum tersedia: ING-CABAI-BUBUK; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan; takaran Coriander: takaran belum dapat diperkirakan dengan aturan bahan
-RCP-TMDB-53078,Beetroot Soup (Borscht),TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Beetroot; padanan bahan: Chicken Stock Cube; padanan bahan: Cannellini Beans; padanan bahan: Dill
-RCP-TMDB-52837,Pilchard puttanesca,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Spaghetti; takaran Olive Oil: satuan/format belum dipetakan: tbls; takaran Tomato Puree: satuan/format belum dipetakan: tbls; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: Pilchards; padanan bahan: Black Olives; padanan bahan: Parmesan
-RCP-TMDB-52815,French Lentils With Garlic and Thyme,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: French Lentils; harga gram belum tersedia: ING-BAY-LEAF; harga gram belum tersedia: ING-SELEDRI; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-52974,Keleya Zaara,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Lamb; padanan bahan: Saffron
-RCP-TMDB-53071,Beef Asado,TheMealDB API; estimasi takaran/porsi,false,10,estimated,padanan bahan: Beef Stock Concentrate; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: White Wine Vinegar; harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Tomato Sauce
-RCP-TMDB-53459,Chicken and Potato Roti,TheMealDB API; estimasi takaran/porsi,false,7,estimated,padanan bahan: Shortening; padanan bahan: Jerk; padanan bahan: Scotch Bonnet
-RCP-TMDB-52819,Cajun spiced fish tacos,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: cajun; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: white fish; padanan bahan: flour tortilla; padanan bahan: avocado; padanan bahan: little gem lettuce; takaran Spring Onions: satuan/format belum dipetakan: shredded; padanan bahan: salsa; padanan bahan: sour cream
-RCP-TMDB-53536,Black Beans Hotpot,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Black Beans; harga gram belum tersedia: ING-SELEDRI; padanan bahan: Oregano
-RCP-TMDB-52982,Spaghetti alla Carbonara,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Spaghetti; padanan bahan: Egg Yolks; padanan bahan: Bacon; padanan bahan: Pecorino
-RCP-TMDB-52915,French Omelette,TheMealDB API; estimasi takaran/porsi,false,2,estimated,takaran Butter: satuan/format belum dipetakan: knobs; padanan bahan: Parmesan; padanan bahan: Tarragon Leaves; padanan bahan: Chives; padanan bahan: Gruyère; bukan menu utama; penempatan waktu makan perlu kurasi
-RCP-TMDB-53257,kofta burgers,TheMealDB API; estimasi takaran/porsi,false,2,estimated,padanan bahan: Lamb; padanan bahan: Garlic Bulb; padanan bahan: Garam Masala; takaran Coriander: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Chilli Sauce; padanan bahan: Pita Bread; padanan bahan: Red Cabbage; padanan bahan: Yogurt
-RCP-TMDB-52997,"Beef Banh Mi Bowls with Sriracha Mayo, Carrot & Pickled Cucumber",TheMealDB API; estimasi takaran/porsi,false,4,estimated,takaran Rice: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-KAGGLE-4469858,Ayam Goreng Pemalas,TAKARKUY adaptasi; inspirasi Kaggle/Cookpad; estimasi takaran/porsi,false,7,curated,padanan bahan: 1 bks bumbu ayam goreng sajiku
+RCP-TMDB-53430,Antiguan Breakfast (Chop Up and ‘Saltfish’),TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Callaloo; padanan bahan: Pumpkin
+RCP-TMDB-53076,Roti Telur Dadar,TheMealDB API; estimasi takaran/porsi,true,2,estimated,
+RCP-TMDB-52965,Breakfast Potatoes,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Bacon; takaran Garlic Clove: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Maple Syrup; harga gram belum tersedia: ING-ALLSPICE
+RCP-TMDB-53379,Dutch poffertjes (mini pancakes),TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Buckwheat Flour; takaran Butter: satuan/format belum dipetakan: knob; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Yeast; padanan bahan: vanilla sugar; padanan bahan: Icing Sugar
+RCP-TMDB-52895,English Breakfast,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Sausages; padanan bahan: Bacon; padanan bahan: Mushrooms; padanan bahan: Black Pudding
+RCP-TMDB-53413,Flija Layered Pancake / Crepe,TheMealDB API; estimasi takaran/porsi,false,14,curated,padanan bahan: Greek Yogurt; padanan bahan: Clotted Cream; padanan bahan: Sour Cream
+RCP-TMDB-52957,Fruit and Cream Cheese Breakfast Pastries,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Cream Cheese; padanan bahan: Vanilla Extract; padanan bahan: Puff Pastry; padanan bahan: Strawberries; padanan bahan: Raspberries; padanan bahan: Blackberries
+RCP-TMDB-52896,Full English Breakfast,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Sausages; padanan bahan: Bacon; padanan bahan: Mushrooms; padanan bahan: Black Pudding; padanan bahan: Baked Beans
+RCP-TMDB-53450,Grits,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Grits
+RCP-TMDB-52967,Home-made Mandazi,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Self-raising Flour; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR
+RCP-TMDB-53363,Jamaican Cornmeal Porridge,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Fine Yellow Cornmeal; padanan bahan: Vanilla Extract; harga gram belum tersedia: ING-ALLSPICE; padanan bahan: Sweetened Condensed Milk
+RCP-TMDB-53331,Oatmeal pancakes,TheMealDB API; estimasi takaran/porsi,false,2,curated,harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Baking Powder; padanan bahan: Vanilla Extract; padanan bahan: Ground Oats; padanan bahan: Sugar Syrup; padanan bahan: Strawberries
+RCP-TMDB-53118,Rømmegrøt – Norwegian Sour Cream Porridge,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Full fat sour cream; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR
+RCP-TMDB-52962,Salmon Eggs Eggs Benedict,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: White Wine Vinegar; padanan bahan: English Muffins; padanan bahan: Smoked Salmon; takaran Egg: satuan/format belum dipetakan: yolkes
+RCP-TMDB-52964,Smoked Haddock Kedgeree,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Cardamom; takaran Bay Leaf: takaran belum dapat diperkirakan dengan aturan bahan; harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Basmati Rice; padanan bahan: Chicken Stock; padanan bahan: Smoked Haddock
+RCP-TMDB-53415,Torrijas,TheMealDB API; estimasi takaran/porsi,false,2,curated,harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Dry sherry; padanan bahan: Baguette; padanan bahan: Honey
+RCP-TMDB-53165,Torrijas with sherry,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Double Cream; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Sweet Sherry; takaran Bread: satuan/format belum dipetakan: thick slices; padanan bahan: Icing Sugar; padanan bahan: Creme Fraiche
+RCP-TMDB-53114,Ugali – Kenyan cornmeal,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: White Cornmeal; belum ada bahan dengan takaran gram
+RCP-TMDB-53225,Yemeni Lahsa (Elite Shakshuka),TheMealDB API; estimasi takaran/porsi,false,2,curated,harga gram belum tersedia: ING-ALLSPICE; padanan bahan: Liquid Cheese
+RCP-TMDB-53425,Authentic Laos Tapioca Pudding with Bananas,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Tapioca; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53281,Kefta Bola Daging ala Aljazair,TheMealDB API; estimasi takaran/porsi,true,4,estimated,
+RCP-TMDB-53085,15-minute chicken & halloumi burgers,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Hotsauce; padanan bahan: Buns; padanan bahan: Cheese; padanan bahan: Mayonnaise; padanan bahan: Sour Cream; padanan bahan: Lettuce
+RCP-TMDB-53483,Acaraje black-eyed pea fritters with shrimp filling,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Black Eyed Peas; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Baking Powder; takaran Lime: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-53158,Air fryer patatas bravas,TheMealDB API; estimasi takaran/porsi,false,2,curated,harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: Tinned Tomatos; harga gram belum tersedia: ING-BASIL
+RCP-TMDB-53092,Tumis Buncis Minyak Zaitun ala Suriah,TheMealDB API; estimasi takaran/porsi,true,2,estimated,
+RCP-TMDB-52839,Chilli prawn linguine,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Linguine Pasta; padanan bahan: Sugar Snap Peas; takaran King Prawns: satuan/format belum dipetakan: skinned; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; takaran Basil Leaves: takaran belum dapat diperkirakan dengan aturan bahan; harga gram belum tersedia: ING-BASIL; padanan bahan: Lettuce; padanan bahan: Fromage Frais; takaran Lime: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-53527,Achiote Oil (Aceite Achiotado) Recipe,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Achiote Seeds; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53262,Adana kebab,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Romano Pepper; padanan bahan: Lamb Mince; padanan bahan: Red Pepper Paste; padanan bahan: Pul Biber; padanan bahan: Sunflower Oil; belum ada bahan dengan takaran gram
+RCP-TMDB-53354,Jamaican Curry Goat,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Goat Meat; padanan bahan: Jamaican Curry Powder; padanan bahan: Ground Ginger; padanan bahan: All-purpose Seasoning; harga gram belum tersedia: ING-ALLSPICE; takaran Thyme: satuan/format belum dipetakan: sprigs; padanan bahan: Scotch Bonnet
+RCP-TMDB-53334,Arepa Pabellón,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Corn Arepa Filled With Mozarella Cheese; padanan bahan: Fried Ripe Bananas; padanan bahan: Black Beans; padanan bahan: Pico De Gallo Sauce; padanan bahan: Shredded Meat
+RCP-TMDB-53050,Ayam Percik,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Chicken Thighs; padanan bahan: Challots; takaran Cayenne Pepper: satuan/format belum dipetakan: ; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Fennel; padanan bahan: Tamarind Paste; takaran Coconut Milk: satuan/format belum dipetakan: can
+RCP-TMDB-53495,Amok Trey – Cambodian Fish Curry,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Fish fillet; takaran Coconut Milk: satuan/format belum dipetakan: can; padanan bahan: Red Curry Paste; padanan bahan: Fish Sauce; padanan bahan: Brown Sugar; padanan bahan: Chicken Stock; padanan bahan: Kaffir Lime Leaves; padanan bahan: Banana Leaves
+RCP-TMDB-53288,Salad Paprika ala Aljazair,TheMealDB API; estimasi takaran/porsi,true,2,estimated,
+RCP-TMDB-53150,Padron peppers,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Padron peppers
+RCP-TMDB-53064,Fettuccine Alfredo,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Fettuccine; padanan bahan: Heavy Cream; padanan bahan: Parmesan
+RCP-TMDB-53525,Ají de Aguacate Recipe (Colombian Spicy Avocado Sauce),TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Avocado; padanan bahan: Habanero Pepper; takaran Lime: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Vinegar; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53265,Chilli ginger lamb chops,TheMealDB API; estimasi takaran/porsi,false,2,curated,harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Lamb Loin Chops
+RCP-TMDB-52968,Mbuzi Choma (Roasted Goat),TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Goat Meat; takaran Coriander Leaves: satuan/format belum dipetakan: bunch
+RCP-TMDB-53329,Arepa pelua,TheMealDB API; estimasi takaran/porsi,false,4,curated,padanan bahan: Oregano; padanan bahan: Beef Stock; padanan bahan: Cheese
+RCP-TMDB-53466,Belgian Waterzooi Chicken,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Chicken Legs; padanan bahan: Leek; padanan bahan: Rosemary; padanan bahan: Cream; harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Egg Yolks
+RCP-TMDB-53147,Arroz con gambas y calamar,TheMealDB API; estimasi takaran/porsi,false,2,curated,harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Saffron; padanan bahan: Paella Rice; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: White Wine; padanan bahan: Seafood stock; padanan bahan: Squid
+RCP-TMDB-53278,Aubergine & hummus grills,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Hummus; padanan bahan: Walnuts; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan; takaran Extra Virgin Olive Oil: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-53115,Red onion pickle,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Cider Vinegar; harga gram belum tersedia: ING-BAY-LEAF
+RCP-TMDB-52835,Fettucine alfredo,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Clotted Cream; padanan bahan: Parmesan Cheese; takaran Nutmeg: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Fettuccine
+RCP-TMDB-52848,Bean & Sausage Hotpot,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Sausages; padanan bahan: Tomato Sauce; padanan bahan: Butter Beans; padanan bahan: Black Treacle; padanan bahan: English Mustard; belum ada bahan dengan takaran gram; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53289,"Chorba Hamra bel Frik (Algerian Lamb, Tomato, and Freekeh Soup)",TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Freekeh; padanan bahan: Lamb; takaran Cilantro: satuan/format belum dipetakan: bunch; takaran Mint: satuan/format belum dipetakan: bunch; padanan bahan: Chickpeas; padanan bahan: Zucchini; harga gram belum tersedia: ING-TOMAT-PUREE
+RCP-TMDB-53133,Asado,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Mixed Beef Cuts; padanan bahan: Chorizo; padanan bahan: Morcilla
+RCP-TMDB-53453,Bengali Chicken Curry with Potatoes,TheMealDB API; estimasi takaran/porsi,false,4,curated,padanan bahan: Ginger Garlic Paste; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Curry Powder; padanan bahan: Garam Masala
+RCP-TMDB-53481,Bahia-style Moqueca prawn stew,TheMealDB API; estimasi takaran/porsi,false,3,curated,padanan bahan: Coconut Oil; padanan bahan: Chilli Flakes
+RCP-TMDB-53267,Aubergine couscous salad,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Couscous; padanan bahan: Vegetable Stock; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; takaran Mint: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Goats Cheese; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-52942,Roast fennel and aubergine paella,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Fennel; takaran Red Pepper: satuan/format belum dipetakan: thinly sliced; padanan bahan: Courgettes; padanan bahan: Paella Rice; padanan bahan: Saffron; padanan bahan: White Wine; padanan bahan: Vegetable Stock; padanan bahan: Frozen Peas; takaran Parsley: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-52829,Grilled Mac and Cheese Sandwich,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Macaroni; padanan bahan: Mustard Powder; padanan bahan: Garlic powder; harga gram belum tersedia: ING-CABAI-BUBUK; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Heavy Cream; padanan bahan: Monterey Jack Cheese; padanan bahan: garlic powder; takaran Cheddar Cheese: satuan/format belum dipetakan: slices mild; padanan bahan: Colby Jack Cheese
+RCP-TMDB-53438,Bolita di Keshi,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Feta; takaran Eggs: satuan/format belum dipetakan: beaten; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53123,Fårikål (Norwegian National Dish),TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Lamb
+RCP-TMDB-53099,Aussie Burgers,TheMealDB API; estimasi takaran/porsi,false,4,curated,padanan bahan: Cooked Beetroot; padanan bahan: Naan Bread; padanan bahan: Rocket; padanan bahan: Soured cream and chive dip
+RCP-TMDB-52940,Brown Stew Chicken,TheMealDB API; estimasi takaran/porsi,false,2,curated,takaran Chicken: satuan/format belum dipetakan: whole; harga gram belum tersedia: ING-ALLSPICE
+RCP-TMDB-52959,Baked salmon with fennel & tomatoes,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Fennel; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; padanan bahan: Salmon; padanan bahan: Black Olives
+RCP-TMDB-53107,Avocado dip with new potatoes,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Avocado; padanan bahan: Natural Yoghurt; takaran Lime: takaran belum dapat diperkirakan dengan aturan bahan; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Hot Chilli Powder; padanan bahan: Tortillas
+RCP-TMDB-53250,Vegan banh mi,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Raw Vegetables; padanan bahan: Vegan White Wine Vinegar; padanan bahan: Baguette; padanan bahan: Hummus; takaran Coriander: takaran belum dapat diperkirakan dengan aturan bahan; takaran Mint: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Hotsauce
+RCP-TMDB-52987,Lasagna Sandwiches,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Sour Cream; padanan bahan: Dried Oregano; padanan bahan: Bacon; padanan bahan: Mozzarella
+RCP-TMDB-52939,Callaloo Jamaican Style,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Kale; padanan bahan: Bacon; takaran Thyme: satuan/format belum dipetakan: sprig; takaran Vegetable Oil: takaran belum dapat diperkirakan dengan aturan bahan; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53258,Hot cumin lamb wrap with crunchy slaw & spicy mayo,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Lamb Leg; padanan bahan: White Wine Vinegar; padanan bahan: Sweet Peppadew Peppers; padanan bahan: Mayonnaise; padanan bahan: Pita Bread
+RCP-TMDB-53457,Barbados Pepperpot,TheMealDB API; estimasi takaran/porsi,false,7,curated,padanan bahan: Pigs Trotters; padanan bahan: Oxtail; takaran Lime juice: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Scotch Bonnet; padanan bahan: Cloves; harga gram belum tersedia: ING-BASIL
+RCP-TMDB-53016,Chick-Fil-A Sandwich,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Pickle Juice; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Icing Sugar; padanan bahan: Garlic Powder; padanan bahan: Celery Salt; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Sesame Seed Burger Buns
+RCP-TMDB-53440,Balchi di Pisca,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Salt Cod; padanan bahan: Tobasco Sauce
+RCP-TMDB-52807,Baingan Bharta,TheMealDB API; estimasi takaran/porsi,false,2,curated,harga gram belum tersedia: ING-CABAI-BUBUK
+RCP-TMDB-52794,Vegan Chocolate Cake,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Self-raising Flour; padanan bahan: coco sugar; padanan bahan: cacao; padanan bahan: baking powder; padanan bahan: flax eggs; padanan bahan: almond milk; padanan bahan: vanilla; belum ada bahan dengan takaran gram
+RCP-TMDB-52844,Lasagne,TheMealDB API; estimasi takaran/porsi,false,4,curated,padanan bahan: Bacon; takaran Tomato Puree: satuan/format belum dipetakan: tbls; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: Chopped Tomatoes; padanan bahan: Honey; padanan bahan: Lasagne Sheets; padanan bahan: Creme Fraiche; padanan bahan: Mozzarella Balls; padanan bahan: Parmesan Cheese; takaran Basil Leaves: takaran belum dapat diperkirakan dengan aturan bahan; harga gram belum tersedia: ING-BASIL
+RCP-TMDB-52969,Chakchouka,TheMealDB API; estimasi takaran/porsi,false,2,curated,harga gram belum tersedia: ING-CABAI-BUBUK; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53253,Imam bayildi with BBQ lamb & tzatziki,TheMealDB API; estimasi takaran/porsi,false,2,curated,takaran Parsley: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Lamb Loin Chops; padanan bahan: Greek Yogurt
+RCP-TMDB-53366,Beef and Broccoli Stir-Fry,TheMealDB API; estimasi takaran/porsi,false,4,curated,padanan bahan: Dry sherry; padanan bahan: Chicken Stock; padanan bahan: Broccoli
+RCP-TMDB-53161,Chicken & chorizo rice pot,TheMealDB API; estimasi takaran/porsi,false,6,curated,takaran Chicken: satuan/format belum dipetakan: whole; padanan bahan: Chorizo; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: White Wine; padanan bahan: Chicken Stock
+RCP-TMDB-53239,Bang bang prawn salad,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Rice Noodles; padanan bahan: Peanut Butter; padanan bahan: sweet chilli sauce; padanan bahan: Bean Sprouts
+RCP-TMDB-53307,Beetroot & red cabbage sauerkraut,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Beetroot; padanan bahan: Red Cabbage; padanan bahan: Caraway Seed
+RCP-TMDB-52775,Vegan Lasagna,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: green red lentils; padanan bahan: zucchini; takaran coriander: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: lasagne sheets; padanan bahan: vegan butter; padanan bahan: soya milk; padanan bahan: mustard; padanan bahan: vinegar
+RCP-TMDB-53461,Macaroni Pie,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Macaroni; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: Ground Onion; padanan bahan: Mustard; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: Breadcrumbs
+RCP-TMDB-53446,Clear Soup with Semolina Dumplings,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Semolina; takaran Oil: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Beef Stock; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-52769,Kapsalon,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Fries; padanan bahan: Doner Meat; padanan bahan: Garlic sauce; padanan bahan: Hotsauce; padanan bahan: Lettuce; takaran Cucumber: satuan/format belum dipetakan: rd; padanan bahan: Gouda cheese
+RCP-TMDB-52874,Beef and Mustard Pie,TheMealDB API; estimasi takaran/porsi,false,7,curated,padanan bahan: Rapeseed Oil; padanan bahan: Red Wine; padanan bahan: Beef Stock; takaran Onion: satuan/format belum dipetakan: finely sliced; takaran Thyme: satuan/format belum dipetakan: sprigs; padanan bahan: Mustard; padanan bahan: Egg Yolks; padanan bahan: Puff Pastry
+RCP-TMDB-52846,Chicken & mushroom Hotpot,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Mushrooms; padanan bahan: Chicken Stock Cube; padanan bahan: Mustard Powder; padanan bahan: Sweetcorn; takaran Butter: satuan/format belum dipetakan: knob
+RCP-TMDB-53451,Bangladeshi fish curry with daikon,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: White Fish; padanan bahan: Daikon Radish; harga gram belum tersedia: ING-CABAI-BUBUK; takaran Coriander Leaves: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-53313,Beetroot latkes,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Rapeseed Oil; padanan bahan: Greek Yogurt; takaran Mint: satuan/format belum dipetakan: bag; padanan bahan: Rocket; gizi belum lengkap: ING-TOMAT-CHERRY; harga gram belum tersedia: ING-TOMAT-CHERRY; padanan bahan: Beetroot; takaran Egg: satuan/format belum dipetakan: beaten; padanan bahan: Caraway Seed; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-53504,Macaroni Pudding,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Macaroni; padanan bahan: Evaporated Milk; padanan bahan: Raisins; padanan bahan: Vanilla
+RCP-TMDB-52907,Duck Confit,TheMealDB API; estimasi takaran/porsi,false,2,curated,takaran Sea Salt: takaran belum dapat diperkirakan dengan aturan bahan; harga gram belum tersedia: ING-BAY-LEAF; takaran Thyme: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Duck Legs; padanan bahan: White Wine; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53449,Kelem dolmasi,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Lamb Mince; padanan bahan: Dill; padanan bahan: Chickpeas; padanan bahan: Lamb Fat; harga gram belum tersedia: ING-TOMAT-PUREE
+RCP-TMDB-52878,Beef and Oyster pie,TheMealDB API; estimasi takaran/porsi,false,6,curated,padanan bahan: Bacon; harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Stout; padanan bahan: Beef Stock; padanan bahan: Oysters; takaran Eggs: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-52796,Chicken Alfredo Primavera,TheMealDB API; estimasi takaran/porsi,false,2,curated,takaran Chicken: satuan/format belum dipetakan: boneless; padanan bahan: Squash; padanan bahan: Broccoli; padanan bahan: mushrooms; takaran Pepper: satuan/format belum dipetakan: red; padanan bahan: red pepper flakes; padanan bahan: white wine; harga gram belum tersedia: ING-SUSU-SAPI-SEGAR; padanan bahan: heavy cream; padanan bahan: Parmesan cheese; padanan bahan: bowtie pasta
+RCP-TMDB-53103,Barramundi with Moroccan spices,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: barramundi; harga gram belum tersedia: ING-CABAI-BUBUK; takaran Lemon: takaran belum dapat diperkirakan dengan aturan bahan; takaran Coriander: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-TMDB-53078,Beetroot Soup (Borscht),TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Beetroot; padanan bahan: Chicken Stock Cube; padanan bahan: Cannellini Beans; padanan bahan: Dill
+RCP-TMDB-52837,Pilchard puttanesca,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Spaghetti; takaran Olive Oil: satuan/format belum dipetakan: tbls; takaran Tomato Puree: satuan/format belum dipetakan: tbls; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: Pilchards; padanan bahan: Black Olives; padanan bahan: Parmesan
+RCP-TMDB-52815,French Lentils With Garlic and Thyme,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: French Lentils; harga gram belum tersedia: ING-BAY-LEAF; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-52974,Keleya Zaara,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Lamb; padanan bahan: Saffron
+RCP-TMDB-53071,Beef Asado,TheMealDB API; estimasi takaran/porsi,false,10,curated,padanan bahan: Beef Stock Concentrate; harga gram belum tersedia: ING-TOMAT-PUREE; padanan bahan: White Wine Vinegar; harga gram belum tersedia: ING-BAY-LEAF; padanan bahan: Tomato Sauce
+RCP-TMDB-53459,Chicken and Potato Roti,TheMealDB API; estimasi takaran/porsi,false,7,curated,padanan bahan: Shortening; padanan bahan: Jerk; padanan bahan: Scotch Bonnet
+RCP-TMDB-52819,Cajun spiced fish tacos,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: cajun; harga gram belum tersedia: ING-CABAI-BUBUK; padanan bahan: white fish; padanan bahan: flour tortilla; padanan bahan: avocado; padanan bahan: little gem lettuce; takaran Spring Onions: satuan/format belum dipetakan: shredded; padanan bahan: salsa; padanan bahan: sour cream
+RCP-TMDB-53536,Black Beans Hotpot,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Black Beans; padanan bahan: Oregano
+RCP-TMDB-52982,Spaghetti alla Carbonara,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Spaghetti; padanan bahan: Egg Yolks; padanan bahan: Bacon; padanan bahan: Pecorino
+RCP-TMDB-52915,French Omelette,TheMealDB API; estimasi takaran/porsi,false,2,curated,takaran Butter: satuan/format belum dipetakan: knobs; padanan bahan: Parmesan; padanan bahan: Tarragon Leaves; padanan bahan: Chives; padanan bahan: Gruyère; bukan menu utama; penempatan waktu makan perlu kurasi
+RCP-TMDB-53257,kofta burgers,TheMealDB API; estimasi takaran/porsi,false,2,curated,padanan bahan: Lamb; padanan bahan: Garlic Bulb; padanan bahan: Garam Masala; takaran Coriander: takaran belum dapat diperkirakan dengan aturan bahan; padanan bahan: Chilli Sauce; padanan bahan: Pita Bread; padanan bahan: Red Cabbage; padanan bahan: Yogurt
+RCP-TMDB-52997,"Beef Banh Mi Bowls with Sriracha Mayo, Carrot & Pickled Cucumber",TheMealDB API; estimasi takaran/porsi,false,4,curated,takaran Rice: takaran belum dapat diperkirakan dengan aturan bahan
+RCP-MDL-0000,Garang Asem Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0009,Ratatouille Tempe Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0021,Balado Ikan Tongkol,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0023,Nasi Kuning Tanpa Kunyit,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0024,Balado Udang Kentang Petai,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0028,Tahu Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0039,Gulai Kuning Ikan Patin,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0046,Ikan Tongkol Balado Masakan Sederhana,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,7,estimated,
+RCP-MDL-0053,Daging Sapi Bumbu Jawa,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0056,Soto Ayam Bening Kuah Kuning,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0059,Sambal Balado Udang Kentang Petai ala Masakan Padang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0071,Swike Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0078,Terong Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0082,Jangan Lombok Tahu Tempe (Sayur Cabai Jawa Timur),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0088,Ayam Woku Kemangi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0090,Woku Telur Tahu Tempe,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0096,Gulai Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0097,Ikan Asin Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0106,Sambal Goreng Kentang Daging,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0114,Pepes Ayam Sunda,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,7,estimated,
+RCP-MDL-0124,Kokor Timun Santan Sambal Limau Kuit (Kutai),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0145,Sambal Goreng Kentang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,7,estimated,
+RCP-MDL-0146,Ikan Mas Betuup (Banjar),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0162,Balado Tahu Tongkol Suwir,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0163,Tuna Goreng Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0165,Sayur Lodeh Kacang Panjang Tempe,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0169,Sambal Tongkol Petai,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0174,Pepes Tahu,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0181,Plecing Kangkung,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0184,Sambal Goreng Kentang Wortel Masakan Rumahan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0194,Ikan Asin Masak Asam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0203,Balado Hati Ayam Kentang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0208,Asam Padeh Tahu Patin Buncis,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0214,Ayam Rica-Rica,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0224,Ikan Pindang Suwir Bumbu Iris,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0227,Soto Ayam Kuning,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0234,Sambal Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0255,Gulai Ikan Padang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0272,Sayur Asem Kepala Patin,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0276,Gulai Tahu Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,12,estimated,
+RCP-MDL-0278,Gulai Ikan Mas,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0279,Garang Asem Ati Ampela,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0289,Empal Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0292,Ayam Bakar Padang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0296,Sambal Tempe,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0298,Pindang Patin Kuning,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0299,Ayam Masak Habang (Banjar),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0309,Gulai Kacang Panjang Tahu,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0312,Sate Ayam Maranggi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0322,Telur Ceplok Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0323,Sate Ayam Madura,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0327,Balado Telur dan Ikan Teri,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0337,Telur Rebus Sambal Kecap,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0348,Ikan Pindang Masak Merah Kemangi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0350,Telur Woku,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,7,estimated,
+RCP-MDL-0355,Nasi Liwet Sunda,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0365,Pindang Tongkol Santan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0367,Ikan Pindang Pedas,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0368,Pindang Tongkol Asam Padeh,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0371,Ayam Sambal Merah,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,10,estimated,
+RCP-MDL-0384,Pindang Tongkol Kuah Tomat,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0394,Dendeng Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0404,Soto Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0409,Soto Ayam Suwir,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0416,Soto Daging,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0422,Semur Ayam Kentang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0427,Ayam Asam Manis Banjar,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0433,Ayam Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0436,Serundeng Daging,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0438,Semur Tahu,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0451,Nasi Kuning,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0457,Nasi Uduk,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0464,Ikan Kembung Kukus Sambal Kemangi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0470,Semur Ati Ampela,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,8,estimated,
+RCP-MDL-0479,Semur Ayam Kecap,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0484,Kering Kentang Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0492,Teri Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0493,Gulai Tempe Tahu Kacang Panjang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0499,Pepes Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,10,estimated,
+RCP-MDL-0504,Pepes Tahu Jamur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0508,Kentang Petai Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0517,Semur Daging Giling Kentang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0535,Sambal Kencur Daging Sapi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0550,Rendang Daging Sapi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,8,estimated,
+RCP-MDL-0567,Sambal Goreng Udang Tahu,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0572,Sup Gulai Ayam Jogja,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0575,Ayam Sambal Bajak,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0581,Udang Sambal Goreng Terasi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0610,Opor Ayam Putih,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,8,estimated,
+RCP-MDL-0621,Ikan Pindang Kecap,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0624,Sate Ayam Bumbu Bali,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0626,Ayam Tahu Rica-Rica,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0628,Balado Terong Teri,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0633,Gulai Ayam Tanpa Santan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0638,Pindang Patin,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0639,Otak-Otak Ikan Tongkol,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0642,Pempek Ikan Teri,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0649,Nasi Kuning Labu,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0651,Sapi Rica-Rica,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0676,Ayam Rica-Rica Kemangi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0680,Oseng Ikan Pindang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0693,Tongseng Sapi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0700,Sambal Teri Medan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0738,Opor Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0744,Soto Sulung Daging,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,10,estimated,
+RCP-MDL-0746,Sayur Lodeh,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0761,Sambal Teri Kacang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0772,Semur Jengkol,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0779,Sambal Teri Tempe Medan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0784,Soto Medan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0790,Asam Padeh Ikan Tongkol,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0811,Ikan Kembung Woku,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0824,Tuna Woku Belanga,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0849,Balado Ikan Tongkol Petai,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0862,Celimpungan (Pempek Kuah Santan),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0873,Kentang Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0875,Celimpungan Pempek Dos,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0890,Tahu Telur Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0896,Gulai Ikan Tongkol Kemangi,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0899,Nasi Bakar Tongkol,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0900,Ayam Tumis Sambal,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-0940,Telur Pindang Kuah Santan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0942,Telur Tempe Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0948,Semur Ayam Tahu Kentang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0958,Telur Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0967,Sate Taichan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-0973,Pempek Tenggiri Lenjer,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0974,Sup Gulai Ayam Tahu Jogja,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-0986,Garang Asem Ayam Tanpa Santan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-0991,Pempek Tahu Tenggiri,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-0994,Opor Ayam Kuning,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1004,Sambal Jengkol Kacang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1006,Sambal Tanak Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1010,Ayam Betutu Bali,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1017,Model Pempek Tahu,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1018,Gulai Ayam Tahu Buncis,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1027,Pepes Tahu Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,8,estimated,
+RCP-MDL-1033,Semur Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1041,Semur Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1042,Gulai Ayam dan Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1053,Opor Ayam Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1054,Tahu Sambal Kacang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1069,Semur Ayam Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1082,Opor Ayam Tempe Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1090,Balado Ikan Kembung dan Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1097,Pepes Ayam Suwir,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1105,Pepes Teri,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1107,Tongseng Tahu Kubis,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1116,Nasi Liwet,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1118,Balado Telur Ceplok,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1120,Laksan (Pempek Kuah Santan Kental),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1127,Balado Telur Terong,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1139,Pindang Sayap Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1152,Lodeh Tempe Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1153,Celimpungan Tuna,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1157,Ayam Bakar Taliwang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1158,Pempek Ikan Tenggiri,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,7,estimated,
+RCP-MDL-1160,Pempek Mini Kapal Selam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1174,Terik Tempe Telur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1191,Semur Tahu Telur Tempe,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1199,Pepes Ikan Kembung,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1215,Celimpungan Udang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1216,Pepes Tahu Udang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1227,Ayam Balado Panggang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,9,estimated,
+RCP-MDL-1233,Terik Ayam Tahu Telur (Semarang),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1235,Pepes Ayam Tempe,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1237,Kare Ayam Jawa Timur,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1261,Soto Ayam Lamongan,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1263,Sambal Tempe Kukus,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1266,Oseng Ayam Sambal Matah,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,4,estimated,
+RCP-MDL-1270,Ayam Kampung Rica-Rica,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1278,Ayam Balado Kentang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1284,Ayam Goreng Balado,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1310,Ayam Sambal Hijau,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1321,Pepes Ikan Tongkol,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1324,Gulai Telur Terong,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1329,Semur Telur Dadar,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1333,Sate Lilit Ayam,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,10,estimated,
+RCP-MDL-1334,Ayam Geprek Sambal Matah,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1343,Ayam Woku,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,1,estimated,
+RCP-MDL-1354,Ayam Telur Asam Manis Banjar,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,6,estimated,
+RCP-MDL-1358,Pempek Sutera,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1360,Ayam Sambal Kecombrang,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1364,Terong Bakar Sambal Limau Kuit (Tarung Babanam),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,2,estimated,
+RCP-MDL-1368,Pepes Manis Ikan Patin (Pais Iwak),"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,3,estimated,
+RCP-MDL-1372,Pempek Dos,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,
+RCP-MDL-1389,Gulai Ikan Tongkol,"Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY",true,5,estimated,

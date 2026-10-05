@@ -117,7 +117,11 @@ class GuestTrialTests(TestCase):
             self.calculate()
         self.client.force_login(get_user_model().objects.create_user(username="member"))
         for _ in range(4):
-            response = self.calculate()
+            draft = self.client.get(reverse("modul1")).context["plan"]
+            data = {**self.inputs}
+            if draft:
+                data.update(plan_id=str(draft.pk), version=draft.version)
+            response = self.client.post(reverse("modul1"), data, follow=True)
             self.assertEqual(response.status_code, 200)
             self.assertIsNone(response.context["trial"])
         self.client.post(reverse("logout"))

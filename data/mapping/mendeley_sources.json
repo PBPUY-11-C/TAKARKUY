@@ -1,0 +1,399 @@
+{
+ "version": "takarkuy-mendeley-sources-2026-10-05",
+ "observed_at": "2026-10-05",
+ "note": "Gizi bahan untuk resep Mendeley dan harga referensi toko daring non-Garut yang ditinjau 5 Oktober 2026. Harga melengkapi bahan tanpa harga Garut saja.",
+ "tkpi_mirror_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+ "tkpi_original_url": "https://repository.kemkes.go.id/book/668",
+ "tkpi_note": "Nilai TKPI per bahan dibaca dari komposisi dataset Mendeley; nilai per gram sumber sudah dikali BDD sehingga dibagi BDD untuk basis bagian termakan.",
+ "nutrition": [
+  {
+   "code": "ING-EBI",
+   "name": "Ebi (Udang Kering)",
+   "category": "protein",
+   "source_id": "Rebon, kering, mentah",
+   "macros": [
+    299,
+    59.4,
+    3.2,
+    3.6
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-TERASI",
+   "name": "Terasi",
+   "category": "bumbu",
+   "source_id": "Terasi",
+   "macros": [
+    155,
+    22.3,
+    9.9,
+    2.9
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-CENGKEH",
+   "name": "Cengkeh",
+   "category": "bumbu",
+   "source_id": "Cengkeh, kering",
+   "macros": [
+    330,
+    5.2,
+    57.4,
+    8.9
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-JAMUR-KUPING",
+   "name": "Jamur Kuping",
+   "category": "sayur",
+   "source_id": "Jamur kuping, segar",
+   "macros": [
+    21,
+    3.8,
+    0.9,
+    0.6
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-BIHUN",
+   "name": "Bihun",
+   "category": "karbohidrat",
+   "source_id": "Bihun Jagung, mentah",
+   "macros": [
+    354,
+    0.5,
+    87.4,
+    0.3
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-SOUN",
+   "name": "Soun",
+   "category": "karbohidrat",
+   "source_id": "Bihun Jagung, mentah",
+   "macros": [
+    354,
+    0.5,
+    87.4,
+    0.3
+   ],
+   "note": "ESTIMASI PROKSI bihun jagung kering; soun kacang hijau belum memiliki nilai TKPI lokal di paket ini.",
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-JENGKOL",
+   "name": "Jengkol",
+   "category": "sayur",
+   "source_id": "Jengkol, segar",
+   "macros": [
+    192.0,
+    5.4,
+    40.71,
+    0.31
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-PETAI",
+   "name": "Petai",
+   "category": "sayur",
+   "source_id": "Petai, segar",
+   "macros": [
+    92.0,
+    5.39,
+    15.19,
+    1.11
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-IKAN-PATIN",
+   "name": "Ikan Patin",
+   "category": "protein",
+   "source_id": "Ikan Patin, segar",
+   "macros": [
+    132,
+    17,
+    1.1,
+    6.6
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-ATI-AMPELA",
+   "name": "Ati Ampela Ayam",
+   "category": "protein",
+   "source_id": "Ayam, hati, segar",
+   "macros": [
+    261,
+    27.4,
+    1.6,
+    16.1
+   ],
+   "note": "ESTIMASI PROKSI hati ayam TKPI; ampela belum dipisahkan.",
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-LABU-KUNING",
+   "name": "Labu Kuning",
+   "category": "sayur",
+   "source_id": "Labu kuning, segar",
+   "macros": [
+    51.0,
+    1.7,
+    10.0,
+    0.5
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-KENCUR",
+   "name": "Kencur",
+   "category": "bumbu",
+   "source_id": "Jahe, segar",
+   "macros": [
+    51.0,
+    1.49,
+    10.1,
+    1.0
+   ],
+   "note": "ESTIMASI PROKSI jahe segar; kencur dipakai dalam jumlah kecil.",
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-IKAN-TENGGIRI",
+   "name": "Ikan Tenggiri",
+   "category": "protein",
+   "source_id": "Ikan kakap, segar",
+   "macros": [
+    92,
+    20,
+    0,
+    0.7
+   ],
+   "note": "ESTIMASI PROKSI ikan kakap segar; bukan nilai tenggiri terverifikasi.",
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-IKAN-SEGAR-TONGKOL-TUNA-CAKALANG",
+   "name": "Ikan Segar Tongkol/Tuna/Cakalang",
+   "category": "protein",
+   "source_id": "Ikan tongkol, segar",
+   "macros": [
+    100,
+    13.7,
+    8.0,
+    1.5
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-IKAN-ASIN-TERI-NO-2",
+   "name": "Ikan Asin Teri No. 2",
+   "category": "protein",
+   "source_id": "Ikan asin, kering",
+   "macros": [
+    193.0,
+    42.0,
+    0.0,
+    1.5
+   ],
+   "note": "ESTIMASI PROKSI ikan asin kering TKPI untuk teri asin.",
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-IKAN-MAS",
+   "name": "Ikan Mas",
+   "category": "protein",
+   "source_id": "Ikan mas, segar",
+   "macros": [
+    86.0,
+    16.0,
+    0.0,
+    2.0
+   ],
+   "source": "TKPI melalui Mendeley Data (Purwanto et al. v3, CC BY 4.0); dikembalikan ke per 100 g bagian termakan; belum dicocokkan PDF asli"
+  },
+  {
+   "code": "ING-KALDU-JAMUR",
+   "name": "Kaldu Jamur Bubuk (Proksi)",
+   "category": "bumbu",
+   "fdc_id": 171562,
+   "note": "ESTIMASI PROKSI bouillon kering USDA; bukan data label kaldu jamur merek mana pun."
+  }
+ ],
+ "retail_prices": [
+  {
+   "code": "ING-SELEDRI",
+   "product": "Daun Seledri 100 g",
+   "price": 5000,
+   "grams": 100,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/daun-seledri-cioipmiq",
+   "note": "harga promo; harga normal Rp5.500"
+  },
+  {
+   "code": "ING-KUNYIT-BUBUK",
+   "product": "Koepoe Koepoe Kunyit Bubuk 25 g",
+   "price": 6500,
+   "grams": 25,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/bubuk-kunyit-koepoe-koepoe-qomnsakm"
+  },
+  {
+   "code": "ING-TERASI",
+   "product": "MamaSuka Terasi Udang 80 g",
+   "price": 7200,
+   "grams": 80,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/terasi-udang-mamasuka-glowivxo"
+  },
+  {
+   "code": "ING-EBI",
+   "product": "Saltee Udang Ebi Asin 250 g",
+   "price": 80500,
+   "grams": 250,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/udang-ebi-asin-saltee-agdacvze"
+  },
+  {
+   "code": "ING-KACANG-PANJANG",
+   "product": "Kacang Panjang 250 g",
+   "price": 8500,
+   "grams": 250,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/kacang-panjang-fpynfcqq"
+  },
+  {
+   "code": "ING-KENCUR",
+   "product": "Kencur 100 g",
+   "price": 9700,
+   "grams": 100,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/kencur-naujwdcr"
+  },
+  {
+   "code": "ING-TAUGE",
+   "product": "Tauge 250 g",
+   "price": 12400,
+   "grams": 250,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/tauge-xnxzntzp"
+  },
+  {
+   "code": "ING-LABU-SIAM",
+   "product": "Labu Siam 500 g",
+   "price": 10200,
+   "grams": 500,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/labu-siam-ggdkmboo"
+  },
+  {
+   "code": "ING-IKAN-PATIN",
+   "product": "Ikan Patin Utuh 400-500 g",
+   "price": 28900,
+   "grams": 450,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/ikan-patin-utuh-proteina-hrrggqeo",
+   "note": "ikan utuh belum dibersihkan; berat memakai titik tengah 450 g"
+  },
+  {
+   "code": "ING-IKAN-TENGGIRI",
+   "product": "Ikan Tenggiri Giling 500 g",
+   "price": 55000,
+   "grams": 500,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/ikan-tenggiri-giling-golden-seafood-xoqvppfm",
+   "note": "tenggiri giling"
+  },
+  {
+   "code": "ING-PETAI",
+   "product": "Pete Kupas 100 g",
+   "price": 39900,
+   "grams": 100,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/pete-kupas-tltvydzd",
+   "note": "harga petai kupas dikonversi ke berat berkulit memakai BDD TKPI 36%",
+   "edible_yield": 2.777778
+  },
+  {
+   "code": "ING-JENGKOL",
+   "product": "Jengkol 250 g",
+   "price": 38500,
+   "grams": 250,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/jengkol-qsnbarrx"
+  },
+  {
+   "code": "ING-BIHUN",
+   "product": "Rose Brand Bihun Jagung 320 g",
+   "price": 9900,
+   "grams": 320,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/bihun-jagung-rose-brand-nuxhlpuz"
+  },
+  {
+   "code": "ING-SOUN",
+   "product": "Longkou Sohun Vermicelli Cap Burung 100 g",
+   "price": 5000,
+   "grams": 100,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/sohun-vermicelli-cap-burung-longkou-dmcuykfg"
+  },
+  {
+   "code": "ING-KELAPA",
+   "product": "Kelapa Parut Segar 250 g",
+   "price": 18000,
+   "grams": 250,
+   "source": "Tokopedia (Kios Sayur Mak Haji)",
+   "url": "https://www.tokopedia.com/kiossayurmakhaji/kelapa-parut-segar-250-gram",
+   "note": "kelapa parut segar; satu penjual marketplace"
+  },
+  {
+   "code": "ING-JAMUR-KUPING",
+   "product": "Jamur Kuping 150 g",
+   "price": 5900,
+   "grams": 150,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/jamur-kuping-kghjxxzg",
+   "note": "kemungkinan segar; halaman tidak menyebut kering; harga promo, normal Rp6.500"
+  },
+  {
+   "code": "ING-ATI-AMPELA",
+   "product": "Sayurbox Selection Hati Ampela Ayam 500 g",
+   "price": 17000,
+   "grams": 500,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/hati-ampela-ayam-sayurbox-selection-zbzghhru"
+  },
+  {
+   "code": "ING-LABU-KUNING",
+   "product": "Labu Parang/Labu Kuning per kg",
+   "price": 19900,
+   "grams": 1000,
+   "source": "Tokopedia (waroenklinda)",
+   "url": "https://www.tokopedia.com/waroenklinda/labu-parang-labu-kuning-per-kg-harga-untuk-1kg-barang-segar-setiap-hari-1729878105874007207"
+  },
+  {
+   "code": "ING-CENGKEH",
+   "product": "Cengkeh 20 g",
+   "price": 7900,
+   "grams": 20,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/cengkeh-jywcmnfq"
+  },
+  {
+   "code": "ING-KALDU-JAMUR",
+   "product": "Totole Kaldu Rasa Jamur 200 g",
+   "price": 30900,
+   "grams": 200,
+   "source": "Sayurbox (Jakarta JK01; harga tampil di halaman pencarian)",
+   "url": "https://www.sayurbox.com/p/kaldu-rasa-jamur-totole-pxkflzjw"
+  }
+ ]
+}

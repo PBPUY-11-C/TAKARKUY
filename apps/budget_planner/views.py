@@ -1,30 +1,19 @@
 import json
-from datetime import date, timedelta
-from decimal import Decimal
+import secrets
+from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 from django.shortcuts import render
 from django.utils import timezone
 
+from apps.catalog.content_policy import protect_plan_instructions
+
 from .forms import PlannerForm
+from .plan_views import account_page
 from .planner import MEALS, build_plan
+from .snapshots import decode_value as _decode_result
+from .snapshots import encode_value as _encode_result
 from .trial import browser_trial, protect_trial_response, record_success, trial_state
-
-
-def _encode_result(value):
-    if isinstance(value, Decimal):
-        return {"_decimal": str(value)}
-    if isinstance(value, date):
-        return {"_date": value.isoformat()}
-    raise TypeError(f"Unsupported planner result type: {type(value).__name__}")
-
-
-def _decode_result(value):
-    if set(value) == {"_decimal"}:
-        return Decimal(value["_decimal"])
-    if set(value) == {"_date"}:
-        return date.fromisoformat(value["_date"])
-    return value
 
 
 def _previous_guest_plan(request):
@@ -34,11 +23,13 @@ def _previous_guest_plan(request):
     form = PlannerForm(saved["inputs"])
     if not form.is_valid():
         return None, None
-    result = json.loads(saved["result"], object_hook=_decode_result)
+    result = protect_plan_instructions(json.loads(saved["result"], object_hook=_decode_result))
     return form, result
 
 
 def planner_page(request):
+    if request.user.is_authenticated:
+        return account_page(request, build_plan)
     initial = {
         "budget": 150000,
         "days": 3,
@@ -79,6 +70,7 @@ def planner_page(request):
                 **form.cleaned_data,
                 recent_recipe_codes=recent_codes,
                 prior_slot_recipes=prior_slot_recipes,
+                seed=secrets.randbits(32),
             )
             if result["within_budget"]:
                 if trial is not None and not record_success(trial):

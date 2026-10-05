@@ -63,3 +63,22 @@ button,input { font:inherit; }
 .trial-banner { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; padding:20px 24px; border:1px solid #cce8dc; border-radius:16px; background:#edf8f3; color:#1d5140; }
 .trial-banner small { display:block; margin-top:6px; font-size:12px; }
 .calculate-button:disabled { opacity:.55; cursor:not-allowed; }
+
+.plan-nav,.plan-card-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-bottom:20px; }
+.plan-nav a,.text-link { color:var(--green); font-weight:700; font-size:13px; }
+.plan-nav a:hover,.text-link:hover { text-decoration:underline; }
+.plan-feedback:empty { display:none; }.plan-feedback { padding:12px 16px; border-radius:9px; background:#fff1e9; color:#9a4d22; font-size:13px; }
+.plan-controls { margin-bottom:22px; }.plan-controls .field-note { line-height:1.6; }
+.plan-save-form { display:flex; flex-wrap:wrap; gap:14px; align-items:end; margin-top:18px; }
+.plan-save-form .field { flex:1 1 190px; }.plan-save-form label { margin-bottom:7px; }
+.plan-save-form input,.plan-dialog input,.plan-dialog select { width:100%; min-height:42px; padding:9px 12px; border:1px solid #ccd8e1; border-radius:9px; color:var(--ink); background:white; font:inherit; }
+.secondary-button,.danger-button,.small-button { display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border:1px solid #ccd8e1; border-radius:9px; background:white; color:var(--green); font:700 12px "DM Sans",sans-serif; cursor:pointer; }
+.danger-button { color:#a83232; border-color:#efcece; }.small-button { font-size:10px; padding:7px; white-space:nowrap; }
+button:disabled { cursor:not-allowed; opacity:.55; }
+.meal-content { min-width:0; flex:1; }.meal-row { flex-wrap:wrap; }.recipe-steps { margin-top:6px; font-size:11px; }.recipe-steps summary { color:var(--green); cursor:pointer; }.recipe-steps p { line-height:1.6; }
+.plan-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:16px; }.saved-plan-card p,.saved-empty { font-size:13px; color:var(--muted); }.plan-card-actions { margin:18px 0 0; }
+.plan-dialog { width:min(94vw,700px); max-height:88vh; overflow:auto; padding:24px; border:1px solid var(--line); border-radius:16px; color:var(--ink); box-shadow:0 18px 60px #17223535; }.plan-dialog::backdrop { background:#17223588; }
+.plan-dialog h2 { font:700 20px "Plus Jakarta Sans",sans-serif; }.plan-dialog p { font-size:13px; line-height:1.6; }.plan-dialog label { display:block; margin:12px 0 7px; font-size:13px; font-weight:700; }.plan-dialog select { margin-bottom:10px; }.plan-dialog button { margin-top:12px; }.plan-dialog [hidden] { display:none; }
+.cost-notice { padding:12px; border-radius:9px; background:var(--blue); font-weight:700; }.preview-schedule { margin:14px 0; padding:10px 14px; border-radius:9px; background:#f6f8fd; }#preview-feedback { color:#9a4d22; }#preview-shopping { font-size:12px; line-height:1.8; }
+.plan-controls input:focus-visible,.plan-dialog input:focus-visible,.plan-dialog select:focus-visible,.secondary-button:focus-visible,.small-button:focus-visible,.danger-button:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+@media(max-width:600px) { .plan-dialog { padding:18px; }.plan-save-form button { width:100%; }.meal-row .small-button { margin-left:auto; } }

@@ -4,17 +4,17 @@
 
 ## Status Implementasi
 
-Snapshot kode dan dataset: **1 Oktober 2026**. Bagian visi, perbandingan, CRUD, dan integrasi di bawah menjelaskan **cakupan/rencana produk**, bukan klaim bahwa seluruh fiturnya sudah selesai.
+Snapshot kode dan inventaris dataset: **5 Oktober 2026**. Harga Garut tetap snapshot **28 September 2026**. Bagian visi, perbandingan, CRUD, dan integrasi di bawah menjelaskan **cakupan/rencana produk**, bukan klaim bahwa seluruh fiturnya sudah selesai.
 
 | Bagian | Sudah tersedia | Belum tersedia |
 | --- | --- | --- |
-| Modul 1 | Simulasi budget, kombinasi target gizi, pantangan, jadwal menu, daftar belanja, estimasi gizi/biaya, dan trial guest 3 rencana berhasil per 24 jam per browser. | CRUD card rencana tersimpan dan integrasi stok pantry. |
+| Modul 1 | Simulasi budget/gizi/pantangan, daftar belanja, trial guest, draft otomatis milik akun, CRUD rencana tersimpan, cari susunan baru, serta ganti satu menu dengan pratinjau biaya dan persetujuan kenaikan budget. | Integrasi stok pantry, edit item belanja secara bebas, dan penghubung jadwal ke cooking tracker/dashboard. |
 | Modul 2 | OCR Tesseract.js, fallback foto Gemini, koreksi tabel, input manual, saran nama/penyimpanan, stok milik akun lintas perangkat, ubah lokasi/tanggal kedaluwarsa, dan hapus stok. | Edit seluruh kolom stok setelah disimpan, pengingat otomatis, dan integrasi cuaca/pengurangan stok saat memasak. |
 | Modul 3 | Landing, daftar akun, login/logout, validasi kata sandi, dan Django Admin. | Username pilihan pengguna, Google OAuth, serta halaman profil/preferensi. |
 | Modul 4 | Template halaman dengan header dan tautan kembali ke beranda. | Recipe book, favorit, dan cooking tracker. |
 | Modul 5 | Beranda setelah login dengan navigasi Budget Meal Planner, Smart Pantry, dan Recipe Book. | Statistik penghematan, ulasan makanan, dan market locator. |
 
-Katalog saat ini berisi **187 bahan, 143 catatan harga, dan 247 resep; 108 resep siap dihitung**, sedangkan 139 masih diblokir karena datanya belum lengkap. Ada **231 kandidat produk Open Food Facts** dan **1.500 kandidat resep** terpisah untuk kurasi, bukan tambahan otomatis ke katalog aktif. Rincian sumber, asumsi, dan penghalang ada di [data/DATASETS.md](data/DATASETS.md).
+Katalog saat ini berisi **201 bahan, 163 catatan harga, dan 434 resep; 296 resep siap dihitung**, sedangkan 138 masih diblokir. Kedua fixture berisi **7.048 objek**. Siap dihitung berarti bahan/gizi/harga tersedia untuk simulasi, bukan semua teks cara memasak sudah boleh diterbitkan. Sebanyak 187 resep Mendeley dapat dihitung, tetapi teks langkahnya ditahan untuk review asal/hak pakai. Ada **231 kandidat produk Open Food Facts** dan **1.500 baris kandidat resep** untuk kurasi; sebagian sudah dipromosikan sehingga jangan menjumlahkan kandidat dengan katalog aktif. Rincian sumber, asumsi, dan penghalang ada di [data/DATASETS.md](data/DATASETS.md) dan [review sumber](data/SOURCE_REVIEW.md).
 
 ## Anggota Kelompok
 
@@ -71,13 +71,23 @@ Daftar CRUD dan model yang direncanakan tidak semuanya sudah diimplementasikan; 
 **PIC:** Alfredo Nathaniel Putra Harsono
 
 - **Input:** nominal budget, durasi 1–7 hari, jumlah porsi 1–10 orang, waktu makan, target gizi, dan bahan yang dihindari.
-- **Output:** kombinasi resep yang diupayakan mendekati budget tanpa melampauinya, daftar belanja per bahan, jadwal menu, serta estimasi kalori, protein, karbohidrat, dan lemak. Pencarian memakai heuristik; tidak menjamin kombinasi optimal global. Pengulangan dibatasi/disebar jika katalog punya alternatif.
-- **Batas MVP:** jika data resep untuk satu waktu makan habis karena pantangan, hasil waktu makan lain tetap muncul dengan peringatan. Rekomendasi sebelumnya diingat lewat sesi browser dan resep di tanggal/waktu makan yang sama dihindari saat ada alternatif. Belum mencatat apakah menu benar-benar dimasak.
-- **Harga:** snapshot Kabupaten Garut diutamakan; referensi toko daring non-Garut melengkapi bahan yang belum punya harga lokal dan diberi keterangan. Bukan harga real-time. Jika budget jauh melebihi variasi katalog, hasil menunjukkan sisa dana tanpa membesar-besarkan porsi.
+- **Output dan budget wajib:** kombinasi resep halal, daftar belanja per bahan, jadwal menu, serta estimasi empat makro. Total belanja **tidak boleh melebihi budget** untuk diterapkan/disimpan; budget tidak dinaikkan otomatis. Hasil infeasible hanya menjelaskan kekurangan biaya, bukan rencana yang dapat disimpan. Sisa budget ditampilkan.
+- **Preferensi budget, bukan syarat wajib:** pencarian menargetkan minimal **60% budget** dan biaya satu menu maksimal **2× jatah rata-rata** (`budget / hari / jumlah waktu makan`, untuk seluruh porsi menu). Jika katalog atau target gizi tidak memungkinkan, preferensi dilonggarkan tanpa melonggarkan batas total budget. Pada penggantian manual, pilihan user dapat melewati preferensi per-menu asalkan total dan target gizi tetap memenuhi syarat. Pembelian buah gabungan dapat menurunkan biaya akhir di bawah target 60%. Catatan pelonggaran ditampilkan pada hasil dan pratinjau. Pencarian adalah heuristik dengan maksimal 40 kandidat per waktu makan; bukan jaminan optimum atau pembuktian bahwa seluruh katalog tak mungkin memenuhi preferensi. Total dipilih acak dari biaya yang terjangkau, dengan penalti pengulangan resep/protein.
+- **Batas MVP dan riwayat:** jika data resep untuk satu waktu makan habis karena pantangan, hasil waktu makan lain tetap muncul dengan peringatan. Akun membaca riwayat dari `PlannedMeal` miliknya bertanggal hari ini hingga enam hari sebelumnya, termasuk draft dan rencana tersimpan; menu berstatus dilewati tidak dihitung. Berlaku lintas perangkat tanpa tabel riwayat baru. Guest tetap memakai `planner_meal_history` dalam session. Susunan sebelumnya juga menjadi penalti slot saat regenerasi. Ini riwayat jadwal, belum bukti menu benar-benar dimasak.
+- **Harga:** snapshot Kabupaten Garut diutamakan; referensi toko daring non-Garut melengkapi bahan yang belum punya harga lokal dan diberi keterangan. Bukan harga real-time. Sisa budget ditampilkan apa adanya tanpa membesar-besarkan porsi.
 - **Pembelian buah:** kebutuhan pisang, jeruk, dan melon digabung untuk seluruh rencana, lalu dibulatkan ke perkiraan buah utuh. Biaya memakai massa beli; gizi memakai bagian termakan. Ukuran/rendemen adalah proksi, bukan minimum pembelian supermarket yang sudah diverifikasi.
 - **Target gizi:** tinggi protein dan rendah kalori dapat dipilih bersama; seimbang tidak dapat digabung dengan keduanya. Tinggi protein menetapkan minimum **80 g/orang/hari untuk tiga waktu makan**; satu/dua waktu makan memakai minimum 27/54 g. Rendah kalori memakai batas gabungan waktu makan terpilih: pagi 500, siang 325, malam 325 kkal, atau **1.150 kkal/orang/hari** bila ketiganya dipilih. Syarat diterapkan pada jumlah menu harian, bukan wajib 26 g pada setiap resep. Angka ini adalah parameter simulasi, bukan rekomendasi kebutuhan gizi pribadi.
-- **Data saat ini:** model `Recipe`, `RecipeIngredient`, `Ingredient`, dan `IngredientPrice`; riwayat rekomendasi disimpan di sesi browser. `BudgetPlan` dan `ShoppingListItem` masih model yang direncanakan, belum ada pada kode saat ini.
+- **Data saat ini:** katalog `Recipe`, `RecipeIngredient`, `Ingredient`, dan `IngredientPrice`; akun memiliki `BudgetPlan` (draft/tersimpan), `PlannedMeal` (jadwal bertanggal), dan `ShoppingListItem`. Snapshot nama, instruksi, gizi, dan belanja dipertahankan agar perubahan katalog tidak diam-diam mengubah rencana yang sudah disimpan. `PlanPreview` menyimpan usulan perubahan selama 15 menit, hanya dapat diterapkan sekali.
+- **Alur akun:** generate yang memenuhi budget otomatis menjadi **satu draft terakhir**, bukan langsung menambah rencana permanen. **Simpan Rencana** memasukkannya ke **Rencana Saya**; judul/tanggal mulai bisa diubah dan rencana bisa dihapus. Rencana dapat dibuka di `/modul1/?plan=<id>` oleh pemiliknya dari perangkat lain. Refresh sesudah generate tidak menghitung ulang. Hasil terakhir guest dibawa menjadi draft setelah login/daftar jika akun belum punya draft; draft akun yang sudah ada tidak ditimpa.
+- **Perlindungan draft:** perubahan draft wajib membawa versi yang dilihat pengguna. Rencana Baru harus membawa ID/versi draft terakhir serta persetujuan penggantian; request usang ditolak HTTP 409. Perubahan dari rencana tersimpan berbeda ditolak selama ada draft lain: simpan/hapus draft itu dahulu. Preview menyimpan ID dan versi draft untuk mendeteksi penghapusan lalu pembuatan ulang, bukan hanya perubahan nomor versi.
+- **Pergantian menu:** **Cari Menu Lain** mencari susunan alternatif dengan parameter yang sama. **Ganti Menu** menetapkan satu slot baru dan mempertahankan kode resep slot lainnya. Backend menghitung ulang seluruh belanja (termasuk pembulatan buah), memeriksa pantangan/target gizi harian, dan menampilkan total sebelum/sesudah serta selisihnya. Jika melewati budget, pengguna harus membatalkan, memilih alternatif, atau secara eksplisit menyetujui budget baru yang cukup. Hasil pencarian tidak menjamin selalu ada alternatif yang memenuhi syarat.
+- **Dropdown dan preview:** keduanya memakai `quote_schedule` terhadap seluruh jadwal. Pembelian buah digabung, baru dibulatkan; selisih dropdown sama dengan preview selama katalog/harga tidak berubah di antara request. Alternatif yang melebihi budget atau gagal target gizi tidak ditawarkan. Katalog dimuat sekali per daftar alternatif, bukan sekali per resep.
+- **Umur dan kuota preview:** usulan berlaku 15 menit dan hanya sekali pakai. Setiap pembuatan preview membersihkan preview akun tersebut yang kedaluwarsa/terpakai; cron dapat menjalankan `python manage.py cleanup_previews` untuk seluruh akun. Maksimal **20 percobaan hitung preview per akun per jendela 10 menit**, dicatat atomik di database sebelum pencarian. Pencarian gagal tetap dihitung; payload/versi yang ditolak sebelum pencarian tidak dihitung. Logout atau browser lain tidak mereset kuota. API mengembalikan HTTP 429 dan `Retry-After`; waktu jendela dihitung sejak percobaan pertama, bukan sliding window.
+- **Penyimpanan efisien:** perubahan judul tidak menulis ulang menu/belanja. Perubahan tanggal hanya memperbarui tanggal jadwal secara batch. Isi anak rencana disinkronkan dengan `bulk_create`/`bulk_update` ketika snapshot/parameter isi berubah; identitas baris yang masih ada dipertahankan. Mengganti resep mengembalikan status slot ke belum masak. Ini belum fitur cooking tracker.
+- **Perubahan rencana tersimpan:** perubahan menu/parameter diperlihatkan sebagai pratinjau, lalu diterapkan ke draft. Rencana asal tidak ditimpa sampai pengguna memilih **Simpan Perubahan ke Rencana Asal**; **Simpan Rencana** menyimpan sebagai rencana baru. Versi rencana dan draft diperiksa agar tab/perangkat lama tidak menimpa perubahan baru. API mutasi menggunakan POST, CSRF, dan filter pemilik. Menghasilkan, menyimpan, mengganti, atau menghapus rencana tidak mengubah stok pantry dan belum mencatat aksi memasak.
 - **Halaman:** 1 halaman dengan form dan hasil dalam satu tampilan, mengikuti mockup terakhir.
+
+**PR data/produk berikutnya (belum dikerjakan pada perbaikan ini):** hak pakai langkah Mendeley harus dituntaskan menurut `data/SOURCE_REVIEW.md` sebelum publikasi. Panduan alternatif harus ditulis mandiri dari metode memasak yang direview, bukan sekadar parafrase teks yang izinnya belum jelas. Katalog siap hitung saat ini memiliki 36 sarapan; target kurasi berikutnya minimal 80, dengan perluasan kata kunci roti/kentang/ubi/jagung/mie dan sekitar 30 resep kurasi manual. Penambahan tetap memerlukan gram/porsi, padanan bahan, harga, gizi, status halal dan audit sumber. Edit belanja, integrasi pantry, preferensi serta cooking tracker tetap pekerjaan roadmap modul lanjutan.
 
 **CRUD Smart Budget Meal Planner:**
 
@@ -197,7 +207,8 @@ Planner memakai katalog lokal yang telah diimpor, bukan memanggil API resep/gizi
 | Open Food Facts API | Mengumpulkan kandidat produk melalui `data/fetch_openfoodfacts_products.py`; belum otomatis menjadi stok atau bahan aktif. |
 | Bapanas, TKPI, USDA SR Legacy | Snapshot/arsip komposisi bahan untuk gizi. Sebagian memakai estimasi/proksi yang diberi status; PDF TKPI lokal belum diekstrak ke katalog. USDA FoodData Central API tidak dipanggil runtime. |
 | Bapokting Garut, PIHPS, referensi toko daring | Snapshot harga dan pelengkap non-Garut, bukan harga supermarket real-time. |
-| Kaggle dan Mendeley Data | Sumber kandidat resep/bahan untuk kurasi; tidak semua kandidat lengkap atau layak planner. |
+| Kaggle dan Mendeley Data | 18 adaptasi Kaggle dan 187 resep Mendeley siap simulasi. Mendeley v3 berlisensi CC BY 4.0; takaran/slot diadaptasi dan teks instruksi ditahan untuk review. Kandidat tidak lengkap tetap diblokir. |
+| Sayurbox dan Tokopedia | 20 harga tambahan dalam `mapping/mendeley_sources.json`; melengkapi 44 referensi retail sebelumnya tanpa mengganti harga Garut. Snapshot non-Garut, bukan harga live/ongkir atau pembelian seluruh kemasan. |
 | USDA FoodKeeper melalui mirror historis | Acuan lokal rentang masa simpan berdasarkan kondisi penyimpanan; bukan jaminan keamanan atau tanggal label kemasan. |
 | [Open-Meteo Forecast API](https://open-meteo.com/en/docs) | Direncanakan untuk cuaca; belum terintegrasi. |
 | [OpenStreetMap](https://www.openstreetmap.org/) — Nominatim dan Overpass | Direncanakan untuk market locator; belum terintegrasi. |
@@ -266,6 +277,7 @@ python data/build_candidate_indexes.py
 python data/build_final.py
 python data/validate_candidates.py
 python data/validate_catalog.py
+python data/validate_docs.py
 ```
 
 Build memerlukan snapshot/arsip sumber yang tersedia di `data/raw/` dan `data/scratch/`. Pengambilan ulang API tidak berjalan otomatis; lihat dokumentasi dataset sebelum memperbarui snapshot.
@@ -275,9 +287,28 @@ python manage.py check
 python manage.py makemigrations --check --dry-run
 python manage.py test
 node --test apps/pantry/tests_js/*.test.mjs
+node --test apps/budget_planner/tests_js/*.test.mjs
 ```
 
-Tes JavaScript memerlukan Node.js. Verifikasi 1 Oktober 2026 setelah pembaruan otorisasi dan navigasi akun meloloskan **143 tes Django dan 12 tes JavaScript**, termasuk kuota trial, reset 24 jam, replay cookie/logout, ownership stok lintas perangkat, akses API guest, dan tautan kembali ke landing dari login/sign up. Tes Gemini memakai respons mock, bukan membuktikan key, kuota, atau akurasi API live. Perapian Python memakai aturan `ruff.toml`; Ruff adalah alat pengembangan opsional, bukan dependensi runtime.
+Tes PostgreSQL memakai konfigurasi khusus yang **tidak menggunakan kredensial DB PWS**. Jalankan PostgreSQL lokal pada loopback dengan pengguna yang boleh membuat database tes, lalu:
+
+```bash
+TEST_PG_PORT=55432 TEST_PG_USER=postgres python manage.py test --settings=config.test_postgres --noinput
+```
+
+Jika memakai Docker lokal (bukan terminal PWS), alternatifnya:
+
+```bash
+docker run --rm --name takarkuy-test-postgres -p 127.0.0.1:55432:5432 -e POSTGRES_PASSWORD=test-only-password -d postgres:16
+TEST_PG_PORT=55432 TEST_PG_USER=postgres TEST_PG_PASSWORD=test-only-password python manage.py test --settings=config.test_postgres --noinput
+docker stop takarkuy-test-postgres
+```
+
+Password contoh hanya untuk container tes lokal sekali pakai. Jika port sudah dipakai, gunakan port lain dan samakan `TEST_PG_PORT`. Jangan menjalankan dua suite sekaligus dengan nama database PostgreSQL tes yang sama.
+
+Opsional: `TEST_PG_PASSWORD` dan `TEST_PG_DATABASE` (harus berawalan `test_takarkuy_`). Jangan gunakan akun/schema produksi. Tes membuat dan menghapus database tes tersendiri; `db.sqlite3` dan database PWS tidak disentuh. `.github/workflows/tests.yml` menyiapkan PostgreSQL 16 dan menjalankan seluruh tes Python, tes JS dengan glob, serta validator katalog/kandidat/dokumentasi. `TransactionTestCase` di `test_concurrency.py` menguji balapan pembuatan/update/penggantian draft, simpan idempoten, penerapan preview sekali, dan row lock nyata. Tes tersebut sengaja di-skip pada SQLite.
+
+Verifikasi **5 Oktober 2026** meloloskan **229 tes Django di PostgreSQL 16 dan 19 tes JavaScript**. Seluruh suite SQLite juga lolos: 222 dijalankan dan 7 tes konkurensi di-skip. Cakupan: kuota trial, otorisasi, draft/snapshot, variasi/halal, kesamaan delta dropdown/preview pembelian buah, preferensi budget lunak, riwayat akun lintas sesi, pembersihan/kuota preview, penyimpanan metadata tanpa rebuild, CSRF, versi wajib/usang, persetujuan Rencana Baru, deteksi ID draft yang berganti, simpan idempoten, row lock/konkurensi kuota nyata, publikasi instruksi yang ditahan, adopsi hasil guest, serta respons UI terlambat. Skip bukan bukti penguncian SQLite. Tes Gemini memakai mock, bukan verifikasi key/kuota/akurasi API live. Tes JS memakai DOM tiruan, bukan review visual browser. CI PostgreSQL sudah dikonfigurasi tetapi belum dijalankan di GitHub karena perubahan belum di-push; database PWS/production belum diuji. Ruff adalah alat pengembangan opsional, bukan dependensi runtime.
 
 ## Catatan Deployment PWS
 
@@ -287,6 +318,9 @@ Tes JavaScript memerlukan Node.js. Verifikasi 1 Oktober 2026 setelah pembaruan o
 - Alur tanggal otomatis pantry memerlukan migrasi `pantry.0006_pantryitem_ingredient_pantryitem_starting_on_and_more`, yang menambahkan referensi bahan dan tanggal awal. Stok lama tidak dihapus; tanggal ditambahkan digunakan jika tanggal awal belum tercatat.
 - Pilihan lokasi pantry hanya **Kulkas, Freezer, dan Suhu Ruang**. Migrasi `pantry.0007_simplify_storage_locations` memindahkan lokasi Lemari Kering lama ke Suhu Ruang tanpa menghapus stok/tanggal yang sudah tersimpan.
 - Otorisasi memerlukan migrasi `budget_planner.0001_initial` (kuota guest) dan `pantry.0008_pantryitem_user_pantrynamecorrection_user_and_more` (pemilik stok/koreksi). Data sesi lama dipertahankan dengan `user=NULL`, tidak ditampilkan atau otomatis diklaim oleh akun yang login. Penetapan pemilik data lama harus dilakukan setelah verifikasi, bukan dari ID sesi yang dikirim pengguna.
+- Penyimpanan rencana Modul 1 memerlukan migrasi `budget_planner.0002_budgetplan_plannedmeal_planpreview_shoppinglistitem_and_more`. Migrasi menambah tabel rencana, jadwal, daftar belanja, serta pratinjau; tidak menghapus stok/katalog/akun lama. Jalankan migrasi sebelum mengaktifkan kode baru, kemudian `collectstatic` untuk CSS/JavaScript Modul 1.
+- Migrasi `budget_planner.0003_preview_draft_identity` menambahkan identitas draft ke preview. Preview lama tanpa identitas dapat ditolak bila ada draft; buat preview baru. Setelah deploy, jalankan `python manage.py import_catalog apps/catalog/fixtures/catalog_seed.json` untuk memperbarui katalog termasuk menahan instruksi Mendeley. Jangan reset database; guard publikasi menyembunyikan teks Mendeley dari snapshot lama tanpa mengubah data historis.
+- Migrasi `budget_planner.0004_preview_quota` menambahkan kuota preview per akun; tidak menghapus data lama. Jalankan `migrate` sebelum memakai kode ini. Jadwalkan `python manage.py cleanup_previews` (misalnya setiap jam melalui scheduler/cron bila tersedia); pembuatan preview juga membersihkan preview akun secara otomatis. Perintah hanya menghapus preview sementara, bukan rencana, menu, stok atau akun.
 - Jalankan `python manage.py collectstatic --noinput` dalam alur deployment. Untuk memperbarui katalog, cadangkan database dan gunakan perintah impor fixture lengkap di atas.
 - Audit lokal belum memverifikasi PWS, koneksi database produksi, atau Gemini live. Pemeriksaan produksi menemukan peringatan HSTS/pengalihan HTTPS; periksa konfigurasi reverse proxy PWS sebelum mengaktifkannya di Django agar tidak menimbulkan redirect loop.
 - Jangan menghapus database/schema sebagai langkah pertama saat deployment gagal. Periksa log aplikasi dan migrasi; reset schema dapat menghapus seluruh akun dan stok pada schema tersebut.

@@ -13,9 +13,13 @@ from collections import defaultdict
 from pathlib import Path
 
 if __package__:
+    from .mendeley_recipes import build_mendeley
     from .recipe_estimation import estimate_candidates, replace_recipe, unique_rows
+    from .recipe_names import EXCLUDE, load_overrides, standard_name
 else:
+    from mendeley_recipes import build_mendeley
     from recipe_estimation import estimate_candidates, replace_recipe, unique_rows
+    from recipe_names import EXCLUDE, load_overrides, standard_name
 
 ROOT = Path(__file__).resolve().parent
 RAW, MAP, OUT, FIX = (ROOT / x for x in ("raw", "mapping", "processed", "fixtures"))
@@ -340,91 +344,95 @@ def build_ingredients_prices():
                 price_status="published",
             )
         )
-    supplements = json.loads((MAP / "recipe_estimation_sources.json").read_text(encoding="utf-8"))
     off = {
         p["code"]: p
         for p in json.loads((RAW / "openfoodfacts_indonesia_sample.json").read_text())["products"]
     }
-    for row in supplements["nutrition"]:
-        if "fdc_id" in row:
-            nutrition = usda_nutrition(usda[row["fdc_id"]])
-        elif "off_code" in row:
-            product = off[row["off_code"]]
-            nutriments = product["nutriments"]
-            nutrition = dict(
-                zip(
-                    (n + "_per_100g" for n in NUTRIENTS),
-                    (
-                        fmt(nutriments[k])
-                        for k in (
-                            "energy-kcal_100g",
-                            "proteins_100g",
-                            "carbohydrates_100g",
-                            "fat_100g",
-                        )
+    # The Mendeley file adds foods and prices needed by Mendeley recipes; it is
+    # observed on its own date and processed exactly like the first file.
+    for source_file in ("recipe_estimation_sources.json", "mendeley_sources.json"):
+        supplements = json.loads((MAP / source_file).read_text(encoding="utf-8"))
+        for row in supplements["nutrition"]:
+            if "fdc_id" in row:
+                nutrition = usda_nutrition(usda[row["fdc_id"]])
+            elif "off_code" in row:
+                product = off[row["off_code"]]
+                nutriments = product["nutriments"]
+                nutrition = dict(
+                    zip(
+                        (n + "_per_100g" for n in NUTRIENTS),
+                        (
+                            fmt(nutriments[k])
+                            for k in (
+                                "energy-kcal_100g",
+                                "proteins_100g",
+                                "carbohydrates_100g",
+                                "fat_100g",
+                            )
+                        ),
+                    )
+                )
+                nutrition.update(
+                    nutrition_source="Open Food Facts; CC BY-SA; label komunitas belum diverifikasi",
+                    nutrition_source_id=row["off_code"],
+                    nutrition_verified="false",
+                    calories_method="Energi label komunitas",
+                    nutrition_source_url="https://world.openfoodfacts.org/product/"
+                    + row["off_code"],
+                )
+            else:
+                scale = 1
+                if "assumed_water_fraction" in row:
+                    assumed, original = row["assumed_water_fraction"], row["source_water_fraction"]
+                    if not (0 <= assumed < 1 and 0 <= original < 1):
+                        raise ValueError("Asumsi kadar air tidak valid: " + row["code"])
+                    scale = (1 - assumed) / (1 - original)
+                nutrition = dict(
+                    zip(
+                        (n + "_per_100g" for n in ("calories", "protein", "carbs", "fat")),
+                        (fmt(value * scale) for value in row["macros"]),
+                    )
+                )
+                nutrition.update(
+                    nutrition_source=row.get(
+                        "source", "TKPI 2019 melalui mirror; belum dicocokkan PDF asli"
                     ),
+                    nutrition_source_id=row.get("source_id", row.get("tkpi_id", "")),
+                    nutrition_verified="false",
+                    calories_method="Energi terlapor sumber; proksi belum diverifikasi lokal",
+                    nutrition_source_url=row.get("source_url", supplements["tkpi_mirror_url"]),
                 )
-            )
-            nutrition.update(
-                nutrition_source="Open Food Facts; CC BY-SA; label komunitas belum diverifikasi",
-                nutrition_source_id=row["off_code"],
-                nutrition_verified="false",
-                calories_method="Energi label komunitas",
-                nutrition_source_url="https://world.openfoodfacts.org/product/" + row["off_code"],
-            )
-        else:
-            scale = 1
-            if "assumed_water_fraction" in row:
-                assumed, original = row["assumed_water_fraction"], row["source_water_fraction"]
-                if not (0 <= assumed < 1 and 0 <= original < 1):
-                    raise ValueError("Asumsi kadar air tidak valid: " + row["code"])
-                scale = (1 - assumed) / (1 - original)
-            nutrition = dict(
-                zip(
-                    (n + "_per_100g" for n in ("calories", "protein", "carbs", "fat")),
-                    (fmt(value * scale) for value in row["macros"]),
-                )
-            )
-            nutrition.update(
-                nutrition_source=row.get(
-                    "source", "TKPI 2019 melalui mirror; belum dicocokkan PDF asli"
-                ),
-                nutrition_source_id=row.get("source_id", row.get("tkpi_id", "")),
-                nutrition_verified="false",
-                calories_method="Energi terlapor sumber; proksi belum diverifikasi lokal",
-                nutrition_source_url=row.get("source_url", supplements["tkpi_mirror_url"]),
-            )
-        if row.get("note"):
-            nutrition["calories_method"] += "; " + row["note"]
-        items[row["code"]] = dict(
-            ingredient_code=row["code"],
-            name=row["name"],
-            category=row["category"],
-            base_unit="g",
-            **nutrition,
-        )
-    for row in supplements["retail_prices"]:
-        if row["code"] not in items:
-            raise ValueError("Harga referensi tanpa bahan: " + row["code"])
-        mass = row["grams"] * row.get("edible_yield", 1)
-        prices.append(
-            dict(
-                price_code=stable("PRC", row["code"], row["url"], supplements["observed_at"]),
+            if row.get("note"):
+                nutrition["calories_method"] += "; " + row["note"]
+            items[row["code"]] = dict(
                 ingredient_code=row["code"],
-                price_rupiah=fmt(row["price"]),
-                quantity=f"{mass / 1000:.6f}".rstrip("0").rstrip("."),
-                unit="kg",
-                region="Referensi toko daring (non-Garut)",
-                recorded_at=supplements["observed_at"],
-                source=row["source"],
-                source_url=row["url"],
-                source_recorded_at="",
-                source_license="Tidak dinyatakan; fakta harga referensi untuk estimasi",
-                source_commodity_name=row["product"]
-                + (" — " + row["note"] if row.get("note") else ""),
-                price_status="retail_reference",
+                name=row["name"],
+                category=row["category"],
+                base_unit="g",
+                **nutrition,
             )
-        )
+        for row in supplements["retail_prices"]:
+            if row["code"] not in items:
+                raise ValueError("Harga referensi tanpa bahan: " + row["code"])
+            mass = row["grams"] * row.get("edible_yield", 1)
+            prices.append(
+                dict(
+                    price_code=stable("PRC", row["code"], row["url"], supplements["observed_at"]),
+                    ingredient_code=row["code"],
+                    price_rupiah=fmt(row["price"]),
+                    quantity=f"{mass / 1000:.6f}".rstrip("0").rstrip("."),
+                    unit="kg",
+                    region="Referensi toko daring (non-Garut)",
+                    recorded_at=supplements["observed_at"],
+                    source=row["source"],
+                    source_url=row["url"],
+                    source_recorded_at="",
+                    source_license="Tidak dinyatakan; fakta harga referensi untuk estimasi",
+                    source_commodity_name=row["product"]
+                    + (" — " + row["note"] if row.get("note") else ""),
+                    price_status="retail_reference",
+                )
+            )
     return items, prices, aliases, bpn, usda
 
 
@@ -1570,6 +1578,33 @@ def build_recipes(items, prices):
                 calculation_status="estimasi_takaran_porsi_dan_bahan_mentah",
             )
         )
+    mendeley = build_mendeley(ROOT, items, price_by_code, [r["name"] for r in recipes])
+    for rows, extra in zip((recipes, links, tags, estimates), mendeley[:4]):
+        rows.extend(extra)
+    # Users see one clear name per menu: curated renames first, then standard
+    # spelling and casing. Mendeley rows already went through the same steps.
+    overrides = load_overrides(MAP / "recipe_name_overrides.csv")
+    for recipe in recipes:
+        if recipe["source"] == "TheMealDB API; kurasi TAKARKUY":
+            continue  # A manually reviewed name wins over generated naming rules.
+        name, _ = overrides.get(recipe["recipe_code"], ("", ""))
+        if name == EXCLUDE and not recipe["recipe_code"].startswith("RCP-MDL-"):
+            raise ValueError(
+                "Pengecualian nama hanya untuk resep Mendeley: " + recipe["recipe_code"]
+            )
+        if name and name != EXCLUDE:
+            recipe["name"] = name
+        if recipe["is_plannable"] == "true":
+            recipe["name"] = standard_name(recipe["name"])
+    names = [r["name"].casefold() for r in recipes if r["is_plannable"] == "true"]
+    duplicates = sorted({n for n in names if names.count(n) > 1})
+    if duplicates:
+        raise ValueError("Nama resep siap hitung ganda: " + ", ".join(duplicates))
+    write_csv(
+        ROOT / "staging/mendeley_recipe_audit.csv",
+        mendeley[4],
+        "recipe_code ingredient_position raw_ingredient raw_measure ingredient_code quantity_g purchase_quantity_g status estimation_note reference_url recipe_source_url rules_version".split(),
+    )
     write_csv(
         ROOT / "staging/recipe_quantity_estimates.csv",
         audit,
@@ -1933,7 +1968,12 @@ def build_all():
     counts["plannable_recipes"] = sum(r["is_plannable"] == "true" for r in recipes)
     counts["priced_plannable_ingredients"] = len({link["ingredient_code"] for link in links})
     counts["estimated_plannable_recipes"] = sum(
-        r["is_plannable"] == "true" and "estimasi takaran/porsi" in r["source"] for r in recipes
+        r["is_plannable"] == "true"
+        and any(
+            link["recipe_code"] == r["recipe_code"] and link["quantity_status"] == "estimated"
+            for link in links
+        )
+        for r in recipes
     )
     nutrient_complete = sum(
         all(row[n + "_per_100g"] not in ("", None) for n in NUTRIENTS) for row in items.values()
@@ -1946,7 +1986,12 @@ def build_all():
             source=r["source"],
             is_plannable=r["is_plannable"],
             base_servings=r["base_servings"],
-            quantity_status="estimated" if "estimasi takaran/porsi" in r["source"] else "curated",
+            quantity_status="estimated"
+            if any(
+                link["recipe_code"] == r["recipe_code"] and link["quantity_status"] == "estimated"
+                for link in links
+            )
+            else "curated",
             missing_data_reason=r["missing_data_reason"],
         )
         for r in recipes

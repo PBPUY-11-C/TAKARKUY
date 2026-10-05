@@ -80,7 +80,7 @@ class PlannerForm(forms.Form):
         raw = str(self.cleaned_data["budget"]).strip()
         # Accept Indonesian thousands separators, e.g. 10.000 or Rp 10.000.
         normalized = raw.replace("Rp", "").replace("rp", "").replace(".", "").replace(" ", "")
-        if not normalized.isdigit():
+        if not normalized.isascii() or not normalized.isdigit():
             raise forms.ValidationError("Masukkan nominal rupiah dengan angka, misalnya 10.000.")
         amount = Decimal(normalized)
         if amount < 1:
@@ -88,3 +88,11 @@ class PlannerForm(forms.Form):
         if amount > Decimal("100000000"):
             raise forms.ValidationError("Maksimal budget Rp 100.000.000.")
         return amount
+
+
+class PlanMetadataForm(forms.Form):
+    title = forms.CharField(max_length=100)
+    starts_on = forms.DateField(input_formats=["%Y-%m-%d"])
+
+    def clean_title(self):
+        return " ".join(self.cleaned_data["title"].split())

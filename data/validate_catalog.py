@@ -4,10 +4,15 @@
 import csv
 import json
 import math
+import re
 from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+NON_HALAL_TERMS = re.compile(
+    r"\b(babi|pork|bacon|ham|lard|angciu|arak|ciu|mirin|sake|wine|rum|bir|beer|brandy|whisky)\b",
+    re.IGNORECASE,
+)
 FILES = {
     "ingredients": "processed/ingredients.csv",
     "ingredient_prices": "processed/ingredient_prices.csv",
@@ -94,14 +99,33 @@ for r in tables["recipe_tags"]:
     tags[r["recipe_code"]].add(r["tag"])
 ready = [r for r in tables["recipes"] if r["is_plannable"] == "true"]
 assert len(ready) >= 15
+ready_names = [r["name"].casefold() for r in ready]
+assert len(ready_names) == len(set(ready_names)), "nama resep siap hitung harus unik"
 for r in ready:
     assert int(r["base_servings"]) > 0 and r["meal_type"] in (
         "sarapan",
         "makan_siang",
         "makan_malam",
     )
-    assert r["instructions"] and not r["missing_data_reason"]
+    assert not r["missing_data_reason"]
+    if r["recipe_code"].startswith("RCP-MDL-"):
+        metadata = json.loads(r["raw_ingredients"])
+        assert not r["instructions"], (
+            r["recipe_code"],
+            "teks belum ditinjau tidak boleh dipublikasikan",
+        )
+        assert metadata["instructions_status"] == "withheld_pending_rights_review"
+        assert metadata["license"] == "CC BY 4.0" and metadata["attribution"]
+    else:
+        assert r["instructions"]
     assert links[r["recipe_code"]] and "halal" in tags[r["recipe_code"]]
+    # TAKARKUY only plans halal menus; a halal tag must not hide such an ingredient.
+    non_halal = [
+        ingredient[x["ingredient_code"]]["name"]
+        for x in links[r["recipe_code"]]
+        if NON_HALAL_TERMS.search(ingredient[x["ingredient_code"]]["name"])
+    ]
+    assert not non_halal, (r["recipe_code"], non_halal)
     for x in links[r["recipe_code"]]:
         assert x["unit"] == "g" and math.isfinite(float(x["quantity"])) and float(x["quantity"]) > 0
         assert x["quantity_status"] in ("curated", "estimated")
