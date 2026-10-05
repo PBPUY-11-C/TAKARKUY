@@ -1,0 +1,8 @@
+{% load planner_format %}
+<section id="rencana-saya" class="results" aria-labelledby="saved-plans-title">
+  <div class="results-heading"><h2 id="saved-plans-title">Rencana Saya</h2><a class="text-link" href="{% url 'modul1' %}?new=1">+ Buat Rencana</a></div>
+  <div class="plan-list">
+    {% for saved in saved_plans %}<article class="panel saved-plan-card"><h3>{{ saved.title }}</h3><p>{{ saved.starts_on|date:'d M Y' }} · {{ saved.inputs.days }} hari · {{ saved.inputs.servings }} orang</p><p>Budget {{ saved.inputs.budget|rupiah }} · estimasi {{ saved.snapshot.total|rupiah }}</p><div class="plan-card-actions"><a class="secondary-button" href="{% url 'modul1' %}?plan={{ saved.pk }}#hasil">Buka / Ubah</a><button class="danger-button" type="button" data-delete-plan data-url="{% url 'modul1-plan-delete' saved.pk %}" data-version="{{ saved.version }}" data-title="{{ saved.title }}">Hapus</button></div></article>
+    {% empty %}<div class="panel saved-empty">Belum ada rencana tersimpan. Buat menu, lalu pilih Simpan Rencana.</div>{% endfor %}
+  </div>
+</section>

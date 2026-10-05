@@ -1,0 +1,67 @@
+pattern,action,ingredient_code,note
+(?:.*\b)?(?:babi|b2|pork|bacon|lard|angciu|arak|ciu|mirin|sake|wine|rum|bir|beer|brandy|whisky)(?:\b.*)?,block,,bahan non-halal; resep tidak dimasukkan
+air(?: \w+)*|es batu|es,utility,,air/es utilitas di luar biaya dan gizi
+(?:ati|hati) ampela|(?:ati|hati) ayam,map,ING-ATI-AMPELA,
+.*\b(?:usus|babat|paru|kikil|jeroan|otak|lidah|limpa|ceker|jantung|kulit(?! manis)|tulang|sumsum|ampela)\b.*,unmapped,,jeroan/potongan khusus belum punya harga dan gizi sendiri; tidak disamakan dengan daging
+.*\b(?:telur|telor) (?:puyuh|bebek|asin)\b.*,unmapped,,telur selain telur ayam belum punya harga; tidak disamakan dengan telur ayam
+daun pisang.*|tusuk sate.*|tusuk gigi.*|lidi.*|simpulkan|plastik.*|tali.*,utility,,alat/pembungkus masak
+(?:micin|msg|vetsin|ajinomoto|penguat rasa|sasa)(?: .*)?|micin asatu.*|penyedap a1.*|penyedap asatu.*,minor,,penguat rasa < 3 g; tidak dihitung
+baking powder|soda kue|baking soda|ragi instan|vanili|pasta pandan|pewarna.*,minor,,bahan pengembang/aroma < 5 g; tidak dihitung
+daun pandan.*|daun suji|daun kari|oregano|bunga lawang|bunga pekak|adas(?: manis)?(?: sangrai)?|kapulaga|cuka(?: masak)?|asam kandis|asam sunti|b(?:e)?limbing wuluh|kecombrang,minor,,bumbu aroma/pengasam sedikit; tidak dihitung
+kaldu jamur.*|kaldu bubuk jamur|penyedap jamur|kaldu jamur non msg,map,ING-KALDU-JAMUR,kaldu jamur bubuk
+(?:kaldu(?: ayam)?(?: bubuk)?(?: ayam)?|bubuk kaldu|masako(?: ayam)?|royco(?: ayam)?|seasoning|kaldu bubuk/penyedap|garam dan bumbu kaldu)( .*)?,map,ING-KALDU-AYAM-BUBUK,kaldu ayam bubuk; gizi proksi
+(?:kaldu sapi(?: bubuk)?|kaldu bubuk sapi|masako sapi|royco sapi),map,ING-KALDU-AYAM-BUBUK,kaldu sapi bubuk dihitung dengan proksi kaldu bubuk
+bawang goreng.*,map,ING-BAWANG-MERAH,proksi bawang merah mentah; minyak goreng bawang tidak dihitung
+ebi(?: kering| sangrai)?|rebon(?: kering)?|udang kering,map,ING-EBI,ebi kering
+t(?:e)?rasi(?: \w+)*,map,ING-TERASI,terasi
+kacang panjang|ikat kacang panjang,map,ING-KACANG-PANJANG,
+ceng(?:keh|kih),map,ING-CENGKEH,
+(?:daging )?(?:ikan )?teng(?:g)?iri(?: giling)?,map,ING-IKAN-TENGGIRI,ikan tenggiri; gizi proksi kakap
+kencur,map,ING-KENCUR,kencur; gizi proksi jahe
+jamur kuping(?: kering| rebus| segar)?,map,ING-JAMUR-KUPING,
+jinten(?: bubuk| sangrai)?|jintan(?: bubuk| sangrai)?,map,ING-CUMIN,jintan
+(?:soun|suun|sohun|soun / bihun)(?: rebus)?|soun / bihun rebus,map,ING-SOUN,soun kering; gizi proksi bihun
+bihun(?: jagung| rose brand| rebus)?,map,ING-BIHUN,bihun kering
+kacang tanah(?: goreng| sangrai)?,map,ING-KACANG-TANAH,
+labu siam,map,ING-LABU-SIAM,
+(?:tepung )?sagu(?: tani)?(?: rose brand)?|tepung sagu tani.*|tapioka(?: .*)?|tepung sagu / tapioka,map,ING-TEPUNG-TAPIOKA,tepung sagu tani/tapioka
+.*\b(?:tongkol|tuna|cakalang)\b.*|ikan pindang|pindang,map,ING-IKAN-SEGAR-TONGKOL-TUNA-CAKALANG,tongkol/tuna/cakalang; ikan pindang dihitung sebagai tongkol
+.*\bteri\b.*|ikan asin(?: \w+)?,map,ING-IKAN-ASIN-TERI-NO-2,teri asin kering; ikan asin lain dihitung dengan harga dan gizi ikan asin
+.*\bkembung\b.*,map,ING-IKAN-KEMBUNG,
+.*\bbandeng\b.*,map,ING-IKAN-BANDENG,
+ikan mas,map,ING-IKAN-MAS,
+.*\bpatin\b.*,map,ING-IKAN-PATIN,
+kelapa(?: parut| tua| muda parut)?,map,ING-KELAPA,kelapa parut
+jengkol(?: tua)?,map,ING-JENGKOL,
+pete|petai,map,ING-PETAI,
+t(?:a|o)uge(?: pendek)?|toge|taoge|kecambah,map,ING-TAUGE,
+labu kuning,map,ING-LABU-KUNING,
+terong(?: ungu| hijau| bulat)?(?: ukuran sedang)?,map,ING-TERONG,
+jagung(?: manis| muda)?|bonggol jagung manis,map,ING-JAGUNG-MANIS,pipilan/jagung manis
+jeruk (?:limau|limo|lemo)|limau kuit|asam jeruk|air jeruk,map,ING-JERUK-NIPIS,jeruk limau dihitung sebagai jeruk nipis
+daun bawang (?:/ |dan )?seledri(?: iris)?,map,ING-DAUN-BAWANG,alternatif sumber; dipilih daun bawang
+lengkoas|laos,map,ING-LENGKUAS,
+salam,map,ING-DAUN-SALAM,
+kunir,map,ING-KUNYIT,
+telor(?: rebus)?,map,ING-TELUR-AYAM-BROILER,
+mentimun,map,ING-MENTIMUN,
+ladaku|lada(?: bubuk)?|garam/lada,map,ING-MERICA,
+lombok (?:merah )?(?:besar|keriting)|lombok merah keriting,map,ING-CABAI-MERAH-KERITING,
+lombok hijau(?: besar)?,map,ING-CABE-HIJAU-BIASA,
+lombok rawit|rawit,map,ING-CABAI-RAWIT-MERAH,
+bawang pre|daun prei,map,ING-DAUN-BAWANG,
+bombay,map,ING-BAWANG-BOMBAY,
+kayumanis,map,ING-KAYU-MANIS,
+sawi putih,map,ING-SAWI-PUTIH,
+pakcoy|pak choi|pokcoy,map,ING-PAKCOY,
+bayam,map,ING-BAYAM,
+kangkung,map,ING-KANGKUNG,
+keju parut,map,ING-KEJU-CHEDDAR,
+kecap (?:hitam|bango|indofood),map,ING-KECAP-MANIS,
+margarine,map,ING-MARGARIN,
+daging(?: giling| has dalam| sengkel| sapi.*)?,map,ING-DAGING-SAPI,daging tanpa keterangan dihitung sebagai daging sapi
+tomatoes,map,ING-TOMAT,
+tumbar,map,ING-KETUMBAR-BIJI,
+miri,map,ING-KEMIRI,
+serei,map,ING-SERAI,
+asam(?: matang)?|asem jawa,map,ING-ASAM-JAWA,asam jawa

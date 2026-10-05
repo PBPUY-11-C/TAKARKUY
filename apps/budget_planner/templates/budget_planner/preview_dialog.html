@@ -1,0 +1,17 @@
+<dialog id="plan-dialog" class="plan-dialog" aria-labelledby="preview-title">
+  <div class="panel-heading"><h2 id="preview-title">Pratinjau Menu</h2><button type="button" class="secondary-button" data-close-dialog aria-label="Tutup pratinjau">×</button></div>
+  <p id="preview-feedback" role="status" aria-live="polite"></p>
+  <div id="replacement-picker" hidden><label for="replacement-recipe">Pilih menu pengganti</label><select id="replacement-recipe"></select><button id="request-preview" class="secondary-button" type="button">Periksa Menu Ini</button><p class="field-note">Alternatif tetap diperiksa terhadap data harga, pantangan, dan target gizi harian.</p></div>
+  <section id="preview-result" hidden>
+    <p id="preview-cost" class="cost-notice"></p>
+    <p id="preview-budget"></p>
+    <p id="preview-parameters"></p>
+    <p id="preview-notes" class="field-note"></p>
+    <p class="field-note">Total dihitung ulang dari seluruh daftar belanja dan acuan harga/gizi saat ini, termasuk pembulatan pembelian buah. Pratinjau belum mengubah pilihanmu.</p>
+    <div id="preview-schedule" class="preview-schedule"></div>
+    <details><summary>Daftar belanja setelah perubahan</summary><ul id="preview-shopping"></ul></details>
+    <div id="budget-increase" class="field" hidden><label for="new-budget">Budget baru yang kamu setujui (Rp)</label><input id="new-budget" type="text" inputmode="numeric"><p class="field-note">Budget tidak dinaikkan otomatis. Perubahan diterapkan hanya setelah persetujuanmu.</p></div>
+    <button id="apply-preview" type="button" class="calculate-button">Terapkan ke Draft</button>
+  </section>
+  <button type="button" class="secondary-button" data-close-dialog>Batal / Pilih Menu Lain</button>
+</dialog>

@@ -1,0 +1,173 @@
+recipe_code,name,reason
+RCP-KAGGLE-4472482,Nugget Ayam,bahasa campuran
+RCP-KAGGLE-4469586,Ayam Teriyaki,bahasa Indonesia
+RCP-KAGGLE-4472147,Ayam Kecap,kata 'resep/rumahan'
+RCP-KAGGLE-4466395,Sup Ayam Garang Asem,ejaan baku
+RCP-KAGGLE-4471637,Ayam Panggang Saus Kecap,ejaan baku
+RCP-KAGGLE-4471562,Ayam Dada Goreng Tepung,beda dengan Ayam Goreng Tepung (potongan utuh)
+RCP-KAGGLE-4448850,Ayam Goreng Tepung,nama jelas
+RCP-KAGGLE-4469261,Ayam Goreng Tanpa Tulang,nama jelas
+RCP-KAGGLE-4470089,Ayam Kecap Cabai Hijau,tanda baca dan ejaan
+RCP-TMDB-53076,Roti Telur Dadar,bahasa Indonesia
+RCP-TMDB-53281,Kefta Bola Daging ala Aljazair,bahasa Indonesia
+RCP-TMDB-53092,Tumis Buncis Minyak Zaitun ala Suriah,bahasa Indonesia
+RCP-TMDB-53288,Salad Paprika ala Aljazair,bahasa Indonesia
+RCP-MDL-0009,Ratatouille Tempe Telur,judul terlalu panjang
+RCP-MDL-0023,Nasi Kuning Tanpa Kunyit,kata pengantar
+RCP-MDL-0024,Balado Udang Kentang Petai,kata pengantar
+RCP-MDL-0032,exclude,duplikat Telur Balado
+RCP-MDL-0035,exclude,duplikat Balado Ikan Tongkol
+RCP-MDL-0196,exclude,duplikat Balado Ikan Tongkol
+RCP-MDL-0053,Daging Sapi Bumbu Jawa,nama jelas
+RCP-MDL-0056,Soto Ayam Bening Kuah Kuning,nama jelas
+RCP-MDL-0071,Swike Ayam,kata pengantar
+RCP-MDL-0078,Terong Balado,kata pengantar
+RCP-MDL-0082,Jangan Lombok Tahu Tempe (Sayur Cabai Jawa Timur),nama daerah dijelaskan
+RCP-MDL-0375,exclude,duplikat Ayam Woku
+RCP-MDL-1283,exclude,duplikat Ayam Woku
+RCP-MDL-0350,Telur Woku,ejaan baku
+RCP-MDL-1034,exclude,duplikat Gulai Ayam
+RCP-MDL-1042,Gulai Ayam dan Telur,nama jelas
+RCP-MDL-1018,Gulai Ayam Tahu Buncis,nomor di judul
+RCP-MDL-0276,Gulai Tahu Ayam,kata pengantar
+RCP-MDL-0097,Ikan Asin Balado,nama jelas
+RCP-MDL-0114,Pepes Ayam Sunda,kata pengantar
+RCP-MDL-0124,Kokor Timun Santan Sambal Limau Kuit (Kutai),nama daerah dijelaskan
+RCP-MDL-0146,Ikan Mas Betuup (Banjar),nama daerah dijelaskan
+RCP-MDL-0152,exclude,duplikat Ayam Rica-Rica
+RCP-MDL-0998,exclude,duplikat Ayam Rica-Rica Kemangi
+RCP-MDL-1270,Ayam Kampung Rica-Rica,nomor dan kode di judul
+RCP-MDL-0626,Ayam Tahu Rica-Rica,urutan nama
+RCP-MDL-0162,Balado Tahu Tongkol Suwir,urutan nama
+RCP-MDL-0165,Sayur Lodeh Kacang Panjang Tempe,kata pengantar
+RCP-MDL-0174,Pepes Tahu,kata pengantar
+RCP-MDL-0181,Plecing Kangkung,ejaan dan kata pengantar
+RCP-MDL-0202,Ikan Pindang Saus Tomat,ejaan baku
+RCP-MDL-0384,Pindang Tongkol Kuah Tomat,nama jelas
+RCP-MDL-0203,Balado Hati Ayam Kentang,nama jelas
+RCP-MDL-0220,exclude,duplikat Rendang Daging Sapi
+RCP-MDL-1093,exclude,duplikat Rendang Daging Sapi
+RCP-MDL-0227,Soto Ayam Kuning,kata pengantar
+RCP-MDL-0404,Soto Ayam,kata pengantar
+RCP-MDL-0414,exclude,nama pribadi; duplikat Soto Ayam
+RCP-MDL-0416,Soto Daging,kata pengantar
+RCP-MDL-0744,Soto Sulung Daging,nama jelas
+RCP-MDL-1327,exclude,duplikat Sambal Telur
+RCP-MDL-0236,exclude,duplikat Semur Telur
+RCP-MDL-1172,exclude,duplikat Semur Telur
+RCP-MDL-1282,exclude,duplikat Semur Telur
+RCP-MDL-1329,Semur Telur Dadar,ejaan baku
+RCP-MDL-1069,Semur Ayam Telur,nama jelas
+RCP-MDL-1246,exclude,duplikat Semur Ayam Telur
+RCP-MDL-0247,exclude,duplikat Opor Ayam
+RCP-MDL-0949,exclude,duplikat Opor Ayam
+RCP-MDL-1206,exclude,duplikat Opor Ayam Kuning
+RCP-MDL-0994,Opor Ayam Kuning,nama jelas
+RCP-MDL-1053,Opor Ayam Telur,nama jelas
+RCP-MDL-0255,Gulai Ikan Padang,kata pengantar
+RCP-MDL-0278,Gulai Ikan Mas,kata pengantar
+RCP-MDL-0896,Gulai Ikan Tongkol Kemangi,nama ringkas
+RCP-MDL-0279,Garang Asem Ati Ampela,nama jelas
+RCP-MDL-0285,exclude,duplikat Ayam Balado
+RCP-MDL-0287,exclude,duplikat Telur Balado
+RCP-MDL-0322,Telur Ceplok Balado,ejaan baku
+RCP-MDL-1070,exclude,duplikat Telur Ceplok Balado
+RCP-MDL-1257,exclude,duplikat Telur Ceplok Balado
+RCP-MDL-0327,Balado Telur dan Ikan Teri,kata promosi
+RCP-MDL-1127,Balado Telur Terong,nama pribadi
+RCP-MDL-1090,Balado Ikan Kembung dan Telur,ejaan baku
+RCP-MDL-0289,Empal Balado,nama jelas
+RCP-MDL-0292,Ayam Bakar Padang,judul sumber memuat nama hidangan setelah koma
+RCP-MDL-0296,Sambal Tempe,kata promosi
+RCP-MDL-0627,exclude,duplikat Sambal Tempe
+RCP-MDL-1263,Sambal Tempe Kukus,nama pribadi
+RCP-MDL-0779,Sambal Teri Tempe Medan,nama ringkas
+RCP-MDL-0298,Pindang Patin Kuning,nama ringkas
+RCP-MDL-0638,Pindang Patin,nama ringkas
+RCP-MDL-0691,exclude,duplikat Pindang Patin
+RCP-MDL-0299,Ayam Masak Habang (Banjar),nama daerah
+RCP-MDL-0309,Gulai Kacang Panjang Tahu,nama jelas
+RCP-MDL-0513,exclude,duplikat Gulai Kacang Panjang Tahu
+RCP-MDL-0337,Telur Rebus Sambal Kecap,nama ringkas
+RCP-MDL-0339,exclude,duplikat Garang Asem Ayam
+RCP-MDL-0449,exclude,nama tidak jelas; duplikat Garang Asem
+RCP-MDL-0986,Garang Asem Ayam Tanpa Santan,urutan nama
+RCP-MDL-0993,exclude,duplikat Garang Asem Ayam Tanpa Santan
+RCP-MDL-1236,exclude,duplikat Garang Asem Ayam
+RCP-MDL-0347,Nasi Kuning Telur Masak Habang,nama daerah dijelaskan
+RCP-MDL-0348,Ikan Pindang Masak Merah Kemangi,nama jelas
+RCP-MDL-0355,Nasi Liwet Sunda,nama alat masak
+RCP-MDL-0365,Pindang Tongkol Santan,nama ringkas
+RCP-MDL-0367,Ikan Pindang Pedas,nama ringkas
+RCP-MDL-0368,Pindang Tongkol Asam Padeh,nama ringkas
+RCP-MDL-0689,exclude,duplikat Pindang Tongkol Asam Padeh
+RCP-MDL-0370,exclude,lontong polos bukan menu lengkap
+RCP-MDL-0554,exclude,lontong polos bukan menu lengkap
+RCP-MDL-0903,exclude,lontong polos bukan menu lengkap
+RCP-MDL-0371,Ayam Sambal Merah,nama jelas
+RCP-MDL-0394,Dendeng Balado,kata 'frozen food'
+RCP-MDL-0409,Soto Ayam Suwir,kata pengantar
+RCP-MDL-0419,exclude,duplikat Balado Terong Teri
+RCP-MDL-0628,Balado Terong Teri,nama ringkas
+RCP-MDL-0425,exclude,duplikat Semur Jengkol
+RCP-MDL-0427,Ayam Asam Manis Banjar,nama ringkas
+RCP-MDL-1354,Ayam Telur Asam Manis Banjar,nama ringkas
+RCP-MDL-0436,Serundeng Daging,nama ringkas
+RCP-MDL-0451,Nasi Kuning,kata 'homemade'
+RCP-MDL-1124,exclude,duplikat Nasi Kuning
+RCP-MDL-0649,Nasi Kuning Labu,ejaan
+RCP-MDL-0457,Nasi Uduk,nama alat masak
+RCP-MDL-0745,exclude,duplikat Nasi Uduk
+RCP-MDL-0464,Ikan Kembung Kukus Sambal Kemangi,bahasa campuran
+RCP-MDL-0470,Semur Ati Ampela,nama ringkas
+RCP-MDL-0495,exclude,duplikat Semur Ayam Kecap
+RCP-MDL-0658,exclude,duplikat Kentang Pete Balado
+RCP-MDL-0508,Kentang Petai Balado,ejaan baku
+RCP-MDL-0517,Semur Daging Giling Kentang,nama ringkas
+RCP-MDL-0567,Sambal Goreng Udang Tahu,nama ringkas
+RCP-MDL-0572,Sup Gulai Ayam Jogja,ejaan baku
+RCP-MDL-0974,Sup Gulai Ayam Tahu Jogja,ejaan baku
+RCP-MDL-0624,Sate Ayam Bumbu Bali,ejaan
+RCP-MDL-0639,Otak-Otak Ikan Tongkol,nama jelas
+RCP-MDL-0862,Celimpungan (Pempek Kuah Santan),nama ringkas
+RCP-MDL-1379,exclude,duplikat Celimpungan Udang
+RCP-MDL-1215,Celimpungan Udang,urutan nama
+RCP-MDL-1153,Celimpungan Tuna,nama ringkas
+RCP-MDL-0874,exclude,"saus cuko, bukan lauk"
+RCP-MDL-0969,exclude,"saus cuko, bukan lauk"
+RCP-MDL-0991,Pempek Tahu Tenggiri,nama ringkas
+RCP-MDL-1017,Model Pempek Tahu,tanda baca
+RCP-MDL-1120,Laksan (Pempek Kuah Santan Kental),nama daerah dijelaskan
+RCP-MDL-1372,Pempek Dos,ejaan
+RCP-MDL-0651,Sapi Rica-Rica,urutan nama
+RCP-MDL-0700,Sambal Teri Medan,nama ringkas
+RCP-MDL-0783,exclude,duplikat Sambal Teri Kacang
+RCP-MDL-0761,Sambal Teri Kacang,nama ringkas
+RCP-MDL-0770,exclude,resep MPASI (bayi)
+RCP-MDL-0926,exclude,resep MPASI (bayi)
+RCP-MDL-0565,exclude,resep MPASI (bayi)
+RCP-MDL-1152,Lodeh Tempe Telur,nama ringkas
+RCP-MDL-0811,Ikan Kembung Woku,nama ringkas
+RCP-MDL-0899,Nasi Bakar Tongkol,nama ringkas
+RCP-MDL-0900,Ayam Tumis Sambal,kata promosi
+RCP-MDL-0948,Semur Ayam Tahu Kentang,nama ringkas
+RCP-MDL-1001,exclude,"minyak cabai, bukan lauk"
+RCP-MDL-1004,Sambal Jengkol Kacang,tanda baca
+RCP-MDL-1010,Ayam Betutu Bali,nama ringkas
+RCP-MDL-1027,Pepes Tahu Telur,nama ringkas
+RCP-MDL-1071,exclude,"minuman, bukan lauk"
+RCP-MDL-1087,exclude,jantung ayam dihitung sebagai daging; belum ada data
+RCP-MDL-1098,Ikan Pindang Saus Tomat ala Sarden,judul menyiratkan ikan sarden padahal tidak ada
+RCP-MDL-1105,Pepes Teri,nama ringkas
+RCP-MDL-1157,Ayam Bakar Taliwang,nama ringkas
+RCP-MDL-1233,Terik Ayam Tahu Telur (Semarang),nama daerah dijelaskan
+RCP-MDL-1199,Pepes Ikan Kembung,nama ringkas
+RCP-MDL-1311,exclude,duplikat Pepes Ikan Kembung
+RCP-MDL-1216,Pepes Tahu Udang,nama pribadi
+RCP-MDL-1237,Kare Ayam Jawa Timur,nama ringkas
+RCP-MDL-1310,Ayam Sambal Hijau,ejaan baku
+RCP-MDL-1333,Sate Lilit Ayam,nama ringkas
+RCP-MDL-1364,Terong Bakar Sambal Limau Kuit (Tarung Babanam),nama daerah dijelaskan
+RCP-MDL-1368,Pepes Manis Ikan Patin (Pais Iwak),nama daerah dijelaskan
+RCP-MDL-0039,Gulai Kuning Ikan Patin,ejaan
+RCP-MDL-0875,Celimpungan Pempek Dos,ejaan

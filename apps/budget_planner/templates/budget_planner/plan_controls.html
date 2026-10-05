@@ -1,0 +1,10 @@
+<section class="panel plan-controls" aria-label="Simpan rencana">
+  <div class="panel-heading"><div><p class="kicker">{% if plan.status == 'draft' %}DRAFT OTOMATIS{% else %}RENCANA TERSIMPAN{% endif %}</p><h3>{{ plan.title }}</h3></div><button type="button" class="secondary-button" data-regenerate data-preview-url="{% url 'modul1-plan-preview' plan.pk %}" data-version="{{ plan.version }}">Cari Menu Lain</button></div>
+  <p class="field-note">{% if plan.status == 'draft' %}Draft terakhir tersimpan di akun. Tekan Simpan Rencana untuk memasukkannya ke Rencana Saya.{% else %}Mencari alternatif tidak menimpa rencana ini. Perubahan menjadi draft sampai kamu memilih menyimpannya.{% endif %} Stok pantry tidak berubah.</p>
+  <form class="plan-save-form" data-save-plan data-url="{% url 'modul1-plan-save' plan.pk %}" data-version="{{ plan.version }}">
+    <div class="field"><label for="plan-title">Judul rencana</label><input id="plan-title" name="title" maxlength="100" required value="{{ plan.title }}"></div>
+    <div class="field"><label for="plan-start">Tanggal mulai</label><input id="plan-start" type="date" name="starts_on" required value="{{ plan.starts_on|date:'Y-m-d' }}"></div>
+    <button class="calculate-button" type="submit">{% if plan.status == 'draft' %}Simpan Rencana{% else %}Simpan Judul / Tanggal{% endif %}</button>
+    {% if plan.status == 'draft' and plan.source_plan_id %}<button class="secondary-button" type="submit" name="replace_original" value="yes">Simpan Perubahan ke Rencana Asal</button>{% endif %}
+  </form>
+</section>

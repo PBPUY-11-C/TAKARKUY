@@ -10,7 +10,6 @@ from .forms import PlannerForm
 from .planner import (
     MEALS,
     _recipe_patterns,
-    budget_target_minimum,
     build_plan,
     money,
     purchase_grams,
@@ -267,7 +266,6 @@ class PlannerCatalogTests(TestCase):
         self.assertEqual(result["protein_floor"], 80)
         self.assertEqual(result["calorie_cap"], 1150)
         self.assertEqual(len(result["schedule"]), 7)
-        self.assertTrue(result["repeated_recipes"])
         for day in result["schedule"]:
             self.assertGreaterEqual(day["protein"], 80)
             self.assertLessEqual(day["calories"], 1150)
@@ -392,6 +390,8 @@ class PlannerCatalogTests(TestCase):
             },
             {"recipe": SimpleNamespace(pk="low_calorie"), "cost": 100, "tags": {"rendah_kalori"}},
         ]
+        for item in candidates:
+            item["protein_group"] = "telur"
         patterns = _recipe_patterns(candidates, 1, {"tinggi_protein", "rendah_kalori"}, set())
         self.assertEqual(patterns[100]["items"][0]["recipe"].pk, "both")
 
@@ -486,7 +486,7 @@ class PlannerCatalogTests(TestCase):
         self.assertTrue(result["catalog_cannot_use_all_budget"])
         self.assertGreaterEqual(result["catalog_ceiling"], result["total"])
 
-    def test_seven_day_large_budget_reaches_catalog_ceiling(self):
+    def test_seven_day_large_budget_stays_varied_and_below_limit(self):
         result = build_plan(
             budget=Decimal("1000000"),
             days=7,
@@ -496,7 +496,7 @@ class PlannerCatalogTests(TestCase):
             exclude_ingredients=[],
         )
         self.assertTrue(result["within_budget"])
-        self.assertEqual(result["total"], result["catalog_ceiling"])
+        self.assertLessEqual(result["total"], result["catalog_ceiling"])
         self.assertEqual(len(result["planned_recipe_codes"]), 21)
 
     def test_minimum_budget_accounts_for_distinct_recipes(self):
@@ -511,26 +511,11 @@ class PlannerCatalogTests(TestCase):
         self.assertFalse(result["within_budget"])
         self.assertEqual(result["minimum_budget"], result["total"])
 
-    def test_target_range_uses_twenty_percent_capped_at_fifty_thousand(self):
-        self.assertEqual(budget_target_minimum(Decimal("100000")), 80000)
-        self.assertEqual(budget_target_minimum(Decimal("200000")), 160000)
-        self.assertEqual(budget_target_minimum(Decimal("250000")), 200000)
-        self.assertEqual(budget_target_minimum(Decimal("300000")), 250000)
-        self.assertEqual(budget_target_minimum(Decimal("380000")), 330000)
-
+    def test_budget_limit_is_never_exceeded(self):
         settings = dict(
             days=7, servings=2, meal_types=MEALS, targets=["seimbang"], exclude_ingredients=[]
         )
-        near = build_plan(budget=Decimal("400000"), **settings)
-        self.assertEqual(near["target_minimum"], 350000)
-        self.assertTrue(near["within_target_range"])
-        self.assertGreaterEqual(near["total"], 350000)
-        self.assertLessEqual(near["total"], 400000)
-
-        # Keep this a genuinely unreachable budget as the catalog grows; the
-        # previous Rp450k ceiling depended on the old 85-recipe fixture.
-        too_far = build_plan(budget=Decimal("1000000"), **settings)
-        self.assertEqual(too_far["target_minimum"], 950000)
-        self.assertTrue(too_far["within_budget"])
-        self.assertFalse(too_far["within_target_range"])
-        self.assertTrue(too_far["catalog_below_target"])
+        for budget in ("150000", "400000", "1000000"):
+            result = build_plan(budget=Decimal(budget), **settings)
+            self.assertTrue(result["within_budget"])
+            self.assertLessEqual(result["total"], Decimal(budget))
