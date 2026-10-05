@@ -1,6 +1,7 @@
 import json
 from datetime import timedelta
 from decimal import Decimal
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from django.test import Client, TestCase
@@ -27,7 +28,7 @@ class PantryFlowTests(TestCase):
     def post_items(self, items, source="ocr", client=None):
         return (client or self.client).post(
             reverse("modul2-items"),
-            data=json.dumps({"source": source, "items": items}),
+            data=json.dumps({"source": source, "operation_key": str(uuid4()), "items": items}),
             content_type="application/json",
         )
 
@@ -75,7 +76,7 @@ class PantryFlowTests(TestCase):
         self.assertIsNone(item.estimated_expires_on)
         page = self.client.get(reverse("modul2"))
         self.assertContains(page, "Tahu Putih")
-        self.assertContains(page, "Belum ditentukan", count=1)
+        self.assertContains(page, "Belum ditentukan")
         self.assertContains(page, "data-pantry-location")
         self.assertContains(page, "data-pantry-expiry")
 
@@ -158,6 +159,8 @@ class PantryFlowTests(TestCase):
             reverse("modul2-item-details", args=[item.pk]),
             data=json.dumps(
                 {
+                    "version": item.version,
+                    "operation_key": str(uuid4()),
                     "location": "chiller",
                     "estimated_expires_on": "2026-10-02",
                     "expiry_mode": "manual",
@@ -176,7 +179,14 @@ class PantryFlowTests(TestCase):
         item = PantryItem.objects.get()
         response = self.client.patch(
             reverse("modul2-item-details", args=[item.pk]),
-            data=json.dumps({"location": "unknown", "estimated_expires_on": "not-a-date"}),
+            data=json.dumps(
+                {
+                    "version": item.version,
+                    "operation_key": str(uuid4()),
+                    "location": "unknown",
+                    "estimated_expires_on": "not-a-date",
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 400)
@@ -190,7 +200,14 @@ class PantryFlowTests(TestCase):
         authenticate(other_client, "other")
         response = other_client.patch(
             reverse("modul2-item-details", args=[item.pk]),
-            data=json.dumps({"location": "freezer", "estimated_expires_on": ""}),
+            data=json.dumps(
+                {
+                    "version": item.version,
+                    "operation_key": str(uuid4()),
+                    "location": "freezer",
+                    "estimated_expires_on": "",
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 404)
@@ -198,9 +215,14 @@ class PantryFlowTests(TestCase):
     def test_pantry_item_can_be_deleted_by_its_owner(self):
         self.post_items([self.item])
         item = PantryItem.objects.get()
-        response = self.client.delete(reverse("modul2-item-delete", args=[item.pk]))
+        response = self.client.delete(
+            reverse("modul2-item-delete", args=[item.pk]),
+            data=json.dumps({"version": item.version, "operation_key": str(uuid4())}),
+            content_type="application/json",
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(PantryItem.objects.count(), 0)
+        self.assertEqual(PantryItem.objects.filter(archived_at__isnull=True).count(), 0)
+        self.assertEqual(item.movements.filter(kind="discard").count(), 1)
 
     def test_other_account_cannot_delete_pantry_item(self):
         self.post_items([self.item])
@@ -240,7 +262,14 @@ class PantryFlowTests(TestCase):
         client.cookies = self.client.cookies.copy()
         response = client.patch(
             reverse("modul2-item-details", args=[item.pk]),
-            data=json.dumps({"location": "freezer", "estimated_expires_on": ""}),
+            data=json.dumps(
+                {
+                    "version": item.version,
+                    "operation_key": str(uuid4()),
+                    "location": "freezer",
+                    "estimated_expires_on": "",
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 403)

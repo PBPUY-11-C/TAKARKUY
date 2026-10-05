@@ -34,7 +34,9 @@ from apps.budget_planner.views import planner_page
 from apps.pantry.views import (
     delete_pantry_item,
     fallback_receipt_ocr,
+    pantry_movements,
     pantry_page,
+    pantry_recipe_matches,
     save_pantry_items,
     suggest_receipt_items,
     update_pantry_details,
@@ -67,6 +69,8 @@ urlpatterns = [
     path("modul2/ocr-fallback/", fallback_receipt_ocr, name="modul2-ocr-fallback"),
     path("modul2/items/<int:item_id>/", update_pantry_details, name="modul2-item-details"),
     path("modul2/items/<int:item_id>/delete/", delete_pantry_item, name="modul2-item-delete"),
+    path("modul2/items/<int:item_id>/movements/", pantry_movements, name="modul2-item-movements"),
+    path("modul2/recipes/", pantry_recipe_matches, name="modul2-recipes"),
     path(
         "modul4/", login_required(TemplateView.as_view(template_name="modul4.html")), name="modul4"
     ),

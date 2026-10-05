@@ -1,6 +1,6 @@
 """Location-specific estimates; a location change never resets the item's age."""
 
-from datetime import timedelta
+from datetime import date, timedelta
 
 from apps.catalog.models import IngredientShelfLife
 
@@ -57,3 +57,27 @@ def expiry_estimate(options, location, starting_on):
         ),
         "source_url": reference["source_url"],
     }
+
+
+def shelf_life_duration(starting_on, expires_on):
+    days = (expires_on - starting_on).days if expires_on and starting_on else -1
+    return days if 0 <= days <= 3650 else None
+
+
+def transfer_estimate(item, options, location, starting_on):
+    if item.expiry_source in {"label", "manual", "legacy", "unknown"} and item.estimated_expires_on:
+        return {
+            "estimated_expires_on": item.estimated_expires_on.isoformat(),
+            "shelf_life_days": shelf_life_duration(starting_on, item.estimated_expires_on),
+            "message": "Tanggal label/manual/lama dipertahankan; pindah lokasi tidak mereset umur.",
+        }
+    result = expiry_estimate(options, location, starting_on)
+    if result["estimated_expires_on"] and item.estimated_expires_on:
+        result["estimated_expires_on"] = min(
+            date.fromisoformat(result["estimated_expires_on"]), item.estimated_expires_on
+        ).isoformat()
+        result["message"] += " Perpindahan tidak memperpanjang estimasi sebelumnya."
+        result["shelf_life_days"] = shelf_life_duration(
+            starting_on, date.fromisoformat(result["estimated_expires_on"])
+        )
+    return result

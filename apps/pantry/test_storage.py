@@ -1,6 +1,7 @@
 import json
 from datetime import timedelta
 from unittest.mock import patch
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from django.test import Client, TestCase
@@ -49,6 +50,7 @@ class PantryStorageTests(TestCase):
             data=json.dumps(
                 {
                     "source": source,
+                    "operation_key": str(uuid4()),
                     "items": [
                         {
                             "name": "Bahan Uji",
@@ -66,7 +68,7 @@ class PantryStorageTests(TestCase):
         return self.client.patch(
             reverse("modul2-item-details", args=[item.pk]),
             content_type="application/json",
-            data=json.dumps(changes),
+            data=json.dumps({**changes, "version": item.version, "operation_key": str(uuid4())}),
         )
 
     @patch("apps.pantry.recommendations._gemini_choices")
@@ -87,12 +89,15 @@ class PantryStorageTests(TestCase):
         for location, days in (("chiller", 5), ("freezer", 20), ("suhu_ruang", 2)):
             # A stale date sent by the client must not override automatic recalculation.
             response = self.update(
-                item, location=location, estimated_expires_on=self.today.isoformat()
+                item,
+                location=location,
+                expiry_mode="auto",
+                estimated_expires_on=self.today.isoformat(),
             )
             self.assertEqual(response.status_code, 200)
             item.refresh_from_db()
             self.assertEqual(item.starting_on, start)
-            self.assertEqual(item.estimated_expires_on, start + timedelta(days=days))
+            self.assertEqual(item.estimated_expires_on, start + timedelta(days=2))
             self.assertEqual(
                 response.json()["estimated_expires_on"], item.estimated_expires_on.isoformat()
             )
@@ -138,7 +143,7 @@ class PantryStorageTests(TestCase):
         item = PantryItem.objects.get()
         self.update(item, location="chiller", expiry_mode="auto")
         item.refresh_from_db()
-        self.assertEqual(item.estimated_expires_on, start + timedelta(days=5))
+        self.assertEqual(item.estimated_expires_on, start + timedelta(days=2))
         self.assertLess(item.estimated_expires_on, self.today)
 
     def test_legacy_item_uses_added_date_without_writing_on_get(self):
@@ -217,7 +222,14 @@ class PantryStorageTests(TestCase):
         response = other.patch(
             reverse("modul2-item-details", args=[item.pk]),
             content_type="application/json",
-            data=json.dumps({"location": "chiller", "expiry_mode": "auto"}),
+            data=json.dumps(
+                {
+                    "version": item.version,
+                    "operation_key": str(uuid4()),
+                    "location": "chiller",
+                    "expiry_mode": "auto",
+                }
+            ),
         )
         self.assertEqual(response.status_code, 404)
         item.refresh_from_db()
@@ -236,6 +248,7 @@ class PantryStorageCatalogTests(TestCase):
             data=json.dumps(
                 {
                     "source": "manual",
+                    "operation_key": str(uuid4()),
                     "items": [
                         {
                             "name": "tempe",
@@ -255,7 +268,14 @@ class PantryStorageCatalogTests(TestCase):
         response = client.patch(
             reverse("modul2-item-details", args=[item.pk]),
             content_type="application/json",
-            data=json.dumps({"location": "chiller", "expiry_mode": "auto"}),
+            data=json.dumps(
+                {
+                    "version": item.version,
+                    "operation_key": str(uuid4()),
+                    "location": "chiller",
+                    "expiry_mode": "auto",
+                }
+            ),
         )
         self.assertEqual(response.status_code, 200)
         item.refresh_from_db()

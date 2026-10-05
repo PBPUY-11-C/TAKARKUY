@@ -1,10 +1,12 @@
 import json
-from datetime import date
+from datetime import date, timedelta
 from unittest.mock import patch
+from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.catalog.models import Ingredient, IngredientAlias, IngredientShelfLife
 
@@ -83,6 +85,7 @@ class PantryRecommendationTests(TestCase):
             data=json.dumps(
                 {
                     "source": "ocr",
+                    "operation_key": str(uuid4()),
                     "items": [
                         {
                             "name": result["suggested_name"],
@@ -104,7 +107,7 @@ class PantryRecommendationTests(TestCase):
     @patch("apps.pantry.recommendations._gemini_choices", return_value={"0": "ING-SAWI"})
     @patch.dict("os.environ", {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
     def test_llm_may_only_choose_offered_candidate(self, llm):
-        results, attempted = resolve_names(["bayam hj"], "session", allow_llm=True)
+        results, attempted = resolve_names(["bayam hj"], "session", user=self.user, allow_llm=True)
         self.assertTrue(attempted)
         self.assertIsNone(results[0]["ingredient_code"])
         llm.assert_called_once()
@@ -112,7 +115,9 @@ class PantryRecommendationTests(TestCase):
     @patch("apps.pantry.recommendations._gemini_choices", return_value={})
     @patch.dict("os.environ", {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
     def test_ambiguous_receipt_items_share_one_llm_request(self, llm):
-        results, attempted = resolve_names(["bayam hj", "sawi hj"], "session", allow_llm=True)
+        results, attempted = resolve_names(
+            ["bayam hj", "sawi hj"], "session", user=self.user, allow_llm=True
+        )
         self.assertTrue(attempted)
         self.assertEqual(len(results), 2)
         llm.assert_called_once()
@@ -127,10 +132,12 @@ class PantryRecommendationTests(TestCase):
             data=json.dumps(
                 {
                     "source": "ocr",
+                    "operation_key": str(uuid4()),
                     "items": [
                         {
                             "name": "Bayam",
                             "original_name": "BYM HIJAU",
+                            "accepted": True,
                             "ingredient_code": "ING-BAYAM",
                             "quantity": "1",
                             "unit": "ikat",
@@ -159,6 +166,7 @@ class PantryRecommendationTests(TestCase):
             raw_name="BXYM",
             normalized_name="bxym",
             ingredient=self.bayam,
+            confirmed_by_user=True,
         )
         from django.test import Client
 
@@ -172,14 +180,17 @@ class PantryRecommendationTests(TestCase):
         self.assertNotEqual(response.json()["suggestions"][0]["method"], "koreksi_anda")
 
     @patch("apps.pantry.recommendations._gemini_choices")
-    def test_five_consistent_corrections_become_shared_suggestion(self, llm):
-        for index in range(5):
+    def test_ten_mature_consistent_corrections_become_shared_suggestion(self, llm):
+        for index in range(10):
             PantryNameCorrection.objects.create(
                 session_id=f"session-{index}",
-                user=get_user_model().objects.create_user(username=f"voter-{index}"),
+                user=get_user_model().objects.create_user(
+                    username=f"voter-{index}", date_joined=timezone.now() - timedelta(days=8)
+                ),
                 raw_name="BXYM",
                 normalized_name="bxym",
                 ingredient=self.bayam,
+                confirmed_by_user=True,
             )
         result, attempted = resolve_names(["BXYM"], "another-session")
         self.assertEqual(result[0]["ingredient_code"], "ING-BAYAM")
@@ -188,20 +199,26 @@ class PantryRecommendationTests(TestCase):
         llm.assert_not_called()
 
     def test_conflicting_community_corrections_are_not_trusted(self):
-        for index in range(5):
+        for index in range(10):
             PantryNameCorrection.objects.create(
                 session_id=f"session-{index}",
-                user=get_user_model().objects.create_user(username=f"voter-{index}"),
+                user=get_user_model().objects.create_user(
+                    username=f"voter-{index}", date_joined=timezone.now() - timedelta(days=8)
+                ),
                 raw_name="BXYM",
                 normalized_name="bxym",
                 ingredient=self.bayam,
+                confirmed_by_user=True,
             )
         PantryNameCorrection.objects.create(
             session_id="conflicting",
-            user=get_user_model().objects.create_user(username="conflicting"),
+            user=get_user_model().objects.create_user(
+                username="conflicting", date_joined=timezone.now() - timedelta(days=8)
+            ),
             raw_name="BXYM",
             normalized_name="bxym",
             ingredient=self.sawi,
+            confirmed_by_user=True,
         )
         result, _ = resolve_names(["BXYM"], "another-session", allow_llm=False)
         self.assertNotEqual(result[0]["method"], "koreksi_bersama")
@@ -217,6 +234,7 @@ class PantryRecommendationTests(TestCase):
             data=json.dumps(
                 {
                     "source": "ocr",
+                    "operation_key": str(uuid4()),
                     "items": [
                         {
                             "name": "Bayam",

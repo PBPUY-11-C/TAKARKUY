@@ -1,71 +1,52 @@
-"""Shared Gemini JSON transport; credentials remain on the server."""
+"""Optional Gemini transport with a killable wall-clock deadline."""
 
 import json
-import os
-import re
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+import subprocess
+import sys
+import time
+from pathlib import Path
 
-DEFAULT_MODEL = "gemini-2.5-flash-lite"
-
-
-class GeminiUnavailable(Exception):
-    """An optional Gemini request could not return a usable JSON object."""
-
-
-def gemini_ready():
-    return os.getenv("PANTRY_LLM_PROVIDER", "").strip().lower() == "gemini" and bool(
-        os.getenv("GEMINI_API_KEY", "").strip()
-    )
+from .ai_usage import GeminiResult, record_call
+from .gemini_transport import GeminiUnavailable, gemini_ready
 
 
 def generate_json(parts, *, timeout, generation_config=None):
+    started = time.monotonic()
+    deadline = started + timeout
     if not gemini_ready():
         raise GeminiUnavailable("Gemini is not configured")
-    model = os.getenv("PANTRY_LLM_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
-    if not re.fullmatch(r"[a-zA-Z0-9._-]+", model):
-        raise GeminiUnavailable("Invalid Gemini model")
-    config = {"responseMimeType": "application/json", "temperature": 0}
-    config.update(generation_config or {})
-    body = json.dumps(
-        {
-            "contents": [{"parts": parts}],
-            "generationConfig": config,
-        }
-    ).encode("utf-8")
-    request = Request(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
-        data=body,
-        headers={
-            "Content-Type": "application/json",
-            "x-goog-api-key": os.environ["GEMINI_API_KEY"].strip(),
-        },
-        method="POST",
-    )
+    request = json.dumps({"parts": parts, "timeout": timeout, "config": generation_config}).encode()
+    if len(request) > 15000000:
+        raise GeminiUnavailable("Request too large")
+    child = None
+    status, usage = "failed", {}
     try:
-        with urlopen(request, timeout=timeout) as response:
-            result = json.load(response)
-        answer_parts = result["candidates"][0]["content"]["parts"]
-        answer = "".join(
-            part["text"]
-            for part in answer_parts
-            if isinstance(part, dict)
-            and isinstance(part.get("text"), str)
-            and not part.get("thought")
+        child = subprocess.Popen(
+            [sys.executable, "-m", "apps.pantry.gemini_transport"],
+            cwd=Path(__file__).resolve().parents[2],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
         )
-        payload = json.loads(answer)
-        if not isinstance(payload, dict):
-            raise ValueError("Expected a JSON object")
-        return payload
-    except (
-        HTTPError,
-        URLError,
-        TimeoutError,
-        ValueError,
-        KeyError,
-        IndexError,
-        TypeError,
-        OSError,
-    ) as exc:
-        # Do not expose HTTP response bodies, receipt text, or credentials.
+        output, _ = child.communicate(request, timeout=max(0, deadline - time.monotonic()))
+        if child.returncode or len(output) > 262144:
+            raise ValueError
+        result = json.loads(output)
+        if not isinstance(result, dict):
+            raise ValueError
+        if result.get("_pantry_transport_v") == 1:
+            payload = result.get("payload")
+            if not isinstance(payload, dict):
+                raise ValueError
+            result = GeminiResult(payload, result.get("usage"))
+        else:
+            result = GeminiResult(result)
+        status, usage = "ok", result.usage
+        return result
+    except (OSError, ValueError, RecursionError, subprocess.TimeoutExpired) as exc:
         raise GeminiUnavailable("Gemini JSON request failed") from exc
+    finally:
+        if child is not None and child.poll() is None:
+            child.kill()
+            child.communicate()
+        record_call(parts, status, round((time.monotonic() - started) * 1000), usage)
