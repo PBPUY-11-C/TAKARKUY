@@ -10,6 +10,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.cache import patch_cache_control
 
+from apps.accounts.preferences import effective_allergens, planner_defaults
+from apps.catalog.allergens import unsafe_schedule
+
 from .forms import PlanMetadataForm, PlannerForm
 from .models import BudgetPlan, PlanPreview
 from .planner import budget_preference_notes, replacement_options
@@ -86,6 +89,7 @@ def account_page(request, builder):
             "servings": 2,
             "meal_types": ["sarapan", "makan_siang", "makan_malam"],
             "targets": ["seimbang"],
+            **planner_defaults(request.user),
         }
     )
     form = PlannerForm(
@@ -104,6 +108,9 @@ def account_page(request, builder):
     error, pending = None, None
     status, retry_after = 200, None
     if request.method == "POST" and form.is_valid():
+        form.cleaned_data["allergens"] = effective_allergens(
+            request.user, plan.inputs if plan else {}, form.cleaned_data
+        )
         try:
             expected = required_version(request.POST) if plan else None
             draft_id, draft_version, replace_draft = None, None, False
@@ -182,6 +189,14 @@ def account_page(request, builder):
             "pending_preview": pending,
             "saved_plans": BudgetPlan.objects.filter(user=request.user, status="saved"),
             "active_draft": BudgetPlan.objects.filter(user=request.user, status="draft").first(),
+            "allergy_warning": bool(
+                result
+                and unsafe_schedule(
+                    schedule_codes(result),
+                    effective_allergens(request.user, plan.inputs if plan else {}),
+                )
+            ),
+            "allergy_active": effective_allergens(request.user, plan.inputs if plan else {}),
         },
         status=status,
     )
@@ -305,7 +320,9 @@ def recipe_alternatives(request, plan_id):
             raise ValueError("Menu sudah dimasak.")
         # The same basket quote as preview, including pooled fruit purchases.
         recipes = replacement_options(
-            **clean_inputs(plan.inputs).cleaned_data,
+            **clean_inputs(
+                {**plan.inputs, "allergens": effective_allergens(request.user, plan.inputs)}
+            ).cleaned_data,
             schedule=slots,
             day=day,
             meal=meal,

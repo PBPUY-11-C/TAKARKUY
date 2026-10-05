@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.apps import apps
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import SimpleTestCase, TestCase
@@ -22,6 +23,24 @@ from data.recipe_estimation import (
 )
 
 from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag
+
+
+class FixtureDiscoveryTests(TestCase):
+    fixtures = ["catalog_seed.json"]
+
+    def test_django_loads_the_single_canonical_fixture_by_name(self):
+        fixture_dir = settings.BASE_DIR / "data" / "fixtures"
+        self.assertIn(fixture_dir, settings.FIXTURE_DIRS)
+        self.assertTrue((fixture_dir / "catalog_seed.json").is_file())
+        self.assertFalse((settings.BASE_DIR / "apps/catalog/fixtures/catalog_seed.json").exists())
+        records = json.loads((fixture_dir / "catalog_seed.json").read_text(encoding="utf-8"))
+        self.assertEqual(
+            Ingredient.objects.count(),
+            sum(row["model"] == "catalog.ingredient" for row in records),
+        )
+        self.assertEqual(
+            Recipe.objects.count(), sum(row["model"] == "catalog.recipe" for row in records)
+        )
 
 
 class DatasetEstimationTests(SimpleTestCase):

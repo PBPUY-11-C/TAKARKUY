@@ -15,6 +15,14 @@ class Ingredient(models.Model):
     nutrition_verified = models.BooleanField(default=False)
     calories_method = models.TextField(blank=True)
     nutrition_source_url = models.URLField(max_length=600, blank=True)
+    allergen_status = models.CharField(
+        max_length=20,
+        default="unknown",
+        choices=[("unknown", "Belum ditinjau"), ("reviewed", "Ditinjau berdasarkan jenis bahan")],
+    )
+    allergens = models.JSONField(default=list)
+    allergen_source_url = models.URLField(max_length=600, blank=True)
+    allergen_note = models.TextField(blank=True)
 
 
 class IngredientPrice(models.Model):

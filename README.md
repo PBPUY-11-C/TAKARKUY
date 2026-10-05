@@ -10,11 +10,11 @@ Snapshot kode dan inventaris dataset: **5 Oktober 2026**. Harga Garut tetap snap
 | --- | --- | --- |
 | Modul 1 | Simulasi budget/gizi/pantangan, daftar belanja, trial guest, draft otomatis milik akun, CRUD rencana tersimpan, cari susunan baru, serta ganti satu menu dengan pratinjau biaya dan persetujuan kenaikan budget. | Integrasi stok pantry, edit item belanja secara bebas, dan penghubung jadwal ke cooking tracker/dashboard. |
 | Modul 2 | OCR/fallback Gemini dengan kuota akun, cache nama, batch dan ledger stok, CRUD berversi/idempoten, konversi berat, tanggal bersumber, kecocokan resep dan layanan FEFO internal (belum tombol memasak). | Integrasi aksi Sudah Masak/riwayat Modul 4, pengingat terjadwal, dan cuaca. |
-| Modul 3 | Landing, daftar akun, login/logout, validasi kata sandi, dan Django Admin. | Username pilihan pengguna, Google OAuth, serta halaman profil/preferensi. |
+| Modul 3 | Landing, username/email, login/logout, profil/preferensi, perubahan password, rate limit database, dan maintenance. | Google OAuth, verifikasi email, serta reset password lewat email. |
 | Modul 4 | Template halaman dengan header dan tautan kembali ke beranda. | Recipe book, favorit, dan cooking tracker. |
 | Modul 5 | Beranda setelah login dengan navigasi Budget Meal Planner, Smart Pantry, dan Recipe Book. | Statistik penghematan, ulasan makanan, dan market locator. |
 
-Katalog saat ini berisi **201 bahan, 163 catatan harga, dan 434 resep; 296 resep siap dihitung**, sedangkan 138 masih diblokir. Kedua fixture berisi **7.048 objek**. Siap dihitung berarti bahan/gizi/harga tersedia untuk simulasi, bukan semua teks cara memasak sudah boleh diterbitkan. Sebanyak 187 resep Mendeley dapat dihitung, tetapi teks langkahnya ditahan untuk review asal/hak pakai. Ada **231 kandidat produk Open Food Facts** dan **1.500 baris kandidat resep** untuk kurasi; sebagian sudah dipromosikan sehingga jangan menjumlahkan kandidat dengan katalog aktif. Rincian sumber, asumsi, dan penghalang ada di [data/DATASETS.md](data/DATASETS.md) dan [review sumber](data/SOURCE_REVIEW.md).
+Katalog saat ini berisi **201 bahan, 163 catatan harga, dan 434 resep; 296 resep siap dihitung**, sedangkan 138 masih diblokir. Fixture tunggal `data/fixtures/catalog_seed.json` berisi **7.048 objek**. Siap dihitung berarti bahan/gizi/harga tersedia untuk simulasi, bukan semua teks cara memasak sudah boleh diterbitkan. Sebanyak 187 resep Mendeley dapat dihitung, tetapi teks langkahnya ditahan untuk review asal/hak pakai. Ada **231 kandidat produk Open Food Facts** dan **1.500 baris kandidat resep** untuk kurasi; sebagian sudah dipromosikan sehingga jangan menjumlahkan kandidat dengan katalog aktif. Rincian sumber, asumsi, dan penghalang ada di [data/DATASETS.md](data/DATASETS.md) dan [review sumber](data/SOURCE_REVIEW.md).
 
 ## Anggota Kelompok
 
@@ -87,7 +87,7 @@ Daftar CRUD dan model yang direncanakan tidak semuanya sudah diimplementasikan; 
 - **Perubahan rencana tersimpan:** perubahan menu/parameter diperlihatkan sebagai pratinjau, lalu diterapkan ke draft. Rencana asal tidak ditimpa sampai pengguna memilih **Simpan Perubahan ke Rencana Asal**; **Simpan Rencana** menyimpan sebagai rencana baru. Versi rencana dan draft diperiksa agar tab/perangkat lama tidak menimpa perubahan baru. API mutasi menggunakan POST, CSRF, dan filter pemilik. Menghasilkan, menyimpan, mengganti, atau menghapus rencana tidak mengubah stok pantry dan belum mencatat aksi memasak.
 - **Halaman:** 1 halaman dengan form dan hasil dalam satu tampilan, mengikuti mockup terakhir.
 
-**PR data/produk berikutnya (belum dikerjakan pada perbaikan ini):** hak pakai langkah Mendeley harus dituntaskan menurut `data/SOURCE_REVIEW.md` sebelum publikasi. Panduan alternatif harus ditulis mandiri dari metode memasak yang direview, bukan sekadar parafrase teks yang izinnya belum jelas. Katalog siap hitung saat ini memiliki 36 sarapan; target kurasi berikutnya minimal 80, dengan perluasan kata kunci roti/kentang/ubi/jagung/mie dan sekitar 30 resep kurasi manual. Penambahan tetap memerlukan gram/porsi, padanan bahan, harga, gizi, status halal dan audit sumber. Edit belanja, integrasi pantry, preferensi serta cooking tracker tetap pekerjaan roadmap modul lanjutan.
+**PR data/produk berikutnya (belum dikerjakan pada perbaikan ini):** hak pakai langkah Mendeley harus dituntaskan menurut `data/SOURCE_REVIEW.md` sebelum publikasi. Panduan alternatif harus ditulis mandiri dari metode memasak yang direview, bukan sekadar parafrase teks yang izinnya belum jelas. Katalog siap hitung saat ini memiliki 36 sarapan; target kurasi berikutnya minimal 80, dengan perluasan kata kunci roti/kentang/ubi/jagung/mie dan sekitar 30 resep kurasi manual. Penambahan tetap memerlukan gram/porsi, padanan bahan, harga, gizi, status halal dan audit sumber. Preferensi akun sudah terhubung ke planner di Modul 3; edit belanja, integrasi stok pantry, serta cooking tracker tetap pekerjaan roadmap modul lanjutan.
 
 **CRUD Smart Budget Meal Planner:**
 
@@ -128,18 +128,20 @@ Foto bahan mentah dan image classification dihapus dari cakupan fitur.
 **PIC:** Attar Rais Hakam
 
 - **Landing page untuk guest:** hero, ringkasan masalah, cara kerja, dan CTA daftar. Simulasi kalkulator budget bersifat opsional.
-- **Autentikasi saat ini:** register, login, dan logout menggunakan Django Authentication berbasis sesi, bukan JWT atau Google OAuth. Form daftar meminta nama lengkap dan email; email disimpan juga sebagai username otomatis. Login menerima email/username yang memang ada di database, tetapi pendaftaran belum menyediakan username pilihan pengguna.
+- **Autentikasi:** Django Authentication berbasis sesi, bukan JWT/OAuth. Daftar meminta nama, username (3–30 karakter Latin/ASCII, angka, `_`, `.`, `-`, tanpa `@`), email dan password. Backend `UsernameOrEmailBackend` menerima username tanpa membedakan kapital; input dengan `@` dicari di email, lalu username email akun lama jika tidak ditemukan. Akun lama tidak diubah. Email baru memakai ASCII. Unique expression indexes `lower(username)` dan `lower(email)` diterapkan di PostgreSQL/SQLite; email kosong dikecualikan untuk kompatibilitas akun admin. Migrasi berhenti jika ada duplikat atau username lama bertabrakan dengan email akun lain. Ini bukan janji Unicode case-fold lintas semua collation.
 - **Kata sandi:** disimpan sebagai hash melalui `create_user()`, bukan teks asli. Minimal 8 karakter, mengandung huruf kapital, angka, dan simbol, serta lolos validator bawaan Django. Akun dapat diperiksa melalui `/admin/` oleh superuser.
 - **Alur beranda:** setelah daftar/login pengguna menuju `/modul5/`; membuka `/` saat sudah login juga diarahkan ke sana. Tautan kembali ke beranda pada halaman modul mengarah ke Modul 5 untuk pengguna login, dan landing untuk guest.
-- **Profil & Preferensi Makanan:** data diri, target diet/gizi, alergi, dan preferensi halal digabung dalam satu halaman. Data ini menjadi acuan perencanaan Modul 1 dan pemilihan resep Modul 4.
-- **Data saat ini:** `User` bawaan Django dan sesi. `UserProfile` serta `FoodPreference` masih direncanakan.
+- **Profil & Preferensi:** `/modul3/`, hanya milik akun yang login, menyediakan edit nama/username/email, ganti password, target simulasi makan, waktu makan, porsi dan bahan yang ingin dihindari. Email baru membutuhkan password saat ini. Ganti password menggunakan `PasswordChangeForm` dan `update_session_auth_hash`: sesi perangkat saat ini dipertahankan, sesi perangkat lain dengan hash lama tidak lagi valid. Profil dibuat lazily dengan `get_or_create`, bukan migrasi yang mengubah semua akun. Edit profil memakai versi wajib dan lock akun→profil untuk mencegah tab lama menimpa perubahan. Semua resep planner tetap halal-only menurut kebijakan katalog, bukan sertifikasi; tidak ada toggle untuk membuka resep non-halal.
+- **Alergi:** 9 kelompok dipetakan per ID ke 201 bahan (167 review jenis bahan, 34 unknown), bukan pencocokan kata. Bahan unknown dan bumbu minor tak tercatat membuat resep dikecualikan saat ada alergi. Profil mengisi nilai awal rencana baru; input per rencana tidak mengubah profil. Generate, dropdown, preview/regenerate dan penerapan preview memakai gabungan alergi rencana dengan profil terbaru, termasuk pemeriksaan ulang di transaksi penulisan. Snapshot lama tidak diubah; halaman menampilkan peringatan jika tidak sesuai alergi terbaru. Menghapus alergi dari profil tidak menghapus batas yang sudah ada pada rencana lama. Filter bukan jaminan bebas alergen; periksa label dan kontaminasi silang. Pilihan menu bisa sedikit/kosong, khususnya dengan produk olahan yang komposisinya belum ditinjau. Jika slot lain dalam rencana lama juga tidak lolos, Ganti Menu bisa kosong: gunakan Cari Menu Lain/rencana baru. Modul 4 akan memakai helper screening yang sama ketika Recipe Book dibuat.
+- **Rate limit bersama:** database `AuthRateBucket`, bukan session/LocMemCache. Per jendela tetap 15 menit: login 10 percobaan per identitas (username/email akun sama berbagi kuota), 100 per IP; signup 5 per email, 30 per IP. Semua percobaan termasuk sukses dihitung; admin login juga dilindungi. Respons 429 memiliki `Retry-After`; logout/perangkat lain tidak mereset. Kunci HMAC tidak menyimpan IP/email asli. Header X-Forwarded-For hanya dipercaya jika REMOTE_ADDR termasuk `AUTH_TRUSTED_PROXY_CIDRS`; rantai dibaca dari kanan hingga hop pertama yang tidak dipercaya. Default daftar proxy kosong. PWS perlu memastikan CIDR proxy aktual sebelum mengaktifkan ini; jika IP yang terlihat hanya IP proxy, batas IP dibagi oleh pengunjung. Limit bukan jaminan melawan botnet/multi-akun dan reset jendela tetap memungkinkan burst di batas waktu.
+- **Data:** `User` bawaan Django, sesi, `UserProfile` beserta relasi bahan yang dihindari, dan `AuthRateBucket`.
 - **Halaman:** 4 halaman, yaitu Landing, Register, Login, dan Profil & Preferensi.
 
 **CRUD User Account & Food Preference:**
 
 - **Create:** mendaftarkan akun, lalu mengisi data diri, target diet/gizi, alergi, dan preferensi halal.
 - **Read:** menampilkan informasi akun, profil, dan preferensi milik pengguna.
-- **Update:** mengubah informasi akun dan data diri yang tersedia di profil, serta target diet/gizi, alergi, dan preferensi halal.
+- **Update:** mengubah informasi akun, password, target makan/gizi, alergi, porsi, waktu makan, dan bahan yang ingin dihindari. Kebijakan halal planner tetap berlaku untuk semua akun.
 - **Delete:** belum termasuk cakupan fitur untuk akun, profil, maupun preferensi.
 
 Login dan logout merupakan operasi autentikasi.
@@ -180,9 +182,9 @@ Login dan logout merupakan operasi autentikasi.
 
 ## Integrasi Antar Modul yang Direncanakan
 
-Integrasi profil, stok ke planner, aksi **Sudah Masak**, dan agregasi statistik berikut belum selesai. Alur aktif saat ini adalah autentikasi → beranda Modul 5 → navigasi ke halaman modul; daftar belanja tidak otomatis menambah stok.
+Integrasi profil ke planner sudah aktif: preferensi mengisi rencana baru dan alergi disaring pada setiap pilihan menu baru. Integrasi stok ke planner, aksi **Sudah Masak**, Recipe Book, dan agregasi statistik berikut belum selesai; daftar belanja tidak otomatis menambah stok.
 
-1. **Modul 3 → Modul 1 dan 4:** target diet/gizi, alergi, dan preferensi halal menjadi acuan perencanaan serta pemilihan resep.
+1. **Modul 3 → Modul 1:** target makan/gizi, porsi, waktu makan, bahan yang dihindari, dan alergi sudah menjadi acuan planner. Modul 4 akan memakai screening alergen yang sama; kebijakan halal tetap wajib.
 2. **Modul 1 → Modul 2:** setelah berbelanja, pengguna memasukkan stok melalui OCR struk atau input manual. Daftar belanja tidak otomatis dianggap sebagai stok pantry.
 3. **Modul 2 → Modul 4:** stok dan estimasi kedaluwarsa digunakan untuk filter ketersediaan bahan dan prioritas bahan kritis.
 4. **Modul 4 → Modul 2:** aksi **Sudah Masak** memanggil `pantry_service.kurangi_stok()` berdasarkan bahan terpakai, lalu mencatat `CookingHistory`. Pengurangan stok dan pencatatan riwayat harus berhasil bersama agar data tetap konsisten.
@@ -198,7 +200,7 @@ Integrasi profil, stok ke planner, aksi **Sudah Masak**, dan agregasi statistik 
 | 4 | List/detail resep, favorit, dan cooking tracker dalam satu tampilan. | 1 |
 | 5 | Card statistik di Dashboard dan modal/popup market locator. | 0 |
 
-Hitungan di atas adalah rencana tampilan, bukan jumlah halaman yang sudah selesai. Dalam kode saat ini, `/modul5/` adalah beranda mandiri setelah login; `/modul4/` masih template kosong dan halaman profil belum tersedia. Market locator masih direncanakan sebagai modal/popup.
+Hitungan di atas adalah rencana tampilan, bukan jumlah halaman yang sudah selesai. `/modul5/` adalah beranda setelah login, `/modul3/` sudah menyediakan profil/preferensi, dan `/modul4/` masih template kosong. Market locator masih direncanakan sebagai modal/popup.
 
 ## API dan Sumber Data
 
@@ -218,6 +220,20 @@ Planner memakai katalog lokal yang telah diimpor, bukan memanggil API resep/gizi
 | [OpenStreetMap](https://www.openstreetmap.org/) — Nominatim dan Overpass | Direncanakan untuk market locator; belum terintegrasi. |
 
 Tautan sumber, status verifikasi, lisensi, dan asumsi setiap kelompok data dicatat di [data/README.md](data/README.md) dan [data/DATASETS.md](data/DATASETS.md). `raw/` menyimpan sumber, `processed/` dan `mapping/` membangun katalog, sedangkan `scratch/` serta `staging/` menyimpan kandidat/audit. Folder kandidat bukan data runtime dan tidak boleh dihapus hanya karena belum aktif.
+
+### Struktur folder dan sumber tunggal
+
+| Lokasi | Peran |
+| --- | --- |
+| `apps/` | Kode, migrasi, tes, template/static per modul; `accounts` = Modul 3, `budget_planner` = Modul 1, `pantry` = Modul 2, `catalog` = master data bersama. |
+| `config/`, `templates/` | Konfigurasi Django/URL dan template halaman bersama; Modul 4/5 belum memiliki seluruh fitur final. |
+| `data/raw/`, `data/scratch/` | Snapshot/arsip sumber dan kandidat; diperlukan untuk reproduksi/kurasi, bukan junk. |
+| `data/mapping/` | Input kurasi: padanan bahan, takaran, nama, sumber, konversi, dan alergen. |
+| `data/processed/`, `data/staging/` | Hasil build katalog, laporan audit, dan antrean review. Bukan salinan database pengguna. |
+| `data/fixtures/catalog_seed.json` | Satu-satunya fixture katalog: hasil build untuk impor dan tes Django melalui `FIXTURE_DIRS`. Tidak ada salinan di `apps/catalog/fixtures/`. |
+| `docs/`, `.github/`, `ruff.toml` | Kontrak implementasi, CI, dan aturan lint; tetap diperlukan. |
+
+`.env`, `db.sqlite3`, `.venv`, cache Python dan `staticfiles/` adalah file lokal/generated yang diabaikan Git; tidak ikut commit. Cleanup fixture tidak menghapus sumber, akun, stok, rencana, atau snapshot pengguna. Menjalankan build tidak lagi membuat salinan fixture aplikasi; validator dan tes menjaga kontrak ini.
 
 ## Teknologi dan Data Pendukung
 
@@ -253,7 +269,7 @@ Untuk database yang sudah berisi data, cadangkan dulu sebelum impor. Opsi `--syn
 | `/modul5/` | Beranda dengan header navigasi; wajib login. |
 | `/admin/` | Django Admin; wajib akun staff/superuser. |
 
-Guest hanya dapat mengakses Modul 1 dengan batas trial. Modul 2/4/5 wajib login. Untuk membuat akun administrator lokal:
+Guest hanya dapat mengakses Modul 1 dengan batas trial. Modul 2/3/4/5 wajib login. Untuk membuat akun administrator lokal:
 
 ```bash
 python manage.py createsuperuser
@@ -265,6 +281,7 @@ python manage.py createsuperuser
 
 ```dotenv
 PRODUCTION=False
+MAINTENANCE_MODE=false
 PANTRY_LLM_PROVIDER=gemini
 PANTRY_LLM_MODEL=gemini-2.5-flash-lite
 GEMINI_API_KEY=isi_key_pribadi_anda
@@ -312,10 +329,19 @@ Password contoh hanya untuk container tes lokal sekali pakai. Jika port sudah di
 
 Opsional: `TEST_PG_PASSWORD` dan `TEST_PG_DATABASE` (harus berawalan `test_takarkuy_`). Jangan gunakan akun/schema produksi. Tes membuat dan menghapus database tes tersendiri; `db.sqlite3` dan database PWS tidak disentuh. `.github/workflows/tests.yml` menyiapkan PostgreSQL 16 dan menjalankan seluruh tes Python, tes JS dengan glob, serta validator katalog/kandidat/dokumentasi. `TransactionTestCase` di `test_concurrency.py` menguji balapan pembuatan/update/penggantian draft, simpan idempoten, penerapan preview sekali, dan row lock nyata. Tes tersebut sengaja di-skip pada SQLite.
 
-Verifikasi **5 Oktober 2026** meloloskan suite penuh **293 tes Django di PostgreSQL 16 tanpa skip dan 32 tes JavaScript**. Suite penuh SQLite juga lolos: 280 dijalankan dan 13 tes konkurensi row lock di-skip. PostgreSQL lokal dijalankan secara terisolasi dengan binary PostgreSQL 16.4 sementara, bukan database PWS; binary tersebut tidak harus tersedia di PATH. Tes tambahan mencakup satu panggilan per scan sukses/gagal/kosong, cache foto→teks, batch 30 nama, schema/kode tervalidasi, token metadata tanpa isi struk, dan pesan validasi Indonesia. Setelah suite penuh, satu regresi tambahan untuk format desimal input di locale Indonesia ditambahkan dan diverifikasi ulang dalam suite scan SQLite serta suite pantry PostgreSQL. Tes juga mencakup migrasi historis/reverse tanggal legacy, konfirmasi koreksi nama (autofill saja bukan suara), input teks/JSON/tanggal tidak valid, lease pada exception, dua penulis SQLite berbasis file, ledger/koreksi/arsip, UUID retry, versi stok wajib, FEFO/rollback multi-bahan, kuota akun lintas sesi, lease cache, konversi snapshot yang tidak bergeser, matching stok per porsi, multipart oversized file dan proses transport yang dihentikan pada deadline. Cakupan Modul 1 tetap meliputi kuota trial, otorisasi, draft/snapshot, variasi/halal, kesamaan delta dropdown/preview pembelian buah, preferensi budget lunak, riwayat akun lintas sesi, pembersihan/kuota preview, penyimpanan metadata tanpa rebuild, CSRF, versi wajib/usang, persetujuan Rencana Baru, deteksi ID draft yang berganti, simpan idempoten, row lock nyata, publikasi instruksi yang ditahan, adopsi hasil guest, serta respons UI terlambat. SQLite IMMEDIATE menserialkan penulis, bukan menyediakan row lock; tes PostgreSQL tetap wajib di CI. Tes Gemini memakai mock, bukan verifikasi key/kuota/akurasi API live. Tes JS memakai DOM tiruan, bukan review visual browser. Baseline Modul 1 sudah memiliki CI PostgreSQL yang lulus dan merge ke main; perubahan Modul 2 saat ini belum di-push, sehingga CI untuk perubahan baru belum diverifikasi. Database PWS/production belum diuji. Ruff adalah alat pengembangan opsional, bukan dependensi runtime.
+Verifikasi Modul 3 sebelum cleanup fixture pada **5 Oktober 2026** meloloskan suite penuh **347 tes Django di PostgreSQL 16 tanpa skip dan 32 tes JavaScript**. Suite SQLite juga lolos: 330 dijalankan dan 17 tes konkurensi PostgreSQL di-skip. PostgreSQL 16.4 dijalankan secara terisolasi, bukan database PWS. Lint, cek migrasi, build ulang katalog, validator katalog/kandidat/dokumentasi, serta `git diff --check` juga lulus.
+
+Cakupan Modul 3 meliputi index identitas tanpa membedakan kapital, penolakan konflik migrasi tanpa menghapus akun, kompatibilitas login legacy, kuota lintas sesi/worker dan race slot terakhir, CSRF, edit profil berversi, perubahan email dengan password, perubahan password lintas perangkat, maintenance seluruh aplikasi, default preferensi, filter alergi berbasis ID/unknown/bumbu minor, gabungan alergi snapshot/profil, serta pemeriksaan ulang setelah preview/generate. Kontrak dan batas produk dijelaskan di [docs/ACCOUNTS.md](docs/ACCOUNTS.md); mapping mencatat status review dan sumber, bukan klaim keamanan makanan.
+
+Regresi Modul 1 tetap mencakup trial, otorisasi, draft/snapshot, variasi/halal, quote dropdown/preview, budget, riwayat, cleanup/kuota preview, metadata, stale-tab dan idempotensi. Regresi Modul 2 mencakup satu panggilan per scan, cache foto→teks, batch 30 nama, validasi schema, consent koreksi, ledger/migrasi historis, konversi/tanggal, UUID, FEFO, kuota, upload dan deadline transport; detail di [docs/PANTRY.md](docs/PANTRY.md). SQLite IMMEDIATE menserialkan penulis, bukan menyediakan row lock; CI PostgreSQL tetap wajib. Gemini menggunakan mock, bukan verifikasi key/akurasi live; tes JS memakai DOM tiruan, bukan review visual browser. Modul 2 sudah di-push, tetapi perubahan Modul 3 ini belum di-commit/di-push dan CI baru belum diverifikasi. Migrasi/impor lokal mempertahankan dua akun dan dua rencana lama; backup ada di scratchpad sementara. Database PWS/production tidak diubah dan belum diuji. Ruff opsional untuk pengembangan, bukan dependensi runtime.
+
+Cleanup fixture sesudahnya menambahkan satu tes discovery: **3 tes terarah lulus pada PostgreSQL dan 3 pada SQLite**, mencakup fixture tunggal, trial planner katalog aktual, serta input/perpindahan stok pantry. **32 tes JS**, lint, cek migrasi, validator dan build ulang juga lulus. Seluruh 17 keluaran fixture/processed/staging yang diperiksa identik byte per byte; delapan snapshot raw cocok dengan manifest. Suite penuh baru tidak dituntaskan pada mesin lokal yang melambat; CI harus menjalankan seluruh suite setelah push.
 
 ## Catatan Deployment PWS
 
+- **Upgrade Modul 3:** jalankan `python manage.py migrate --noinput` untuk model profil/rate limit, metadata alergen dan indeks identitas. Jika preflight melaporkan konflik akun, jangan reset schema/hapus akun: tinjau konflik secara manual. Impor kembali `python manage.py import_catalog data/fixtures/catalog_seed.json` agar mapping alergen masuk database; sebelum impor, semua bahan lama berstatus unknown dan filter alergi menutupnya. Penggantian backend auth dapat membuat sesi lama memerlukan login ulang, tanpa menghapus akun atau stok/rencana. Profil akun lama dibuat otomatis saat digunakan. Pastikan akun staff/superuser tersedia sebelum mengaktifkan maintenance. `AUTH_TRUSTED_PROXY_CIDRS` opsional, berisi CIDR reverse proxy yang benar-benar diverifikasi; jangan memakai `0.0.0.0/0` atau mempercayai X-Forwarded-For tanpa memeriksa proxy.
+- **Maintenance seluruh aplikasi:** setelah kode ini di-deploy, set `MAINTENANCE_MODE=true` di environment PWS, lalu restart/redeploy agar proses membaca konfigurasi baru. Landing, daftar/login publik, seluruh modul (termasuk trial guest), dan endpoint API ditutup untuk guest maupun akun biasa dengan HTTP **503**, `Retry-After: 3600` (saran mencoba kembali, bukan janji waktu selesai), dan `Cache-Control: private, no-store`. Request JSON menerima error JSON; halaman menerima tampilan maintenance. View penulisan stok/rencana dan panggilan Gemini tidak dijalankan untuk request yang diblokir. Data dan sesi tidak dihapus. Untuk membuka kembali, set `MAINTENANCE_MODE=false` lalu restart/redeploy; jika variabel tidak ada, default-nya nonaktif. `.env` lokal tidak mengatur PWS.
+- **Akses pengelola selama maintenance:** `/admin/login/` tetap tersedia dengan autentikasi dan CSRF bawaan Django Admin; hanya akun aktif berstatus staff yang berhasil login dapat membuka aplikasi untuk pengujian. Login publik `/login/` tetap ditutup. Tidak ada password maintenance, query, header, atau alamat IP untuk bypass. Static files yang benar-benar dilayani WhiteNoise tetap tersedia; tidak ada pengecualian umum untuk semua URL berawalan `/static/`. Middleware ini bukan penghentian container, backup, penguncian database, atau pengganti pembatas upload reverse proxy: admin, background job, dan perintah terminal masih bisa mengubah data, serta request yang sudah berjalan saat restart tidak dibatalkan secara transaksional. Mode ini memerlukan server Django yang bisa berjalan; jika aplikasi gagal start, halaman ini juga tidak dapat disajikan.
 - Atur environment PWS terpisah dari `.env` lokal: `PRODUCTION=True`, `DJANGO_SECRET_KEY` yang kuat, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, serta `SCHEMA` sesuai schema yang diberikan. Variabel Gemini opsional sama seperti contoh lokal.
 - `PRODUCTION=True` memakai PostgreSQL dan cookie secure; gunakan domain HTTPS yang sudah diizinkan dalam `config/settings.py`. Jangan menggunakan konfigurasi produksi untuk akses HTTP lokal.
 - Jalankan `python manage.py migrate --noinput` sebelum impor fixture terbaru, termasuk migrasi `catalog.0002_ingredient_calories_method_text` agar catatan sumber gizi panjang diterima PostgreSQL.
@@ -323,7 +349,7 @@ Verifikasi **5 Oktober 2026** meloloskan suite penuh **293 tes Django di Postgre
 - Pilihan lokasi pantry hanya **Kulkas, Freezer, dan Suhu Ruang**. Migrasi `pantry.0007_simplify_storage_locations` memindahkan lokasi Lemari Kering lama ke Suhu Ruang tanpa menghapus stok/tanggal yang sudah tersimpan.
 - Otorisasi memerlukan migrasi `budget_planner.0001_initial` (kuota guest) dan `pantry.0008_pantryitem_user_pantrynamecorrection_user_and_more` (pemilik stok/koreksi). Data sesi lama dipertahankan dengan `user=NULL`, tidak ditampilkan atau otomatis diklaim oleh akun yang login. Penetapan pemilik data lama harus dilakukan setelah verifikasi, bukan dari ID sesi yang dikirim pengguna.
 - Penyimpanan rencana Modul 1 memerlukan migrasi `budget_planner.0002_budgetplan_plannedmeal_planpreview_shoppinglistitem_and_more`. Migrasi menambah tabel rencana, jadwal, daftar belanja, serta pratinjau; tidak menghapus stok/katalog/akun lama. Jalankan migrasi sebelum mengaktifkan kode baru, kemudian `collectstatic` untuk CSS/JavaScript Modul 1.
-- Migrasi `budget_planner.0003_preview_draft_identity` menambahkan identitas draft ke preview. Preview lama tanpa identitas dapat ditolak bila ada draft; buat preview baru. Setelah deploy, jalankan `python manage.py import_catalog apps/catalog/fixtures/catalog_seed.json` untuk memperbarui katalog termasuk menahan instruksi Mendeley. Jangan reset database; guard publikasi menyembunyikan teks Mendeley dari snapshot lama tanpa mengubah data historis.
+- Migrasi `budget_planner.0003_preview_draft_identity` menambahkan identitas draft ke preview. Preview lama tanpa identitas dapat ditolak bila ada draft; buat preview baru. Setelah deploy, jalankan `python manage.py import_catalog data/fixtures/catalog_seed.json` untuk memperbarui katalog termasuk menahan instruksi Mendeley. Jangan reset database; guard publikasi menyembunyikan teks Mendeley dari snapshot lama tanpa mengubah data historis.
 - Migrasi `budget_planner.0004_preview_quota` menambahkan kuota preview per akun; tidak menghapus data lama. Jalankan `migrate` sebelum memakai kode ini. Jadwalkan `python manage.py cleanup_previews` (misalnya setiap jam melalui scheduler/cron bila tersedia); pembuatan preview juga membersihkan preview akun secara otomatis. Perintah hanya menghapus preview sementara, bukan rencana, menu, stok atau akun.
 - Jalankan `python manage.py collectstatic --noinput` dalam alur deployment. Untuk memperbarui katalog, cadangkan database dan gunakan perintah impor fixture lengkap di atas.
 - Audit lokal belum memverifikasi PWS, koneksi database produksi, atau Gemini live. Pemeriksaan produksi menemukan peringatan HSTS/pengalihan HTTPS; periksa konfigurasi reverse proxy PWS sebelum mengaktifkannya di Django agar tidak menimbulkan redirect loop.
@@ -331,12 +357,12 @@ Verifikasi **5 Oktober 2026** meloloskan suite penuh **293 tes Django di Postgre
 
 ## Otorisasi Saat Ini
 
-Pembatasan berlaku pada backend, bukan hanya tombol navigasi. Halaman Modul 2/4/5 mengarahkan guest ke login dengan `next`; API pantry mengembalikan JSON HTTP 401. CSRF tetap wajib untuk request perubahan data. CRUD katalog di Django Admin belum didaftarkan; pengelolaan master katalog dilakukan melalui command impor.
+Pembatasan berlaku pada backend, bukan hanya tombol navigasi. Halaman Modul 2/3/4/5 mengarahkan guest ke login dengan `next`; API pantry mengembalikan JSON HTTP 401. CSRF tetap wajib untuk request perubahan data. CRUD katalog di Django Admin belum didaftarkan; pengelolaan master katalog dilakukan melalui command impor.
 
 | Peran | Hak Akses |
 | --- | --- |
-| Guest | Landing, register/login, dan trial Modul 1: 3 kalkulasi berhasil per 24 jam per browser. Tidak dapat mengakses Modul 2/4/5 atau API pantry/Gemini. |
-| Registered User | Modul 1 tanpa batas trial guest; Modul 2 untuk stok milik sendiri; template Modul 4 dan beranda Modul 5. Fitur resep, profil, ulasan, dan tracker yang belum dibuat tetap belum tersedia. |
+| Guest | Landing, register/login, dan trial Modul 1: 3 kalkulasi berhasil per 24 jam per browser. Tidak dapat mengakses Modul 2/3/4/5 atau API pantry/Gemini. |
+| Registered User | Modul 1 tanpa batas trial guest; Modul 2 untuk stok milik sendiri; Modul 3 untuk akun/profil sendiri; template Modul 4 dan beranda Modul 5. Recipe Book, ulasan, tracker dan statistik dashboard belum tersedia. |
 | Administrator | Django Admin hanya untuk staff dengan izin yang sesuai. Akun staff tidak otomatis mendapat akses stok akun lain melalui API pantry. |
 
 Kuota guest disimpan dalam tabel `GuestTrial`, dengan ID acak bertanda tangan pada cookie HttpOnly. Jendela 24 jam dimulai dari **kalkulasi berhasil pertama**; input tidak valid, error kalkulasi, dan budget belum cukup tidak mengurangi kuota. Pengambilan kuota memakai UPDATE bersyarat atomik sehingga request dengan pembacaan counter lama tidak mendapat slot keempat. Request keempat ditolak HTTP 429 sebelum kalkulasi jika kuota sudah habis. Hasil terakhir disimpan dalam sesi dan tetap dapat dilihat saat reload selama sesi tersebut masih ada. Refresh, logout, atau replay cookie lama tidak mereset kuota; cookie trial memakai Secure di produksi.

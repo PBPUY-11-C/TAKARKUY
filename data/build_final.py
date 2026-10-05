@@ -13,10 +13,12 @@ from collections import defaultdict
 from pathlib import Path
 
 if __package__:
+    from .allergens import build_allergens
     from .mendeley_recipes import build_mendeley
     from .recipe_estimation import estimate_candidates, replace_recipe, unique_rows
     from .recipe_names import EXCLUDE, load_overrides, standard_name
 else:
+    from allergens import build_allergens
     from mendeley_recipes import build_mendeley
     from recipe_estimation import estimate_candidates, replace_recipe, unique_rows
     from recipe_names import EXCLUDE, load_overrides, standard_name
@@ -1886,6 +1888,9 @@ FIELDS = {
     "mapping/ingredient_aliases.csv": "alias_code source raw_name ingredient_code mapping_status",
     "mapping/unit_conversions.csv": "conversion_code ingredient_code unit gram_equivalent source source_url conversion_status note",
 }
+FIELDS["processed/ingredients.csv"] += (
+    " allergens allergen_status allergen_source_url allergen_note"
+)
 MODEL = {
     "processed/ingredients.csv": "catalog.ingredient",
     "processed/ingredient_prices.csv": "catalog.ingredientprice",
@@ -1910,6 +1915,7 @@ PK = {
 
 def build_all():
     items, prices, price_aliases, bpn, usda = build_ingredients_prices()
+    allergen_rows = build_allergens(items)
     recipes, links, tags, estimates = build_recipes(items, prices)
     datasets = {
         "processed/ingredients.csv": list(items.values()),
@@ -1957,14 +1963,19 @@ def build_all():
             for k in ("is_plannable", "is_active", "is_optional", "nutrition_verified"):
                 if k in data:
                     data[k] = data[k] == "true"
+            if "allergens" in data:
+                data["allergens"] = json.loads(data["allergens"])
             fixture.append(dict(model=MODEL[rel], pk=row[pk], fields=data))
     FIX.mkdir(exist_ok=True)
     fixture_text = json.dumps(fixture, ensure_ascii=False, indent=2)
     (FIX / "catalog_seed.json").write_text(fixture_text, encoding="utf-8")
-    app_fixtures = ROOT.parent / "apps/catalog/fixtures"
-    app_fixtures.mkdir(parents=True, exist_ok=True)
-    (app_fixtures / "catalog_seed.json").write_text(fixture_text, encoding="utf-8")
     counts = {rel: len(rows) for rel, rows in datasets.items()}
+    write_csv(
+        OUT / "ingredient_allergens.csv",
+        allergen_rows,
+        "ingredient_code name allergens allergen_status allergen_source_url allergen_note".split(),
+    )
+    counts["processed/ingredient_allergens.csv"] = len(allergen_rows)
     counts["plannable_recipes"] = sum(r["is_plannable"] == "true" for r in recipes)
     counts["priced_plannable_ingredients"] = len({link["ingredient_code"] for link in links})
     counts["estimated_plannable_recipes"] = sum(
