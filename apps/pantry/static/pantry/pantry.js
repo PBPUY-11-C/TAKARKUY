@@ -1,5 +1,6 @@
 import { needsGeminiFallback, parseReceiptText } from "./receipt_parser.mjs";
 import { storagePreview } from "./storage_preview.mjs";
+import { createActionKeyStore, locationExpiry, isAISuggestion, correctionConsent } from "./batch_actions.mjs";
 
 const fileInput = document.getElementById("receipt-file");
 const preview = document.getElementById("receipt-preview");
@@ -78,7 +79,7 @@ function addSelect(row, field, sourceId, value, label) {
 function addDraftRow(item = {}) {
   const row = document.createElement("tr");
   row.dataset.draft = "";
-  row.dataset.originalName = item.name || "";
+  row.dataset.originalName = item.raw || item.name || "";
   if (item.rawLine) row.title = `Teks struk: ${item.rawLine}`;
   addInput(row, "name", "text", item.name, "Nama bahan");
   const nameInput = row.querySelector('[data-field="name"]');
@@ -86,12 +87,29 @@ function addDraftRow(item = {}) {
   suggestion.className = "name-suggestion";
   suggestion.hidden = true;
   nameInput.parentElement.append(suggestion);
+  const confirmation = document.createElement("label");
+  confirmation.className = "name-suggestion";
+  confirmation.hidden = true;
+  const accepted = document.createElement("input");
+  accepted.type = "checkbox";
+  accepted.className = "confirm-name";
+  confirmation.append(accepted, document.createTextNode(" Nama ini sudah saya periksa (opsional)"));
+  nameInput.parentElement.append(confirmation);
+  if (item.method === "ai_foto_perlu_periksa") {
+    if (item.ingredient_code) row.dataset.ingredientCode = item.ingredient_code;
+    row.dataset.suggestionMethod = item.method;
+    suggestion.textContent = `Dibaca dengan AI dari “${row.dataset.originalName}”. Periksa dan ubah jika keliru.`;
+    suggestion.hidden = false;
+    confirmation.hidden = false;
+  }
   nameInput.addEventListener("input", () => {
     row.dataset.userEdited = "true";
     delete row.dataset.ingredientCode;
     delete row.dataset.location;
     delete row.dataset.minDays;
     suggestion.hidden = true;
+    accepted.checked = false;
+    confirmation.hidden = true;
   });
   addInput(row, "quantity", "number", item.quantity, "Jumlah bahan");
   addSelect(row, "unit", "ocr-unit-options", item.unit, "Satuan bahan");
@@ -110,14 +128,14 @@ function addDraftRow(item = {}) {
   return row;
 }
 
-async function suggestRows(rows, version) {
+async function suggestRows(rows, version, allowLLM = true) {
   const draft = draftElements();
   try {
     const response = await fetch("/modul2/suggestions/", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
       credentials: "same-origin",
-      body: JSON.stringify({ names: rows.map((row) => row.name) }),
+      body: JSON.stringify({ names: rows.map((row) => row.raw || row.name), allow_llm: allowLLM }),
     });
     if (!response.ok) return;
     const data = await response.json();
@@ -134,20 +152,23 @@ async function suggestRows(rows, version) {
         : " · acuan masa simpan suhu ruang belum tersedia";
       nameInput.value = result.suggested_name;
       row.dataset.ingredientCode = result.ingredient_code;
+      row.dataset.suggestionMethod = result.method;
+      const aiLabel = isAISuggestion(result.method) ? " dengan AI" : "";
       box.textContent = result.raw_name === result.suggested_name
-        ? `Cocok dengan katalog${details}`
-        : `Diperbaiki otomatis${result.method === "ai_perlu_periksa" ? " dengan AI" : ""} dari “${result.raw_name}”${details}. Periksa dan ubah jika keliru.`;
+        ? `Cocok dengan katalog${aiLabel}${details}`
+        : `Diperbaiki otomatis${aiLabel} dari “${result.raw_name}”${details}. Periksa dan ubah jika keliru.`;
       box.hidden = false;
+      row.querySelector(".confirm-name").parentElement.hidden = false;
     });
   } catch (_) {
     // OCR and manual correction still work when recommendation service is unavailable.
   }
 }
 
-function showDraftItems(rows) {
+function showDraftItems(rows, {photoAttempted = false, photoSucceeded = false} = {}) {
   draftRows.replaceChildren();
   rows.forEach(addDraftRow);
-  if (rows.length) suggestRows(rows, scanVersion);
+  if (rows.length && !photoSucceeded) suggestRows(rows, scanVersion, !photoAttempted);
   refreshDraftCount();
   return rows.length;
 }
@@ -272,9 +293,11 @@ fileInput.addEventListener("change", async () => {
     }
     let rows = parseReceiptText(rawText);
     let usedGemini = false;
+    let photoAttempted = false;
     let fallbackEmpty = false;
     let fallbackError = null;
     if (geminiFallbackEnabled && (ocrError || needsGeminiFallback(confidence, rows.length))) {
+      photoAttempted = true;
       scanProgress.textContent = "Mencoba pembacaan cadangan dengan AI…";
       try {
         const aiRows = await readWithGemini(file);
@@ -289,7 +312,7 @@ fileInput.addEventListener("change", async () => {
       }
     }
     if (ocrError && !usedGemini) throw ocrError;
-    const found = showDraftItems(rows);
+    const found = showDraftItems(rows, {photoAttempted, photoSucceeded: usedGemini});
     if (usedGemini) {
       feedback(scanFeedback, `${found} calon bahan dibaca ulang dengan AI. Periksa nama, jumlah, dan satuannya sebelum menyimpan.`);
     } else if (fallbackError) {
@@ -329,12 +352,14 @@ document.getElementById("add-draft-row").addEventListener("click", () => {
   row.querySelector('[data-field="name"]').focus();
 });
 
+const actionKey = createActionKeyStore();
+
 async function saveItems(items, source) {
   const response = await fetch("/modul2/items/", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
     credentials: "same-origin",
-    body: JSON.stringify({ source, items }),
+    body: JSON.stringify({ source, items, operation_key: actionKey(`create-${source}`, {source, items}) }),
   });
   const data = await response.json().catch(() => {
     throw new Error("Sesi tidak valid atau server sedang bermasalah. Muat ulang halaman lalu coba lagi.");
@@ -371,6 +396,7 @@ saveDraftButton.addEventListener("click", async () => {
   items.forEach((item, index) => {
     const row = rows[index];
     item.original_name = row.dataset.originalName || "";
+    Object.assign(item, correctionConsent(row.dataset, row.querySelector(".confirm-name")?.checked));
     if (row.dataset.ingredientCode) {
       item.ingredient_code = row.dataset.ingredientCode;
     }
@@ -412,17 +438,26 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   const locationInput = row.querySelector("[data-pantry-location]");
   const expiryInput = row.querySelector("[data-pantry-expiry]");
   const storageFeedback = row.querySelector("[data-storage-feedback]");
+  const sourceInput = row.querySelector("[data-expiry-source]");
   let expiryMode = "";
   locationInput.addEventListener("change", () => {
     const estimate = storagePreview(pantryStorage[row.dataset.pantryItem], locationInput.value);
-    expiryMode = "auto";
-    expiryInput.value = estimate.estimated_expires_on;
+    const change = locationExpiry(sourceInput.value, expiryInput.value, estimate);
+    expiryMode = change.mode;
+    expiryInput.value = change.date;
     storageFeedback.textContent = estimate.message;
     feedback(rowFeedback, "Perkiraan diperbarui. Tekan Simpan untuk menyimpan perubahan.");
   });
   expiryInput.addEventListener("input", () => {
     expiryMode = "manual";
+    if (sourceInput.value !== "label") sourceInput.value = "manual";
     storageFeedback.textContent = "Tanggal diisi manual; utamakan label kemasan.";
+  });
+  sourceInput.addEventListener("change", () => {
+    expiryMode = sourceInput.value === "estimate" ? "auto" : "manual";
+  });
+  row.querySelector("[data-edit-name]").addEventListener("input", () => {
+    row.querySelector("[data-edit-ingredient]").value = "";
   });
   button.addEventListener("click", async () => {
     const location = locationInput.value;
@@ -434,15 +469,27 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
     locationInput.disabled = true;
     expiryInput.disabled = true;
     feedback(rowFeedback, "Menyimpan…");
+    const changes = {
+      location, estimated_expires_on: expiryInput.value, expiry_mode: expiryMode,
+      expiry_source: sourceInput.value, version: Number(row.dataset.version),
+      name: row.querySelector("[data-edit-name]").value,
+      quantity: row.querySelector("[data-edit-quantity]").value,
+      unit: row.querySelector("[data-edit-unit]").value,
+      category: row.querySelector("[data-edit-category]").value,
+      ingredient_code: row.querySelector("[data-edit-ingredient]").value,
+      pack_weight_g: row.querySelector("[data-edit-weight]").value,
+    };
     try {
       const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
         credentials: "same-origin",
-        body: JSON.stringify({ location, estimated_expires_on: expiryInput.value, expiry_mode: expiryMode }),
+        body: JSON.stringify({ ...changes, operation_key: actionKey(`edit-${row.dataset.pantryItem}`, changes) }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Gagal menyimpan perubahan.");
+      row.dataset.version = data.version;
+      sourceInput.value = data.expiry_source;
       locationInput.value = data.location;
       expiryInput.value = data.estimated_expires_on;
       storageFeedback.textContent = data.message;
@@ -456,6 +503,20 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
       expiryInput.disabled = false;
     }
   });
+  row.querySelector(".pantry-history").addEventListener("click", async () => {
+    const output = row.querySelector("[data-history-output]");
+    try {
+      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/movements/`, {credentials: "same-origin"});
+      const data = await response.json();
+      if (!response.ok) throw new Error("Riwayat tidak tersedia.");
+      output.replaceChildren(...data.movements.map((entry) => {
+        const line = document.createElement("p");
+        line.textContent = `${new Date(entry.created_at).toLocaleString("id-ID")} · ${entry.kind}: ${entry.before} → ${entry.after}`;
+        return line;
+      }));
+      output.hidden = !output.hidden;
+    } catch (error) { feedback(rowFeedback, error.message, true); }
+  });
   deleteButton.addEventListener("click", async () => {
     if (!window.confirm(`Hapus ${deleteButton.dataset.itemName} dari stok pantry?`)) return;
     deleteButton.disabled = true;
@@ -463,8 +524,9 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
     try {
       const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/delete/`, {
         method: "DELETE",
-        headers: { "X-CSRFToken": csrfToken },
+        headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
         credentials: "same-origin",
+        body: JSON.stringify({ version: Number(row.dataset.version), operation_key: actionKey(`delete-${row.dataset.pantryItem}`, {version: Number(row.dataset.version)}) }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Gagal menghapus bahan.");
@@ -475,6 +537,25 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
       deleteButton.disabled = false;
     }
   });
+});
+
+document.getElementById("stock-recipes-button").addEventListener("click", async (event) => {
+  const button = event.currentTarget;
+  const output = document.getElementById("stock-recipes-output");
+  button.disabled = true;
+  try {
+    const servings = document.getElementById("stock-recipe-servings").value;
+    const response = await fetch(`/modul2/recipes/?servings=${encodeURIComponent(servings)}`, {credentials: "same-origin"});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Tidak dapat membaca kecocokan stok.");
+    if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Hubungkan bahan ke katalog dan lengkapi berat/tanggal stok jika diketahui.";
+    else output.replaceChildren(...data.recipes.map((recipe) => {
+      const line = document.createElement("p");
+      line.textContent = `${recipe.name} · ${recipe.complete ? "Bahan cukup" : "Sebagian bahan tersedia"}${recipe.instructions_pending_review ? " · langkah memasak belum dipublikasikan" : ""}`;
+      return line;
+    }));
+  } catch (error) { output.textContent = error.message; }
+  finally { button.disabled = false; }
 });
 
 window.addEventListener("pagehide", () => {

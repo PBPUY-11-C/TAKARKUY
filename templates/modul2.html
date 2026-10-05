@@ -1,4 +1,4 @@
-{% load static %}
+{% load static l10n %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -75,6 +75,7 @@
     .draft-table input:focus, .draft-table select:focus { outline: 2px solid #91d9b8; }
     .draft-table .remove-row { min-height: 34px; padding: 5px 9px; border: 1px solid #eed5d5; border-radius: 7px; background: #fff8f8; color: #9a3131; cursor: pointer; }
     .name-suggestion { margin-top: 7px; color: #4d645e; font-size: 11px; line-height: 1.4; }
+    .draft-table .confirm-name { width: auto; height: auto; margin-right: 3px; vertical-align: middle; }
     .empty-draft { display: grid; justify-items: center; gap: 8px; padding: 36px 18px; border: 1px dashed #c9d9e7; border-radius: 14px; background: #f8fbff; color: #667782; text-align: center; font-size: 13px; line-height: 1.5; }
     .empty-draft-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: #e4f4ed; color: var(--green); font-size: 24px; }
     .empty-draft p { max-width: 360px; margin: 0; }
@@ -110,9 +111,14 @@
     .saved-table th, .saved-table td { text-align: left; vertical-align: top; }
     .saved-table th:last-child, .saved-table td:last-child { text-align: left; }
     .pantry-value { min-height: 37px; display: flex; align-items: center; line-height: 1.4; overflow-wrap: anywhere; }
-    .saved-table select, .saved-table input[type="date"] { width: 100%; min-width: 145px; height: 37px; padding: 6px 9px; border: 1px solid #cbd9e4; border-radius: 8px; background: #fff; color: var(--ink); font-size: 12px; }
+    .saved-table select, .saved-table input { width: 100%; min-width: 0; height: 37px; padding: 6px 9px; border: 1px solid #cbd9e4; border-radius: 8px; background: #fff; color: var(--ink); font-size: 12px; margin-bottom: 5px; }
+    .saved-table details { color: var(--muted); font-size: 11px; }
+    .saved-table details label { display: block; margin-top: 8px; }
+    .saved-table small { display: block; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    #stock-recipes-title { font: 800 20px "Plus Jakarta Sans", sans-serif; }
+    #stock-recipe-servings { width: 64px; padding: 9px; border: 1px solid #cbd9e4; border-radius: 8px; margin: 0 8px 12px; }
     .saved-table .button { min-height: 37px; padding-inline: 10px; white-space: nowrap; }
-    .pantry-actions { display: flex; align-items: center; gap: 8px; }
+    .pantry-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
     .saved-table .button.danger { margin-top: 0; border-color: #efcece; color: #9a3131; }
     .row-feedback { display: block; margin-top: 5px; color: var(--green-dark); font-size: 11px; }
     .row-feedback.error { color: #a43d32; }
@@ -225,21 +231,28 @@
       {% if pantry_items %}
       <div class="table-wrap"><table class="saved-table"><colgroup><col style="width:14%"><col style="width:12%"><col style="width:17%"><col style="width:18%"><col style="width:21%"><col style="width:18%"></colgroup><thead><tr><th scope="col">Bahan</th><th scope="col">Jumlah</th><th scope="col">Kategori</th><th scope="col">Lokasi Simpan</th><th scope="col">Perkiraan kedaluwarsa</th><th scope="col">Aksi</th></tr></thead><tbody>
         {% for item in pantry_items %}
-        <tr data-pantry-item="{{ item.pk }}">
-          <td><span class="pantry-value">{{ item.name }}</span></td>
-          <td><span class="pantry-value">{{ item.quantity|floatformat:"-3" }} {{ item.get_unit_display }}</span></td>
-          <td><span class="pantry-value">{% if item.category %}{{ item.get_category_display }}{% else %}Belum ditentukan{% endif %}</span></td>
+        <tr data-pantry-item="{{ item.pk }}" data-version="{{ item.version }}">
+          <td><input data-edit-name aria-label="Nama bahan" value="{{ item.name }}" maxlength="255"><details><summary>Konversi untuk resep</summary><label>Bahan katalog<select data-edit-ingredient><option value="">Belum terhubung</option>{% for ingredient in ingredients %}<option value="{{ ingredient.pk }}"{% if item.ingredient_id == ingredient.pk %} selected{% endif %}>{{ ingredient.name }}</option>{% endfor %}</select></label><label>Berat per unit/pack (g, opsional)<input data-edit-weight inputmode="decimal" value="{{ item.pack_weight_g|default_if_none:''|unlocalize }}" aria-label="Berat per unit"></label><small>{{ item.conversion_note }}</small></details></td>
+          <td><input data-edit-quantity inputmode="decimal" value="{{ item.quantity|floatformat:'-6u' }}" aria-label="Jumlah"><select data-edit-unit aria-label="Satuan">{% for value, label in manual_unit_choices %}<option value="{{ value }}"{% if item.unit == value %} selected{% endif %}>{{ label }}</option>{% endfor %}{% if item.unit == "papan" or item.unit == "kotak" or item.unit == "pak" or item.unit == "bungkus" %}<option value="{{ item.unit }}" selected>{{ item.get_unit_display }}</option>{% endif %}</select></td>
+          <td><select data-edit-category aria-label="Kategori"><option value="">Belum ditentukan</option>{% for value, label in category_choices %}<option value="{{ value }}"{% if item.category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}{% if item.category and item.category not in "sayur_buah,daging_seafood,tahu_tempe_kacang,beras_karbohidrat,bumbu_minyak,lainnya" %}<option value="{{ item.category }}" selected>{{ item.get_category_display }}</option>{% endif %}</select></td>
           <td><select data-pantry-location aria-label="Lokasi simpan {{ item.name }}">{% for value, label in location_choices %}<option value="{{ value }}"{% if item.display_location == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></td>
-          <td><input type="date" data-pantry-expiry value="{{ item.estimated_expires_on|date:'Y-m-d' }}" aria-label="Perkiraan kedaluwarsa {{ item.name }}"><span class="storage-feedback" data-storage-feedback>{{ item.storage_message }}</span></td>
-          <td><div class="pantry-actions"><button type="button" class="button save-pantry-details">Simpan</button><button type="button" class="button danger delete-pantry-item" data-item-name="{{ item.name }}">Hapus</button></div><span class="row-feedback" role="status" aria-live="polite"></span></td>
+          <td><input type="date" data-pantry-expiry value="{{ item.estimated_expires_on|date:'Y-m-d' }}" aria-label="Perkiraan kedaluwarsa {{ item.name }}"><select data-expiry-source aria-label="Sumber tanggal kedaluwarsa">{% for value, label in expiry_choices %}<option value="{{ value }}"{% if item.expiry_source == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>{% if item.expiry_status %}<small>{{ item.expiry_status }}</small>{% endif %}<span class="storage-feedback" data-storage-feedback>{{ item.storage_message }}</span></td>
+          <td><div class="pantry-actions"><button type="button" class="button save-pantry-details">Simpan</button><button type="button" class="button danger delete-pantry-item" data-item-name="{{ item.name }}">Hapus</button><button type="button" class="button pantry-history">Riwayat</button></div><div data-history-output hidden></div><span class="row-feedback" role="status" aria-live="polite"></span></td>
         </tr>
         {% endfor %}
       </tbody></table></div>
       {% else %}<p class="saved-empty">Belum ada bahan tersimpan. Pindai struk atau masukkan bahan secara manual.</p>{% endif %}
     </section>
+    <section class="panel pantry-list" aria-labelledby="stock-recipes-title">
+      <h2 id="stock-recipes-title">Ide Menu dari Stok</h2>
+      <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, diketahui beratnya, dan memiliki tanggal yang belum lewat. Kecocokan stok bukan jaminan keamanan bahan. Tidak mengurangi stok.</p>
+      <label for="stock-recipe-servings">Porsi <input id="stock-recipe-servings" inputmode="numeric" value="1" maxlength="2"></label>
+      <button class="button secondary" type="button" id="stock-recipes-button">Cari Menu dari Stok</button>
+      <div id="stock-recipes-output" role="status" aria-live="polite"></div>
+    </section>
   </main>
   {{ pantry_storage|json_script:"pantry-storage-data" }}
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js" integrity="sha384-2BQ3U3OdKOb0Uczxqr41I9UvZkzr4V9Hv8uSzMMZAlmhsFClvdZX5wi5fDCzG+tM" crossorigin="anonymous" defer></script>
   <script type="module" src="{% static 'pantry/pantry.js' %}"></script>
 </body>
 </html>

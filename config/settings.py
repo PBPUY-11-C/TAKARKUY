@@ -67,6 +67,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "apps.pantry.uploads.ReceiptUploadMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -113,6 +114,7 @@ else:
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
+            "OPTIONS": {"transaction_mode": "IMMEDIATE", "timeout": 20},
         }
     }
 
@@ -142,7 +144,21 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "id"
+
+# Only sanitized counts/tokens/timing, never provider request bodies.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"pantry_ai_console": {"class": "logging.StreamHandler"}},
+    "loggers": {
+        "apps.pantry.ai_usage": {
+            "handlers": ["pantry_ai_console"],
+            "level": "INFO",
+            "propagate": False,
+        }
+    },
+}
 
 TIME_ZONE = "UTC"
 

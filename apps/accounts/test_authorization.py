@@ -1,5 +1,6 @@
 import json
 from unittest.mock import patch
+from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
@@ -67,14 +68,26 @@ class AuthorizationTests(TestCase):
         self.assertContains(page, self.item.name)
         response = device.patch(
             reverse("modul2-item-details", args=[self.item.pk]),
-            data=json.dumps({"location": "freezer", "expiry_mode": "auto"}),
+            data=json.dumps(
+                {
+                    "location": "freezer",
+                    "expiry_mode": "auto",
+                    "version": self.item.version,
+                    "operation_key": str(uuid4()),
+                }
+            ),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 200)
         self.item.refresh_from_db()
         self.assertEqual(self.item.location, "freezer")
         self.assertEqual(
-            device.delete(reverse("modul2-item-delete", args=[self.item.pk])).status_code, 200
+            device.delete(
+                reverse("modul2-item-delete", args=[self.item.pk]),
+                data=json.dumps({"version": self.item.version, "operation_key": str(uuid4())}),
+                content_type="application/json",
+            ).status_code,
+            200,
         )
 
     def test_other_account_cannot_access_ids_even_with_copied_pantry_scope(self):
@@ -130,6 +143,7 @@ class AuthorizationTests(TestCase):
             data=json.dumps(
                 {
                     "source": "manual",
+                    "operation_key": str(uuid4()),
                     "user_id": self.other.pk,
                     "items": [
                         {
@@ -151,6 +165,7 @@ class AuthorizationTests(TestCase):
 
     def test_private_ocr_correction_follows_account_across_devices(self):
         PantryNameCorrection.objects.create(
+            confirmed_by_user=True,
             user=self.owner,
             session_id="old-session",
             raw_name="BXYM",
