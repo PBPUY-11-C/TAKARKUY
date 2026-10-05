@@ -16,7 +16,9 @@ class BatchMigrationTests(TransactionTestCase):
         executor = MigrationExecutor(connection)
         executor.migrate([self.old])
         try:
-            apps = executor.loader.project_state([self.old]).apps
+            # Only pantry is rolled back; catalogue/account migrations stay applied.
+            executor = MigrationExecutor(connection)
+            apps = executor.loader.project_state(list(executor.loader.applied_migrations)).apps
             User = apps.get_model("auth", "User")
             Batch = apps.get_model("pantry", "PantryItem")
             owner = User.objects.create(username="legacy-owner")

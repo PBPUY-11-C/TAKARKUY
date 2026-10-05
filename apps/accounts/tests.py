@@ -17,6 +17,7 @@ class AccountFlowTests(TestCase):
 
     def signup_data(self, **changes):
         return {
+            "username": "dina",
             "full_name": "Dina Putri",
             "email": "Dina@example.com",
             "password1": "AmanSekali!827",

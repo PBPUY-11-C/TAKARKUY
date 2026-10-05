@@ -2,8 +2,13 @@ from decimal import Decimal
 
 from django import forms
 
+from apps.accounts.choices import ALLERGEN_CHOICES
+
 
 class PlannerForm(forms.Form):
+    allergens = forms.MultipleChoiceField(
+        choices=ALLERGEN_CHOICES, required=False, widget=forms.MultipleHiddenInput
+    )
     MEAL_CHOICES = [
         ("sarapan", "Pagi"),
         ("makan_siang", "Siang"),

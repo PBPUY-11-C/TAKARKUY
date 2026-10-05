@@ -523,8 +523,9 @@ def _nutrition_plan(
     )
 
 
-def _load_candidates(requested_meals, servings, exclude_ingredients):
+def _load_candidates(requested_meals, servings, exclude_ingredients, allergens=()):
     """Price and nutrition-complete halal recipes per meal for the given servings."""
+    from apps.catalog.allergens import recipe_allowed
     snapshot = (
         IngredientPrice.objects.filter(region=REGION, price_status="published", unit="kg")
         .order_by("-recorded_at")
@@ -571,6 +572,8 @@ def _load_candidates(requested_meals, servings, exclude_ingredients):
         if HALAL_TAG not in tags:
             continue
         ingredients = list(recipe.recipeingredient_set.all())
+        if not recipe_allowed(recipe, ingredients, allergens):
+            continue
         if any(
             term in link.ingredient.name.casefold()
             for link in ingredients
@@ -817,6 +820,7 @@ def build_plan(
     meal_types,
     targets,
     exclude_ingredients,
+    allergens=(),
     recent_recipe_codes=(),
     prior_slot_recipes=None,
     fixed_schedule=None,
@@ -837,7 +841,7 @@ def build_plan(
         raise ValueError("Seimbang tidak bisa digabung dengan target gizi lain.")
     recent_recipe_codes = set(recent_recipe_codes)
     prior_slot_recipes = prior_slot_recipes or {}
-    catalog = _load_candidates(requested_meals, servings, exclude_ingredients)
+    catalog = _load_candidates(requested_meals, servings, exclude_ingredients, allergens)
     (
         snapshot,
         prices,
@@ -1132,6 +1136,7 @@ def replacement_options(
     day,
     meal,
     current_total,
+    allergens=(),
 ):
     """Quote each full alternative schedule using the preview's shopping rules.
 
@@ -1139,7 +1144,7 @@ def replacement_options(
     days before buying whole units and rounding the final total.
     """
     requested_meals = tuple(item for item in MEALS if item in meal_types)
-    catalog = _load_candidates(requested_meals, servings, exclude_ingredients)
+    catalog = _load_candidates(requested_meals, servings, exclude_ingredients, allergens)
     candidates = catalog[5]
     current_code = schedule[day - 1][meal]
     options = []

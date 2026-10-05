@@ -54,6 +54,34 @@ for name, fields in {
     assert len(values) == len(set(values)), (name, "relasi semantik ganda")
 
 ingredient = {r["ingredient_code"]: r for r in tables["ingredients"]}
+with open(ROOT / "processed/ingredient_allergens.csv", newline="", encoding="utf-8") as stream:
+    allergen_rows = list(csv.DictReader(stream))
+assert len(allergen_rows) == len(ingredient)
+assert {row["ingredient_code"] for row in allergen_rows} == set(ingredient)
+allowed_allergens = {
+    "telur",
+    "susu",
+    "kacang_tanah",
+    "kedelai",
+    "gluten",
+    "ikan",
+    "krustasea",
+    "moluska",
+    "wijen",
+}
+for row in allergen_rows:
+    codes = json.loads(row["allergens"])
+    assert (
+        isinstance(codes, list)
+        and len(codes) == len(set(codes))
+        and set(codes) <= allowed_allergens
+    )
+    assert row["allergen_status"] in {"reviewed", "unknown"}
+    assert row["allergen_note"]
+    if row["allergen_status"] == "reviewed":
+        assert row["allergen_source_url"]
+    for key in ("allergens", "allergen_status", "allergen_source_url", "allergen_note"):
+        assert row[key] == ingredient[row["ingredient_code"]][key]
 recipe = {r["recipe_code"]: r for r in tables["recipes"]}
 for name in (
     "ingredient_prices",
@@ -151,9 +179,9 @@ for r in ready:
 fixture = json.loads((ROOT / "fixtures/catalog_seed.json").read_text(encoding="utf-8"))
 assert len(fixture) == sum(map(len, tables.values()))
 assert len({(x["model"], x["pk"]) for x in fixture}) == len(fixture)
-assert (ROOT / "fixtures/catalog_seed.json").read_bytes() == (
-    ROOT.parent / "apps/catalog/fixtures/catalog_seed.json"
-).read_bytes()
+assert not (ROOT.parent / "apps/catalog/fixtures/catalog_seed.json").exists(), (
+    "Fixture katalog harus tunggal di data/fixtures; jangan membuat salinan aplikasi."
+)
 for x in fixture:
     assert x["model"].startswith("catalog.") and isinstance(x["fields"], dict)
 

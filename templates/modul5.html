@@ -55,7 +55,7 @@
       <a href="{% url 'modul4' %}">Recipe Book</a>
     </nav>
     <div class="header-actions">
-      <span>Hai, {{ user.first_name|default:user.username }}!</span>
+      <a href="{% url 'modul3' %}" aria-label="Profil dan preferensi">Hai, {{ user.first_name|default:user.username }}!</a>
       <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
         <button class="logout-button" type="submit">Keluar</button>

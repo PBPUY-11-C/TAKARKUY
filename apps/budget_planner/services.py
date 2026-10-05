@@ -12,6 +12,8 @@ from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 
+from apps.accounts.preferences import effective_allergens
+from apps.catalog.allergens import unsafe_schedule
 from apps.catalog.models import Ingredient, Recipe
 
 from .forms import PlannerForm
@@ -96,6 +98,7 @@ def stored_inputs(form):
         "meal_types": values["meal_types"],
         "targets": values["targets"],
         "exclude_ingredients": ", ".join(values["exclude_ingredients"]),
+        "allergens": values.get("allergens", []),
     }
 
 
@@ -216,6 +219,14 @@ def write_draft(
 ):
     # Serializes the first-draft creation as well as concurrent writes across devices.
     get_user_model().objects.select_for_update().get(pk=user.pk)
+    inputs = {
+        **inputs,
+        "allergens": effective_allergens(user, inputs, previous.inputs if previous else {}),
+    }
+    if unsafe_schedule(schedule_codes(result), inputs["allergens"]):
+        raise PlanConflict(
+            "Menu tidak sesuai alergi terbaru atau mengandung bahan belum ditinjau. Buat rencana baru."
+        )
     draft = BudgetPlan.objects.select_for_update().filter(user=user, status="draft").first()
     if previous is not None:
         try:
@@ -289,7 +300,7 @@ def make_preview(plan, version, payload):
     if not isinstance(action, str):
         raise ValueError("Aksi pratinjau tidak valid.")
     old = thaw(plan.snapshot)
-    inputs = plan.inputs
+    inputs = {**plan.inputs, "allergens": effective_allergens(plan.user, plan.inputs)}
     form = clean_inputs(inputs)
     if action == "replace":
         day, meal_type, recipe = payload.get("day"), payload.get("meal"), payload.get("recipe")
@@ -319,6 +330,9 @@ def make_preview(plan, version, payload):
         assert_editable(plan)
         if action == "parameters":
             form = clean_inputs(payload.get("inputs", {}))
+            form.cleaned_data["allergens"] = effective_allergens(
+                plan.user, plan.inputs, form.cleaned_data
+            )
             inputs = stored_inputs(form)
         prior = {
             meal: [slots.get(meal) for slots in schedule_codes(old)]
@@ -370,6 +384,11 @@ def apply_preview(user, preview_id, *, new_budget=None):
         raise PlanConflict("Pratinjau sudah digunakan atau kedaluwarsa. Buat pratinjau baru.")
     result = thaw(preview.snapshot)
     inputs = preview.inputs.copy()
+    inputs["allergens"] = effective_allergens(user, plan.inputs, inputs)
+    if unsafe_schedule(schedule_codes(result), inputs["allergens"]):
+        raise PlanConflict(
+            "Pratinjau tidak sesuai alergi terbaru atau ada bahan belum ditinjau. Buat pratinjau baru; rencana lama tidak diubah."
+        )
     if result["total"] > Decimal(inputs["budget"]):
         if new_budget is None:
             raise ValueError(
@@ -486,6 +505,7 @@ def adopt_guest_result(request):
         return
     try:
         form = clean_inputs(saved["inputs"])
+        form.cleaned_data["allergens"] = effective_allergens(request.user, form.cleaned_data)
         result = json.loads(saved["result"], object_hook=decode_value)
         if not isinstance(result, dict) or not isinstance(result.get("schedule"), list):
             return
@@ -502,6 +522,8 @@ def adopt_guest_result(request):
             result = build_plan(**form.cleaned_data, fixed_schedule=schedule_codes(result))
         except ValueError:
             return
+    if unsafe_schedule(schedule_codes(result), form.cleaned_data["allergens"]):
+        return
     if result.get("within_budget"):
         recipe_codes = {code for slots in schedule_codes(result) for code in slots.values()}
         ingredient_codes = {

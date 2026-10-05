@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import ipaddress
 import os
 from pathlib import Path
 
@@ -20,12 +21,15 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+FIXTURE_DIRS = [BASE_DIR / "data" / "fixtures"]
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 PRODUCTION = os.getenv("PRODUCTION", "False").lower() == "true"
+# Opt-in per deployment; local development stays available by default.
+MAINTENANCE_MODE = os.getenv("MAINTENANCE_MODE", "false").strip().lower() == "true"
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     if PRODUCTION:
@@ -37,6 +41,20 @@ SESSION_COOKIE_SECURE = PRODUCTION
 CSRF_COOKIE_SECURE = PRODUCTION
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "modul5"
+AUTHENTICATION_BACKENDS = ["apps.accounts.backends.UsernameOrEmailBackend"]
+# Empty by default. Set only to the actual, verified PWS reverse-proxy CIDRs.
+AUTH_TRUSTED_PROXY_CIDRS = [
+    value.strip() for value in os.getenv("AUTH_TRUSTED_PROXY_CIDRS", "").split(",") if value.strip()
+]
+try:
+    for proxy_cidr in AUTH_TRUSTED_PROXY_CIDRS:
+        network = ipaddress.ip_network(proxy_cidr)
+        if network.prefixlen == 0:
+            raise ValueError("Daftar proxy tidak boleh mempercayai seluruh internet.")
+except ValueError as error:
+    raise ImproperlyConfigured(
+        "AUTH_TRUSTED_PROXY_CIDRS harus berisi CIDR proxy terpercaya."
+    ) from error
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -67,9 +85,11 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.accounts.middleware.MaintenanceMiddleware",
     "apps.pantry.uploads.ReceiptUploadMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.accounts.middleware.AuthRateLimitMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]

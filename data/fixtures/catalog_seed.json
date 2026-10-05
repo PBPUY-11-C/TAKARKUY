@@ -14,7 +14,11 @@
       "nutrition_source_id": "row:beras",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -32,7 +36,13 @@
       "nutrition_source_id": "row:tepung_terigu",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -50,7 +60,11 @@
       "nutrition_source_id": "row:jagung_segar",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -68,7 +82,11 @@
       "nutrition_source_id": "row:beras_ketan",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -86,7 +104,11 @@
       "nutrition_source_id": "row:jagung_pipil",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -104,7 +126,11 @@
       "nutrition_source_id": "row:kentang",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -122,7 +148,11 @@
       "nutrition_source_id": "row:singkong",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -140,7 +170,11 @@
       "nutrition_source_id": "row:ubi_jalar",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -158,7 +192,11 @@
       "nutrition_source_id": "row:talas",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -176,7 +214,11 @@
       "nutrition_source_id": "row:sagu",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -194,7 +236,13 @@
       "nutrition_source_id": "row:ikan_lele",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -212,7 +260,13 @@
       "nutrition_source_id": "row:ikan_bandeng",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -230,7 +284,13 @@
       "nutrition_source_id": "row:ikan_mujair",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -248,7 +308,13 @@
       "nutrition_source_id": "row:ikan_tongkol",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -266,7 +332,13 @@
       "nutrition_source_id": "row:ikan_kembung",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -284,7 +356,13 @@
       "nutrition_source_id": "row:ikan_tuna",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -302,7 +380,13 @@
       "nutrition_source_id": "row:udang",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "krustasea"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -320,7 +404,13 @@
       "nutrition_source_id": "row:cumi",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "moluska"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -338,7 +428,11 @@
       "nutrition_source_id": "row:daging_ayam",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -356,7 +450,11 @@
       "nutrition_source_id": "row:daging_sapi",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -374,7 +472,11 @@
       "nutrition_source_id": "row:daging_ayam_kampung",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -392,7 +494,13 @@
       "nutrition_source_id": "row:telur_ayam",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "telur"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -410,7 +518,13 @@
       "nutrition_source_id": "row:telur_ayam_kampung",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "telur"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -428,7 +542,13 @@
       "nutrition_source_id": "row:telur_puyuh",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "telur"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -446,7 +566,13 @@
       "nutrition_source_id": "row:susu_sapi_segar",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -464,7 +590,11 @@
       "nutrition_source_id": "row:tomat",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -482,7 +612,11 @@
       "nutrition_source_id": "row:bayam",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -500,7 +634,11 @@
       "nutrition_source_id": "row:kangkung",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -518,7 +656,11 @@
       "nutrition_source_id": "row:kacang_panjang",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -536,7 +678,11 @@
       "nutrition_source_id": "row:sawi_hijau",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -554,7 +700,11 @@
       "nutrition_source_id": "row:terong",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -572,7 +722,11 @@
       "nutrition_source_id": "row:buncis",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -590,7 +744,11 @@
       "nutrition_source_id": "row:tauge",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -608,7 +766,11 @@
       "nutrition_source_id": "row:daun_ketela_pohon",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -626,7 +788,11 @@
       "nutrition_source_id": "row:pakcoy",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -644,7 +810,11 @@
       "nutrition_source_id": "row:labu_siam",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -662,7 +832,11 @@
       "nutrition_source_id": "row:kubis",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -680,7 +854,11 @@
       "nutrition_source_id": "row:mentimun",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -698,7 +876,11 @@
       "nutrition_source_id": "row:sawi_putih",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -716,7 +898,11 @@
       "nutrition_source_id": "row:selada",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -734,7 +920,11 @@
       "nutrition_source_id": "row:wortel",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -752,7 +942,11 @@
       "nutrition_source_id": "row:jamur_tiram",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -770,7 +964,11 @@
       "nutrition_source_id": "row:kembang_kol",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -788,7 +986,11 @@
       "nutrition_source_id": "row:bawang_merah",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -806,7 +1008,11 @@
       "nutrition_source_id": "row:cabe_merah",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -824,7 +1030,11 @@
       "nutrition_source_id": "row:bawang_putih",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -842,7 +1052,11 @@
       "nutrition_source_id": "row:cabe_rawit",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -860,7 +1074,13 @@
       "nutrition_source_id": "row:kacang_kedelai",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "kedelai"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -878,7 +1098,13 @@
       "nutrition_source_id": "row:kacang_tanah",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "kacang_tanah"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -896,7 +1122,11 @@
       "nutrition_source_id": "row:jeruk",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -914,7 +1144,11 @@
       "nutrition_source_id": "row:pisang",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -932,7 +1166,11 @@
       "nutrition_source_id": "row:apel",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -950,7 +1188,11 @@
       "nutrition_source_id": "row:pepaya",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -968,7 +1210,11 @@
       "nutrition_source_id": "row:semangka",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -986,7 +1232,11 @@
       "nutrition_source_id": "row:salak",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1004,7 +1254,11 @@
       "nutrition_source_id": "row:mangga",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1022,7 +1276,11 @@
       "nutrition_source_id": "row:nanas_madu",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1040,7 +1298,11 @@
       "nutrition_source_id": "row:buah_naga",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1058,7 +1320,11 @@
       "nutrition_source_id": "row:jambu_biji",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1076,7 +1342,11 @@
       "nutrition_source_id": "row:melon",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1094,7 +1364,11 @@
       "nutrition_source_id": "row:anggur_merah",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1112,7 +1386,11 @@
       "nutrition_source_id": "row:minyak_goreng",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1130,7 +1408,11 @@
       "nutrition_source_id": "row:kelapa",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1148,7 +1430,11 @@
       "nutrition_source_id": "row:minyak_kelapa",
       "nutrition_verified": true,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1166,7 +1452,13 @@
       "nutrition_source_id": "172476",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172476/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172476/nutrients",
+      "allergens": [
+        "kedelai"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1184,7 +1476,13 @@
       "nutrition_source_id": "174272",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174272/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174272/nutrients",
+      "allergens": [
+        "kedelai"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1202,7 +1500,11 @@
       "nutrition_source_id": "173468",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173468/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173468/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1220,7 +1522,11 @@
       "nutrition_source_id": "169655",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169655/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169655/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1238,7 +1544,11 @@
       "nutrition_source_id": "168833",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/168833/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/168833/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1256,7 +1566,11 @@
       "nutrition_source_id": "170000",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170000/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170000/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1274,7 +1588,11 @@
       "nutrition_source_id": "174256",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174256/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174256/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1292,7 +1610,11 @@
       "nutrition_source_id": "173647",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173647/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173647/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1310,7 +1632,11 @@
       "nutrition_source_id": "row:beras",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1328,7 +1654,11 @@
       "nutrition_source_id": "row:beras",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1346,7 +1676,11 @@
       "nutrition_source_id": "row:beras",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1364,7 +1698,11 @@
       "nutrition_source_id": "row:beras",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1382,7 +1720,11 @@
       "nutrition_source_id": "169655",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169655/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169655/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1400,7 +1742,11 @@
       "nutrition_source_id": "row:minyak_goreng",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1418,7 +1764,11 @@
       "nutrition_source_id": "row:minyak_goreng",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1436,7 +1786,11 @@
       "nutrition_source_id": "row:minyak_goreng",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1454,7 +1808,11 @@
       "nutrition_source_id": "row:daging_ayam",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1472,7 +1830,13 @@
       "nutrition_source_id": "row:telur_ayam",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "telur"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1490,7 +1854,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1508,7 +1878,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1526,7 +1902,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1544,7 +1926,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1562,7 +1950,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1580,7 +1972,11 @@
       "nutrition_source_id": "173468",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173468/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173468/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1598,7 +1994,11 @@
       "nutrition_source_id": "173468",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173468/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173468/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1616,7 +2016,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1634,7 +2040,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1652,7 +2064,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1670,7 +2088,13 @@
       "nutrition_source_id": "row:kacang_kedelai",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "kedelai"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1688,7 +2112,15 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "gluten",
+        "telur",
+        "kedelai"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1706,7 +2138,11 @@
       "nutrition_source_id": "row:cabe_merah",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1724,7 +2160,11 @@
       "nutrition_source_id": "row:cabe_merah",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1742,7 +2182,11 @@
       "nutrition_source_id": "row:cabe_rawit",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1760,7 +2204,11 @@
       "nutrition_source_id": "row:cabe_rawit",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1778,7 +2226,13 @@
       "nutrition_source_id": "Ikan asin, kering",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal; ESTIMASI PROKSI ikan asin kering TKPI untuk teri asin.",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1796,7 +2250,11 @@
       "nutrition_source_id": "row:jagung_segar",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1814,7 +2272,13 @@
       "nutrition_source_id": "row:tepung_terigu",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1832,7 +2296,13 @@
       "nutrition_source_id": "Ikan tongkol, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1850,7 +2320,11 @@
       "nutrition_source_id": "NR012",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/"
+      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1868,7 +2342,11 @@
       "nutrition_source_id": "row:tomat",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1886,7 +2364,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1904,7 +2386,13 @@
       "nutrition_source_id": "Ikan mas, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1922,7 +2410,11 @@
       "nutrition_source_id": "row:ubi_jalar",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1940,7 +2432,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -1958,7 +2456,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1976,7 +2478,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -1994,7 +2500,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2012,7 +2522,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2030,7 +2544,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2048,7 +2566,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -2066,7 +2590,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2084,7 +2612,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2102,7 +2634,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2120,7 +2656,13 @@
       "nutrition_source_id": "GR060",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal; ESTIMASI PROKSI ikan patin segar; nama dagang dori tidak memastikan spesies atau produk. Bukan gizi terverifikasi dori.",
-      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/"
+      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2138,7 +2680,11 @@
       "nutrition_source_id": "row:kubis",
       "nutrition_verified": false,
       "calories_method": "Atwater 4-4-9; karbohidrat tersedia bila ada",
-      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
+      "nutrition_source_url": "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2156,7 +2702,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2174,7 +2724,16 @@
       "nutrition_source_id": "174924",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174924/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174924/nutrients",
+      "allergens": [
+        "gluten",
+        "telur",
+        "susu",
+        "kedelai"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -2192,7 +2751,13 @@
       "nutrition_source_id": "172476",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172476/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172476/nutrients",
+      "allergens": [
+        "kedelai"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2210,7 +2775,13 @@
       "nutrition_source_id": "174272",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174272/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174272/nutrients",
+      "allergens": [
+        "kedelai"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2228,7 +2799,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2246,7 +2821,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2264,7 +2843,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2282,7 +2865,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2300,7 +2887,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2318,7 +2909,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2336,7 +2931,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2354,7 +2953,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2372,7 +2975,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2390,7 +2997,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2408,7 +3019,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2426,7 +3041,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2444,7 +3063,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2462,7 +3085,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2480,7 +3107,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -2498,7 +3129,11 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -2516,7 +3151,13 @@
       "nutrition_source_id": "",
       "calories_method": "",
       "nutrition_source_url": "",
-      "nutrition_verified": false
+      "nutrition_verified": false,
+      "allergens": [
+        "telur"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2534,7 +3175,11 @@
       "nutrition_source_id": "NR019",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/"
+      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -2552,7 +3197,11 @@
       "nutrition_source_id": "NR022",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/"
+      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2570,7 +3219,11 @@
       "nutrition_source_id": "NR010",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/"
+      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2588,7 +3241,11 @@
       "nutrition_source_id": "DR039",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/"
+      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2606,7 +3263,11 @@
       "nutrition_source_id": "169231",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169231/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169231/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2624,7 +3285,11 @@
       "nutrition_source_id": "168573",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/168573/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/168573/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2642,7 +3307,11 @@
       "nutrition_source_id": "170931",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170931/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170931/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2660,7 +3329,11 @@
       "nutrition_source_id": "170922",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170922/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170922/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2678,7 +3351,11 @@
       "nutrition_source_id": "172231",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172231/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172231/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2696,7 +3373,11 @@
       "nutrition_source_id": "169997",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169997/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169997/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2714,7 +3395,11 @@
       "nutrition_source_id": "170416",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170416/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170416/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2732,7 +3417,11 @@
       "nutrition_source_id": "172232",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172232/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172232/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2750,7 +3439,11 @@
       "nutrition_source_id": "170005",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170005/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170005/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2768,7 +3461,11 @@
       "nutrition_source_id": "169988",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169988/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169988/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2786,7 +3483,11 @@
       "nutrition_source_id": "168156",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy; Proksi jus mentah untuk bagian termakan, bukan berat buah berkulit.",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/168156/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/168156/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2804,7 +3505,11 @@
       "nutrition_source_id": "167746",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/167746/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/167746/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2822,7 +3527,11 @@
       "nutrition_source_id": "169698",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169698/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169698/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2840,7 +3549,13 @@
       "nutrition_source_id": "173410",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173410/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173410/nutrients",
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -2858,7 +3573,11 @@
       "nutrition_source_id": "171413",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171413/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171413/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2876,7 +3595,11 @@
       "nutrition_source_id": "170172",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy; Proksi santan mentah USDA; bukan hasil ukur setiap merek/kekentalan.",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170172/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170172/nutrients",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -2894,7 +3617,14 @@
       "nutrition_source_id": "174277",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174277/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174277/nutrients",
+      "allergens": [
+        "kedelai",
+        "gluten"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -2912,7 +3642,11 @@
       "nutrition_source_id": "170108",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170108/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170108/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2930,7 +3664,11 @@
       "nutrition_source_id": "170427",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170427/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170427/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2948,7 +3686,11 @@
       "nutrition_source_id": "170923",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170923/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170923/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2966,7 +3708,11 @@
       "nutrition_source_id": "171329",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171329/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171329/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -2984,7 +3730,11 @@
       "nutrition_source_id": "170938",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170938/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170938/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3002,7 +3752,11 @@
       "nutrition_source_id": "171320",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171320/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171320/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3020,7 +3774,11 @@
       "nutrition_source_id": "171326",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171326/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171326/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3038,7 +3796,15 @@
       "nutrition_source_id": "174529",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy; ESTIMASI PROKSI saus tiram generik USDA; komposisi merek Indonesia dapat berbeda.",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174529/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174529/nutrients",
+      "allergens": [
+        "moluska",
+        "kedelai",
+        "gluten"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3056,7 +3822,11 @@
       "nutrition_source_id": "168556",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy; ESTIMASI PROKSI catsup USDA untuk saus tomat, bukan tomat mentah atau puree.",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/168556/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/168556/nutrients",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3074,7 +3844,14 @@
       "nutrition_source_id": "171167",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy; ESTIMASI PROKSI teriyaki generik, bukan pengukuran produk Saori.",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171167/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171167/nutrients",
+      "allergens": [
+        "kedelai",
+        "gluten"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3092,7 +3869,14 @@
       "nutrition_source_id": "172346",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172346/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/172346/nutrients",
+      "allergens": [
+        "susu",
+        "kedelai"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3110,7 +3894,11 @@
       "nutrition_source_id": "173474",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173474/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173474/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3128,7 +3916,11 @@
       "nutrition_source_id": "171315",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171315/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171315/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3146,7 +3938,11 @@
       "nutrition_source_id": "170932",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170932/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170932/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3164,7 +3960,13 @@
       "nutrition_source_id": "169412",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169412/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/169412/nutrients",
+      "allergens": [
+        "wijen"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3182,7 +3984,11 @@
       "nutrition_source_id": "167763",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/167763/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/167763/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3200,7 +4006,11 @@
       "nutrition_source_id": "170917",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy; Berbeda dari daun salam Indonesia (Syzygium); tidak disamakan.",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170917/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170917/nutrients",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3218,7 +4028,13 @@
       "nutrition_source_id": "173414",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173414/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/173414/nutrients",
+      "allergens": [
+        "susu"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3236,7 +4052,11 @@
       "nutrition_source_id": "170460",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170460/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/170460/nutrients",
+      "allergens": [],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3254,7 +4074,14 @@
       "nutrition_source_id": "171562",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy; ESTIMASI PROKSI bouillon ayam kering USDA untuk varian resep demonstrasi dengan penyedap ayam. Bukan data label Royco/Masako/kaldu jamur atau konversi stok merek.",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171562/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171562/nutrients",
+      "allergens": [
+        "gluten",
+        "kedelai"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3272,7 +4099,14 @@
       "nutrition_source_id": "8999999002503",
       "nutrition_verified": false,
       "calories_method": "Energi label komunitas; ESTIMASI PROKSI label produk Open Food Facts, tidak menjamin semua kecap manis identik. Data komunitas CC BY-SA, belum diverifikasi kemasan.",
-      "nutrition_source_url": "https://world.openfoodfacts.org/product/8999999002503"
+      "nutrition_source_url": "https://world.openfoodfacts.org/product/8999999002503",
+      "allergens": [
+        "kedelai",
+        "gluten"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3290,7 +4124,11 @@
       "nutrition_source_id": "CT-Food-2271",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal; ESTIMASI PROKSI label daun jeruk beku untuk daun jeruk segar lokal, bukan daun jeruk bubuk. Lemak nol adalah nilai label, bukan pengisian data hilang.",
-      "nutrition_source_url": "https://ctfood.se/lime-leaf-frozen-30x114g-cock-brand/?language=en"
+      "nutrition_source_url": "https://ctfood.se/lime-leaf-frozen-30x114g-cock-brand/?language=en",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3308,7 +4146,11 @@
       "nutrition_source_id": "NR017",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal; ESTIMASI PROKSI salam bubuk TKPI NR017 dikoreksi bahan kering: (1−0,70)/(1−0,131). Kadar air daun segar 70% adalah asumsi TAKARKUY, bukan hasil penelitian atau nilai TKPI segar. Diasumsikan seluruh gram ikut termakan; perpindahan gizi infus/daun dibuang belum dimodelkan.",
-      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/"
+      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3326,7 +4168,13 @@
       "nutrition_source_id": "171016",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171016/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171016/nutrients",
+      "allergens": [
+        "wijen"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3344,7 +4192,16 @@
       "nutrition_source_id": "174928",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174928/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/174928/nutrients",
+      "allergens": [
+        "gluten",
+        "telur",
+        "susu",
+        "kedelai"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3362,7 +4219,11 @@
       "nutrition_source_id": "BP070",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/"
+      "nutrition_source_url": "https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3380,7 +4241,13 @@
       "nutrition_source_id": "Rebon, kering, mentah",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "krustasea"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3398,7 +4265,14 @@
       "nutrition_source_id": "Terasi",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "krustasea",
+        "ikan"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3416,7 +4290,11 @@
       "nutrition_source_id": "Cengkeh, kering",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3434,7 +4312,11 @@
       "nutrition_source_id": "Jamur kuping, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3452,7 +4334,13 @@
       "nutrition_source_id": "Bihun Jagung, mentah",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3470,7 +4358,13 @@
       "nutrition_source_id": "Bihun Jagung, mentah",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal; ESTIMASI PROKSI bihun jagung kering; soun kacang hijau belum memiliki nilai TKPI lokal di paket ini.",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {
@@ -3488,7 +4382,11 @@
       "nutrition_source_id": "Jengkol, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3506,7 +4404,11 @@
       "nutrition_source_id": "Petai, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3524,7 +4426,13 @@
       "nutrition_source_id": "Ikan Patin, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3542,7 +4450,11 @@
       "nutrition_source_id": "Ayam, hati, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal; ESTIMASI PROKSI hati ayam TKPI; ampela belum dipisahkan.",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3560,7 +4472,11 @@
       "nutrition_source_id": "Labu kuning, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3578,7 +4494,11 @@
       "nutrition_source_id": "Jahe, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal; ESTIMASI PROKSI jahe segar; kencur dipakai dalam jumlah kecil.",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3596,7 +4516,13 @@
       "nutrition_source_id": "Ikan kakap, segar",
       "nutrition_verified": false,
       "calories_method": "Energi terlapor sumber; proksi belum diverifikasi lokal; ESTIMASI PROKSI ikan kakap segar; bukan nilai tenggiri terverifikasi.",
-      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3"
+      "nutrition_source_url": "https://data.mendeley.com/datasets/8b4ztns76h/3",
+      "allergens": [
+        "ikan"
+      ],
+      "allergen_status": "reviewed",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Peninjauan internal jenis bahan tunggal untuk 9 kelompok; bukan pemeriksaan label produk atau kontaminasi silang."
     }
   },
   {
@@ -3614,7 +4540,14 @@
       "nutrition_source_id": "171562",
       "nutrition_verified": false,
       "calories_method": "USDA reported energy; ESTIMASI PROKSI bouillon kering USDA; bukan data label kaldu jamur merek mana pun.",
-      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171562/nutrients"
+      "nutrition_source_url": "https://fdc.nal.usda.gov/food-details/171562/nutrients",
+      "allergens": [
+        "gluten",
+        "kedelai"
+      ],
+      "allergen_status": "unknown",
+      "allergen_source_url": "https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses",
+      "allergen_note": "Komposisi produk belum diverifikasi; kelompok tercantum adalah potensi, bukan klaim komposisi aktual. Resep dikecualikan saat alergi aktif."
     }
   },
   {

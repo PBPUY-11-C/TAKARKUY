@@ -22,7 +22,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from apps.accounts.forms import EmailOrUsernameAuthenticationForm
-from apps.accounts.views import AccountLoginView, landing_view, signup_view
+from apps.accounts.views import AccountLoginView, landing_view, profile_view, signup_view
 from apps.budget_planner.plan_views import (
     apply_plan_preview,
     delete_account_plan,
@@ -51,6 +51,7 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", LogoutView.as_view(next_page="landing"), name="logout"),
+    path("modul3/", profile_view, name="modul3"),
     path("modul1/", planner_page, name="modul1"),
     path("modul1/plans/<uuid:plan_id>/save/", save_account_plan, name="modul1-plan-save"),
     path("modul1/plans/<uuid:plan_id>/delete/", delete_account_plan, name="modul1-plan-delete"),
