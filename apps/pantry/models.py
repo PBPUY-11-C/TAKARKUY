@@ -137,8 +137,17 @@ class PantryMovement(models.Model):
     )
     quantity_before = models.DecimalField(max_digits=14, decimal_places=6)
     quantity_after = models.DecimalField(max_digits=14, decimal_places=6)
+    consumed_grams = models.DecimalField(max_digits=26, decimal_places=12, null=True, blank=True)
     snapshot = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(consumed_grams__isnull=True) | models.Q(consumed_grams__gte=0),
+                name="pantry_consumed_grams_nonnegative",
+            )
+        ]
 
 
 class PantryLLMUsage(models.Model):

@@ -1,5 +1,6 @@
 import json
 import secrets
+from copy import deepcopy
 from functools import wraps
 from uuid import UUID
 
@@ -21,10 +22,10 @@ from .services import (
     PreviewRateLimit,
     account_recent_recipe_codes,
     apply_preview,
-    assert_editable,
     check_draft_state,
     check_version,
     clean_inputs,
+    cooked_slots,
     make_preview,
     save_plan,
     schedule_codes,
@@ -177,12 +178,23 @@ def account_page(request, builder):
         except ValueError as exc:
             error = str(exc)
             status = 400
+    display_schedule = deepcopy(result["schedule"]) if result else []
+    if result and plan:
+        slots = {(item.day, item.meal_type): item for item in plan.meals.all()}
+        cooked = {(item.day, item.meal_type) for item in cooked_slots(plan)}
+        for day in display_schedule:
+            for meal in day["meals"]:
+                item = slots.get((day["number"], meal["type"]))
+                if item:
+                    meal["planned_meal_id"] = item.pk if plan.status == "saved" else None
+                    meal["cooked"] = (item.day, item.meal_type) in cooked
     response = render(
         request,
         "budget_planner/planner.html",
         {
             "form": form,
             "result": result,
+            "display_schedule": display_schedule,
             "error": error,
             "plan": plan,
             "trial": None,
@@ -298,7 +310,6 @@ def delete_account_plan(request, payload, plan_id):
             BudgetPlan.objects.select_for_update(), pk=plan_id, user=request.user
         )
         check_version(plan, payload.get("version"))
-        assert_editable(plan)
         plan.delete()
     return JsonResponse({"url": reverse("modul1") + "#rencana-saya"})
 
@@ -316,7 +327,7 @@ def recipe_alternatives(request, plan_id):
         slots = schedule_codes(snapshot)
         if not 1 <= day <= len(slots) or meal not in slots[day - 1]:
             raise ValueError("Slot menu tidak valid.")
-        if plan.meals.filter(day=day, meal_type=meal, status="cooked").exists():
+        if any(item.day == day and item.meal_type == meal for item in cooked_slots(plan)):
             raise ValueError("Menu sudah dimasak.")
         # The same basket quote as preview, including pooled fruit purchases.
         recipes = replacement_options(

@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "apps.catalog",
     "apps.budget_planner",
     "apps.pantry",
+    "apps.recipe_book",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

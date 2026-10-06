@@ -8,5 +8,7 @@ ALLERGEN_CHOICES = [
     ("krustasea", "Udang / krustasea"),
     ("moluska", "Kerang / cumi / moluska"),
     ("wijen", "Wijen"),
+    ("kacang_pohon", "Kacang pohon"),
+    ("sulfit", "Sulfit"),
 ]
 ALLERGEN_KEYS = {key for key, _ in ALLERGEN_CHOICES}

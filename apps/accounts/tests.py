@@ -174,12 +174,13 @@ class AccountFlowTests(TestCase):
                 response = self.client.get(reverse(page_name))
                 self.assertContains(response, f'href="{reverse("modul5")}"', count=2)
 
-    def test_modul4_is_header_only(self):
+    def test_modul4_keeps_header_and_shows_recipe_book(self):
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("modul4"))
         self.assertContains(response, "TAKARKUY")
         self.assertContains(response, "Kembali ke beranda")
-        self.assertContains(response, "<main></main>", html=True)
+        self.assertContains(response, "Resep favorit")
+        self.assertContains(response, "Riwayat masak")
 
     def test_signup_and_login_post_require_csrf(self):
         client = Client(enforce_csrf_checks=True)
