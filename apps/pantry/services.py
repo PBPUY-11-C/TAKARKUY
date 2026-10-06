@@ -11,7 +11,7 @@ from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
 
-from apps.catalog.models import Recipe, UnitConversion
+from apps.catalog.models import UnitConversion
 
 from .models import PantryItem, PantryLLMUsage, PantryMovement, PantryOperation
 
@@ -95,13 +95,14 @@ def snapshot(item):
     }
 
 
-def movement(item, operation, kind, before):
+def movement(item, operation, kind, before, *, consumed_grams=None):
     PantryMovement.objects.create(
         batch=item,
         operation=operation,
         kind=kind,
         quantity_before=Decimal(before.get("quantity") or "0"),
         quantity_after=item.quantity,
+        consumed_grams=consumed_grams,
         snapshot={"before": before, "after": snapshot(item)},
     )
 
@@ -152,37 +153,157 @@ def available_grams(user, *, allow_unknown_expiry=False):
     return totals
 
 
+def plan_consumption(
+    user, requirements, *, manual=None, allow_unknown_expiry=False, lock=False, preview_batches=None
+):
+    """One allocation algorithm for previews and execution; previews reserve nothing.
+
+    Manual rows identify a batch/version and declare grams per native unit when
+    no conversion exists. Known conversions cannot be overridden. Expired stock
+    is never eligible, even with consent to unknown expiry dates.
+    """
+    if not isinstance(requirements, dict) or len(requirements) > 100:
+        raise StockError("Kebutuhan bahan tidak valid.", 400)
+    try:
+        needs = {code: Decimal(str(value)) for code, value in requirements.items()}
+        if any(
+            not isinstance(code, str) or not n.is_finite() or not 0 < n <= 100000000
+            for code, n in needs.items()
+        ):
+            raise ValueError
+    except (ValueError, InvalidOperation, TypeError) as exc:
+        raise StockError("Kebutuhan gram tidak valid.", 400) from exc
+    manual = manual if manual is not None else []
+    if not isinstance(manual, list) or len(manual) > 100:
+        raise StockError("Pilihan batch tidak valid.", 400)
+    query = PantryItem.objects.filter(
+        user=user, archived_at__isnull=True, quantity__gt=0, ingredient_id__in=needs
+    ).exclude(estimated_expires_on__lt=timezone.localdate(timezone=ZoneInfo("Asia/Jakarta")))
+    if not allow_unknown_expiry:
+        query = query.filter(estimated_expires_on__isnull=False).exclude(expiry_source="unknown")
+    query = query.order_by(F("estimated_expires_on").asc(nulls_last=True), "pk")
+    if lock:
+        query = query.select_for_update()
+    if preview_batches is not None:
+        if lock:
+            raise ValueError("Eksekusi wajib membaca ulang stok terkunci.")
+        today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
+        batches = [
+            b
+            for b in preview_batches
+            if (
+                b.user_id == user.pk
+                and b.ingredient_id in needs
+                and b.archived_at is None
+                and b.quantity > 0
+                and (b.estimated_expires_on is None or b.estimated_expires_on >= today)
+                and (
+                    allow_unknown_expiry
+                    or (b.estimated_expires_on is not None and b.expiry_source != "unknown")
+                )
+            )
+        ]
+    else:
+        batches = list(query)
+    by_id = {batch.pk: batch for batch in batches}
+    allocations, selected = [], set()
+    for row in manual:
+        if not isinstance(row, dict) or type(row.get("batch_id")) is not int:
+            raise StockError("Pilihan batch tidak valid.", 400)
+        batch = by_id.get(row["batch_id"])
+        if batch is None or batch.pk in selected:
+            raise StockError("Batch pilihan sudah berubah/tidak tersedia. Muat ulang.")
+        check_version(batch, row.get("version"))
+        try:
+            taken = Decimal(str(row.get("quantity")))
+            weight = Decimal(str(row.get("grams_per_unit")))
+            if (
+                not taken.is_finite()
+                or not weight.is_finite()
+                or not Decimal("0.000001") <= weight <= 1000000
+                or not 0 < taken <= batch.quantity
+                or taken.as_tuple().exponent < -6
+            ):
+                raise ValueError
+        except (InvalidOperation, ValueError, TypeError) as exc:
+            raise StockError(
+                "Jumlah/berat batch manual tidak valid (maksimal 6 desimal).", 400
+            ) from exc
+        if batch.grams_per_unit and weight != batch.grams_per_unit:
+            raise StockError("Konversi katalog tidak boleh ditimpa saat memasak.", 400)
+        grams = taken * weight
+        # Permit only the rounding of one native-unit microstep, not arbitrary overuse.
+        if grams > needs[batch.ingredient_id] + weight * Decimal("0.000001"):
+            raise StockError("Pemakaian manual melebihi kebutuhan resep.", 400)
+        needs[batch.ingredient_id] -= grams
+        selected.add(batch.pk)
+        allocations.append({"batch": batch, "quantity": taken, "grams": grams, "manual": True})
+    for batch in batches:
+        remaining = needs[batch.ingredient_id]
+        if batch.pk in selected or remaining <= 0 or not batch.grams_per_unit:
+            continue
+        taken = min(
+            batch.quantity,
+            (remaining / batch.grams_per_unit).quantize(Decimal("0.000001"), rounding=ROUND_UP),
+        )
+        grams = taken * batch.grams_per_unit
+        needs[batch.ingredient_id] -= grams
+        allocations.append({"batch": batch, "quantity": taken, "grams": grams, "manual": False})
+    return {
+        "allocations": allocations,
+        "missing": {code: grams for code, grams in needs.items() if grams > 0},
+        "manual_batches": [batch for batch in batches if not batch.grams_per_unit],
+    }
+
+
+def execute_consumption(user, requirements, event, *, manual=None, allow_unknown_expiry=False):
+    """Caller holds the account lock and transaction, then we lock FEFO batches."""
+    plan = plan_consumption(
+        user, requirements, manual=manual, allow_unknown_expiry=allow_unknown_expiry, lock=True
+    )
+    if plan["missing"]:
+        raise StockError("Stok terkonversi yang belum kedaluwarsa tidak cukup.")
+    changes = []
+    for row in plan["allocations"]:
+        batch = row["batch"]
+        before = snapshot(batch)
+        batch.quantity -= row["quantity"]
+        batch.version += 1
+        batch.save(update_fields=["quantity", "version", "updated_at"])
+        movement(batch, event, "consume", before, consumed_grams=row["grams"])
+        changes.append(
+            {
+                "batch_id": batch.pk,
+                "quantity": str(row["quantity"]),
+                "grams": str(row["grams"]),
+                "manual": row["manual"],
+            }
+        )
+    return {"consumed": changes}
+
+
 def recipe_matches(user, servings=1):
     """Read-only bridge to Recipe Book; matching does not reserve/deduct stock."""
-    from apps.budget_planner.planner import purchase_grams
     from apps.catalog.content_policy import protect_recipe_instructions
+    from apps.recipe_book.services import recipe_query, recipe_requirements
 
     totals = available_grams(user)
     matches = []
     if not totals:
         return matches
-    recipes = Recipe.objects.filter(is_active=True, is_plannable=True).prefetch_related(
-        "recipeingredient_set", "recipetag_set"
+    recipes = recipe_query(user).prefetch_related(
+        "recipeingredient_set__ingredient", "recipetag_set"
     )
     for recipe in recipes:
         if not recipe.base_servings or not any(
             tag.tag == "halal" for tag in recipe.recipetag_set.all()
         ):
             continue
-        required = {}
-        valid = True
-        for link in recipe.recipeingredient_set.all():
-            if link.is_optional:
-                continue
-            if link.unit != "g" or link.quantity is None or link.quantity <= 0:
-                valid = False
-                break
-            grams = purchase_grams(link) * Decimal(servings) / Decimal(recipe.base_servings)
-            if not grams.is_finite() or grams <= 0:
-                valid = False
-                break
-            required[link.ingredient_id] = required.get(link.ingredient_id, Decimal(0)) + grams
-        if not valid or not required:
+        try:
+            required, _, _ = recipe_requirements(recipe, servings)
+        except StockError:
+            continue
+        if not required:
             continue
         covered = sum(
             min(totals.get(code, 0), grams) / grams for code, grams in required.items()
@@ -226,36 +347,8 @@ def consume_stock(user, requirements, consumption_key, *, allow_unknown_expiry=F
     )
     if replay:
         return event.response
-    batches = list(
-        eligible_stock(user, allow_unknown_expiry=allow_unknown_expiry)
-        .filter(ingredient_id__in=needs)
-        .order_by(F("estimated_expires_on").asc(nulls_last=True), "pk")
-        .select_for_update()
+    event.response = execute_consumption(
+        user, needs, event, allow_unknown_expiry=allow_unknown_expiry
     )
-    totals = {}
-    for batch in batches:
-        totals[batch.ingredient_id] = (
-            totals.get(batch.ingredient_id, Decimal(0)) + batch.quantity * batch.grams_per_unit
-        )
-    if any(totals.get(code, 0) < grams for code, grams in needs.items()):
-        raise StockError("Stok terkonversi yang belum kedaluwarsa tidak cukup.")
-    changes = []
-    for batch in batches:
-        required = needs[batch.ingredient_id]
-        if required <= 0:
-            continue
-        before = snapshot(batch)
-        taken = min(
-            batch.quantity,
-            (required / batch.grams_per_unit).quantize(Decimal("0.000001"), rounding=ROUND_UP),
-        )
-        batch.quantity -= taken
-        batch.version += 1
-        batch.save(update_fields=["quantity", "version", "updated_at"])
-        movement(batch, event, "consume", before)
-        grams = taken * batch.grams_per_unit
-        needs[batch.ingredient_id] -= grams
-        changes.append({"batch_id": batch.pk, "quantity": str(taken), "grams": str(grams)})
-    event.response = {"consumed": changes}
     event.save(update_fields=["response"])
     return event.response

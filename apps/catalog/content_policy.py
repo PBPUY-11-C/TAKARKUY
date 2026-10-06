@@ -10,9 +10,16 @@ MENDELEY_URL = "https://data.mendeley.com/datasets/8b4ztns76h/3"
 
 def protect_recipe_instructions(meal):
     code = meal.get("recipe_code", "")
-    if isinstance(code, str) and code.startswith("RCP-MDL-"):
+    mendeley = isinstance(code, str) and code.startswith("RCP-MDL-")
+    reviewed = (
+        meal.get("instruction_status") in {"source_ok", "authored_reviewed"}
+        and meal.get("instruction_review_note")
+        and meal.get("instruction_reviewed_on")
+    )
+    if meal.get("instruction_status") == "withheld" or (mendeley and not reviewed):
         meal["instructions"] = ""
         meal["instructions_pending_review"] = True
+    if mendeley:
         meal["recipe_source_url"] = MENDELEY_URL
         meal["recipe_attribution"] = "Purwanto, Wibawa & Devi · Mendeley Data v3 · CC BY 4.0"
     return meal

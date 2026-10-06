@@ -658,13 +658,55 @@ class SavedPlanTests(TestCase):
         self.assertEqual(saved.inputs["days"], 1)
         self.assertContains(response, 'id="pending-plan-preview"')
 
-    def test_cooked_slots_cannot_be_replaced_or_deleted(self):
+    def test_cooked_slots_cannot_be_replaced_but_plan_can_be_deleted(self):
         self.draft.meals.update(status="cooked")
         with self.assertRaises(PlanConflict):
             self.replacement()
         self.assertEqual(
-            self.api("modul1-plan-delete", self.draft.pk, {"version": 1}).status_code, 409
+            self.api("modul1-plan-delete", self.draft.pk, {"version": 1}).status_code, 200
         )
+        self.assertFalse(BudgetPlan.objects.filter(pk=self.draft.pk).exists())
+
+    def test_uncooked_slot_can_change_after_other_slot_cooked(self):
+        from .services import sync_children
+
+        self.draft.delete()
+        inputs = {**self.inputs, "days": 2}
+        result = build_plan(
+            **clean_inputs(inputs).cleaned_data, fixed_schedule=[{"sarapan": self.quotes[0][1]}] * 2
+        )
+        draft = write_draft(self.user, inputs, result)
+        saved = save_plan(self.user, draft.pk, draft.version, "Dua hari", timezone.localdate())
+        first = saved.meals.get(day=1)
+        first.status = "cooked"
+        first.save()
+        snapshot = deepcopy(first.snapshot)
+        preview = make_preview(
+            saved,
+            saved.version,
+            {"action": "replace", "day": 2, "meal": "sarapan", "recipe": self.quotes[-1][1]},
+        )
+        edited = apply_preview(self.user, preview.pk)
+        for action in ("regenerate", "parameters"):
+            with self.assertRaises(PlanConflict):
+                make_preview(edited, edited.version, {"action": action})
+        saved = save_plan(
+            self.user,
+            edited.pk,
+            edited.version,
+            saved.title,
+            saved.starts_on,
+            replace_original=True,
+        )
+        first.refresh_from_db()
+        self.assertEqual(first.status, "cooked")
+        self.assertEqual(first.snapshot, snapshot)
+        self.assertEqual(saved.meals.get(day=2).recipe_id, self.quotes[-1][1])
+        bad = thaw(saved.snapshot)
+        bad["schedule"] = bad["schedule"][1:]
+        saved.snapshot = freeze(bad)
+        with self.assertRaises(PlanConflict):
+            sync_children(saved)
 
     def test_guest_result_adopted_after_login_without_permanent_save(self):
         guest = Client()

@@ -720,6 +720,9 @@ def quote_schedule(schedule, *, servings, targets, catalog):
             meals.append(
                 {
                     "instructions": item["recipe"].instructions,
+                    "instruction_status": item["recipe"].instruction_status,
+                    "instruction_review_note": item["recipe"].instruction_review_note,
+                    "instruction_reviewed_on": item["recipe"].instruction_reviewed_on,
                     "servings": servings,
                     "type": meal,
                     "label": MEAL_LABELS[meal],

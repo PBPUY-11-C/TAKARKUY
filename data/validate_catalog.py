@@ -68,6 +68,8 @@ allowed_allergens = {
     "krustasea",
     "moluska",
     "wijen",
+    "kacang_pohon",
+    "sulfit",
 }
 for row in allergen_rows:
     codes = json.loads(row["allergens"])

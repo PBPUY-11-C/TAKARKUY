@@ -41,6 +41,7 @@ from apps.pantry.views import (
     suggest_receipt_items,
     update_pantry_details,
 )
+from apps.recipe_book.views import book_page, cooking_preview, record_cooking, set_favorite
 
 urlpatterns = [
     path("", landing_view, name="landing"),
@@ -72,9 +73,10 @@ urlpatterns = [
     path("modul2/items/<int:item_id>/delete/", delete_pantry_item, name="modul2-item-delete"),
     path("modul2/items/<int:item_id>/movements/", pantry_movements, name="modul2-item-movements"),
     path("modul2/recipes/", pantry_recipe_matches, name="modul2-recipes"),
-    path(
-        "modul4/", login_required(TemplateView.as_view(template_name="modul4.html")), name="modul4"
-    ),
+    path("modul4/", book_page, name="modul4"),
+    path("modul4/favorite/", set_favorite, name="modul4-favorite"),
+    path("modul4/preview/", cooking_preview, name="modul4-preview"),
+    path("modul4/cook/", record_cooking, name="modul4-cook"),
     path(
         "modul5/", login_required(TemplateView.as_view(template_name="modul5.html")), name="modul5"
     ),

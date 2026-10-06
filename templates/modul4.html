@@ -1,3 +1,4 @@
+{% load static planner_format %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -26,12 +27,46 @@
       .back-link { font-size: 12px; }
     }
   </style>
+  <link rel="stylesheet" href="{% static 'recipe_book/book.css' %}">
+  <script type="module" src="{% static 'recipe_book/book.js' %}"></script>
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}" aria-label="TAKARKUY beranda"><span class="brand-mark" aria-hidden="true">✳</span> TAKARKUY</a>
     <a class="back-link" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}">← Kembali ke beranda</a>
   </header>
-  <main></main>
+  <main class="book-shell">
+    <div class="page-heading"><div><p class="eyebrow">DAPUR SAYA</p><h1>Recipe Book &amp; Cooking Tracker</h1></div><a class="quiet-link" href="{% url 'modul2' %}">Kelola pantry →</a></div>
+    <div id="page-message" class="notice" role="status" hidden></div>
+    <div class="book-layout">
+      <div>
+        <form class="panel search-panel" method="get" action="{% url 'modul4' %}">
+          <div class="search-row"><label class="sr-only" for="recipe-search">Cari resep atau bahan</label><input id="recipe-search" name="q" value="{{ q }}" placeholder="Cari resep atau bahan…" maxlength="100"><button type="submit">Cari</button></div>
+          <div class="filters"><label>Waktu makan <select name="meal"><option value="">Semua</option><option value="sarapan" {% if meal == 'sarapan' %}selected{% endif %}>Sarapan</option><option value="makan_siang" {% if meal == 'makan_siang' %}selected{% endif %}>Makan siang</option><option value="makan_malam" {% if meal == 'makan_malam' %}selected{% endif %}>Makan malam</option></select></label><label>Stok <select name="stock"><option value="">Semua</option><option value="complete" {% if filters.stock == 'complete' %}selected{% endif %}>Bahan utama lengkap</option><option value="soon" {% if filters.stock == 'soon' %}selected{% endif %}>Gunakan segera (≤2 hari)</option></select></label><label><input type="checkbox" name="favorites" value="1" {% if filters.favorites == '1' %}checked{% endif %}> Favorit saja</label><label><input type="checkbox" name="held" value="1" {% if filters.held == '1' %}checked{% endif %}> Sertakan tanpa panduan</label></div>
+          {% if unknown_count or allergen_count %}<p class="helper">{{ unknown_count }} resep disembunyikan karena data alergen belum lengkap; {{ allergen_count }} karena alergen pilihan Anda. <a href="{% url 'modul3' %}">Profil</a></p>{% endif %}
+          {% if held_count and filters.held != '1' %}<p class="helper">{{ held_count }} resep tanpa panduan tidak ditampilkan secara default.</p>{% endif %}
+        </form>
+        {% if selection_error %}<div class="notice" role="alert">{{ selection_error }}</div>{% endif %}
+        {% if selected %}
+        <article class="panel recipe-detail" id="recipe-detail" data-code="{{ selected.pk }}" data-servings="{{ detail.servings }}" data-slot="{% if slot %}{{ slot.pk }}{% endif %}" data-version="{% if slot %}{{ slot.plan.version }}{% endif %}" data-preview-url="{% url 'modul4-preview' %}" data-cook-url="{% url 'modul4-cook' %}" data-favorite-url="{% url 'modul4-favorite' %}">
+          <div class="detail-heading"><div><span class="chip">{% if detail.complete %}Bahan utama lengkap{% else %}Periksa stok bahan{% endif %}</span><h2>{{ selected.name }}</h2></div><button class="favorite-button" id="favorite-button" type="button" aria-pressed="{% if detail.favorite %}true{% else %}false{% endif %}" aria-label="Simpan atau hapus favorit">{% if detail.favorite %}♥{% else %}♡{% endif %}</button></div>
+          {% if slot %}<p class="helper">{{ slot.plan.title }} · Hari {{ slot.day }} · {{ slot.get_status_display }} · {{ slot.servings }} porsi</p>{% endif %}
+          <div class="metrics"><div><strong>{{ detail.nutrition.calories|default_if_none:'—' }}</strong><span>kkal total</span></div><div><strong>{{ detail.nutrition.protein|default_if_none:'—' }} g</strong><span>Protein total</span></div><div><strong>{{ detail.nutrition.carbs|default_if_none:'—' }} g</strong><span>Karbohidrat total</span></div><div><strong>{{ detail.nutrition.fat|default_if_none:'—' }} g</strong><span>Lemak total</span></div></div><p class="helper">{{ detail.servings }} porsi · {% if detail.cost is not None %}Estimasi belanja {{ detail.cost|rupiah }} (harga referensi katalog, bukan belanja aktual){% else %}Estimasi harga belum tersedia{% endif %}</p>
+          <h3>Bahan yang digunakan</h3><ul class="ingredient-grid">{% for item in detail.ingredients %}<li><div>{{ item.name }}{% if item.estimated %}<small>Takaran estimasi</small>{% endif %}{% if not item.tracked %}<small>{% if item.optional %}Opsional{% else %}Bumbu dasar · tidak dilacak{% endif %}</small>{% elif item.missing != '0' %}<small class="missing">Kurang {{ item.missing|floatformat:1 }} g</small>{% endif %}</div><span>{{ item.grams|floatformat:1 }} g</span></li>{% endfor %}</ul>
+          <h3>Cara memasak</h3>
+          {% if detail.guidance %}<ol class="steps">{% for step in detail.steps %}<li>{{ step }}</li>{% endfor %}</ol><p class="helper">{% if selected.instruction_status == 'authored_reviewed' %}Panduan tim ditinjau{% else %}Panduan dari katalog{% endif %}{% if detail.source_url %} · <a href="{{ detail.source_url }}" target="_blank" rel="noopener noreferrer">Sumber resep</a>{% endif %}</p>{% else %}<p class="empty-state">Panduan belum tersedia atau masih ditahan untuk peninjauan sumber. Resep ini tetap dapat digunakan untuk estimasi rencana.</p>{% endif %}
+          <p class="helper">Estimasi gizi, bukan jaminan bebas alergen. Periksa komposisi produk dan kemungkinan kontaminasi silang.</p>
+          <div class="cook-bar"><p>Stok baru dikurangi setelah konfirmasi.</p><button id="open-cooking" type="button" {% if slot and slot.status != 'planned' %}disabled{% endif %}>Sudah Masak →</button></div>
+        </article>
+        {% endif %}
+        <section class="recipe-list"><div class="section-heading"><h2>Pilihan resep</h2><span>{{ recipes.paginator.count }} resep</span></div><div class="recipe-cards">{% for recipe in recipes %}<a class="panel recipe-card" href="?{{ query_params }}&amp;recipe={{ recipe.pk|urlencode }}&amp;page={{ recipes.number }}#recipe-detail"><span class="recipe-symbol" aria-hidden="true">♨</span><h3>{{ recipe.name }}</h3><small>{{ recipe.get_instruction_status_display }}</small><span class="quiet-link">Lihat resep →</span></a>{% empty %}<p class="panel empty-state">Belum ada resep yang sesuai filter. Coba kata kunci lain atau periksa preferensi Anda.</p>{% endfor %}</div><nav class="pagination" aria-label="Halaman resep">{% if recipes.has_previous %}<a href="?{{ query_params }}&amp;page={{ recipes.previous_page_number }}">← Sebelumnya</a>{% endif %}<span>{{ recipes.number }} / {{ recipes.paginator.num_pages }}</span>{% if recipes.has_next %}<a href="?{{ query_params }}&amp;page={{ recipes.next_page_number }}">Berikutnya →</a>{% endif %}</nav></section>
+      </div>
+      <aside>
+        <section class="panel"><div class="section-heading"><h2>Resep favorit</h2><span>{{ favorites|length }}</span></div><ul class="side-list">{% for favorite in favorites %}<li>{% if favorite.available %}<a href="?recipe={{ favorite.recipe_id|urlencode }}#recipe-detail">{{ favorite.recipe.name }}</a>{% else %}<span>{{ favorite.recipe.name }}</span><small>Tidak tersedia / tidak sesuai preferensi</small>{% endif %}<button type="button" class="text-button" data-remove-favorite="{{ favorite.recipe_id }}" data-url="{% url 'modul4-favorite' %}">Hapus favorit</button></li>{% empty %}<li class="empty-state">Simpan resep lewat tombol ♡.</li>{% endfor %}</ul></section>
+        <section class="panel"><div class="section-heading"><h2>Riwayat masak</h2><span>{{ week_count }} / 7 hari</span></div><ul class="side-list">{% for entry in history %}<li><small>{{ entry.cooked_at|date:'d M Y, H:i' }}</small><strong>{{ entry.recipe_name }}</strong><span>{{ entry.servings }} porsi · Stok tercatat</span><details><summary>Bahan terpakai</summary><ul>{% for move in entry.operation.pantrymovement_set.all %}<li>{{ move.snapshot.before.name }} · {{ move.consumed_grams|floatformat:1 }} g · {{ move.quantity_before }} → {{ move.quantity_after }} {{ move.snapshot.before.unit }}</li>{% empty %}<li>Bumbu dasar tidak dilacak.</li>{% endfor %}</ul></details></li>{% empty %}<li class="empty-state">Belum ada masakan tercatat.</li>{% endfor %}</ul><nav class="pagination" aria-label="Halaman riwayat">{% if history.has_previous %}<a href="?{{ history_params }}&amp;history_page={{ history.previous_page_number }}">←</a>{% endif %}<span>{{ history.number }} / {{ history.paginator.num_pages }}</span>{% if history.has_next %}<a href="?{{ history_params }}&amp;history_page={{ history.next_page_number }}">→</a>{% endif %}</nav><p class="helper">Salah input? Koreksi lewat <a href="{% url 'modul2' %}">Smart Pantry</a>. Koreksi stok tidak menghapus riwayat masak.</p></section>
+      </aside>
+    </div>
+  </main>
+  <dialog id="cooking-dialog" aria-labelledby="cooking-title"><form id="cooking-form"><div class="section-heading"><h2 id="cooking-title">Konfirmasi masak</h2><button type="button" id="close-cooking" class="text-button" aria-label="Tutup dialog">✕</button></div>{% csrf_token %}<label class="field">Porsi <input name="servings" type="number" min="1" max="10" value="{{ detail.servings|default:1 }}" required {% if slot %}readonly{% endif %}></label><label class="check-field"><input type="checkbox" name="include_staples"> Kurangi stok bumbu dasar juga</label><label class="check-field"><input type="checkbox" name="allow_unknown_expiry"> Saya sudah memeriksa kondisi/label stok yang tanggalnya belum diketahui</label><p class="helper">Stok kedaluwarsa tidak digunakan. Preview tidak memesan stok.</p><div id="manual-batches"></div><button type="submit" class="secondary">Periksa pemakaian stok</button><div id="cooking-preview" aria-live="polite"></div><p id="cooking-error" class="missing" role="alert"></p><button id="confirm-cooking" type="button" disabled>Konfirmasi Sudah Masak</button></form></dialog>
 </body>
 </html>

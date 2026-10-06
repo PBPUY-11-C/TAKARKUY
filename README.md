@@ -9,9 +9,9 @@ Snapshot kode dan inventaris dataset: **5 Oktober 2026**. Harga Garut tetap snap
 | Bagian | Sudah tersedia | Belum tersedia |
 | --- | --- | --- |
 | Modul 1 | Simulasi budget/gizi/pantangan, daftar belanja, trial guest, draft otomatis milik akun, CRUD rencana tersimpan, cari susunan baru, serta ganti satu menu dengan pratinjau biaya dan persetujuan kenaikan budget. | Integrasi stok pantry, edit item belanja secara bebas, dan penghubung jadwal ke cooking tracker/dashboard. |
-| Modul 2 | OCR/fallback Gemini dengan kuota akun, cache nama, batch dan ledger stok, CRUD berversi/idempoten, konversi berat, tanggal bersumber, kecocokan resep dan layanan FEFO internal (belum tombol memasak). | Integrasi aksi Sudah Masak/riwayat Modul 4, pengingat terjadwal, dan cuaca. |
+| Modul 2 | OCR/fallback Gemini dengan kuota akun, cache nama, batch dan ledger stok, CRUD berversi/idempoten, konversi berat, tanggal bersumber, kecocokan resep dan FEFO yang terhubung ke Modul 4. | Pengingat terjadwal dan cuaca. |
 | Modul 3 | Landing, username/email, login/logout, profil/preferensi, perubahan password, rate limit database, dan maintenance. | Google OAuth, verifikasi email, serta reset password lewat email. |
-| Modul 4 | Template halaman dengan header dan tautan kembali ke beranda. | Recipe book, favorit, dan cooking tracker. |
+| Modul 4 | Recipe Book di `/modul4/`: pencarian/filter, detail/panduan berstatus, favorit pribadi, preview dan pencatatan masak atomik dengan FEFO/ledger, riwayat snapshot, integrasi slot rencana tersimpan. | Foto/durasi terkurasi, resep buatan pengguna, dan undo riwayat. |
 | Modul 5 | Beranda setelah login dengan navigasi Budget Meal Planner, Smart Pantry, dan Recipe Book. | Statistik penghematan, ulasan makanan, dan market locator. |
 
 Katalog saat ini berisi **201 bahan, 163 catatan harga, dan 434 resep; 296 resep siap dihitung**, sedangkan 138 masih diblokir. Fixture tunggal `data/fixtures/catalog_seed.json` berisi **7.048 objek**. Siap dihitung berarti bahan/gizi/harga tersedia untuk simulasi, bukan semua teks cara memasak sudah boleh diterbitkan. Sebanyak 187 resep Mendeley dapat dihitung, tetapi teks langkahnya ditahan untuk review asal/hak pakai. Ada **231 kandidat produk Open Food Facts** dan **1.500 baris kandidat resep** untuk kurasi; sebagian sudah dipromosikan sehingga jangan menjumlahkan kandidat dengan katalog aktif. Rincian sumber, asumsi, dan penghalang ada di [data/DATASETS.md](data/DATASETS.md) dan [review sumber](data/SOURCE_REVIEW.md).
@@ -110,7 +110,7 @@ Daftar CRUD dan model yang direncanakan tidak semuanya sudah diimplementasikan; 
 - **Pengukuran AI:** `ai_usage` pada respons dan log `pantry_ai_call` berisi status/durasi/token dari metadata provider, tanpa isi struk/API key. Belum ada benchmark struk live atau klaim penghematan persentase. Maksimal satu panggilan adalah kontrak alur scan normal; client jahat masih bisa membuat request baru dan dibatasi kuota akun, bukan flag browser. Validasi Django berbahasa Indonesia. Rincian ada di [docs/PANTRY.md](docs/PANTRY.md).
 - **Batch dan audit:** `PantryItem` adalah satu batch pembelian, bukan total gabungan. Migrasi mempertahankan ID, pemilik, kuantitas dan tanggal lama, lalu menulis pergerakan masuk awal. `PantryMovement` menyimpan kuantitas sebelum/sesudah serta snapshot perubahan. Edit memakai version wajib (konflik 409); create/edit/delete memakai UUID `operation_key` yang tetap saat retry. Hapus mengarsipkan batch dan mencatat stok dibuang. Constraint database melarang kuantitas negatif.
 - **Konversi dan kecocokan menu:** berat `g/kg`, konversi katalog yang ditinjau (misalnya telur large 50 g/butir), atau berat per unit/pack yang diisi pengguna disimpan sebagai snapshot. **Tidak mengasumsikan 1 ml = 1 g** atau berat bungkus yang tidak diketahui. Stok tanpa padanan katalog/konversi/tanggal yang diketahui, atau tanggal sudah lewat, tidak dihitung sebagai stok resep secara default. Halaman menampilkan hingga 20 menu halal dengan kecocokan bahan per porsi; tidak memanggil AI atau mengurangi stok. Langkah yang ditahan kebijakan publikasi tetap tidak ditampilkan.
-- **Layanan integrasi:** `apps.pantry.services.consume_stock(user, requirements, consumption_key)` menerima gram per kode bahan dan mengurangi batch FEFO, tanggal terdekat lalu ID. Satu operasi dapat memakai banyak batch; key unik per akun mencegah konsumsi dua kali. Lock dan ledger ditulis dalam transaksi yang sama, stok kurang membatalkan seluruh operasi. Pecahan unit dibulatkan ke atas maksimal 0,000001 unit dan gram aktual dicatat. Layanan belum dihubungkan ke tombol **Sudah Masak/CookingHistory** Modul 4; integrasi itu harus berada dalam satu transaksi luar. Generate/simpan rencana tidak mengurangi stok.
+- **Layanan integrasi:** `apps.pantry.services.consume_stock(user, requirements, consumption_key)` menerima gram per kode bahan dan mengurangi batch FEFO, tanggal terdekat lalu ID. Satu operasi dapat memakai banyak batch; key unik per akun mencegah konsumsi dua kali. Lock dan ledger ditulis dalam transaksi yang sama, stok kurang membatalkan seluruh operasi. Pecahan unit dibulatkan ke atas maksimal 0,000001 unit dan gram aktual dicatat. Tombol **Sudah Masak** memakai algoritme yang sama melalui `execute_consumption()` dalam transaksi luar dengan `CookingHistory`. Generate/simpan rencana tidak mengurangi stok.
 - **Data yang dipegang:** stok, koreksi pribadi, kuota dan operasi milik FK akun. Akun lain tidak dapat membaca atau memutasi ID stok/riwayat tersebut; stok legacy tanpa pemilik tidak diklaim otomatis. `expiry_source` membedakan label/manual/estimate/legacy/unknown. Migrasi 0012 mempertahankan tanggal lama dan menandainya `legacy`, bukan mengarang asalnya sebagai estimasi; stok bertanggal valid dapat dihitung kembali. Cache AI bersama hanya menyimpan nama bahan dan kode kandidat, bukan foto/teks struk lengkap.
 - **Halaman:** 1 halaman berisi dua panel input dan tabel inventaris.
 
@@ -118,7 +118,7 @@ Daftar CRUD dan model yang direncanakan tidak semuanya sudah diimplementasikan; 
 
 - **Create:** menambahkan bahan lewat form manual atau hasil OCR struk yang sudah diperiksa dan diedit.
 - **Read:** menampilkan tabel stok, lokasi simpan, dan estimasi kedaluwarsa.
-- **Update:** mengubah nama, kategori, kuantitas/satuan, padanan katalog/berat per unit, lokasi, dan tanggal bersumber; perubahan tercatat sebagai koreksi/perpindahan. Pengurangan saat **Sudah Masak** menunggu integrasi Modul 4.
+- **Update:** mengubah nama, kategori, kuantitas/satuan, padanan katalog/berat per unit, lokasi, dan tanggal bersumber; perubahan tercatat sebagai koreksi/perpindahan. **Sudah Masak** di Modul 4 mengurangi batch FEFO dan mencatat gram aktual pada ledger.
 - **Delete:** mengarsipkan satu batch dari inventaris, tanpa menghapus ledger-nya.
 
 Foto bahan mentah dan image classification dihapus dari cakupan fitur.
@@ -157,6 +157,18 @@ Login dan logout merupakan operasi autentikasi.
 - **Data yang dipegang:** `Resep`, `FavoritResep`, `CookingHistory`.
 - **Halaman:** 1 halaman yang menggabungkan list/detail resep, favorit, dan tracker dalam satu tampilan, mengikuti mockup terakhir.
 
+Implementasi sekarang berada di `apps/recipe_book/` dan **hanya `/modul4/`**. Pencarian nama/bahan, waktu makan, favorit, panduan, alergen dan pantangan disaring di database; filter stok memakai algoritme alokasi yang sama dari satu snapshot inventaris sebelum paginasi. Default hanya menampilkan panduan tersedia. Detail menampilkan estimasi makro dan biaya dari quote daftar belanja planner; tidak mengarang foto, durasi, atau harga yang belum tersedia.
+
+- Endpoint POST JSON: `/modul4/favorite/`, `/modul4/preview/`, `/modul4/cook/`. Semua memerlukan akun/CSRF; stok, favorit, riwayat dan slot hanya milik akun. Preview memakai kuota database bersama planner: 20 upaya per 10 menit.
+- `plan_consumption()` adalah simulasi; **bukan reservasi**. Eksekusi membaca ulang batch terkunci dengan urutan FEFO. Batch otomatis boleh berbeda; kekurangan stok atau versi batch manual usang menghasilkan 409. Stok kedaluwarsa tidak dipakai. Tanggal unknown memerlukan persetujuan eksplisit pengguna untuk memeriksa label/kondisi, bukan jaminan keamanan.
+- `cook()` mengunci akun → rencana/slot → batch, memakai `PantryOperation` unik dan menulis pengurangan, `PantryMovement.consumed_grams`, `CookingHistory`, status slot dan versi rencana dalam transaksi yang sama. Retry key/payload sama tidak mengurangi dua kali; key berbeda untuk slot yang sudah dimasak tetap ditolak. Riwayat terhubung ke ledger, bukan hanya JSON.
+- Kebutuhan stok memakai **massa beli**, gizi memakai massa termakan. Garam, merica dan air ditandai bumbu dasar berdasarkan ID; default tidak dilacak, tetapi bisa disertakan saat konfirmasi. Minyak tidak dikecualikan otomatis. Bahan opsional tetap masuk screening alergi; estimasi gizi resep dapat mencakupnya. Stok tanpa konversi ditampilkan sebagai batch manual: perlu jumlah, berat per unit dan versi; konversi yang sudah diketahui tidak boleh ditimpa.
+- Dari jadwal rencana tersimpan, **Lihat Resep** membuka `/modul4/?slot=<id>`. Porsi/versi mengikuti slot; draft harus disimpan dahulu. Memasak menaikkan versi rencana sehingga preview lama ditolak. Ganti satu slot belum dimasak tetap boleh; regenerasi/parameter/porsi diblokir setelah ada slot dimasak. Tanggal mulai boleh berubah tanpa mengubah tanggal riwayat masak. Draft bersumber juga melindungi slot yang sudah dimasak di rencana asal.
+- Status panduan: `source_ok`, `authored_reviewed`, `withheld`. Metadata di database terpisah dari fixture lama. Migrasi/import mempertahankan kebijakan publikasi lama non-Mendeley, bukan review hak pakai baru. Mendeley tetap ditahan sampai ada panduan/bukti, catatan dan tanggal tinjauan per resep; snapshot lama tanpa bukti tetap disembunyikan. Impor mempertahankan teks authored yang sudah ditinjau; teks sumber yang berubah perlu review ulang.
+- Alergen menambah pilihan `kacang_pohon` dan `sulfit`, **bukan otomatis mereview ulang 201 bahan**. Kemiri/santan/kaldu/minyak yang masih unknown tetap ditutup saat ada alergi. Kelapa tidak otomatis dikelompokkan sebagai kacang pohon; alergi spesifik di luar kelompok perlu memasukkan bahan itu ke pantangan (hard exclusion). Tidak ada jaminan bebas alergen. Recipe Book menjelaskan jumlah yang disembunyikan karena unknown, alergen teridentifikasi dan panduan ditahan, dengan kelompok alasan terpisah.
+- `RecipeAllergen` dan `Recipe.allergen_reviewed` diperbarui melalui helper yang sama pada impor dan save/delete bahan penyusun/tag di Admin. Penulisan bulk di luar importer wajib diikuti `python manage.py rebuild_recipe_allergens`; gunakan `--check` untuk mendeteksi drift. Eksekusi tetap memeriksa bahan sebenarnya agar indeks usang tidak meloloskan alergi.
+- Favorit resep nonaktif tetap terlihat dengan label tidak tersedia. Riwayat menyimpan snapshot resep/bahan/gizi dan waktu sebenarnya; penghapusan slot/resep menggunakan SET_NULL. Tidak ada undo: koreksi jumlah melalui Smart Pantry tidak menghapus riwayat masak.
+
 **CRUD Recipe Book & Cooking Tracker:**
 
 - **Create:** administrator menambahkan resep; pengguna menyimpan resep favorit atau mencatat riwayat setelah aksi **Sudah Masak** berhasil.
@@ -182,12 +194,12 @@ Login dan logout merupakan operasi autentikasi.
 
 ## Integrasi Antar Modul yang Direncanakan
 
-Integrasi profil ke planner sudah aktif: preferensi mengisi rencana baru dan alergi disaring pada setiap pilihan menu baru. Integrasi stok ke planner, aksi **Sudah Masak**, Recipe Book, dan agregasi statistik berikut belum selesai; daftar belanja tidak otomatis menambah stok.
+Integrasi profil ke planner/Recipe Book serta **Sudah Masak → pantry/riwayat/slot rencana** sudah aktif. Integrasi stok ke perhitungan belanja planner dan agregasi statistik dashboard belum selesai; daftar belanja tidak otomatis menambah stok.
 
-1. **Modul 3 → Modul 1:** target makan/gizi, porsi, waktu makan, bahan yang dihindari, dan alergi sudah menjadi acuan planner. Modul 4 akan memakai screening alergen yang sama; kebijakan halal tetap wajib.
+1. **Modul 3 → Modul 1/4:** porsi, bahan yang dihindari, dan alergi menjadi acuan planner/Recipe Book; target makan/gizi dan waktu makan juga mengisi planner. Kebijakan halal tetap wajib.
 2. **Modul 1 → Modul 2:** setelah berbelanja, pengguna memasukkan stok melalui OCR struk atau input manual. Daftar belanja tidak otomatis dianggap sebagai stok pantry.
 3. **Modul 2 → Modul 4:** stok dan estimasi kedaluwarsa digunakan untuk filter ketersediaan bahan dan prioritas bahan kritis.
-4. **Modul 4 → Modul 2:** aksi **Sudah Masak** memanggil `pantry_service.kurangi_stok()` berdasarkan bahan terpakai, lalu mencatat `CookingHistory`. Pengurangan stok dan pencatatan riwayat harus berhasil bersama agar data tetap konsisten.
+4. **Modul 4 → Modul 2:** `apps.recipe_book.services.cook()` memakai `execute_consumption()` dan mencatat `CookingHistory` dalam transaksi yang sama. `plan_consumption()` dipakai untuk simulasi dan eksekusi.
 5. **Modul 1, 2, dan 4 → Modul 5:** data rencana belanja, stok, dan riwayat masak menjadi sumber agregasi statistik di Dashboard.
 
 ## Ringkasan Halaman yang Direncanakan
@@ -200,7 +212,7 @@ Integrasi profil ke planner sudah aktif: preferensi mengisi rencana baru dan ale
 | 4 | List/detail resep, favorit, dan cooking tracker dalam satu tampilan. | 1 |
 | 5 | Card statistik di Dashboard dan modal/popup market locator. | 0 |
 
-Hitungan di atas adalah rencana tampilan, bukan jumlah halaman yang sudah selesai. `/modul5/` adalah beranda setelah login, `/modul3/` sudah menyediakan profil/preferensi, dan `/modul4/` masih template kosong. Market locator masih direncanakan sebagai modal/popup.
+Hitungan di atas adalah rencana tampilan, bukan jumlah halaman yang sudah selesai. `/modul5/` adalah beranda setelah login, `/modul3/` menyediakan profil/preferensi, dan `/modul4/` menyediakan Recipe Book & Cooking Tracker. Market locator masih direncanakan sebagai modal/popup.
 
 ## API dan Sumber Data
 
@@ -265,7 +277,7 @@ Untuk database yang sudah berisi data, cadangkan dulu sebelum impor. Opsi `--syn
 | `/signup/`, `/login/` | Daftar dan masuk akun. |
 | `/modul1/` | Simulasi Meal Plan; guest dibatasi 3 rencana berhasil per 24 jam per browser. |
 | `/modul2/` | Smart Pantry dan input struk/manual; halaman dan seluruh API wajib login. |
-| `/modul4/` | Template Recipe Book; wajib login, isi utama masih kosong. |
+| `/modul4/` | Recipe Book, favorit dan cooking tracker; wajib login, terhubung ke stok dan slot rencana. |
 | `/modul5/` | Beranda dengan header navigasi; wajib login. |
 | `/admin/` | Django Admin; wajib akun staff/superuser. |
 
@@ -355,14 +367,16 @@ Cleanup fixture sesudahnya menambahkan satu tes discovery: **3 tes terarah lulus
 - Audit lokal belum memverifikasi PWS, koneksi database produksi, atau Gemini live. Pemeriksaan produksi menemukan peringatan HSTS/pengalihan HTTPS; periksa konfigurasi reverse proxy PWS sebelum mengaktifkannya di Django agar tidak menimbulkan redirect loop.
 - Jangan menghapus database/schema sebagai langkah pertama saat deployment gagal. Periksa log aplikasi dan migrasi; reset schema dapat menghapus seluruh akun dan stok pada schema tersebut.
 
+- **Upgrade Modul 4:** jalankan `python manage.py migrate --noinput` (metadata/status panduan dan indeks alergen, gram ledger, favorit/riwayat), lalu `python manage.py import_catalog data/fixtures/catalog_seed.json` dan `python manage.py rebuild_recipe_allergens --check`. Jangan reset database. Jika memakai `loaddata` langsung, lanjutkan dengan `rebuild_recipe_allergens` karena raw fixture tidak memicu signal agregasi. Migrasi tidak menghapus akun/stok/rencana lama. Fitur baru berada di `/modul4/`; beranda tetap `/modul5/`.
+
 ## Otorisasi Saat Ini
 
-Pembatasan berlaku pada backend, bukan hanya tombol navigasi. Halaman Modul 2/3/4/5 mengarahkan guest ke login dengan `next`; API pantry mengembalikan JSON HTTP 401. CSRF tetap wajib untuk request perubahan data. CRUD katalog di Django Admin belum didaftarkan; pengelolaan master katalog dilakukan melalui command impor.
+Pembatasan berlaku pada backend, bukan hanya tombol navigasi. Halaman Modul 2/3/4/5 mengarahkan guest ke login dengan `next`; API pantry mengembalikan JSON HTTP 401 dan API Recipe Book HTTP 403. CSRF tetap wajib untuk request perubahan data. Pengelolaan resep/bahan di Django Admin terdaftar dengan izin model standar; impor master juga tersedia melalui command.
 
 | Peran | Hak Akses |
 | --- | --- |
 | Guest | Landing, register/login, dan trial Modul 1: 3 kalkulasi berhasil per 24 jam per browser. Tidak dapat mengakses Modul 2/3/4/5 atau API pantry/Gemini. |
-| Registered User | Modul 1 tanpa batas trial guest; Modul 2 untuk stok milik sendiri; Modul 3 untuk akun/profil sendiri; template Modul 4 dan beranda Modul 5. Recipe Book, ulasan, tracker dan statistik dashboard belum tersedia. |
+| Registered User | Modul 1 tanpa batas trial guest; Modul 2 untuk stok milik sendiri; Modul 3 untuk akun/profil sendiri; Recipe Book/favorit/cooking tracker pribadi Modul 4 dan beranda Modul 5. Ulasan dan statistik dashboard belum tersedia. |
 | Administrator | Django Admin hanya untuk staff dengan izin yang sesuai. Akun staff tidak otomatis mendapat akses stok akun lain melalui API pantry. |
 
 Kuota guest disimpan dalam tabel `GuestTrial`, dengan ID acak bertanda tangan pada cookie HttpOnly. Jendela 24 jam dimulai dari **kalkulasi berhasil pertama**; input tidak valid, error kalkulasi, dan budget belum cukup tidak mengurangi kuota. Pengambilan kuota memakai UPDATE bersyarat atomik sehingga request dengan pembacaan counter lama tidak mendapat slot keempat. Request keempat ditolak HTTP 429 sebelum kalkulasi jika kuota sudah habis. Hasil terakhir disimpan dalam sesi dan tetap dapat dilihat saat reload selama sesi tersebut masih ada. Refresh, logout, atau replay cookie lama tidak mereset kuota; cookie trial memakai Secure di produksi.

@@ -9,6 +9,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.db.models import Q
 
+from apps.catalog.aggregation import rebuild_allergens, suspend_aggregation
+
 
 class Command(BaseCommand):
     help = "Update catalog rows from a fixture and optionally deactivate missing recipes."
@@ -23,6 +25,7 @@ class Command(BaseCommand):
         )
 
     @transaction.atomic
+    @suspend_aggregation()
     def handle(self, *args, **options):
         path = options["fixture"]
         if not path.is_file():
@@ -82,6 +85,34 @@ class Command(BaseCommand):
                 raise CommandError(f"Model tidak dikenal: {label}")
             model = apps.get_model(label)
             values = item["fields"].copy()
+            if label == "catalog.recipe":
+                # Legacy generated fixtures do not contain publication review fields.
+                # Preserve a per-recipe review; only initialize previously absent rows.
+                current = model.objects.filter(pk=item["pk"]).first()
+                if current is None:
+                    values.setdefault(
+                        "instruction_status",
+                        "source_ok"
+                        if (
+                            values.get("instructions")
+                            and not str(item["pk"]).startswith("RCP-MDL-")
+                        )
+                        else "withheld",
+                    )
+                elif "instruction_status" not in values:
+                    if current.instruction_status == "authored_reviewed":
+                        values.pop("instructions", None)
+                    elif (
+                        current.instruction_status != "withheld"
+                        and "instructions" in values
+                        and current.instructions != values["instructions"]
+                    ):
+                        values.update(
+                            instruction_status="withheld",
+                            instruction_reviewed_on=None,
+                            instruction_review_note="Teks sumber berubah; perlu ditinjau ulang.",
+                        )
+                values.pop("allergen_reviewed", None)
             for key in ("ingredient", "recipe"):
                 if key in values:
                     values[key + "_id"] = values.pop(key)
@@ -114,4 +145,5 @@ class Command(BaseCommand):
             apps.get_model("catalog.recipe").objects.exclude(pk__in=seen_recipes).update(
                 is_active=False
             )
+        rebuild_allergens()
         self.stdout.write(self.style.SUCCESS(f"{len(records)} baris fixture diproses."))

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -23,6 +24,16 @@ class Ingredient(models.Model):
     allergens = models.JSONField(default=list)
     allergen_source_url = models.URLField(max_length=600, blank=True)
     allergen_note = models.TextField(blank=True)
+
+    def clean(self):
+        from apps.accounts.choices import ALLERGEN_KEYS
+
+        if not isinstance(self.allergens, list) or any(
+            not isinstance(value, str) or value not in ALLERGEN_KEYS for value in self.allergens
+        ):
+            raise ValidationError({"allergens": "Kelompok alergen tidak valid."})
+        if self.allergen_status == "reviewed" and not self.allergen_source_url:
+            raise ValidationError({"allergen_source_url": "Sumber peninjauan wajib diisi."})
 
 
 class IngredientPrice(models.Model):
@@ -79,6 +90,44 @@ class Recipe(models.Model):
     source_url = models.URLField(max_length=600)
     raw_ingredients = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
+    instruction_status = models.CharField(
+        max_length=20,
+        default="withheld",
+        db_index=True,
+        choices=[
+            ("source_ok", "Sumber disetujui"),
+            ("authored_reviewed", "Panduan tim ditinjau"),
+            ("withheld", "Ditahan"),
+        ],
+    )
+    instruction_review_note = models.TextField(blank=True)
+    instruction_reviewed_on = models.DateField(null=True, blank=True)
+    allergen_reviewed = models.BooleanField(default=False, db_index=True)
+
+    def clean(self):
+        if self.instruction_status != "withheld" and (
+            not self.instructions.strip() or not self.instruction_review_note.strip()
+        ):
+            raise ValidationError(
+                {"instruction_review_note": "Panduan dan bukti/catatan tinjauan wajib diisi."}
+            )
+        if (
+            self.instruction_status == "authored_reviewed"
+            or (self.pk.startswith("RCP-MDL-") and self.instruction_status != "withheld")
+        ) and not self.instruction_reviewed_on:
+            raise ValidationError(
+                {"instruction_reviewed_on": "Tanggal tinjauan panduan tim wajib diisi."}
+            )
+
+
+class RecipeAllergen(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="allergen_groups")
+    group = models.CharField(max_length=30, db_index=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["recipe", "group"], name="recipe_allergen_unique")
+        ]
 
 
 class RecipeIngredient(models.Model):

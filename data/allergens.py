@@ -14,6 +14,8 @@ KEYS = {
     "krustasea",
     "moluska",
     "wijen",
+    "kacang_pohon",
+    "sulfit",
 }
 
 
