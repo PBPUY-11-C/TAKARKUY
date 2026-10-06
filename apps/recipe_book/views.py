@@ -20,6 +20,7 @@ from apps.pantry.models import PantryItem
 from apps.pantry.services import StockError, plan_consumption
 
 from .models import CookingHistory, RecipeFavorite
+from .reviews import review_context, write_review
 from .services import (
     cook,
     estimated_recipe_cost,
@@ -93,6 +94,11 @@ def cooking_preview(request, data):
 @api
 def record_cooking(request, data):
     return JsonResponse(cook(request.user, data), status=201)
+
+
+@api
+def recipe_review(request, data):
+    return JsonResponse(write_review(request.user, data))
 
 
 @login_required
@@ -245,6 +251,11 @@ def book_page(request):
             "filters": request.GET,
             "query_params": urlencode(params, doseq=True),
             "history_params": urlencode(history_params, doseq=True),
+            **(
+                review_context(request.user, selected, request.GET.get("review_page"))
+                if selected and not selection_error
+                else {}
+            ),
         },
     )
     patch_cache_control(response, private=True, no_store=True)

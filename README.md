@@ -4,15 +4,15 @@
 
 ## Status Implementasi
 
-Snapshot kode dan inventaris dataset: **5 Oktober 2026**. Harga Garut tetap snapshot **28 September 2026**. Bagian visi, perbandingan, CRUD, dan integrasi di bawah menjelaskan **cakupan/rencana produk**, bukan klaim bahwa seluruh fiturnya sudah selesai.
+Snapshot kode dan inventaris dataset: **6 Oktober 2026**. Harga Garut tetap snapshot **28 September 2026**. Bagian visi, perbandingan, CRUD, dan integrasi di bawah menjelaskan **cakupan/rencana produk**, bukan klaim bahwa seluruh fiturnya sudah selesai.
 
 | Bagian | Sudah tersedia | Belum tersedia |
 | --- | --- | --- |
-| Modul 1 | Simulasi budget/gizi/pantangan, daftar belanja, trial guest, draft otomatis milik akun, CRUD rencana tersimpan, cari susunan baru, serta ganti satu menu dengan pratinjau biaya dan persetujuan kenaikan budget. | Integrasi stok pantry, edit item belanja secara bebas, dan penghubung jadwal ke cooking tracker/dashboard. |
+| Modul 1 | Simulasi budget/gizi/pantangan, daftar belanja, trial guest, draft otomatis milik akun, CRUD rencana tersimpan, cari susunan baru, serta ganti satu menu dengan pratinjau biaya dan persetujuan kenaikan budget; slot terhubung ke cooking tracker/dashboard. | Integrasi stok pantry dan edit item belanja secara bebas. |
 | Modul 2 | OCR/fallback Gemini dengan kuota akun, cache nama, batch dan ledger stok, CRUD berversi/idempoten, konversi berat, tanggal bersumber, kecocokan resep dan FEFO yang terhubung ke Modul 4. | Pengingat terjadwal dan cuaca. |
 | Modul 3 | Landing, username/email, login/logout, profil/preferensi, perubahan password, rate limit database, dan maintenance. | Google OAuth, verifikasi email, serta reset password lewat email. |
 | Modul 4 | Recipe Book di `/modul4/`: pencarian/filter, detail/panduan berstatus, favorit pribadi, preview dan pencatatan masak atomik dengan FEFO/ledger, riwayat snapshot, integrasi slot rencana tersimpan. | Foto/durasi terkurasi, resep buatan pengguna, dan undo riwayat. |
-| Modul 5 | Beranda setelah login dengan navigasi Budget Meal Planner, Smart Pantry, dan Recipe Book. | Statistik penghematan, ulasan makanan, dan market locator. |
+| Modul 5 | Dashboard personal: semua rencana aktif hari ini, estimasi sisa budget per rencana, stok prioritas/unknown, riwayat masak, ulasan resep di Modul 4, dan modal peta/daftar kurasi dengan pencarian OSM opsional. | Penghematan/limbah dicegah yang terverifikasi dan cakupan lokasi nasional terkurasi. |
 
 Katalog saat ini berisi **201 bahan, 163 catatan harga, dan 434 resep; 296 resep siap dihitung**, sedangkan 138 masih diblokir. Fixture tunggal `data/fixtures/catalog_seed.json` berisi **7.048 objek**. Siap dihitung berarti bahan/gizi/harga tersedia untuk simulasi, bukan semua teks cara memasak sudah boleh diterbitkan. Sebanyak 187 resep Mendeley dapat dihitung, tetapi teks langkahnya ditahan untuk review asal/hak pakai. Ada **231 kandidat produk Open Food Facts** dan **1.500 baris kandidat resep** untuk kurasi; sebagian sudah dipromosikan sehingga jangan menjumlahkan kandidat dengan katalog aktif. Rincian sumber, asumsi, dan penghalang ada di [data/DATASETS.md](data/DATASETS.md) dan [review sumber](data/SOURCE_REVIEW.md).
 
@@ -180,21 +180,20 @@ Implementasi sekarang berada di `apps/recipe_book/` dan **hanya `/modul4/`**. Pe
 
 **PIC:** Aiko Zahwa
 
-- **Statistik:** total dihemat dan limbah dicegah ditampilkan sebagai card di Dashboard.
-- **Market locator:** peta pasar tradisional dan bank sampah ditampilkan dalam modal/popup yang dibuka melalui tombol di Dashboard.
-- **Data yang dipegang:** agregasi **read-only** dari Modul 1, 2, dan 4; tidak memiliki model utama sendiri.
-- **Halaman:** 0 halaman mandiri; seluruh fitur terintegrasi ke Dashboard.
+- **Dashboard:** `/modul5/` menampilkan semua rencana tersimpan aktif hari ini (Asia/Jakarta), estimasi sisa budget terpisah, stok mendekati/melewati tanggal dan tanggal unknown, serta tiga riwayat terbaru. Enam query data; tanpa angka contoh atau klaim penghematan aktual.
+- **Ulasan:** rating 1–5 dan komentar maksimal 500 karakter di detail resep Modul 4, hanya setelah riwayat memasak milik akun. Constraint unik, versi/kuota database, moderasi Admin, agregasi rating dan perlindungan email legacy.
+- **Market locator:** modal Leaflet/OSM dan daftar kurasi Garut/Depok bersumber. GPS hanya di browser setelah klik. Pencarian wilayah daring opsional (default nonaktif), cache/gate global, tanpa autocomplete; data kurasi tetap berfungsi saat layanan gagal.
+- **Data yang dipegang:** dashboard read-only dari Modul 1/2/4; ulasan disimpan di Recipe Book. App dashboard hanya memiliki tabel teknis cache dan kuota, bukan salinan data stok/rencana.
+- **Halaman:** seluruh fitur dashboard di `/modul5/`; ulasan di detail `/modul4/`. Kontrak, konfigurasi, sumber dan batas: [docs/DASHBOARD.md](docs/DASHBOARD.md).
 
 **CRUD Eco-Savings & Market Locator:**
 
-- **Create:** tidak ada; modul ini tidak menyimpan data utama sendiri.
-- **Read:** menampilkan card total dihemat dan limbah dicegah di Dashboard, serta peta pasar/bank sampah melalui modal.
-- **Update:** tidak ada; statistik dihitung dari data Modul 1, 2, dan 4.
-- **Delete:** tidak ada; penghapusan data dilakukan pada modul sumbernya.
+- **Create/Update/Delete:** pengguna membuat, mengedit dan menghapus ulasan sendiri setelah memasak; Admin dapat menyembunyikan ulasan. Dashboard tidak mengubah stok/rencana.
+- **Read:** ringkasan akun, budget per rencana, stok prioritas, riwayat masak, ulasan publik terlihat, serta peta/daftar pasar dan bank sampah. Penghematan/limbah dicegah belum diklaim.
 
 ## Integrasi Antar Modul yang Direncanakan
 
-Integrasi profil ke planner/Recipe Book serta **Sudah Masak → pantry/riwayat/slot rencana** sudah aktif. Integrasi stok ke perhitungan belanja planner dan agregasi statistik dashboard belum selesai; daftar belanja tidak otomatis menambah stok.
+Integrasi profil ke planner/Recipe Book, **Sudah Masak → pantry/riwayat/slot rencana**, dan agregasi dashboard sudah aktif. Integrasi stok ke perhitungan belanja planner belum selesai; daftar belanja tidak otomatis menambah stok.
 
 1. **Modul 3 → Modul 1/4:** porsi, bahan yang dihindari, dan alergi menjadi acuan planner/Recipe Book; target makan/gizi dan waktu makan juga mengisi planner. Kebijakan halal tetap wajib.
 2. **Modul 1 → Modul 2:** setelah berbelanja, pengguna memasukkan stok melalui OCR struk atau input manual. Daftar belanja tidak otomatis dianggap sebagai stok pantry.
@@ -212,7 +211,7 @@ Integrasi profil ke planner/Recipe Book serta **Sudah Masak → pantry/riwayat/s
 | 4 | List/detail resep, favorit, dan cooking tracker dalam satu tampilan. | 1 |
 | 5 | Card statistik di Dashboard dan modal/popup market locator. | 0 |
 
-Hitungan di atas adalah rencana tampilan, bukan jumlah halaman yang sudah selesai. `/modul5/` adalah beranda setelah login, `/modul3/` menyediakan profil/preferensi, dan `/modul4/` menyediakan Recipe Book & Cooking Tracker. Market locator masih direncanakan sebagai modal/popup.
+Hitungan di atas adalah rencana tampilan, bukan jumlah halaman yang sudah selesai. `/modul5/` adalah beranda setelah login beserta modal market locator, `/modul3/` menyediakan profil/preferensi, dan `/modul4/` menyediakan Recipe Book & Cooking Tracker serta ulasan resep.
 
 ## API dan Sumber Data
 
@@ -278,7 +277,7 @@ Untuk database yang sudah berisi data, cadangkan dulu sebelum impor. Opsi `--syn
 | `/modul1/` | Simulasi Meal Plan; guest dibatasi 3 rencana berhasil per 24 jam per browser. |
 | `/modul2/` | Smart Pantry dan input struk/manual; halaman dan seluruh API wajib login. |
 | `/modul4/` | Recipe Book, favorit dan cooking tracker; wajib login, terhubung ke stok dan slot rencana. |
-| `/modul5/` | Beranda dengan header navigasi; wajib login. |
+| `/modul5/` | Dashboard personal, ringkasan rencana/stok/masak dan modal peta; wajib login. |
 | `/admin/` | Django Admin; wajib akun staff/superuser. |
 
 Guest hanya dapat mengakses Modul 1 dengan batas trial. Modul 2/3/4/5 wajib login. Untuk membuat akun administrator lokal:
@@ -345,11 +344,13 @@ Verifikasi Modul 3 sebelum cleanup fixture pada **5 Oktober 2026** meloloskan su
 
 Cakupan Modul 3 meliputi index identitas tanpa membedakan kapital, penolakan konflik migrasi tanpa menghapus akun, kompatibilitas login legacy, kuota lintas sesi/worker dan race slot terakhir, CSRF, edit profil berversi, perubahan email dengan password, perubahan password lintas perangkat, maintenance seluruh aplikasi, default preferensi, filter alergi berbasis ID/unknown/bumbu minor, gabungan alergi snapshot/profil, serta pemeriksaan ulang setelah preview/generate. Kontrak dan batas produk dijelaskan di [docs/ACCOUNTS.md](docs/ACCOUNTS.md); mapping mencatat status review dan sumber, bukan klaim keamanan makanan.
 
-Regresi Modul 1 tetap mencakup trial, otorisasi, draft/snapshot, variasi/halal, quote dropdown/preview, budget, riwayat, cleanup/kuota preview, metadata, stale-tab dan idempotensi. Regresi Modul 2 mencakup satu panggilan per scan, cache foto→teks, batch 30 nama, validasi schema, consent koreksi, ledger/migrasi historis, konversi/tanggal, UUID, FEFO, kuota, upload dan deadline transport; detail di [docs/PANTRY.md](docs/PANTRY.md). SQLite IMMEDIATE menserialkan penulis, bukan menyediakan row lock; CI PostgreSQL tetap wajib. Gemini menggunakan mock, bukan verifikasi key/akurasi live; tes JS memakai DOM tiruan, bukan review visual browser. Modul 2 sudah di-push, tetapi perubahan Modul 3 ini belum di-commit/di-push dan CI baru belum diverifikasi. Migrasi/impor lokal mempertahankan dua akun dan dua rencana lama; backup ada di scratchpad sementara. Database PWS/production tidak diubah dan belum diuji. Ruff opsional untuk pengembangan, bukan dependensi runtime.
+Regresi Modul 1 tetap mencakup trial, otorisasi, draft/snapshot, variasi/halal, quote dropdown/preview, budget, riwayat, cleanup/kuota preview, metadata, stale-tab dan idempotensi. Regresi Modul 2 mencakup satu panggilan per scan, cache foto→teks, batch 30 nama, validasi schema, consent koreksi, ledger/migrasi historis, konversi/tanggal, UUID, FEFO, kuota, upload dan deadline transport; detail di [docs/PANTRY.md](docs/PANTRY.md). SQLite IMMEDIATE menserialkan penulis, bukan menyediakan row lock; CI PostgreSQL tetap wajib. Gemini menggunakan mock, bukan verifikasi key/akurasi live; tes JS memakai DOM tiruan, bukan review visual browser. Catatan hasil Modul 3 di atas bersifat historis; Modul 3 dan Modul 4 sudah masuk `main`. Perubahan Modul 5 berada pada branch `modul-5-dashboard`; status CI dan merge mengikuti GitHub. Database PWS/production tidak diubah dan belum diuji. Ruff opsional untuk pengembangan, bukan dependensi runtime.
 
 Cleanup fixture sesudahnya menambahkan satu tes discovery: **3 tes terarah lulus pada PostgreSQL dan 3 pada SQLite**, mencakup fixture tunggal, trial planner katalog aktual, serta input/perpindahan stok pantry. **32 tes JS**, lint, cek migrasi, validator dan build ulang juga lulus. Seluruh 17 keluaran fixture/processed/staging yang diperiksa identik byte per byte; delapan snapshot raw cocok dengan manifest. Suite penuh baru tidak dituntaskan pada mesin lokal yang melambat; CI harus menjalankan seluruh suite setelah push.
 
 ## Catatan Deployment PWS
+
+Verifikasi Modul 5 pada **6 Oktober 2026**: **422 tes Django lulus di PostgreSQL tanpa skip dan 48 tes JavaScript lulus**. Ini menggantikan catatan suite lokal yang belum lengkap di atas. Lint, system check, cek migrasi dan validator katalog/kandidat/dokumentasi lulus. Migrasi baru sudah diterapkan lokal tanpa reset data. Layanan peta/Gemini memakai mock dalam tes; browser tidak tersedia sehingga tampilan visual dan provider live belum diverifikasi. Modul 5 belum di-deploy ke PWS; PWS tidak disentuh. Detail ada di [docs/DASHBOARD.md](docs/DASHBOARD.md).
 
 - **Upgrade Modul 3:** jalankan `python manage.py migrate --noinput` untuk model profil/rate limit, metadata alergen dan indeks identitas. Jika preflight melaporkan konflik akun, jangan reset schema/hapus akun: tinjau konflik secara manual. Impor kembali `python manage.py import_catalog data/fixtures/catalog_seed.json` agar mapping alergen masuk database; sebelum impor, semua bahan lama berstatus unknown dan filter alergi menutupnya. Penggantian backend auth dapat membuat sesi lama memerlukan login ulang, tanpa menghapus akun atau stok/rencana. Profil akun lama dibuat otomatis saat digunakan. Pastikan akun staff/superuser tersedia sebelum mengaktifkan maintenance. `AUTH_TRUSTED_PROXY_CIDRS` opsional, berisi CIDR reverse proxy yang benar-benar diverifikasi; jangan memakai `0.0.0.0/0` atau mempercayai X-Forwarded-For tanpa memeriksa proxy.
 - **Maintenance seluruh aplikasi:** setelah kode ini di-deploy, set `MAINTENANCE_MODE=true` di environment PWS, lalu restart/redeploy agar proses membaca konfigurasi baru. Landing, daftar/login publik, seluruh modul (termasuk trial guest), dan endpoint API ditutup untuk guest maupun akun biasa dengan HTTP **503**, `Retry-After: 3600` (saran mencoba kembali, bukan janji waktu selesai), dan `Cache-Control: private, no-store`. Request JSON menerima error JSON; halaman menerima tampilan maintenance. View penulisan stok/rencana dan panggilan Gemini tidak dijalankan untuk request yang diblokir. Data dan sesi tidak dihapus. Untuk membuka kembali, set `MAINTENANCE_MODE=false` lalu restart/redeploy; jika variabel tidak ada, default-nya nonaktif. `.env` lokal tidak mengatur PWS.
@@ -368,15 +369,18 @@ Cleanup fixture sesudahnya menambahkan satu tes discovery: **3 tes terarah lulus
 - Jangan menghapus database/schema sebagai langkah pertama saat deployment gagal. Periksa log aplikasi dan migrasi; reset schema dapat menghapus seluruh akun dan stok pada schema tersebut.
 
 - **Upgrade Modul 4:** jalankan `python manage.py migrate --noinput` (metadata/status panduan dan indeks alergen, gram ledger, favorit/riwayat), lalu `python manage.py import_catalog data/fixtures/catalog_seed.json` dan `python manage.py rebuild_recipe_allergens --check`. Jangan reset database. Jika memakai `loaddata` langsung, lanjutkan dengan `rebuild_recipe_allergens` karena raw fixture tidak memicu signal agregasi. Migrasi tidak menghapus akun/stok/rencana lama. Fitur baru berada di `/modul4/`; beranda tetap `/modul5/`.
+- **Upgrade Modul 5:** jalankan `python manage.py migrate --noinput` dan `python manage.py collectstatic --noinput` untuk tabel ulasan/kuota/cache peta dan aset dashboard. Tidak perlu reset atau impor ulang katalog. Pencarian daring default nonaktif; daftar kurasi tetap tersedia tanpa API key. Konfigurasi, sumber dan batas privasi ada di [docs/DASHBOARD.md](docs/DASHBOARD.md). Dua temuan audit rate limit login/proxy PWS tetap perlu diperbaiki sebelum demo; perubahan Modul 5 ini tidak memperbaikinya.
 
 ## Otorisasi Saat Ini
+
+Sesudah tiga revisi kecil audit Modul 5 (kuota offline, provider sibuk dan alias HMAC), **44 tes Python terarah lulus di PostgreSQL tanpa skip dan 48 tes JS lulus**. Lint, system check, cek migrasi dan validator dokumentasi lulus. Hasil suite penuh 422 tes di atas berasal dari sebelum revisi ini; suite penuh belum diulang sesudahnya, dan CI PostgreSQL wajib hijau sebelum merge.
 
 Pembatasan berlaku pada backend, bukan hanya tombol navigasi. Halaman Modul 2/3/4/5 mengarahkan guest ke login dengan `next`; API pantry mengembalikan JSON HTTP 401 dan API Recipe Book HTTP 403. CSRF tetap wajib untuk request perubahan data. Pengelolaan resep/bahan di Django Admin terdaftar dengan izin model standar; impor master juga tersedia melalui command.
 
 | Peran | Hak Akses |
 | --- | --- |
 | Guest | Landing, register/login, dan trial Modul 1: 3 kalkulasi berhasil per 24 jam per browser. Tidak dapat mengakses Modul 2/3/4/5 atau API pantry/Gemini. |
-| Registered User | Modul 1 tanpa batas trial guest; Modul 2 untuk stok milik sendiri; Modul 3 untuk akun/profil sendiri; Recipe Book/favorit/cooking tracker pribadi Modul 4 dan beranda Modul 5. Ulasan dan statistik dashboard belum tersedia. |
+| Registered User | Modul 1 tanpa batas trial guest; stok/profil/rencana/riwayat pribadi; dashboard akun dan modal peta. Ulasan resep terlihat pengguna lain; hanya ulasan sendiri yang boleh diubah/dihapus setelah memasak. |
 | Administrator | Django Admin hanya untuk staff dengan izin yang sesuai. Akun staff tidak otomatis mendapat akses stok akun lain melalui API pantry. |
 
 Kuota guest disimpan dalam tabel `GuestTrial`, dengan ID acak bertanda tangan pada cookie HttpOnly. Jendela 24 jam dimulai dari **kalkulasi berhasil pertama**; input tidak valid, error kalkulasi, dan budget belum cukup tidak mengurangi kuota. Pengambilan kuota memakai UPDATE bersyarat atomik sehingga request dengan pembacaan counter lama tidak mendapat slot keempat. Request keempat ditolak HTTP 429 sebelum kalkulasi jika kuota sudah habis. Hasil terakhir disimpan dalam sesi dan tetap dapat dilihat saat reload selama sesi tersebut masih ada. Refresh, logout, atau replay cookie lama tidak mereset kuota; cookie trial memakai Secure di produksi.

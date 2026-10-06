@@ -16,10 +16,8 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-from django.views.generic import TemplateView
 
 from apps.accounts.forms import EmailOrUsernameAuthenticationForm
 from apps.accounts.views import AccountLoginView, landing_view, profile_view, signup_view
@@ -31,6 +29,7 @@ from apps.budget_planner.plan_views import (
     save_account_plan,
 )
 from apps.budget_planner.views import planner_page
+from apps.dashboard.views import dashboard_page, market_lookup
 from apps.pantry.views import (
     delete_pantry_item,
     fallback_receipt_ocr,
@@ -41,7 +40,13 @@ from apps.pantry.views import (
     suggest_receipt_items,
     update_pantry_details,
 )
-from apps.recipe_book.views import book_page, cooking_preview, record_cooking, set_favorite
+from apps.recipe_book.views import (
+    book_page,
+    cooking_preview,
+    recipe_review,
+    record_cooking,
+    set_favorite,
+)
 
 urlpatterns = [
     path("", landing_view, name="landing"),
@@ -77,8 +82,8 @@ urlpatterns = [
     path("modul4/favorite/", set_favorite, name="modul4-favorite"),
     path("modul4/preview/", cooking_preview, name="modul4-preview"),
     path("modul4/cook/", record_cooking, name="modul4-cook"),
-    path(
-        "modul5/", login_required(TemplateView.as_view(template_name="modul5.html")), name="modul5"
-    ),
+    path("modul4/review/", recipe_review, name="modul4-review"),
+    path("modul5/", dashboard_page, name="modul5"),
+    path("modul5/places/", market_lookup, name="modul5-places"),
     path("admin/", admin.site.urls),
 ]

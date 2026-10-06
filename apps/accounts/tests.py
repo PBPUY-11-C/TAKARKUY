@@ -144,7 +144,7 @@ class AccountFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
-    def test_modul5_requires_login_and_only_shows_module_header(self):
+    def test_modul5_requires_login_and_shows_dashboard_with_module_header(self):
         self.assertRedirects(
             self.client.get(reverse("modul5")),
             f"{reverse('login')}?next={reverse('modul5')}",
@@ -160,6 +160,8 @@ class AccountFlowTests(TestCase):
             self.assertContains(response, f'href="{reverse(name)}"')
             self.assertContains(response, label)
         self.assertContains(response, 'action="/logout/"')
+        self.assertContains(response, "Menu hari ini")
+        self.assertContains(response, "Terakhir dimasak")
         self.assertNotContains(response, "Masak Enak Sesuai Budget")
 
     def test_module_home_links_follow_login_state(self):

@@ -37,3 +37,36 @@ class CookingHistory(models.Model):
                 condition=models.Q(servings__gte=1, servings__lte=10), name="cooking_servings_valid"
             ),
         ]
+
+
+class RecipeReview(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE, related_name="reviews")
+    rating = models.PositiveSmallIntegerField()
+    comment = models.CharField(max_length=500, blank=True)
+    is_hidden = models.BooleanField(default=False, db_index=True)
+    version = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at", "-pk"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "recipe"], name="one_recipe_review_per_user"),
+            models.CheckConstraint(
+                condition=models.Q(rating__gte=1, rating__lte=5), name="recipe_review_rating_valid"
+            ),
+        ]
+
+
+class ReviewQuota(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True
+    )
+    window_started_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=models.Q(attempts__lte=10), name="review_quota_max_10")
+        ]
