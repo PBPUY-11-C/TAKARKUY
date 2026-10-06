@@ -1,9 +1,10 @@
 """Regressions for unconfirmed AI, malformed JSON and legacy dates."""
 
 import json
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from unittest.mock import patch
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -21,7 +22,7 @@ from .test_helpers import authenticate
 class AuditRegressionTests(TestCase):
     def setUp(self):
         self.user = authenticate(self.client)
-        self.today = timezone.localdate()
+        self.today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
         self.ingredient = Ingredient.objects.create(
             ingredient_code="ING-AUDIT", name="Bayam", category="sayur", base_unit="g"
         )
@@ -177,6 +178,9 @@ class AuditRegressionTests(TestCase):
             self.assertIn("error", response.json())
 
     def test_date_bounds_and_same_day_expiry(self):
+        self.assert_date_bounds_and_same_day_expiry()
+
+    def assert_date_bounds_and_same_day_expiry(self):
         for field in ("starting_on", "estimated_expires_on"):
             for value in ("0001-01-01", "9999-12-31"):
                 self.assertEqual(self.create(**{field: value}).status_code, 400)
@@ -213,6 +217,9 @@ class AuditRegressionTests(TestCase):
         self.assertEqual(item.expiry_source, "legacy")
 
     def test_capped_freezer_date_and_duration_stay_consistent(self):
+        self.assert_capped_freezer_date_and_duration()
+
+    def assert_capped_freezer_date_and_duration(self):
         for location, days in (("suhu_ruang", 2), ("freezer", 20)):
             IngredientShelfLife.objects.create(
                 shelf_life_code=f"SHF-{location}",
@@ -234,6 +241,22 @@ class AuditRegressionTests(TestCase):
         item.refresh_from_db()
         self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=2))
         self.assertEqual(item.shelf_life_days, 2)
+
+    def test_date_validation_uses_jakarta_when_utc_is_previous_day(self):
+        frozen = datetime(2026, 10, 5, 18, 0, tzinfo=UTC)
+        with patch("django.utils.timezone.now", return_value=frozen), timezone.override("UTC"):
+            self.today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
+            self.assertEqual(timezone.localdate(), date(2026, 10, 5))
+            self.assertEqual(self.today, date(2026, 10, 6))
+            self.assert_date_bounds_and_same_day_expiry()
+
+    def test_freezer_expiry_uses_jakarta_when_utc_is_previous_day(self):
+        frozen = datetime(2026, 10, 5, 18, 0, tzinfo=UTC)
+        with patch("django.utils.timezone.now", return_value=frozen), timezone.override("UTC"):
+            self.today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
+            self.assertEqual(timezone.localdate(), date(2026, 10, 5))
+            self.assertEqual(self.today, date(2026, 10, 6))
+            self.assert_capped_freezer_date_and_duration()
 
     @patch.dict("os.environ", {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
     @patch(
