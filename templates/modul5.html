@@ -1,9 +1,12 @@
+{% load static planner_format %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TAKARKUY</title>
+  <title>Beranda — TAKARKUY</title>
+  <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+  <script type="module" src="{% static 'dashboard/dashboard.js' %}"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
@@ -62,6 +65,38 @@
       </form>
     </div>
   </header>
-  <main></main>
+  <main class="dashboard-shell">
+    <div class="dashboard-heading"><div><p class="muted">{{ today|date:'l, d F Y' }}</p><h1>Hai, {{ user.first_name|default:user.username }} <span aria-hidden="true">👋</span></h1></div><button id="open-market" type="button" class="secondary">Cari pasar &amp; bank sampah ↗</button></div>
+    <section class="summary-cards" aria-label="Ringkasan dapur">
+      <a class="summary-card" href="{% url 'modul1' %}#rencana-saya"><span>Rencana aktif</span><strong>{{ plans|length }}</strong></a>
+      <a class="summary-card" href="{% url 'modul2' %}"><span>Segera digunakan</span><strong>{{ stock_counts.soon }} <small>batch</small></strong></a>
+      <a class="summary-card" href="{% url 'modul4' %}#cooking-history"><span>Total masak</span><strong>{{ cooking_count }} <small>kali</small></strong></a>
+    </section>
+    <div class="dashboard-grid">
+      <section class="dashboard-panel"><div class="section-title"><h2>Menu hari ini</h2><a href="{% url 'modul1' %}">Rencana →</a></div>
+        {% for plan in plans %}<article class="today-plan"><div class="plan-title"><h3>{{ plan.title }}</h3><a href="{% url 'modul1' %}?plan={{ plan.pk }}#hasil">Buka</a></div><p class="budget-caption">{% if plan.remaining is None %}Estimasi budget belum tersedia{% elif plan.over_budget %}Estimasi melebihi budget · {{ plan.remaining|rupiah }}{% else %}Estimasi sisa budget · {{ plan.remaining|rupiah }}{% endif %}</p>
+          <ul class="dashboard-list">{% for meal in plan.today_meals %}<li><div><small>{{ meal.display_time }} · {{ meal.servings }} porsi</small><strong>{{ meal.display_name }}</strong></div>{% if meal.status == 'cooked' %}<span class="status-chip">Sudah masak</span>{% elif meal.status == 'skipped' %}<span class="muted">Dilewati</span>{% else %}<a class="row-action" href="{% url 'modul4' %}?slot={{ meal.pk }}#recipe-detail">Lihat resep →</a>{% endif %}</li>{% empty %}<li class="empty">Tidak ada jadwal hari ini.</li>{% endfor %}</ul>
+        </article>{% empty %}<div class="dashboard-empty"><span aria-hidden="true">◷</span><p>Belum ada rencana untuk hari ini.</p><a class="primary" href="{% url 'modul1' %}">Buat rencana</a></div>{% endfor %}
+        {% if plans %}<p class="small-note">Harga referensi, bukan saldo atau penghematan aktual.</p>{% endif %}
+      </section>
+      <section class="dashboard-panel"><div class="section-title"><h2>Segera digunakan</h2><a href="{% url 'modul2' %}">Pantry →</a></div><ul class="dashboard-list">
+        {% for batch in stock_groups.soon %}<li><div><strong>{{ batch.name }}</strong><small>{{ batch.quantity|floatformat:-6 }} {{ batch.get_unit_display }} · {{ batch.get_expiry_source_display }}</small></div><span class="status-chip amber">{% if batch.days_left == 0 %}Hari ini{% else %}{{ batch.days_left }} hari lagi{% endif %}</span></li>{% empty %}<li class="empty">Tidak ada bahan yang mendekati tanggal kedaluwarsa.</li>{% endfor %}
+      </ul>{% if stock_counts.soon > 3 %}<a class="more-link" href="{% url 'modul2' %}">Lihat {{ stock_counts.soon }} batch →</a>{% endif %}
+      {% if stock_groups.expired %}<details class="stock-detail"><summary class="danger">Lewat tanggal · {{ stock_counts.expired }}</summary><ul class="dashboard-list">{% for batch in stock_groups.expired %}<li><div><strong>{{ batch.name }}</strong><small>{{ batch.estimated_expires_on|date:'d M Y' }} · {{ batch.get_expiry_source_display }}</small></div><a href="{% url 'modul2' %}">Periksa →</a></li>{% endfor %}</ul><p class="small-note">Tidak ditawarkan untuk memasak.</p></details>{% endif %}
+      {% if stock_groups.unknown %}<details class="stock-detail"><summary>Tanggal belum diketahui · {{ stock_counts.unknown }}</summary><ul class="dashboard-list">{% for batch in stock_groups.unknown %}<li><div><strong>{{ batch.name }}</strong><small>{{ batch.quantity|floatformat:-6 }} {{ batch.get_unit_display }}</small></div><a href="{% url 'modul2' %}">Lengkapi →</a></li>{% endfor %}</ul></details>{% endif %}
+      </section>
+      <section class="dashboard-panel history-panel"><div class="section-title"><h2>Terakhir dimasak</h2><a href="{% url 'modul4' %}#cooking-history">Semua →</a></div><ul class="dashboard-list">{% for entry in recent_cooking %}<li><div><strong>{{ entry.recipe_name }}</strong><small>{{ entry.display_time|date:'d M Y, H:i' }} WIB · {{ entry.servings }} porsi</small></div>{% if entry.recipe and entry.recipe.is_active %}<a href="{% url 'modul4' %}?recipe={{ entry.recipe_id|urlencode }}#recipe-reviews">Ulas resep →</a>{% else %}<span class="muted">Resep tidak tersedia</span>{% endif %}</li>{% empty %}<li class="empty">Masakan yang dicatat di Recipe Book akan tampil di sini.</li>{% endfor %}</ul></section>
+    </div>
+  </main>
+  {{ map_places|json_script:'map-places' }}
+  {{ map_config|json_script:'map-config' }}
+  <dialog id="market-dialog" aria-labelledby="market-title" data-url="{% url 'modul5-places' %}">
+    <div class="section-title"><h2 id="market-title">Pasar &amp; bank sampah</h2><button id="close-market" class="text-button" type="button" aria-label="Tutup peta">✕</button></div>
+    <form id="market-form">{% csrf_token %}<div class="market-controls"><label class="sr-only" for="market-region">Kota atau kabupaten</label><input id="market-region" name="region" value="Garut" maxlength="60" placeholder="Kota atau kabupaten" required><label class="sr-only" for="market-kind">Jenis tempat</label><select id="market-kind" name="kind"><option value="all">Semua</option><option value="market">Pasar</option><option value="waste_bank">Bank sampah</option></select><button type="submit" class="primary">Cari</button></div>{% if map_config.online %}<label class="online-choice"><input name="online" type="checkbox"> Sertakan hasil daring OSM</label>{% endif %}</form>
+    <div class="map-toolbar"><button id="locate-market" type="button" class="secondary">Gunakan lokasi saya</button><small>Lokasi hanya dipakai di perangkat, bukan dikirim ke server aplikasi.</small></div>
+    <p id="market-message" role="status" class="muted" aria-live="polite"></p><div id="market-map" aria-label="Peta tempat" hidden></div><ul id="market-results" class="dashboard-list"></ul>
+    <p class="small-note">Data kurasi Garut &amp; Depok, bukan daftar lengkap. Konfirmasi lokasi dan jenis sampah yang diterima sebelum datang.</p>
+    <details class="small-note"><summary>Sumber &amp; privasi peta</summary><p>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. Tile peta dikirim oleh pihak ketiga yang dapat melihat IP/area peta yang dibuka. Pencarian daring mengirim nama wilayah publik, bukan GPS. Hasil komunitas belum tentu lengkap atau terbaru.</p></details>
+  </dialog>
 </body>
 </html>

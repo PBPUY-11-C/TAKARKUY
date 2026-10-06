@@ -30,6 +30,13 @@ FIXTURE_DIRS = [BASE_DIR / "data" / "fixtures"]
 PRODUCTION = os.getenv("PRODUCTION", "False").lower() == "true"
 # Opt-in per deployment; local development stays available by default.
 MAINTENANCE_MODE = os.getenv("MAINTENANCE_MODE", "false").strip().lower() == "true"
+# OSM services are best-effort and policy-bound. Opt in to online region lookup
+# only after reviewing docs/DASHBOARD.md and setting an identifying User-Agent.
+MAP_LOOKUP_ENABLED = os.getenv("MAP_LOOKUP_ENABLED", "false").strip().lower() == "true"
+MAP_USER_AGENT = os.getenv("MAP_USER_AGENT", "")
+MAP_GEOCODER_URL = os.getenv("MAP_GEOCODER_URL", "https://nominatim.openstreetmap.org/search")
+MAP_OVERPASS_URL = os.getenv("MAP_OVERPASS_URL", "https://overpass-api.de/api/interpreter")
+MAP_TILE_URL = os.getenv("MAP_TILE_URL", "https://tile.openstreetmap.org/{z}/{x}/{y}.png")
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     if PRODUCTION:
@@ -73,6 +80,7 @@ INSTALLED_APPS = [
     "apps.budget_planner",
     "apps.pantry",
     "apps.recipe_book",
+    "apps.dashboard",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
