@@ -1,7 +1,7 @@
 recipe_code,name,reason
 RCP-KAGGLE-4472482,Nugget Ayam,bahasa campuran
 RCP-KAGGLE-4469586,Ayam Teriyaki,bahasa Indonesia
-RCP-KAGGLE-4472147,Ayam Kecap,kata 'resep/rumahan'
+RCP-KAGGLE-4472147,Ayam Bumbu Rempah Pedas,sumber tidak memakai kecap
 RCP-KAGGLE-4466395,Sup Ayam Garang Asem,ejaan baku
 RCP-KAGGLE-4471637,Ayam Panggang Saus Kecap,ejaan baku
 RCP-KAGGLE-4471562,Ayam Dada Goreng Tepung,beda dengan Ayam Goreng Tepung (potongan utuh)
@@ -12,14 +12,14 @@ RCP-TMDB-53076,Roti Telur Dadar,bahasa Indonesia
 RCP-TMDB-53281,Kefta Bola Daging ala Aljazair,bahasa Indonesia
 RCP-TMDB-53092,Tumis Buncis Minyak Zaitun ala Suriah,bahasa Indonesia
 RCP-TMDB-53288,Salad Paprika ala Aljazair,bahasa Indonesia
-RCP-MDL-0009,Ratatouille Tempe Telur,judul terlalu panjang
-RCP-MDL-0023,Nasi Kuning Tanpa Kunyit,kata pengantar
+RCP-MDL-0009,Tumis Terong Tempe Tomat,nama Prancis diganti nama Indonesia sesuai bahan
+RCP-MDL-0023,Nasi Gurih Santan,nama kontradiktif (nasi kuning tanpa kunyit)
 RCP-MDL-0024,Balado Udang Kentang Petai,kata pengantar
 RCP-MDL-0032,exclude,duplikat Telur Balado
 RCP-MDL-0035,exclude,duplikat Balado Ikan Tongkol
 RCP-MDL-0196,exclude,duplikat Balado Ikan Tongkol
 RCP-MDL-0053,Daging Sapi Bumbu Jawa,nama jelas
-RCP-MDL-0056,Soto Ayam Bening Kuah Kuning,nama jelas
+RCP-MDL-0056,Soto Ayam Kuning Soun,nama kontradiktif (bening/kuning)
 RCP-MDL-0071,Swike Ayam,kata pengantar
 RCP-MDL-0078,Terong Balado,kata pengantar
 RCP-MDL-0082,Jangan Lombok Tahu Tempe (Sayur Cabai Jawa Timur),nama daerah dijelaskan
@@ -33,7 +33,7 @@ RCP-MDL-0276,Gulai Tahu Ayam,kata pengantar
 RCP-MDL-0097,Ikan Asin Balado,nama jelas
 RCP-MDL-0114,Pepes Ayam Sunda,kata pengantar
 RCP-MDL-0124,Kokor Timun Santan Sambal Limau Kuit (Kutai),nama daerah dijelaskan
-RCP-MDL-0146,Ikan Mas Betuup (Banjar),nama daerah dijelaskan
+RCP-MDL-0146,Iwak Betuup,nama daerah Banjar
 RCP-MDL-0152,exclude,duplikat Ayam Rica-Rica
 RCP-MDL-0998,exclude,duplikat Ayam Rica-Rica Kemangi
 RCP-MDL-1270,Ayam Kampung Rica-Rica,nomor dan kode di judul
@@ -122,11 +122,11 @@ RCP-MDL-0464,Ikan Kembung Kukus Sambal Kemangi,bahasa campuran
 RCP-MDL-0470,Semur Ati Ampela,nama ringkas
 RCP-MDL-0495,exclude,duplikat Semur Ayam Kecap
 RCP-MDL-0658,exclude,duplikat Kentang Pete Balado
-RCP-MDL-0508,Kentang Petai Balado,ejaan baku
+RCP-MDL-0508,nonaktif,judul menyebut petai tetapi sumber tanpa petai; duplikat Kentang Balado
 RCP-MDL-0517,Semur Daging Giling Kentang,nama ringkas
 RCP-MDL-0567,Sambal Goreng Udang Tahu,nama ringkas
-RCP-MDL-0572,Sup Gulai Ayam Jogja,ejaan baku
-RCP-MDL-0974,Sup Gulai Ayam Tahu Jogja,ejaan baku
+RCP-MDL-0572,Gulai Ayam Jawa,gulai bukan sup; bumbu kecap/gula merah khas Jawa
+RCP-MDL-0974,Gulai Ayam Tahu Jawa,gulai bukan sup; bumbu kecap/gula merah khas Jawa
 RCP-MDL-0624,Sate Ayam Bumbu Bali,ejaan
 RCP-MDL-0639,Otak-Otak Ikan Tongkol,nama jelas
 RCP-MDL-0862,Celimpungan (Pempek Kuah Santan),nama ringkas
@@ -171,3 +171,83 @@ RCP-MDL-1364,Terong Bakar Sambal Limau Kuit (Tarung Babanam),nama daerah dijelas
 RCP-MDL-1368,Pepes Manis Ikan Patin (Pais Iwak),nama daerah dijelaskan
 RCP-MDL-0039,Gulai Kuning Ikan Patin,ejaan
 RCP-MDL-0875,Celimpungan Pempek Dos,ejaan
+RCP-MDL-0642,nonaktif,pempek teri tidak lazim; takaran merica sumber janggal
+RCP-MDL-0184,Sambal Goreng Kentang Wortel,hapus embel-embel judul
+RCP-MDL-0046,nonaktif,duplikat Balado Ikan Tongkol; takaran sumber janggal
+RCP-MDL-0059,nonaktif,duplikat Balado Udang Kentang Petai
+RCP-MDL-1360,nonaktif,kecombrang belum ada di katalog sehingga tidak masuk daftar belanja
+RCP-MDL-0320,Sate Ayam Maranggi,hapus embel-embel judul
+RCP-MDL-0357,exclude,"hanya lontong, bukan menu lengkap"
+RCP-MDL-0489,Pepes Bandeng Kemangi,hapus embel-embel judul
+RCP-MDL-0656,Ayam Goreng Sambal Matah,ejaan baku
+RCP-MDL-1325,Telur Balado Tomat,nama jelas
+RCP-MDL-0431,exclude,duplikat Telur Balado; kode lama dipertahankan
+RCP-MDL-0608,exclude,duplikat Semur Jengkol; kode lama dipertahankan
+RCP-MVP-001,Nasi + Orak-Arik Telur Tomat,generalisasi nama menu
+RCP-MVP-002,Nasi + Tumis Ayam Bawang,generalisasi nama menu
+RCP-MVP-003,Nasi + Tumis Tempe Cabai,generalisasi nama menu
+RCP-MVP-004,Nasi + Tumis Tahu Buncis,generalisasi nama menu
+RCP-MVP-005,Nasi + Tumis Udang Tomat,generalisasi nama menu
+RCP-MVP-006,Nasi + Ikan Kembung Masak Cabai,generalisasi nama menu
+RCP-MVP-007,Nasi + Bandeng Masak Tomat,generalisasi nama menu
+RCP-MVP-008,Nasi + Tumis Daging Sapi Cabai,generalisasi nama menu
+RCP-MVP-015,Singkong Kukus + Tumis Ayam Cabai,generalisasi nama menu
+RCP-MVP-016,Ubi Panggang dan Telur,generalisasi nama menu
+RCP-MVP-017,Tumis Kentang Tempe,generalisasi nama menu
+RCP-MVP-018,Tumis Sawi Putih Tahu,generalisasi nama menu
+RCP-MVP-019,Tumis Ayam Kubis Wortel,generalisasi nama menu
+RCP-MVP-020,Tumis Tahu Tempe Cabai,generalisasi nama menu
+RCP-MVP-025,"Salad Buah Pisang, Jeruk, dan Melon",generalisasi nama menu
+RCP-MVP-028,Tumis Kentang Telur,generalisasi nama menu
+RCP-MVP-029,Orak-Arik Telur Jagung,generalisasi nama menu
+RCP-MVP-030,Nasi + Tempe Tumis dan Telur,generalisasi nama menu
+RCP-MVP-031,Ubi Kukus + Tumis Tempe,generalisasi nama menu
+RCP-MVP-032,Singkong Kukus + Telur dan Bawang Tumis,generalisasi nama menu
+RCP-MVP-033,Nasi + Tumis Pakcoy Telur,generalisasi nama menu
+RCP-MVP-034,Nasi + Tumis Ayam Jagung,generalisasi nama menu
+RCP-MVP-035,Nasi + Tumis Tempe Buncis,generalisasi nama menu
+RCP-MVP-036,Nasi + Tumis Kubis Wortel Telur,generalisasi nama menu
+RCP-MVP-037,Nasi + Tumis Tahu Kangkung,generalisasi nama menu
+RCP-MVP-038,Nasi + Semur Daging Sapi Kentang,generalisasi nama menu
+RCP-MVP-039,Nasi + Ikan Kembung dan Tumis Kangkung,generalisasi nama menu
+RCP-MVP-040,Nasi + Tumis Ayam Kubis Wortel,generalisasi nama menu
+RCP-MVP-042,Nasi + Tumis Ayam Pakcoy,generalisasi nama menu
+RCP-MVP-043,Nasi + Tumis Tempe Bayam,generalisasi nama menu
+RCP-MVP-044,Nasi + Orak-Arik Telur Bayam Tomat,generalisasi nama menu
+RCP-MVP-045,Nasi + Ikan Kembung dan Tumis Kubis,generalisasi nama menu
+RCP-MVP-046,Nasi + Tumis Tahu Tempe Kentang,generalisasi nama menu
+RCP-MVP-049,Nasi Jagung + Tumis Bayam dan Telur Ceplok,generalisasi nama menu
+RCP-MVP-050,Dadar Kentang Telur Kubis,generalisasi nama menu
+RCP-MVP-053,nonaktif,duplikat Ubi Kukus + Tumis Tempe (RCP-MVP-031)
+RCP-MVP-055,Singkong Kukus + Orak-Arik Telur Tomat,generalisasi nama menu
+RCP-MVP-056,Pisang Panggang dan Telur,generalisasi nama menu
+RCP-MVP-059,Nasi + Tumis Ayam Tomat Buncis,generalisasi nama menu
+RCP-MVP-060,Nasi + Tumis Udang Kubis Wortel,generalisasi nama menu
+RCP-MVP-061,Nasi + Dadar Telur Bayam,generalisasi nama menu
+RCP-MVP-062,Nasi + Bandeng dan Tumis Tomat,dibedakan dari Bandeng Masak Tomat (RCP-MVP-007)
+RCP-MVP-063,Nasi + Tumis Daging Sapi Kubis,generalisasi nama menu
+RCP-MVP-064,Nasi + Ikan Kembung dan Tumis Buncis,generalisasi nama menu
+RCP-MVP-065,Nasi + Tumis Tempe Wortel Pakcoy,generalisasi nama menu
+RCP-MVP-066,Nasi + Tumis Tahu Tomat Kubis,generalisasi nama menu
+RCP-MVP-067,Nasi + Sup Ayam Kentang Bayam,generalisasi nama menu
+RCP-MVP-068,Nasi + Tumis Tempe Kangkung dan Telur Ceplok,generalisasi nama menu
+RCP-MVP-069,Nasi + Tumis Udang Jagung Bayam,generalisasi nama menu
+RCP-MVP-070,Nasi + Ikan Dori dan Tumis Tomat,generalisasi nama menu
+RCP-MVP-071,Nasi + Tumis Ayam Pakcoy Wortel,generalisasi nama menu
+RCP-MVP-072,Nasi + Tumis Kentang Kubis Telur,generalisasi nama menu
+RCP-MVP-073,Nasi + Bandeng Goreng dan Tumis Buncis Tomat,generalisasi nama menu
+RCP-MVP-075,Nasi Goreng Tempe Kubis,generalisasi nama menu
+RCP-MVP-077,Nasi + Tumis Daging Sapi Tomat Buncis,generalisasi nama menu
+RCP-MVP-078,Ikan Kembung dan Tumis Kubis Tomat,nama sesuai instruksi
+RCP-MVP-080,"Nasi + Ayam, Ubi Kukus, dan Tumis Bayam",generalisasi nama menu
+RCP-MVP-081,Nasi + Orak-Arik Telur Pakcoy,generalisasi nama menu
+RCP-MVP-082,Nasi + Tumis Udang Tomat Kangkung,generalisasi nama menu
+RCP-MVP-083,Kentang Kukus + Tumis Tempe Bayam,generalisasi nama menu
+RCP-MVP-084,Nasi + Ikan Dori dan Tumis Kubis Wortel,generalisasi nama menu
+RCP-MVP-085,Kentang + Tumis Ayam Sawi Putih,nama sesuai instruksi
+RCP-MVP-086,Nasi + Tumis Tempe Jagung Tomat,generalisasi nama menu
+RCP-MDL-0512,exclude,duplikat Telur Balado; kode lama dipertahankan
+RCP-MDL-0956,exclude,duplikat Telur Balado; kode lama dipertahankan
+RCP-MDL-1343,nonaktif,porsi sumber 1 tidak sesuai 1 ekor ayam dan bumbunya; ada Ayam Woku Manado/Kemangi
+RCP-MDL-0001,exclude,duplikat Balado Udang Kentang Petai
+RCP-MDL-0837,Ayam Katsu,nama ringkas

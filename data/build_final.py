@@ -16,12 +16,12 @@ if __package__:
     from .allergens import build_allergens
     from .mendeley_recipes import build_mendeley
     from .recipe_estimation import estimate_candidates, replace_recipe, unique_rows
-    from .recipe_names import EXCLUDE, load_overrides, standard_name
+    from .recipe_names import DEACTIVATE, EXCLUDE, load_overrides, standard_name
 else:
     from allergens import build_allergens
     from mendeley_recipes import build_mendeley
     from recipe_estimation import estimate_candidates, replace_recipe, unique_rows
-    from recipe_names import EXCLUDE, load_overrides, standard_name
+    from recipe_names import DEACTIVATE, EXCLUDE, load_overrides, standard_name
 
 ROOT = Path(__file__).resolve().parent
 RAW, MAP, OUT, FIX = (ROOT / x for x in ("raw", "mapping", "processed", "fixtures"))
@@ -1585,6 +1585,7 @@ def build_recipes(items, prices):
         rows.extend(extra)
     # Users see one clear name per menu: curated renames first, then standard
     # spelling and casing. Mendeley rows already went through the same steps.
+    # A "nonaktif" override hides the menu but keeps its code for saved plans.
     overrides = load_overrides(MAP / "recipe_name_overrides.csv")
     for recipe in recipes:
         if recipe["source"] == "TheMealDB API; kurasi TAKARKUY":
@@ -1594,7 +1595,9 @@ def build_recipes(items, prices):
             raise ValueError(
                 "Pengecualian nama hanya untuk resep Mendeley: " + recipe["recipe_code"]
             )
-        if name and name != EXCLUDE:
+        if name == DEACTIVATE:
+            recipe["is_active"] = "false"
+        elif name and name != EXCLUDE:
             recipe["name"] = name
         if recipe["is_plannable"] == "true":
             recipe["name"] = standard_name(recipe["name"])

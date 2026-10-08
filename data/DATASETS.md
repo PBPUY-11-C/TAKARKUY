@@ -1,6 +1,6 @@
 # Inventaris dataset TAKARKUY
 
-Inventaris diperbarui pada **5 Oktober 2026**. Harga Garut tetap snapshot 28 September; tanggal review bukan tanggal publikasi harga. Angka menunjukkan baris data, bukan jumlah makanan unik. Ada tiga tingkat: **aktif** (`processed/` dan `mapping/`, dipakai aplikasi), **kandidat** (`staging/` dan `scratch/`, kurasi), dan **sumber mentah** (`raw/`, jejak asal/rekonstruksi). Sebagian kandidat sudah dipromosikan; jangan menjumlahkan staging dengan aktif. Tidak ada klaim cakupan seluruh bahan Indonesia/produk minimarket.
+Inventaris diperbarui pada **8 Oktober 2026**. Harga Garut tetap snapshot 28 September; tanggal review bukan tanggal publikasi harga. Angka menunjukkan baris data, bukan jumlah makanan unik. Ada tiga tingkat: **aktif** (`processed/` dan `mapping/`, dipakai aplikasi), **kandidat** (`staging/` dan `scratch/`, kurasi), dan **sumber mentah** (`raw/`, jejak asal/rekonstruksi). Sebagian kandidat sudah dipromosikan; jangan menjumlahkan staging dengan aktif. Tidak ada klaim cakupan seluruh bahan Indonesia/produk minimarket.
 
 ## Dataset aktif
 
@@ -10,16 +10,16 @@ Inventaris diperbarui pada **5 Oktober 2026**. Harga Garut tetap snapshot 28 Sep
 | `processed/ingredient_allergens.csv` | 201 | Input kurasi `mapping/ingredient_allergens.csv`; 167 review jenis bahan tunggal dan 34 unknown. 9 kelompok berdasarkan [FSA](https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses), bukan sertifikasi atau verifikasi label merek. Build menggabungkan metadata ke master bahan/fixture tanpa menambah objek. |
 | `processed/ingredient_prices.csv` | 163 | 78 Garut + 21 PIHPS (28 September 2026), ditambah **64 referensi toko daring non-Garut** (44 dari kurasi 1 Oktober dan 20 dari kurasi 5 Oktober). Tanggal terbit listing tidak diketahui; bukan harga real-time. Harga Garut tetap diutamakan. |
 | `processed/ingredient_shelf_life.csv` | 149 | Rentang lama simpan untuk 80 bahan/berbagai kondisi. Berbasis [USDA FoodKeeper](https://catalog.data.gov/dataset/fsis-foodkeeper-data) melalui mirror historis; semua perlu verifikasi lokal. **Bukan** tanggal kedaluwarsa pada kemasan. |
-| `processed/recipes.csv` | 434 | **296 siap dihitung**: 87 internal, 18 adaptasi Kaggle, 4 TheMealDB, 187 Mendeley. **138** diblokir. Siap dihitung bukan izin publikasi: teks langkah Mendeley ditahan. |
-| `processed/recipe_ingredients.csv` | 2.973 | Hubungan bahan dan gram; takaran tambahan memakai `quantity_status=estimated` beserta audit di `raw_text`. Bahan berulang dalam resep dijumlahkan menjadi satu relasi/ID. |
-| `processed/recipe_tags.csv` | 2.140 | Tag resep; label diet/halal bukan sertifikasi. Tag kandidat dibersihkan saat promosi. |
+| `processed/recipes.csv` | 438 | **300 siap dihitung**: 87 internal, 18 adaptasi Kaggle, 4 TheMealDB, 191 Mendeley; 6 di antaranya `is_active=false` (duplikat/data sumber janggal), sehingga **294 tampil** di aplikasi. **138** diblokir. Siap dihitung bukan izin publikasi: teks langkah Mendeley ditahan. |
+| `processed/recipe_ingredients.csv` | 3.027 | Hubungan bahan dan gram; takaran tambahan memakai `quantity_status=estimated` beserta audit di `raw_text`. Bahan berulang dalam resep dijumlahkan menjadi satu relasi/ID. |
+| `processed/recipe_tags.csv` | 2.174 | Tag resep; label diet/halal bukan sertifikasi. Tag kandidat dibersihkan saat promosi. |
 | `mapping/ingredient_aliases.csv` | 376 | Padanan nama bahan/alias; ID lama dipertahankan agar relasi stok tidak putus. |
 | `mapping/unit_conversions.csv` | 612 | Massa standar dan konversi spesifik. Asumsi takaran resep **tidak** menjadi konversi kemasan global untuk OCR/pantry. |
 | `staging/recipe_quantity_estimates.csv` | 1.824 | Audit **semua bahan dari 160 kandidat**, termasuk 38 komponen tambahan hasil pemisahan bahan gabungan: nama/takaran asli, gram termakan dan massa beli jika dapat dihitung, padanan bahan, asumsi, sumber, dan penghalang. Baris `blocked` dapat memiliki gram yang diketahui tetapi belum punya padanan gizi/harga. |
-| `processed/recipe_readiness.csv` | 434 | Status/penyebab per resep; memudahkan memilih penghalang yang perlu dilengkapi. |
-| `processed/recipe_estimated_nutrition.csv` | 296 | Hasil perhitungan empat makro dan biaya per porsi resep siap hitung; bukan hasil uji laboratorium. |
+| `processed/recipe_readiness.csv` | 438 | Status/penyebab per resep; memudahkan memilih penghalang yang perlu dilengkapi. |
+| `processed/recipe_estimated_nutrition.csv` | 300 | Hasil perhitungan empat makro dan biaya per porsi resep siap hitung; bukan hasil uji laboratorium. |
 
-Fixture tunggal `fixtures/catalog_seed.json` berisi **7.048 objek**. Delapan tabel utama dan fixture lolos pemeriksaan PK/FK tanpa ID ganda. Kandidat yang dipromosikan **mengganti metadata dengan ID sama**, bukan ditambahkan lagi. Duplikat identik diringkas; ID sama dengan isi berbeda ditolak, bukan diam-diam ditimpa. Kurasi nama mengeluarkan 48 resep dari hasil ekspansi sebelumnya: duplikat hidangan dan menu di luar cakupan, dengan alasan eksplisit dalam `mapping/recipe_name_overrides.csv`; sumber mentah tetap disimpan. Build/validator menolak nama resep aktif ganda. `validate_docs.py` membandingkan hitungan ketiga dokumen dengan keluaran build agar angka tidak tertinggal.
+Fixture tunggal `fixtures/catalog_seed.json` berisi **7.140 objek**. Delapan tabel utama dan fixture lolos pemeriksaan PK/FK tanpa ID ganda. Kandidat yang dipromosikan **mengganti metadata dengan ID sama**, bukan ditambahkan lagi. Duplikat identik diringkas; ID sama dengan isi berbeda ditolak, bukan diam-diam ditimpa. Kurasi nama mengeluarkan 48 resep dari hasil ekspansi sebelumnya: duplikat hidangan dan menu di luar cakupan, dengan alasan eksplisit dalam `mapping/recipe_name_overrides.csv`; sumber mentah tetap disimpan. Build/validator menolak nama resep aktif ganda. `validate_docs.py` membandingkan hitungan ketiga dokumen dengan keluaran build agar angka tidak tertinggal.
 
 ### Estimasi dan resep yang masih diblokir
 
@@ -27,7 +27,7 @@ Fixture tunggal `fixtures/catalog_seed.json` berisi **7.048 objek**. Delapan tab
 |---|---:|---|
 | TheMealDB | 4 aktif / 96 diblokir | Aktif: Bread Omelette, Algerian Kefta, Fasoliyyeh, Algerian Flafla. Semua porsi/takaran rumah tangga diberi label estimasi. Sisanya masih memiliki padanan bahan/bentuk produk, harga, satuan, atau penempatan menu yang belum selesai. |
 | Kaggle/Cookpad | 18 aktif / 42 diblokir | Langkah singkat merupakan adaptasi TAKARKUY, bukan penerbitan ulang langkah Cookpad verbatim. Bumbu campuran/SKU, bentuk matang, serta padanan/takaran/harga belum lengkap tetap menghalangi resep lain. “Bumbu ayam” tidak disamakan dengan daging ayam. |
-| Mendeley | 187 aktif untuk simulasi | Bahan, porsi dan empat makro dipadankan/dihitung ulang; takaran dan slot diberi status estimasi. Teks langkah tidak dipublikasikan sampai review sumber selesai. |
+| Mendeley | 191 siap hitung (186 aktif) untuk simulasi | Bahan, porsi dan empat makro dipadankan/dihitung ulang; takaran dan slot diberi status estimasi. Teks langkah tidak dipublikasikan sampai review sumber selesai. |
 | Menu dori internal | 2 aktif dengan proksi | Gram/harga Garut dipertahankan. Gizi menggunakan **estimasi proksi patin segar GR060** (132 kkal, 17 g protein, 1,1 g karbo, 6,6 g lemak/100 g) melalui [mirror TKPI](https://alatpertanian.asia/tabel-komposisi-pangan-indonesia-tkpi-2019/), belum dicocokkan dengan PDF asli. `nutrition_verified=false`; bukan pernyataan bahwa semua dori adalah patin. |
 
 Aturan estimasi yang dapat diperbaiki ada di `recipe_estimation.py`; angka/sumber tambahan ada di `mapping/recipe_estimation_sources.json`. Massa `oz`/`lb` mengikuti [NIST](https://www.nist.gov/pml/owm/metric-si/unit-conversion/approximate-conversions-us-customary-measures-metric), **bukan** ons Indonesia (100 g). Berat siung/cup mengacu [USDA SR Legacy](https://fdc.nal.usda.gov/download-datasets/) dan [King Arthur Ingredient Weight Chart](https://www.kingarthurbaking.com/learn/ingredient-weight-chart), dengan asumsi lokal yang dilabeli terpisah. Cup tidak disamakan dengan gram untuk semua bahan. Takaran `secukupnya` memakai asumsi **khusus bahan dan batch**, bukan angka universal. Porsi diasumsikan minimal 2, memakai pembagi internal 150 g bahan protein hewani atau 75 g beras/tepung; ini **bukan** rekomendasi kebutuhan gizi.
@@ -123,6 +123,13 @@ python manage.py import_catalog data/fixtures/catalog_seed.json --sync-generated
 Opsi impor terakhir menyinkronkan relasi bahan/tag **buatan generator** pada resep yang tercantum dalam fixture; relasi bersumber pengguna, resep lain, stok dan riwayat rencana tidak dihapus. Jangan memakai opsi ini pada fixture parsial untuk resep yang ingin mempertahankan relasi generator lama.
 
 Perintah pertama mengakses internet dan mengganti snapshot kandidat Open Food Facts; jangan menjalankannya otomatis pada setiap request aplikasi. Open Food Facts meminta unduhan [bulk export](https://openfoodfacts.github.io/documentation/docs/Product-Opener/api/) bila membutuhkan lebih dari beberapa ratus produk, bukan memperbanyak panggilan search API. Perintah kedua membangun ulang indeks dari snapshot lokal. Keduanya **tidak** mengubah fixture Django atau mempromosikan kandidat menjadi data aktif.
+
+## Perbaikan takaran dan nama resep — 8 Oktober 2026
+
+- **Berat sumber Mendeley diperiksa.** Kolom berat dataset Mendeley sering tidak sesuai takarannya (mis. "6 butir" telur tertulis 50 g, "5 butir" kemiri 500 g, "1 sdt" gula 0,05 g). Berat sumber kini hanya dipakai bila berada pada 0,5–2× takaran rumah tangga yang sama; di luar itu dipakai estimasi TAKARKUY dan alasannya dicatat di `raw_text`/audit (aturan `takarkuy-mendeley-2026-10-08-v3`). Satuan `ekor` tidak diperiksa karena sumber juga memakainya untuk potongan.
+- **Satuan Indonesia:** `lb`/`lbr` dibaca *lembar*, bukan pound (daun jeruk 1.360 g → 1,5 g). Kaldu bertakaran volume (`kaldu sapi 500 ml`) dihitung sebagai air, bukan kaldu bubuk. Minyak goreng dibatasi **15 g/porsi** sebagai bagian terserap; sisa minyak penggorengan tidak dihitung.
+- **Nama dan duplikat** diatur di `mapping/recipe_name_overrides.csv`. Nilai baru `nonaktif` menulis `is_active=false` tanpa menghapus baris/kode, sehingga rencana tersimpan tetap terbaca; `exclude` tetap hanya untuk Mendeley. Ganti nama tidak lagi membebaskan judul sumber untuk duplikatnya. Resep internal memakai nama sesuai cara masak, mis. "Nasi + Ikan Kembung Masak Cabai".
+- Dampak dibanding katalog sebelumnya: 8 resep dikeluarkan dari fixture, 6 resep dinonaktifkan, dan 12 resep Mendeley baru lolos validasi. Total resep aktif siap dihitung berubah dari 296 menjadi 294. Sarapan aktif 35.
 
 ## Cleanup fixture — 5 Oktober 2026
 
