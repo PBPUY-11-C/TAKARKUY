@@ -2,8 +2,9 @@
 
 import hashlib
 import json
+from datetime import timedelta
 from decimal import ROUND_UP, Decimal, InvalidOperation
-from uuid import UUID
+from uuid import NAMESPACE_URL, UUID, uuid5
 from zoneinfo import ZoneInfo
 
 from django.contrib.auth import get_user_model
@@ -352,3 +353,72 @@ def consume_stock(user, requirements, consumption_key, *, allow_unknown_expiry=F
     )
     event.save(update_fields=["response"])
     return event.response
+
+
+def session_scope(user):
+    """Compatibility session column for a user's batches; authorization uses the FK."""
+    return uuid5(NAMESPACE_URL, f"takarkuy:pantry-user:{user.pk}").hex
+
+
+# Catalog category -> pantry category, and the storage tried first for it.
+PURCHASE_CATEGORY = {
+    "sayur": "sayur_buah",
+    "buah": "sayur_buah",
+    "karbohidrat": "beras_karbohidrat",
+    "bumbu": "bumbu_minyak",
+    "lemak": "bumbu_minyak",
+}
+FRESH_LOCATIONS = ("chiller", "freezer", "suhu_ruang")
+
+
+def purchase_category(ingredient):
+    if ingredient.category == "protein":
+        code = ingredient.pk
+        if any(word in code for word in ("TAHU", "TEMPE", "KACANG")):
+            return "tahu_tempe_kacang"
+        return "lainnya" if "TELUR" in code else "daging_seafood"
+    return PURCHASE_CATEGORY.get(ingredient.category, "lainnya")
+
+
+def add_purchases(user, rows, event):
+    """Create one batch per bought catalog ingredient (grams), like manual input.
+
+    Must be called inside atomic after operation(). Expiry comes from the local
+    shelf-life reference for the first location that has one; fresh food tries
+    the fridge first. Without a reference the date stays unknown, never guessed.
+    """
+    from .catalog_context import everyday_ingredient_name
+    from .storage import DEFAULT_LOCATION, expiry_estimate, shelf_life_duration, storage_options
+
+    today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
+    items = []
+    for ingredient, grams in rows:
+        options = storage_options(ingredient.pk)
+        order = (
+            FRESH_LOCATIONS
+            if ingredient.category in {"protein", "sayur", "buah"}
+            else (DEFAULT_LOCATION, "chiller", "freezer")
+        )
+        location = next((place for place in order if place in options), DEFAULT_LOCATION)
+        days = expiry_estimate(options, location, today)["shelf_life_days"]
+        expires_on = today + timedelta(days=days) if days is not None else None
+        item = PantryItem(
+            user=user,
+            session_id=session_scope(user),
+            source="manual",
+            name=everyday_ingredient_name(ingredient.name),
+            category=purchase_category(ingredient),
+            quantity=grams,
+            unit="g",
+            location=location,
+            ingredient_id=ingredient.pk,
+            starting_on=today,
+            estimated_expires_on=expires_on,
+            expiry_source="estimate" if expires_on else "unknown",
+            shelf_life_days=shelf_life_duration(today, expires_on),
+        )
+        refresh_conversion(item)
+        item.save()
+        movement(item, event, "in", {})
+        items.append(item)
+    return items

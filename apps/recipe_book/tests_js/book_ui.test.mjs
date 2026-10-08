@@ -68,3 +68,11 @@ test('recipe and stock names render as plain text', async () => {
   await ui.get('#cooking-form').trigger('submit');
   assert.match(ui.get('#cooking-preview').children[1].textContent, /<img onerror/);
 });
+test('skip button sends the slot, plan version and target status', async () => {
+  const ui = setup();
+  Object.assign(ui.get('#recipe-detail').dataset, {slot: '7', version: '3'});
+  ui.get('#slot-status').dataset = {url: '/modul4/slot-status/', status: 'skipped'};
+  await ui.get('#slot-status').trigger();
+  assert.deepEqual(ui.requests.at(-1), {url: '/modul4/slot-status/', payload: {planned_meal: 7, version: 3, status: 'skipped'}});
+  assert.equal(ui.reloads(), 1);
+});

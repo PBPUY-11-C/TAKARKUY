@@ -1,5 +1,4 @@
 from datetime import date, timedelta
-from uuid import NAMESPACE_URL, uuid5
 from zoneinfo import ZoneInfo
 
 from django.contrib.auth.decorators import login_required
@@ -38,6 +37,7 @@ from .services import (
     recipe_matches,
     refresh_conversion,
     reserve_llm,
+    session_scope,
     snapshot,
 )
 from .storage import (
@@ -62,7 +62,7 @@ def _starting_on(item):
 
 def _session_id(request):
     # Compatibility column only: all authorization queries use the user FK.
-    scope = uuid5(NAMESPACE_URL, f"takarkuy:pantry-user:{request.user.pk}").hex
+    scope = session_scope(request.user)
     if request.session.get("pantry_session_id") != scope:
         request.session["pantry_session_id"] = scope
     return scope

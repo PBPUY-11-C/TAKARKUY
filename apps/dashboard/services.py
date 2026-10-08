@@ -53,7 +53,9 @@ def dashboard_data(user):
             plan.remaining = -plan.remaining
         for meal in plan.today_meals:
             snapshot = meal.snapshot if isinstance(meal.snapshot, dict) else {}
-            meal.display_name = snapshot.get("name") or meal.recipe.name
+            meal.display_name = (snapshot.get("name") or meal.recipe.name) + (
+                " + Nasi" if snapshot.get("with_rice") else ""
+            )
             meal.display_time = MEALS.get(meal.meal_type, meal.meal_type)
         plan.today_meals.sort(
             key=lambda meal: list(MEALS).index(meal.meal_type) if meal.meal_type in MEALS else 99

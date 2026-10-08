@@ -1,6 +1,7 @@
 import json
 import secrets
 from copy import deepcopy
+from decimal import ROUND_CEILING, Decimal
 from functools import wraps
 from uuid import UUID
 
@@ -27,6 +28,8 @@ from .services import (
     clean_inputs,
     cooked_slots,
     make_preview,
+    pantry_priority,
+    purchases_to_pantry,
     save_plan,
     schedule_codes,
     stored_inputs,
@@ -69,6 +72,39 @@ def preview_data(preview):
     }
 
 
+def pantry_annotations(user, plan, result, display_schedule):
+    """Live pantry facts for display only; never written into the plan snapshot."""
+    from apps.catalog.models import RecipeIngredient
+    from apps.pantry.services import available_grams
+
+    stock = available_grams(user)
+    added = {
+        item.ingredient_id: item.added_to_pantry_at
+        for item in (plan.shopping_items.all() if plan else ())
+    }
+    groups, saving = deepcopy(result["shopping_groups"]), 0
+    for group in groups:
+        for item in group["items"]:
+            need = Decimal(str(item["quantity"]))
+            have = min(stock.get(item["ingredient_code"], Decimal(0)), need)
+            item["in_pantry"] = int(have)
+            item["to_buy"] = max(0, int((need - have).to_integral_value(rounding=ROUND_CEILING)))
+            item["added_to_pantry"] = bool(added.get(item["ingredient_code"]))
+            if have > 0 and need > 0:
+                saving += int(Decimal(item["cost"]) * have / need)
+    priority = pantry_priority(user)
+    codes = {meal["recipe_code"] for day in display_schedule for meal in day["meals"]}
+    uses = {}
+    for link in RecipeIngredient.objects.filter(
+        recipe_id__in=codes, ingredient_id__in=priority
+    ).select_related("ingredient"):
+        uses.setdefault(link.recipe_id, []).append(link.ingredient.name)
+    for day in display_schedule:
+        for meal in day["meals"]:
+            meal["expiring_stock"] = sorted(uses.get(meal["recipe_code"], []))
+    return groups, saving // 100 * 100
+
+
 def account_page(request, builder):
     plan = None
     requested = request.POST.get("plan_id") if request.method == "POST" else request.GET.get("plan")
@@ -81,8 +117,10 @@ def account_page(request, builder):
         request.method == "POST" and request.POST.get("new_plan") == "1"
     ):
         plan = BudgetPlan.objects.filter(user=request.user, status="draft").first()
+    # Plans saved before the rice option existed were made without rice.
+    plan_inputs = {"rice": "no", **plan.inputs} if plan else None
     initial = (
-        plan.inputs
+        plan_inputs
         if plan
         else {
             "budget": 150000,
@@ -94,7 +132,7 @@ def account_page(request, builder):
         }
     )
     form = PlannerForm(
-        request.POST if request.method == "POST" else (plan.inputs if plan else None),
+        request.POST if request.method == "POST" else plan_inputs,
         initial=initial,
     )
     result = thaw(plan.snapshot) if plan else None
@@ -152,6 +190,7 @@ def account_page(request, builder):
                         for meal in form.cleaned_data["meal_types"]
                     },
                     seed=secrets.randbits(32),
+                    priority_ingredients=pantry_priority(request.user),
                 )
                 result = candidate
                 if candidate["within_budget"]:
@@ -188,6 +227,12 @@ def account_page(request, builder):
                 if item:
                     meal["planned_meal_id"] = item.pk if plan.status == "saved" else None
                     meal["cooked"] = (item.day, item.meal_type) in cooked
+                    meal["skipped"] = item.status == "skipped"
+    shopping_groups, pantry_saving = (
+        pantry_annotations(request.user, plan, result, display_schedule)
+        if result and result.get("within_budget")
+        else (None, 0)
+    )
     response = render(
         request,
         "budget_planner/planner.html",
@@ -195,6 +240,8 @@ def account_page(request, builder):
             "form": form,
             "result": result,
             "display_schedule": display_schedule,
+            "shopping_groups": shopping_groups,
+            "pantry_saving": pantry_saving,
             "error": error,
             "plan": plan,
             "trial": None,
@@ -300,6 +347,15 @@ def save_account_plan(request, payload, plan_id):
         request.user, plan_id, payload.get("version"), **form.cleaned_data, replace_original=replace
     )
     return JsonResponse({"url": reverse("modul1") + f"?plan={plan.pk}#hasil", "id": str(plan.pk)})
+
+
+@plan_api
+def add_plan_purchases(request, payload, plan_id):
+    owned_plan(request, plan_id)
+    response = purchases_to_pantry(
+        request.user, plan_id, payload.get("version"), payload.get("items")
+    )
+    return JsonResponse({**response, "pantry_url": reverse("modul2")}, status=201)
 
 
 @plan_api

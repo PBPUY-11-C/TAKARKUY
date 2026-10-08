@@ -188,3 +188,41 @@
   const pending = document.getElementById("pending-plan-preview");
   if (pending) { resetDialog(); showProposal(JSON.parse(pending.textContent)); }
 })();
+
+// Move checked shopping-list items into the pantry once they were bought.
+(() => {
+  const button = document.getElementById("add-to-pantry");
+  if (!button) return;
+  const feedback = document.getElementById("plan-feedback");
+  button.addEventListener("click", async () => {
+    const items = Array.from(document.querySelectorAll(".pantry-pick:checked")).map((box) => ({
+      ingredient_code: box.dataset.ingredient,
+      grams: Number(box.dataset.grams),
+    }));
+    if (!items.length) {
+      feedback.textContent = "Centang minimal satu bahan yang sudah dibeli.";
+      return;
+    }
+    button.disabled = true;
+    feedback.textContent = "Memasukkan belanjaan ke Pantry…";
+    try {
+      const response = await fetch(button.dataset.url, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector('[name="csrfmiddlewaretoken"]').value,
+        },
+        body: JSON.stringify({ version: Number(button.dataset.version), items }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || `Request belum berhasil (kode ${response.status}).`);
+      feedback.textContent = `${body.saved} bahan masuk ke Pantry. Atur lokasi/tanggal di Smart Pantry bila perlu.`;
+      location.reload();
+    } catch (error) {
+      feedback.textContent = error.message;
+      button.disabled = false;
+    }
+  });
+})();
