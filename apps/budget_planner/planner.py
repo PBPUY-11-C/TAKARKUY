@@ -9,7 +9,7 @@ from math import ceil
 from random import Random
 
 from apps.catalog.content_policy import protect_plan_instructions
-from apps.catalog.models import IngredientPrice, Recipe
+from apps.catalog.models import Ingredient, IngredientPrice, Recipe
 
 from .protein_groups import main_protein_group
 from .purchase_units import load_fruit_rules, whole_fruit_quote
@@ -42,13 +42,51 @@ CATALOG_VARIETY_SHARE = 0.10
 # equally close, so protein variety and the seeded tie-break decide.
 NUTRITION_COST_BAND_RATIO = 0.10
 MIN_NUTRITION_COST_BAND = 2500
-SCORE_LENGTH = 6  # elements in a _recipe_patterns score
+SCORE_LENGTH = 7  # elements in a _recipe_patterns score
 HIGH_PROTEIN_GRAMS_PER_DAY = Decimal("80")
 CALORIE_LIMITS_BY_MEAL = {
     "sarapan": Decimal("500"),
     "makan_siang": Decimal("325"),
     "makan_malam": Decimal("325"),
 }
+# Many lunch/dinner recipes are side dishes (lauk) eaten with rice. When rice is
+# on, a lauk without any carbohydrate ingredient gets one plate of rice per
+# serving, priced and counted like any other ingredient.
+RICE_CODE = "ING-BERAS-MEDIUM"
+RICE_GRAMS_PER_SERVING = 80  # raw rice, about one plate of cooked rice
+RICE_MEALS = ("makan_siang", "makan_malam")
+# Recipes using pantry stock that expires soon are guaranteed a place in the
+# search pool, up to this many per meal.
+PANTRY_POOL_SLOTS = 8
+
+
+def rice_included(rice, servings, targets):
+    """'auto' adds rice for 1-2 people, except under a low-calorie target."""
+    if rice == "yes":
+        return True
+    return rice == "auto" and servings <= 2 and "rendah_kalori" not in targets
+
+
+class RiceLink:
+    """A recipe-ingredient row for the added rice; never stored in the catalog."""
+
+    unit = "g"
+    quantity_status = "curated"
+    raw_text = ""
+    is_optional = False
+
+    def __init__(self, recipe, ingredient):
+        self.recipe_ingredient_code = f"NASI-{recipe.pk}"
+        self.ingredient = ingredient
+        self.ingredient_id = ingredient.pk
+        # Scaled by servings / base_servings like catalog rows.
+        self.quantity = RICE_GRAMS_PER_SERVING * recipe.base_servings
+
+
+def needs_rice(meal_type, ingredients):
+    return meal_type in RICE_MEALS and not any(
+        link.ingredient.category == "karbohidrat" for link in ingredients
+    )
 
 
 def purchase_grams(link):
@@ -111,11 +149,13 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
             0,
             0,
             0,
-        )  # indexes, all-target hits, total hits, recent hits, prior hits, protein repeats
+            0,
+        )  # indexes, all-target hits, total hits, recent hits, prior hits, protein repeats,
+        # pantry hits
         prior_codes = set(prior_slot_codes)
 
         def rank(state):
-            return (-state[4], state[1], -state[5], state[2], -state[3])
+            return (-state[4], state[1], -state[5], state[2], state[6], -state[3])
 
         for index, item in enumerate(candidates):
             code = item["recipe"].pk
@@ -128,6 +168,7 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
                     recent_hits,
                     prior_hits,
                     protein_repeats,
+                    pantry_hits,
                 ) in states[count - 1].items():
                     new_cost = cost + item["cost"]
                     matched = len(preferred_tags & item["tags"])
@@ -139,6 +180,7 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
                         prior_hits + (code in prior_codes),
                         protein_repeats
                         + sum(candidates[i]["protein_group"] == group for i in indexes),
+                        pantry_hits + item.get("pantry_hits", 0),
                     )
                     old = states[count].get(new_cost)
                     if old is None or rank(candidate) > rank(old):
@@ -167,6 +209,7 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
             sum(preferred_tags <= item["tags"] for item in pattern),
             -sum(count - 1 for count in group_counts.values()),
             sum(len(preferred_tags & item["tags"]) for item in pattern),
+            sum(item.get("pantry_hits", 0) for item in pattern),
             -sum(1 for item in pattern if item["recipe"].pk in recent_codes),
             len(recipe_counts),
         )
@@ -258,6 +301,13 @@ def _candidate_pool(items, size, days, rng, recent_codes, targets):
     ordered = sorted(items, key=lambda item: (item["cost"], item["recipe"].pk))
     pool = ordered[: min(days, size)]
     rest = ordered[len(pool) :]
+    pantry = sorted(
+        (item for item in rest if item.get("pantry_hits", 0)),
+        key=lambda item: (-item.get("pantry_hits", 0), item["cost"], item["recipe"].pk),
+    )[: min(PANTRY_POOL_SLOTS, size - len(pool))]
+    if pantry:
+        pool += pantry
+        rest = [item for item in rest if not any(item is chosen for chosen in pantry)]
     fit = _target_fit(rest, targets)
     groups = Counter(item["protein_group"] for item in pool)
     buckets = size - len(pool)
@@ -472,6 +522,7 @@ def _nutrition_plan(
                     )
                     repeats = sum(uses[code] for code in codes)
                     recent_hits = sum(code in recent_codes for code in codes)
+                    pantry_hits = sum(item.get("pantry_hits", 0) for item in items)
                     same_as_yesterday = sum(a == b for a, b in zip(groups, yesterday))
                     # Costs within one band count as equally close to the daily
                     # target, so protein variety and the seeded tie-break decide.
@@ -480,6 +531,7 @@ def _nutrition_plan(
                         day_repeats,
                         repeats,
                         prior_hits,
+                        -pantry_hits,
                         recent_hits,
                         same_as_yesterday,
                         tie_break,
@@ -523,9 +575,23 @@ def _nutrition_plan(
     )
 
 
-def _load_candidates(requested_meals, servings, exclude_ingredients, allergens=()):
-    """Price and nutrition-complete halal recipes per meal for the given servings."""
+def _load_candidates(
+    requested_meals,
+    servings,
+    exclude_ingredients,
+    allergens=(),
+    *,
+    with_rice=False,
+    priority_ingredients=frozenset(),
+):
+    """Price and nutrition-complete halal recipes per meal for the given servings.
+
+    With rice, a lunch/dinner lauk gets RICE_GRAMS_PER_SERVING of rice per serving
+    unless the user avoids rice. priority_ingredients are pantry stock that
+    expires soon; each recipe counts how many of them it uses.
+    """
     from apps.catalog.allergens import recipe_allowed
+
     snapshot = (
         IngredientPrice.objects.filter(region=REGION, price_status="published", unit="kg")
         .order_by("-recorded_at")
@@ -560,6 +626,11 @@ def _load_candidates(requested_meals, servings, exclude_ingredients, allergens=(
             Decimal(str(edible_grams)) * prices[ingredient_code] / Decimal("1000"), 100
         )
 
+    rice = None
+    if with_rice and RICE_CODE in prices:
+        rice = Ingredient.objects.filter(pk=RICE_CODE).first()
+        if rice is not None and any(term in rice.name.casefold() for term in exclude_ingredients):
+            rice = None
     candidates = defaultdict(list)
     matched_terms, excluded_names = set(), set()
     recipes = Recipe.objects.filter(is_active=True, is_plannable=True).prefetch_related(
@@ -596,6 +667,9 @@ def _load_candidates(requested_meals, servings, exclude_ingredients, allergens=(
             for link in ingredients
         ):
             continue
+        added_rice = rice is not None and needs_rice(recipe.meal_type, ingredients)
+        if added_rice:
+            ingredients = [*ingredients, RiceLink(recipe, rice)]
 
         scale = Decimal(servings) / Decimal(recipe.base_servings)
         ingredient_costs = {
@@ -627,6 +701,10 @@ def _load_candidates(requested_meals, servings, exclude_ingredients, allergens=(
                 "cost": sum(ingredient_costs.values()),
                 "nutrition": nutrition,
                 "protein_group": main_protein_group(ingredients),
+                "with_rice": added_rice,
+                "pantry_hits": len(
+                    {link.ingredient_id for link in ingredients} & priority_ingredients
+                ),
             }
         )
 
@@ -733,6 +811,8 @@ def quote_schedule(schedule, *, servings, targets, catalog):
                         link.quantity_status == "estimated" for link in item["ingredients"]
                     ),
                     "calories": money(item["nutrition"]["calories"] / Decimal(servings)),
+                    # Only present when true, so snapshots of older plans stay identical.
+                    **({"with_rice": True} if item.get("with_rice") else {}),
                 }
             )
         output_schedule.append(
@@ -828,6 +908,8 @@ def build_plan(
     prior_slot_recipes=None,
     fixed_schedule=None,
     seed=None,
+    rice="no",
+    priority_ingredients=(),
 ):
     """Return varied halal recipes with a mandatory budget ceiling.
 
@@ -844,7 +926,14 @@ def build_plan(
         raise ValueError("Seimbang tidak bisa digabung dengan target gizi lain.")
     recent_recipe_codes = set(recent_recipe_codes)
     prior_slot_recipes = prior_slot_recipes or {}
-    catalog = _load_candidates(requested_meals, servings, exclude_ingredients, allergens)
+    catalog = _load_candidates(
+        requested_meals,
+        servings,
+        exclude_ingredients,
+        allergens,
+        with_rice=rice_included(rice, servings, targets),
+        priority_ingredients=frozenset(priority_ingredients),
+    )
     (
         snapshot,
         prices,
@@ -1140,6 +1229,7 @@ def replacement_options(
     meal,
     current_total,
     allergens=(),
+    rice="no",
 ):
     """Quote each full alternative schedule using the preview's shopping rules.
 
@@ -1147,7 +1237,13 @@ def replacement_options(
     days before buying whole units and rounding the final total.
     """
     requested_meals = tuple(item for item in MEALS if item in meal_types)
-    catalog = _load_candidates(requested_meals, servings, exclude_ingredients, allergens)
+    catalog = _load_candidates(
+        requested_meals,
+        servings,
+        exclude_ingredients,
+        allergens,
+        with_rice=rice_included(rice, servings, targets),
+    )
     candidates = catalog[5]
     current_code = schedule[day - 1][meal]
     options = []

@@ -82,3 +82,10 @@ button:disabled { cursor:not-allowed; opacity:.55; }
 .cost-notice { padding:12px; border-radius:9px; background:var(--blue); font-weight:700; }.preview-schedule { margin:14px 0; padding:10px 14px; border-radius:9px; background:#f6f8fd; }#preview-feedback { color:#9a4d22; }#preview-shopping { font-size:12px; line-height:1.8; }
 .plan-controls input:focus-visible,.plan-dialog input:focus-visible,.plan-dialog select:focus-visible,.secondary-button:focus-visible,.small-button:focus-visible,.danger-button:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
 @media(max-width:600px) { .plan-dialog { padding:18px; }.plan-save-form button { width:100%; }.meal-row .small-button { margin-left:auto; } }
+.excluded-input select { width:100%; min-height:42px; padding:9px 12px; border:1px solid #dce5ef; border-radius:9px; color:var(--ink); background:white; font-size:12px; }
+.excluded-input select:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+.pantry-note { display:block; margin-top:4px; color:var(--green); font-weight:600; }
+.pantry-pick { width:16px; height:16px; margin:2px 8px 0 0; flex:none; accent-color:var(--green); }
+.pantry-done { margin-right:8px; color:var(--green); font-weight:700; flex:none; }
+.pantry-actions { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
+.pantry-actions .field-note { flex:1 1 220px; margin:0; }

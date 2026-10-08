@@ -104,4 +104,16 @@ if (detail) {
       confirm.disabled = !approved;
     } finally { sending = false; }
   });
+  // Skip a planned menu, or undo the skip; the plan version guards stale tabs.
+  const slotStatus = document.querySelector('#slot-status');
+  if (slotStatus) {
+    slotStatus.addEventListener('click', async () => {
+      slotStatus.disabled = true;
+      try {
+        await post(slotStatus.dataset.url, {planned_meal: Number(detail.dataset.slot),
+          version: Number(detail.dataset.version), status: slotStatus.dataset.status});
+        location.reload();
+      } catch (error) { showError(error); slotStatus.disabled = false; }
+    });
+  }
 }

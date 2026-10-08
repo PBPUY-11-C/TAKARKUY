@@ -8,9 +8,9 @@ from django.db.models import Q
 from apps.accounts.choices import ALLERGEN_KEYS
 from apps.accounts.preferences import effective_allergens, profile_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
-from apps.budget_planner.planner import purchase_grams
+from apps.budget_planner.planner import RICE_CODE, RICE_GRAMS_PER_SERVING, purchase_grams
 from apps.catalog.allergens import recipe_allowed
-from apps.catalog.models import Recipe
+from apps.catalog.models import Ingredient, Recipe
 from apps.pantry.services import StockError, execute_consumption, operation, plan_consumption
 
 from .models import CookingHistory
@@ -32,6 +32,26 @@ def estimated_recipe_cost(recipe, servings):
         return quote["total"]
     except ValueError:
         return None
+
+
+def recipe_costs(servings, codes):
+    """Basket quote per recipe for many recipes with one catalog load."""
+    from apps.budget_planner.planner import MEALS, _load_candidates, quote_schedule
+
+    try:
+        catalog = _load_candidates(MEALS, servings, [])
+    except ValueError:
+        return {}  # no price snapshot imported yet: nothing can be priced
+    costs = {}
+    for meal, items in catalog[5].items():
+        for item in items:
+            code = item["recipe"].pk
+            if code in codes:
+                quote = quote_schedule(
+                    [{meal: code}], servings=servings, targets=[], catalog=catalog
+                )
+                costs[code] = quote["total"]
+    return costs
 
 
 def recipe_query(user, *, allergens=None):
@@ -73,13 +93,31 @@ def get_recipe(user, code, *, inputs=None):
     return recipe
 
 
-def recipe_requirements(recipe, servings, *, include_staples=False):
+def recipe_requirements(recipe, servings, *, include_staples=False, with_rice=False):
+    """Stock needs per ingredient. with_rice adds the planner's rice for a lauk slot."""
     if type(servings) is not int or not 1 <= servings <= 10:
         raise StockError("Porsi harus bilangan bulat 1–10.", 400)
     if not recipe.base_servings:
         raise StockError("Porsi dasar resep belum tersedia.", 400)
     needs, ingredients = {}, []
     nutrition = {key: Decimal(0) for key in ("calories", "protein", "carbs", "fat")}
+    rice = Ingredient.objects.filter(pk=RICE_CODE).first() if with_rice else None
+    if rice is not None:
+        grams = Decimal(RICE_GRAMS_PER_SERVING * servings)
+        ingredients.append(
+            {
+                "ingredient_code": rice.pk,
+                "name": f"{rice.name} (nasi pendamping)",
+                "grams": str(grams),
+                "tracked": True,
+                "optional": False,
+                "estimated": False,
+            }
+        )
+        needs[rice.pk] = grams
+        for key in nutrition:
+            value = getattr(rice, f"{key}_per_100g")
+            nutrition[key] = None if value is None else grams * Decimal(str(value)) / 100
     for link in recipe.recipeingredient_set.all():
         try:
             grams = purchase_grams(link) * Decimal(servings) / Decimal(recipe.base_servings)
@@ -150,9 +188,65 @@ def cooking_inputs(user, payload, *, lock=False):
             raise StockError("Pilihan konfirmasi tidak valid.", 400)
     recipe = get_recipe(user, code, inputs=plan.inputs if plan else None)
     needs, ingredients, nutrition = recipe_requirements(
-        recipe, payload.get("servings"), include_staples=payload.get("include_staples", False)
+        recipe,
+        payload.get("servings"),
+        include_staples=payload.get("include_staples", False),
+        with_rice=slot_has_rice(slot),
     )
     return recipe, slot, needs, ingredients, nutrition
+
+
+def slot_has_rice(slot):
+    return bool(slot and isinstance(slot.snapshot, dict) and slot.snapshot.get("with_rice"))
+
+
+def advance_plan_version(user, plan):
+    """Bump a saved plan after a slot status change, and its clean draft mirror.
+
+    A clean, saved mirror has no unsaved content. Advance only its version
+    references; edited drafts stay untouched and must be resolved explicitly.
+    """
+    mirror = (
+        BudgetPlan.objects.select_for_update()
+        .filter(user=user, status="draft", source_plan=plan, source_version=plan.version)
+        .first()
+    )
+    if mirror and mirror.inputs == plan.inputs and mirror.snapshot == plan.snapshot:
+        mirror.source_version = plan.version + 1
+        mirror.version += 1
+        mirror.save(update_fields=["source_version", "version", "updated_at"])
+    plan.version += 1
+    plan.save(update_fields=["version", "updated_at"])
+
+
+@transaction.atomic
+def set_slot_status(user, payload):
+    """Skip a planned menu or undo the skip. Cooked menus never change."""
+    from django.contrib.auth import get_user_model
+
+    slot_id, status = payload.get("planned_meal"), payload.get("status")
+    if type(slot_id) is not int or slot_id < 1 or status not in {"skipped", "planned"}:
+        raise StockError("Slot atau status tidak valid.", 400)
+    if type(payload.get("version")) is not int:
+        raise StockError("Versi rencana wajib diisi.", 400)
+    # Same lock order as cooking: user, then plan, then slot.
+    get_user_model().objects.select_for_update().get(pk=user.pk)
+    stub = PlannedMeal.objects.filter(pk=slot_id, plan__user=user).first()
+    if stub is None:
+        raise StockError("Menu rencana tidak ditemukan.", 404)
+    plan = BudgetPlan.objects.select_for_update().get(pk=stub.plan_id, user=user)
+    slot = PlannedMeal.objects.select_for_update().get(pk=slot_id, plan=plan)
+    if plan.status != "saved":
+        raise StockError("Simpan rencana sebelum mengubah status menu.")
+    if plan.version != payload["version"]:
+        raise StockError("Menu/rencana sudah berubah. Muat ulang.")
+    expected = "planned" if status == "skipped" else "skipped"
+    if slot.status != expected:
+        raise StockError("Status menu sudah berubah atau sudah dimasak. Muat ulang.")
+    slot.status = status
+    slot.save(update_fields=["status"])
+    advance_plan_version(user, plan)
+    return {"status": status, "version": plan.version}
 
 
 def preview_cooking(user, payload):
@@ -234,21 +328,7 @@ def cook(user, payload):
     if slot:
         slot.status = "cooked"
         slot.save(update_fields=["status"])
-        # A clean, saved mirror has no unsaved content. Advance only its version
-        # references; edited drafts stay untouched and must be resolved explicitly.
-        mirror = (
-            BudgetPlan.objects.select_for_update()
-            .filter(
-                user=user, status="draft", source_plan=slot.plan, source_version=slot.plan.version
-            )
-            .first()
-        )
-        if mirror and mirror.inputs == slot.plan.inputs and mirror.snapshot == slot.plan.snapshot:
-            mirror.source_version = slot.plan.version + 1
-            mirror.version += 1
-            mirror.save(update_fields=["source_version", "version", "updated_at"])
-        slot.plan.version += 1
-        slot.plan.save(update_fields=["version", "updated_at"])
+        advance_plan_version(user, slot.plan)
     event.response = {**response, "history_id": history.pk, "name": recipe.name}
     event.save(update_fields=["response"])
     return event.response

@@ -2,6 +2,7 @@ import json
 from datetime import timedelta
 from functools import wraps
 from urllib.parse import urlencode
+from zoneinfo import ZoneInfo
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -26,10 +27,17 @@ from .services import (
     estimated_recipe_cost,
     get_recipe,
     preview_cooking,
+    recipe_costs,
     recipe_query,
     recipe_requirements,
+    slot_has_rice,
     with_guidance,
 )
+from .services import set_slot_status as change_slot_status
+
+JAKARTA = ZoneInfo("Asia/Jakarta")
+# Price ceilings offered in the filter, for the profile's servings.
+PRICE_LIMITS = (10000, 15000, 25000, 50000)
 
 
 def api(view):
@@ -97,6 +105,11 @@ def record_cooking(request, data):
 
 
 @api
+def set_slot_status(request, data):
+    return JsonResponse(change_slot_status(request.user, data))
+
+
+@api
 def recipe_review(request, data):
     return JsonResponse(write_review(request.user, data))
 
@@ -130,6 +143,18 @@ def book_page(request):
         query = query.filter(recipefavorite__user=request.user)
     if request.GET.get("held") != "1":
         query = with_guidance(query)
+    try:
+        max_price = int(request.GET.get("max_price", ""))
+    except ValueError:
+        max_price = None
+    if max_price in PRICE_LIMITS:
+        codes = set(query.values_list("pk", flat=True))
+        costs = recipe_costs(profile.servings, codes)
+        query = query.filter(pk__in=[code for code, cost in costs.items() if cost <= max_price])
+    else:
+        max_price = None
+    # Pantry dates are Jakarta dates; the server clock runs on UTC.
+    today = timezone.localdate(timezone=JAKARTA)
     stock_filter = request.GET.get("stock", "")
     if stock_filter in {"complete", "soon"}:
         inventory = list(
@@ -137,7 +162,7 @@ def book_page(request):
                 user=request.user,
                 archived_at__isnull=True,
                 quantity__gt=0,
-                estimated_expires_on__gte=timezone.localdate(),
+                estimated_expires_on__gte=today,
             )
             .exclude(expiry_source="unknown")
             .order_by("estimated_expires_on", "pk")
@@ -152,7 +177,7 @@ def book_page(request):
             if stock_filter == "complete" and not allocation["missing"]:
                 allowed.append(recipe.pk)
             elif stock_filter == "soon" and any(
-                row["batch"].estimated_expires_on <= timezone.localdate() + timedelta(days=2)
+                row["batch"].estimated_expires_on <= today + timedelta(days=2)
                 for row in allocation["allocations"]
             ):
                 allowed.append(recipe.pk)
@@ -182,7 +207,9 @@ def book_page(request):
         try:
             selected = get_recipe(request.user, code, inputs=slot.plan.inputs if slot else None)
             servings = slot.servings if slot else profile.servings
-            needs, ingredients, nutrition = recipe_requirements(selected, servings)
+            needs, ingredients, nutrition = recipe_requirements(
+                selected, servings, with_rice=slot_has_rice(slot)
+            )
             stock = plan_consumption(request.user, needs)
             detail = {
                 "ingredients": ingredients,
@@ -248,6 +275,9 @@ def book_page(request):
             "held_count": held_count,
             "q": term,
             "meal": meal,
+            "max_price": max_price,
+            "price_limits": PRICE_LIMITS,
+            "with_rice": slot_has_rice(slot),
             "filters": request.GET,
             "query_params": urlencode(params, doseq=True),
             "history_params": urlencode(history_params, doseq=True),

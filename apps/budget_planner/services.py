@@ -6,6 +6,8 @@ from collections.abc import Mapping
 from datetime import timedelta
 from decimal import Decimal
 from math import ceil
+from uuid import NAMESPACE_URL, uuid5
+from zoneinfo import ZoneInfo
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -46,6 +48,22 @@ def account_recent_recipe_codes(user, *, today=None):
         .exclude(status="skipped")
         .values_list("recipe_id", flat=True)
         .distinct()
+    )
+
+
+JAKARTA = ZoneInfo("Asia/Jakarta")
+PANTRY_PRIORITY_DAYS = 3
+
+
+def pantry_priority(user, *, today=None):
+    """Catalog ingredients in the user's pantry that expire within a few days."""
+    from apps.pantry.services import eligible_stock
+
+    today = today or timezone.localdate(timezone=JAKARTA)
+    return frozenset(
+        eligible_stock(user)
+        .filter(estimated_expires_on__lte=today + timedelta(days=PANTRY_PRIORITY_DAYS))
+        .values_list("ingredient_id", flat=True)
     )
 
 
@@ -100,6 +118,7 @@ def stored_inputs(form):
         "targets": values["targets"],
         "exclude_ingredients": ", ".join(values["exclude_ingredients"]),
         "allergens": values.get("allergens", []),
+        "rice": values.get("rice") or "no",
     }
 
 
@@ -376,6 +395,7 @@ def make_preview(plan, version, payload):
             | set(old["planned_recipe_codes"]),
             prior_slot_recipes=prior,
             seed=secrets.randbits(32),
+            priority_ingredients=pantry_priority(plan.user),
         )
         if not result["within_budget"]:
             raise ValueError(
@@ -576,3 +596,81 @@ def adopt_guest_result(request):
             return
         write_draft(request.user, stored_inputs(form), result)
     request.session.pop("guest_last_plan", None)
+
+
+MAX_PURCHASE_GRAMS = Decimal("100000")
+
+
+def purchase_rows(rows):
+    """Validate [{ingredient_code, grams}] from the browser into {code: grams}."""
+    if not isinstance(rows, list) or not 1 <= len(rows) <= 60:
+        raise ValueError("Pilih 1–60 bahan belanja.")
+    wanted = {}
+    for row in rows:
+        code = row.get("ingredient_code") if isinstance(row, Mapping) else None
+        grams = row.get("grams") if isinstance(row, Mapping) else None
+        if (
+            not isinstance(code, str)
+            or isinstance(grams, bool)
+            or not isinstance(grams, (int, float, str))
+        ):
+            raise ValueError("Data bahan belanja tidak valid.")
+        try:
+            grams = Decimal(str(grams)).quantize(Decimal("0.001"))
+        except (ArithmeticError, ValueError) as exc:
+            raise ValueError("Jumlah gram tidak valid.") from exc
+        if not grams.is_finite() or not 0 < grams <= MAX_PURCHASE_GRAMS:
+            raise ValueError("Jumlah gram harus lebih dari 0 dan maksimal 100.000 g.")
+        if code in wanted:
+            raise ValueError("Bahan yang sama dikirim dua kali.")
+        wanted[code] = grams
+    return wanted
+
+
+@transaction.atomic
+def purchases_to_pantry(user, plan_id, version, rows):
+    """Move bought shopping-list items of a saved plan into the user's pantry.
+
+    The operation key is derived from the plan and items, so a double click or
+    retry replays the first response instead of adding stock twice.
+    """
+    from apps.pantry.services import StockError, add_purchases, operation
+
+    wanted = purchase_rows(rows)
+    key = uuid5(
+        NAMESPACE_URL,
+        f"takarkuy:plan-pantry:{plan_id}:"
+        + "|".join(f"{code}={grams}" for code, grams in sorted(wanted.items())),
+    )
+    payload = {"plan": str(plan_id), "items": {code: str(g) for code, g in wanted.items()}}
+    try:
+        # Lock order matches other planner writes: account -> plan -> rows.
+        event, replay = operation(user, key, "create", payload)
+        if replay:
+            return event.response
+        plan = BudgetPlan.objects.select_for_update().get(pk=plan_id, user=user)
+        check_version(plan, version)
+        if plan.status != "saved":
+            raise PlanConflict("Simpan rencana sebelum memasukkan belanja ke Pantry.")
+        items = {
+            item.ingredient_id: item
+            for item in plan.shopping_items.select_for_update()
+            .select_related("ingredient")
+            .filter(ingredient_id__in=wanted)
+        }
+        if set(items) != set(wanted):
+            raise ValueError("Bahan tidak ada di daftar belanja rencana ini.")
+        if any(item.added_to_pantry_at for item in items.values()):
+            raise PlanConflict("Sebagian bahan sudah dimasukkan ke Pantry. Muat ulang halaman.")
+        created = add_purchases(
+            user, [(items[code].ingredient, grams) for code, grams in sorted(wanted.items())], event
+        )
+    except StockError as exc:
+        raise (PlanConflict if exc.status == 409 else ValueError)(str(exc)) from exc
+    now = timezone.now()
+    for item in items.values():
+        item.added_to_pantry_at = now
+    ShoppingListItem.objects.bulk_update(items.values(), ["added_to_pantry_at"])
+    event.response = {"saved": len(created), "ids": [item.pk for item in created]}
+    event.save(update_fields=["response"])
+    return event.response

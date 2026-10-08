@@ -66,6 +66,17 @@ class PlannerForm(forms.Form):
         ),
     )
 
+    RICE_CHOICES = [
+        ("auto", "Otomatis (1–2 orang)"),
+        ("yes", "Selalu tambahkan"),
+        ("no", "Tanpa nasi"),
+    ]
+    rice = forms.ChoiceField(choices=RICE_CHOICES, required=False, initial="auto")
+
+    def clean_rice(self):
+        # Plans saved before this option existed had no rice; keep them that way.
+        return self.cleaned_data["rice"] or "no"
+
     def clean_targets(self):
         targets = self.cleaned_data["targets"]
         if "seimbang" in targets and len(targets) > 1:

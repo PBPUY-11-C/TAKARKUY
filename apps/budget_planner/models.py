@@ -81,6 +81,8 @@ class ShoppingListItem(models.Model):
     quantity_grams = models.DecimalField(max_digits=14, decimal_places=3)
     estimated_cost = models.DecimalField(max_digits=14, decimal_places=2)
     snapshot = models.JSONField()
+    # Set once the user moved this purchase into the pantry; never re-added.
+    added_to_pantry_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         constraints = [
