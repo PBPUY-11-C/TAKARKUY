@@ -15,16 +15,16 @@ from contextlib import contextmanager
 
 try:
     from . import recipe_estimation as estimation
-    from .recipe_names import EXCLUDE, load_overrides, standard_name
+    from .recipe_names import DEACTIVATE, EXCLUDE, load_overrides, standard_name
 except ImportError:
     import recipe_estimation as estimation
-    from recipe_names import EXCLUDE, load_overrides, standard_name
+    from recipe_names import DEACTIVATE, EXCLUDE, load_overrides, standard_name
 
 normalize = estimation.normalize
 
 MENDELEY_URL = "https://data.mendeley.com/datasets/8b4ztns76h/3"
 SOURCE = "Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARKUY"
-RULES_VERSION = "takarkuy-mendeley-2026-10-05-v2"
+RULES_VERSION = "takarkuy-mendeley-2026-10-08-v3"
 MACROS = ("calories", "protein", "carbs", "fat")
 
 # Unit mass (g), mass per 240 ml cup, default batch amount (g) for foods the
@@ -88,6 +88,18 @@ MEASURE_REWRITES = (
     (r"^(\d+(?:[.,]\d+)?)\s*(?:ruas|cm)\b", None, "KENCUR:5|KAYU-MANIS:0.5"),
     (r"^(\d+(?:[.,]\d+)?)\s*(?:blok|bh|buah|biji)\b", None, "TERASI:5"),
 )
+# Indonesian sources abbreviate "lembar" as lb/lbr; it is never a pound here.
+LEAF_UNIT = re.compile(r"^(\d+(?:[.,]\d+)?)\s*(?:lb|lbr|lmbr)\b")
+# A source weight this far from its household measure is a source error, e.g.
+# "6 butir" telur listed as 50 g, "5 btr" kemiri as 500 g or "1 sdm" gula as 81 g.
+SOURCE_WEIGHT_RATIO = (0.5, 2.0)
+# "kaldu sapi 500 ml" is liquid stock (water for cooking), not bouillon powder.
+LIQUID_STOCK = re.compile(r"^\d+(?:[.,]\d+)?\s*(?:ml|cc|l|liter|gelas)\b")
+STOCK_POWDER = ("ING-KALDU-AYAM-BUBUK", "ING-KALDU-JAMUR")
+# Frying oil mostly stays in the pan ("600 ml" for balado); count what a dish
+# plausibly absorbs per serving instead of the whole pan.
+FRYING_OIL = "ING-MINYAK-GORENG-CURAH"
+OIL_PER_SERVING = 15
 NOT_MAIN = re.compile(
     r"\b(?:kue|cake|bolu|puding|pudding|agar|minuman|jus|juice|wedang|smoothie|sirup|selai|"
     r"keripik|kripik|kerupuk|rempeyek|peyek|cookies|kukis|brownies?|donat|martabak manis|"
@@ -98,7 +110,7 @@ NOT_MAIN = re.compile(
 )
 STARTS_AS_CONDIMENT = re.compile(r"^(?:sambal|sambel|bumbu|acar)\b")
 BREAKFAST = re.compile(
-    r"^(?:bubur|nasi uduk|nasi kuning|lontong|ketupat|kupat|roti|sandwich|omelet|omelette|"
+    r"^(?:bubur|nasi uduk|nasi kuning|nasi gurih|lontong|ketupat|kupat|roti|sandwich|omelet|omelette|"
     r"telur dadar|nasi goreng|mi goreng|mie goreng|oat|pancake|nasi liwet|ketan|arem)"
 )
 DINNER = re.compile(
@@ -256,19 +268,46 @@ def measure_text(row):
     return f"{amount} {unit}".strip()
 
 
+def reference_grams(measure, code):
+    """Grams implied by a stated household measure; None for vague amounts.
+
+    "ekor" is skipped: sources also write it for pieces ("8 ekor" ayam gulai).
+    """
+    if re.match(r"^\S+\s*(?:ekor|ekr)\b", measure):
+        return None
+    grams, note, _ = estimation.estimate_quantity(measure, code, "id")
+    if grams is None or "untuk batch" in note:
+        return None
+    return grams
+
+
 def estimate(row, code):
     """Return (edible_g, purchase_g, note) or (None, None, reason)."""
-    short = code.removeprefix("ING-")
     source_g = number(row.get("weight_in_grams"))
     bdd = number(row.get("BDD"))
-    measure = measure_text(row)
+    measure = LEAF_UNIT.sub(r"\1 lembar", measure_text(row))
+    doubt = ""
     if source_g and row.get("name_of_material"):
         share = min(bdd, 100) / 100 if bdd else 1
-        return (
-            source_g * share,
-            source_g,
-            f"berat sumber Mendeley {source_g:g} g; BDD {bdd or 100:g}% untuk bagian termakan",
+        reference = reference_grams(measure, code)
+        low, high = SOURCE_WEIGHT_RATIO
+        if reference is None or low <= source_g * share / reference <= high:
+            return (
+                source_g * share,
+                source_g,
+                f"berat sumber Mendeley {source_g:g} g; BDD {bdd or 100:g}% untuk bagian termakan",
+            )
+        doubt = (
+            f"berat sumber Mendeley {source_g:g} g tidak wajar untuk '{measure}' "
+            f"(acuan {reference:g} g), diganti estimasi TAKARKUY"
         )
+    grams, purchase, note = household_estimate(measure, code)
+    return grams, purchase, "; ".join(filter(None, [doubt, note]))
+
+
+def household_estimate(measure, code):
+    """Estimate from the household measure alone (no trusted source weight)."""
+    short = code.removeprefix("ING-")
     match = re.match(r"^(\d+(?:[.,]\d+)?)\s*(?:ekor|ekr)\b", measure)
     if match and short in FISH_PER_EKOR:
         gross = number(match[1]) * FISH_PER_EKOR[short]
@@ -308,8 +347,9 @@ def build_mendeley(root, items, price_by_code, existing_names):
         for source in data:
             code = f"RCP-MDL-{int(source['id']):04d}"
             name = display_title(clean_title(source.get("title", "")))
+            source_name = name
             override, override_reason = overrides.get(code, ("", ""))
-            if override and override != EXCLUDE:
+            if override and override not in (EXCLUDE, DEACTIVATE):
                 name = override
             name = standard_name(name) if name else name
             texts = [normalize(row.get("ingredient", "")) for row in source["composition"]]
@@ -332,6 +372,8 @@ def build_mendeley(root, items, price_by_code, existing_names):
                 for position, row in enumerate(source["composition"], 1):
                     raw = str(row.get("ingredient", "")).strip()
                     action, ic, note = resolve(raw, terms)
+                    if ic in STOCK_POWDER and LIQUID_STOCK.match(measure_text(row)):
+                        action, ic, note = "utility", "", "kaldu cair; dihitung seperti air"
                     entry = dict(
                         ingredient_position=str(position),
                         raw_ingredient=raw,
@@ -386,6 +428,13 @@ def build_mendeley(root, items, price_by_code, existing_names):
                         errors.append(f"bahan utama pada judul tidak ada di daftar: {pattern}")
             if excluded is None and not errors:
                 portions = int(servings)
+                oil_cap = OIL_PER_SERVING * portions
+                if quantities.get(FRYING_OIL, 0) > oil_cap:
+                    quantities[FRYING_OIL] = purchases[FRYING_OIL] = oil_cap
+                    provenance[FRYING_OIL][-1]["estimation_note"] += (
+                        f"; total minyak dibatasi {oil_cap:g} g "
+                        f"(terserap {OIL_PER_SERVING} g/porsi, sisa minyak penggorengan tidak dihitung)"
+                    )
                 totals = {
                     n: sum(
                         g * float(items[ic][n + "_per_100g"]) / 100 for ic, g in quantities.items()
@@ -414,7 +463,8 @@ def build_mendeley(root, items, price_by_code, existing_names):
             )
             if reason:
                 continue
-            seen.add(title_key(name))
+            # A curated rename must not free the source title for its duplicates.
+            seen.update({title_key(name), title_key(standard_name(source_name))})
             meal = meal_type(name, source["id"])
             cost = sum(
                 g
