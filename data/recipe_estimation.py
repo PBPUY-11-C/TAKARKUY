@@ -539,7 +539,9 @@ def source_candidates(root):
                     break
             if len(seen) == 60:
                 break
-    snapshot = json.loads((root / "scratch/themealdb_100_candidates.json").read_text())
+    snapshot = json.loads(
+        (root / "scratch/themealdb_100_candidates.json").read_text(encoding="utf-8")
+    )
     seen = {}
     for row in snapshot.get("recipes", []):
         code = "RCP-TMDB-" + str(row["source_id"])

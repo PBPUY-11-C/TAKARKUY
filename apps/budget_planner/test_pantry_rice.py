@@ -15,7 +15,15 @@ from apps.pantry.models import PantryItem, PantryMovement
 
 from .models import BudgetPlan, ShoppingListItem
 from .planner import RICE_CODE, _candidate_pool, build_plan, rice_included
-from .services import clean_inputs, pantry_priority, save_plan, stored_inputs, write_draft
+from .services import (
+    clean_inputs,
+    pantry_priority,
+    save_plan,
+    stored_inputs,
+    sync_children,
+    write_draft,
+)
+from .snapshots import freeze, thaw
 
 TODAY = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
 
@@ -220,3 +228,23 @@ class PlanPantryTests(TestCase):
         self.assertContains(response, "Sudah ada di Pantry 50 g · perlu beli 30 g")
         self.assertContains(response, "+ Nasi")
         self.assertContains(response, "Masukkan ke Pantry")
+
+    def test_increased_quantity_can_be_added_to_pantry_again(self):
+        self.assertEqual(self.add([{"ingredient_code": RICE_CODE, "grams": 80}]).status_code, 201)
+        result = thaw(self.plan.snapshot)
+        for group in result["shopping_groups"]:
+            for row in group["items"]:
+                if row["ingredient_code"] == RICE_CODE:
+                    row["quantity"] = Decimal(row["quantity"]) * 2
+        self.plan.snapshot, self.plan.version = freeze(result), self.plan.version + 1
+        self.plan.save()
+        sync_children(self.plan)
+        item = ShoppingListItem.objects.get(plan=self.plan, ingredient_id=RICE_CODE)
+        self.assertIsNone(item.added_to_pantry_at)
+        self.assertEqual(self.add([{"ingredient_code": RICE_CODE, "grams": 80}]).status_code, 201)
+        self.assertEqual(PantryItem.objects.filter(user=self.user).count(), 2)
+
+    def test_item_fully_covered_by_pantry_cannot_be_added_again(self):
+        self.batch(RICE_CODE, 500, 30)
+        response = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
+        self.assertNotContains(response, f'data-ingredient="{RICE_CODE}"')

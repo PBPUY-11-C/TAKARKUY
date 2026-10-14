@@ -38,7 +38,7 @@ class PreviewRateLimit(ValueError):
 
 
 def account_recent_recipe_codes(user, *, today=None):
-    today = today or timezone.localdate()
+    today = today or timezone.localdate(timezone=JAKARTA)
     return set(
         PlannedMeal.objects.filter(
             plan__user=user,
@@ -198,6 +198,9 @@ def sync_children(plan):
             if item is None:
                 created.append(ShoppingListItem(plan=plan, ingredient_id=code, **values))
             elif any(getattr(item, field) != value for field, value in values.items()):
+                # More to buy than what was already moved: let the user add the extra.
+                if values["quantity_grams"] > item.quantity_grams:
+                    item.added_to_pantry_at = None
                 for field, value in values.items():
                     setattr(item, field, value)
                 updated.append(item)
@@ -206,7 +209,9 @@ def sync_children(plan):
     ).delete()
     ShoppingListItem.objects.bulk_create(created, batch_size=100)
     ShoppingListItem.objects.bulk_update(
-        updated, ["quantity_grams", "estimated_cost", "snapshot"], batch_size=100
+        updated,
+        ["quantity_grams", "estimated_cost", "snapshot", "added_to_pantry_at"],
+        batch_size=100,
     )
 
 
@@ -295,14 +300,30 @@ def write_draft(
     if draft:
         if previous is not None and previous.status == "draft" and draft.pk != previous.pk:
             raise PlanConflict("Draft sudah diganti. Muat ulang halaman.")
+        # A draft identical to its own saved source holds no unsaved work, so it may be reused.
+        own_source = draft.source_plan
         if (
             previous is not None
             and previous.status == "saved"
             and (
-                draft.source_plan_id != previous.pk
-                or draft.source_version != previous.version
-                or draft.snapshot != previous.snapshot
-                or draft.inputs != previous.inputs
+                (
+                    draft.source_plan_id != previous.pk
+                    and not (
+                        own_source is not None
+                        and own_source.status == "saved"
+                        and draft.source_version == own_source.version
+                        and draft.snapshot == own_source.snapshot
+                        and draft.inputs == own_source.inputs
+                    )
+                )
+                or (
+                    draft.source_plan_id == previous.pk
+                    and (
+                        draft.source_version != previous.version
+                        or draft.snapshot != previous.snapshot
+                        or draft.inputs != previous.inputs
+                    )
+                )
             )
         ):
             raise PlanConflict(
@@ -324,14 +345,17 @@ def write_draft(
         if source:
             draft.title, draft.starts_on = source.title, source.starts_on
         elif previous is None:
-            draft.title, draft.starts_on = "Rencana Makan Saya", timezone.localdate()
+            draft.title, draft.starts_on = (
+                "Rencana Makan Saya",
+                timezone.localdate(timezone=JAKARTA),
+            )
         draft.save()
     else:
         draft = BudgetPlan.objects.create(
             user=user,
             inputs=inputs,
             snapshot=freeze(result),
-            starts_on=source.starts_on if source else timezone.localdate(),
+            starts_on=source.starts_on if source else timezone.localdate(timezone=JAKARTA),
             title=source.title if source else "Rencana Makan Saya",
             source_plan=source,
             source_version=source.version if source else None,
@@ -631,7 +655,7 @@ def purchase_rows(rows):
 def purchases_to_pantry(user, plan_id, version, rows):
     """Move bought shopping-list items of a saved plan into the user's pantry.
 
-    The operation key is derived from the plan and items, so a double click or
+    The operation key is derived from the plan, its version and items, so a double click or
     retry replays the first response instead of adding stock twice.
     """
     from apps.pantry.services import StockError, add_purchases, operation
@@ -639,7 +663,7 @@ def purchases_to_pantry(user, plan_id, version, rows):
     wanted = purchase_rows(rows)
     key = uuid5(
         NAMESPACE_URL,
-        f"takarkuy:plan-pantry:{plan_id}:"
+        f"takarkuy:plan-pantry:{plan_id}:{version}:"
         + "|".join(f"{code}={grams}" for code, grams in sorted(wanted.items())),
     )
     payload = {"plan": str(plan_id), "items": {code: str(g) for code, g in wanted.items()}}

@@ -101,7 +101,9 @@ class DatasetEstimationTests(SimpleTestCase):
                 patch.object(fetch_themealdb_candidates, "get_json", side_effect=response),
             ):
                 fetch_themealdb_candidates.main()
-            snapshot = json.loads((scratch / "themealdb_100_candidates.json").read_text())
+            snapshot = json.loads(
+                (scratch / "themealdb_100_candidates.json").read_text(encoding="utf-8")
+            )
             rows = build_final.read_csv(scratch / "themealdb_100_candidates.csv")
             self.assertEqual(len(rows), 100)
             self.assertEqual(len({row["source_id"] for row in rows}), 100)
@@ -331,7 +333,9 @@ class DatasetEstimationTests(SimpleTestCase):
         )
 
     def test_manual_themealdb_promotion_reuses_candidate_id_and_aggregates_links(self):
-        fixture = json.loads((build_final.ROOT / "fixtures/catalog_seed.json").read_text())
+        fixture = json.loads(
+            (build_final.ROOT / "fixtures/catalog_seed.json").read_text(encoding="utf-8")
+        )
         items = {
             x["pk"]: dict(ingredient_code=x["pk"], **x["fields"])
             for x in fixture
@@ -387,7 +391,9 @@ class DatasetEstimationTests(SimpleTestCase):
 
 class CatalogImportTests(TestCase):
     def test_fixture_text_fits_postgresql_column_limits(self):
-        fixture = json.loads((build_final.ROOT / "fixtures/catalog_seed.json").read_text())
+        fixture = json.loads(
+            (build_final.ROOT / "fixtures/catalog_seed.json").read_text(encoding="utf-8")
+        )
         for record in fixture:
             model = apps.get_model(record["model"])
             for name, value in record["fields"].items():

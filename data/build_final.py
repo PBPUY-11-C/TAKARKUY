@@ -320,7 +320,7 @@ def build_ingredients_prices():
                 price_status="published",
             )
         )
-    for item in json.loads((RAW / "pihps_prices_2026-09-28.json").read_text()):
+    for item in json.loads((RAW / "pihps_prices_2026-09-28.json").read_text(encoding="utf-8")):
         name = item["commodity"]
         d = item["response"][0]
         if d["nominal"] <= 0:
@@ -348,7 +348,9 @@ def build_ingredients_prices():
         )
     off = {
         p["code"]: p
-        for p in json.loads((RAW / "openfoodfacts_indonesia_sample.json").read_text())["products"]
+        for p in json.loads(
+            (RAW / "openfoodfacts_indonesia_sample.json").read_text(encoding="utf-8")
+        )["products"]
     }
     # The Mendeley file adds foods and prices needed by Mendeley recipes; it is
     # observed on its own date and processed exactly like the first file.

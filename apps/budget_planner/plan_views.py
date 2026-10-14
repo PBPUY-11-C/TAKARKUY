@@ -156,7 +156,12 @@ def account_page(request, builder):
             if plan is None:
                 raw_id = request.POST.get("replace_draft_id")
                 if raw_id:
-                    draft_id = UUID(raw_id)
+                    try:
+                        draft_id = UUID(raw_id)
+                    except ValueError:
+                        raise PlanConflict(
+                            "Draft sudah berubah. Muat ulang halaman sebelum melanjutkan."
+                        ) from None
                     draft_version = required_version(request.POST, "replace_draft_version")
                 existing = BudgetPlan.objects.filter(user=request.user, status="draft").first()
                 check_draft_state(existing, draft_id, draft_version)

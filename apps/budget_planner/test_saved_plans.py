@@ -1,7 +1,8 @@
 import json
 from copy import deepcopy
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
@@ -181,6 +182,28 @@ class SavedPlanTests(TestCase):
         saved.refresh_from_db()
         self.assertEqual(self.draft.snapshot, original)
         self.assertEqual(saved.version, 1)
+
+    def test_older_saved_plan_editable_when_draft_matches_its_own_saved_source(self):
+        first = self.saved()
+        self.draft.refresh_from_db()
+        self.draft = write_draft(
+            self.user,
+            self.inputs,
+            self.quotes[1][2],
+            replace_draft=True,
+            expected_draft_id=self.draft.pk,
+            expected_draft_version=self.draft.version,
+        )
+        save_plan(self.user, self.draft.pk, self.draft.version, "Plan B", date(2026, 10, 6))
+        draft = apply_preview(self.user, self.replacement(first).pk)
+        self.assertEqual(draft.source_plan_id, first.pk)
+
+    def test_new_draft_starts_on_jakarta_date_not_utc(self):
+        # 23:30 UTC on 14 Oct is already 06:30 on 15 Oct in Jakarta.
+        early_morning = datetime(2026, 10, 14, 23, 30, tzinfo=UTC)
+        with patch("django.utils.timezone.now", return_value=early_morning):
+            draft = write_draft(self.other, self.inputs, self.quotes[0][2])
+        self.assertEqual(draft.starts_on, date(2026, 10, 15))
 
     def test_preview_detects_recreated_draft_even_with_same_version(self):
         saved = self.saved()
@@ -413,12 +436,27 @@ class SavedPlanTests(TestCase):
                 self.api("modul1-plan-preview", self.draft.pk, payload).status_code, (400, 409)
             )
 
+    def test_malformed_draft_id_shows_friendly_conflict(self):
+        response = self.client.post(
+            reverse("modul1"),
+            {
+                **self.inputs,
+                "new_plan": "1",
+                "replace_draft": "1",
+                "replace_draft_id": "bukan-uuid",
+                "replace_draft_version": self.draft.version,
+            },
+        )
+        self.assertEqual(response.status_code, 409)
+        self.assertContains(response, "Draft sudah berubah", status_code=409)
+
     def test_metadata_validation(self):
         for changes in (
             {"title": ""},
             {"title": "x" * 101},
             {"title": {}},
             {"starts_on": "invalid"},
+            {"starts_on": "9999-12-31"},
         ):
             response = self.api(
                 "modul1-plan-save",
