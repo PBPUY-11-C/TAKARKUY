@@ -152,6 +152,28 @@ class BatchTests(TestCase):
         self.assertEqual(item.movements.count(), 2)
         self.assertEqual(item.movements.last().snapshot["before"]["quantity"], "100.000000")
 
+    def test_location_only_change_logged_as_move(self):
+        item = self.batch()
+        # The page sends quantities without trailing zeros, e.g. "100" for 100.000000.
+        self.assertEqual(self.edit(item, location="freezer", quantity="100").status_code, 200)
+        self.assertEqual(item.movements.last().kind, "move")
+
+    def test_used_up_batch_hidden_from_pantry_page(self):
+        PantryItem.objects.filter(pk=self.batch().pk).update(name="Bayam Habis", quantity=0)
+        self.assertNotContains(self.client.get(reverse("modul2")), "Bayam Habis")
+
+    def test_rename_without_catalog_code_resolves_from_new_name(self):
+        item = self.batch()
+        self.assertEqual(self.edit(item, name="bayam").status_code, 200)
+        item.refresh_from_db()
+        self.assertEqual(item.ingredient_id, self.ingredient.pk)
+
+    def test_explicit_empty_catalog_code_unlinks(self):
+        item = self.batch()
+        self.assertEqual(self.edit(item, ingredient_code="").status_code, 200)
+        item.refresh_from_db()
+        self.assertIsNone(item.ingredient_id)
+
     def test_missing_version_and_invalid_edit_do_not_leave_operations(self):
         item = self.batch()
         for changes in ({"version": None}, {"quantity": "-1"}, {"ingredient_code": "UNKNOWN"}):
@@ -215,6 +237,10 @@ class BatchTests(TestCase):
             conversion_status="size_specific",
         )
         self.assertEqual(conversion("butir", self.ingredient.pk)[1], 50)
+
+    def test_liquid_uses_user_pack_weight(self):
+        self.assertEqual(conversion("liter", None, Decimal("920"))[:2], ("ml", Decimal("920")))
+        self.assertEqual(conversion("ml", None, Decimal("0.92"))[:2], ("ml", Decimal("0.92")))
 
     def test_fefo_and_replay_across_multiple_batches(self):
         first = self.batch()

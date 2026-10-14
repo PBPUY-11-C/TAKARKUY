@@ -108,6 +108,24 @@ test("save sends version, full editable fields and retry-stable operation key", 
   assert.equal(app.row.dataset.version, 2);
 });
 
+test("typing a new name lets the server re-match the catalog instead of unlinking", async () => {
+  const app = setup();
+  app.row.querySelector("[data-edit-name]").value = "bayam segar";
+  await app.row.querySelector("[data-edit-name]").trigger("input");
+  await app.row.querySelector(".save-pantry-details").trigger();
+  assert.equal("ingredient_code" in JSON.parse(app.requests[0].options.body), false);
+});
+
+test("choosing 'Belum terhubung' after a rename still unlinks", async () => {
+  const app = setup();
+  app.row.querySelector("[data-edit-name]").value = "bayam segar";
+  await app.row.querySelector("[data-edit-name]").trigger("input");
+  app.row.querySelector("[data-edit-ingredient]").value = "";
+  await app.row.querySelector("[data-edit-ingredient]").trigger("change");
+  await app.row.querySelector(".save-pantry-details").trigger();
+  assert.equal(JSON.parse(app.requests[0].options.body).ingredient_code, "");
+});
+
 test("delete carries a version and key, and recipe names render as text", async () => {
   const app = setup();
   await app.row.querySelector(".delete-pantry-item").trigger();
