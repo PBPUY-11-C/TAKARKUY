@@ -23,7 +23,6 @@ from .services import (
     available_grams,
     consume_stock,
     conversion,
-    recipe_matches,
     reserve_llm,
 )
 from .test_helpers import authenticate
@@ -343,8 +342,14 @@ class BatchTests(TestCase):
 
     def test_recipe_matching_checks_servings_and_does_not_consume_stock(self):
         self.batch()
+        # Recommendations follow the Recipe Book defaults, so the recipe needs published guidance.
         recipe = Recipe.objects.create(
-            recipe_code="RCP-MDL-TEST", name="Sayur", base_servings=1, is_plannable=True
+            recipe_code="RCP-TEST",
+            name="Sayur",
+            base_servings=1,
+            is_plannable=True,
+            instructions="Rebus.",
+            instruction_status="source_ok",
         )
         RecipeTag.objects.create(
             recipe_tag_code="TAG-TEST", recipe=recipe, tag="halal", source="test"
@@ -358,9 +363,17 @@ class BatchTests(TestCase):
             quantity_status="test",
             source="test",
         )
-        self.assertTrue(recipe_matches(self.user, 1)[0]["complete"])
-        self.assertFalse(recipe_matches(self.user, 2)[0]["complete"])
-        self.assertTrue(recipe_matches(self.user)[0]["instructions_pending_review"])
+
+        def matches(servings):
+            response = self.client.get(reverse("modul2-recipes"), {"servings": servings})
+            return response.json()["recipes"]
+
+        self.assertTrue(matches(1)[0]["complete"])
+        self.assertFalse(matches(2)[0]["complete"])
+        self.assertEqual(matches(1)[0]["recipe_code"], "RCP-TEST")
+        self.assertEqual(
+            self.client.get(reverse("modul2-recipes"), {"servings": 12}).status_code, 400
+        )
         self.assertEqual(PantryItem.objects.get().quantity, 100)
         self.assertFalse(PantryMovement.objects.exists())
         self.assertEqual(Client().get(reverse("modul2-recipes")).status_code, 401)

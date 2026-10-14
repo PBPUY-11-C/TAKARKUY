@@ -28,6 +28,17 @@ class ReviewTests(TestCase):
         self.batch()
         return cook(self.user, self.payload)
 
+    def test_review_pagination_keeps_slot(self):
+        for index in range(6):
+            reviewer = get_user_model().objects.create_user(f"reviewer{index}")
+            RecipeReview.objects.create(user=reviewer, recipe=self.recipe, rating=5)
+        slot = self.slot()
+        response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk, "slot": slot.pk})
+        self.assertRegex(
+            response.content.decode(),
+            rf'href="\?[^"]*slot={slot.pk}[^"]*review_page=2#recipe-reviews"',
+        )
+
     def test_must_have_own_cooking_history_on_every_save(self):
         self.assertEqual(self.post_review().status_code, 403)
         self.cooked()

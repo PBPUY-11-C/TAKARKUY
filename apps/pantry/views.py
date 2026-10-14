@@ -35,7 +35,6 @@ from .services import (
     check_version,
     movement,
     operation,
-    recipe_matches,
     refresh_conversion,
     reserve_llm,
     session_scope,
@@ -513,10 +512,15 @@ def pantry_movements(request, item_id):
 @api_login_required
 @require_http_methods(["GET"])
 def pantry_recipe_matches(request):
+    """Read-only shortcut into the Recipe Book's own stock matching."""
+    from apps.recipe_book.services import stock_matches
+
     try:
         servings = int(request.GET.get("servings", "1"))
-        if not 1 <= servings <= 20:
+        if not 1 <= servings <= 10:
             raise ValueError
     except (ValueError, TypeError):
-        return JsonResponse({"error": "Porsi harus 1–20."}, status=400)
-    return JsonResponse({"recipes": recipe_matches(request.user, servings), "servings": servings})
+        return JsonResponse({"error": "Porsi harus 1–10."}, status=400)
+    return JsonResponse(
+        {"recipes": stock_matches(request.user, servings)[:20], "servings": servings}
+    )
