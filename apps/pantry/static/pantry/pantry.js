@@ -456,8 +456,14 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   sourceInput.addEventListener("change", () => {
     expiryMode = sourceInput.value === "estimate" ? "auto" : "manual";
   });
+  let renamed = false;
   row.querySelector("[data-edit-name]").addEventListener("input", () => {
+    renamed = true;
     row.querySelector("[data-edit-ingredient]").value = "";
+  });
+  // Any explicit catalog choice, including "Belum terhubung", is sent as-is.
+  row.querySelector("[data-edit-ingredient]").addEventListener("change", () => {
+    renamed = false;
   });
   button.addEventListener("click", async () => {
     const location = locationInput.value;
@@ -479,6 +485,9 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
       ingredient_code: row.querySelector("[data-edit-ingredient]").value,
       pack_weight_g: row.querySelector("[data-edit-weight]").value,
     };
+    // After a rename with no catalog pick, omit the code so the server re-matches by name;
+    // an explicit "Belum terhubung" choice still sends "" and unlinks.
+    if (renamed && !changes.ingredient_code) delete changes.ingredient_code;
     try {
       const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/`, {
         method: "PATCH",

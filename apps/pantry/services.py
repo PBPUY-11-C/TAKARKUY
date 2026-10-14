@@ -43,7 +43,7 @@ def conversion(unit, ingredient_id, pack_weight_g=None):
     base = "g" if unit in {"g", "kg"} else "ml" if unit in {"ml", "liter"} else "pcs"
     if unit in {"g", "kg"}:
         return base, Decimal(1 if unit == "g" else 1000), "Satuan berat."
-    if pack_weight_g is not None and base == "pcs":
+    if pack_weight_g is not None:
         return base, pack_weight_g, "Berat per unit diisi pengguna."
     records = (
         UnitConversion.objects.filter(ingredient_id=ingredient_id, unit=unit).order_by(

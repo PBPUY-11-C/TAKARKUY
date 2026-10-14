@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 from django.contrib.auth.decorators import login_required
@@ -71,7 +72,9 @@ def _session_id(request):
 @login_required
 def pantry_page(request):
     session_id = _session_id(request)
-    items = list(PantryItem.objects.filter(user=request.user, archived_at__isnull=True))
+    items = list(
+        PantryItem.objects.filter(user=request.user, archived_at__isnull=True, quantity__gt=0)
+    )
     unmatched = [item for item in items if not item.ingredient_id]
     legacy_codes = dict(
         zip(
@@ -429,7 +432,8 @@ def update_pantry_details(request, item_id):
                 item,
                 event,
                 "move"
-                if before["location"] != item.location and before["quantity"] == str(item.quantity)
+                if before["location"] != item.location
+                and Decimal(before["quantity"]) == item.quantity
                 else "correction",
                 before,
             )
