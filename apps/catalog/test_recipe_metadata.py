@@ -120,3 +120,37 @@ class RecipeMetadataTests(TestCase):
         )
         self.assertEqual(reviewed["instructions"], "Panduan tim")
         self.assertNotIn("instructions_pending_review", reviewed)
+
+
+class AuthoredInstructionsFileTests(TestCase):
+    """data/authored_instructions.json holds team-reviewed steps for Mendeley recipes."""
+
+    fixtures = ["catalog_seed"]
+
+    def test_reviewed_steps_are_published_and_survive_catalog_reimport(self):
+        from django.conf import settings
+
+        from apps.recipe_book.services import with_guidance
+
+        call_command(
+            "import_catalog", settings.BASE_DIR / "data/authored_instructions.json", verbosity=0
+        )
+        authored = Recipe.objects.filter(instruction_status="authored_reviewed")
+        self.assertEqual(authored.count(), 186)
+        self.assertFalse(authored.filter(instructions="").exists())
+        self.assertEqual(with_guidance(authored).count(), 186)
+        recipe = authored.first()
+        meal = {
+            "recipe_code": recipe.pk,
+            "instructions": recipe.instructions,
+            "instruction_status": recipe.instruction_status,
+            "instruction_review_note": recipe.instruction_review_note,
+            "instruction_reviewed_on": recipe.instruction_reviewed_on,
+        }
+        self.assertEqual(protect_recipe_instructions(meal)["instructions"], recipe.instructions)
+        # Re-importing the main catalog must not wipe the authored steps or the review.
+        call_command(
+            "import_catalog", settings.BASE_DIR / "data/fixtures/catalog_seed.json", verbosity=0
+        )
+        recipe.refresh_from_db()
+        self.assertTrue(with_guidance(Recipe.objects.filter(pk=recipe.pk)).exists())
