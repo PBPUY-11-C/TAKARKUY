@@ -50,7 +50,7 @@ def planner_page(request):
             form = previous_form
     elif request.method == "POST" and form.is_valid():
         try:
-            today = timezone.localdate()
+            today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
             history = request.session.get("planner_meal_history", {})
             cutoff = today - timedelta(days=7)
             history = {

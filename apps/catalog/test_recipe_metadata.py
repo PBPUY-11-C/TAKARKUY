@@ -33,9 +33,12 @@ class RecipeMetadataTests(TestCase):
         )
 
     def import_records(self, records):
-        with NamedTemporaryFile(mode="w+", suffix=".json", encoding="utf-8") as stream:
+        # Windows cannot reopen a file that is still open, so close it before importing.
+        with NamedTemporaryFile(
+            mode="w+", suffix=".json", encoding="utf-8", delete_on_close=False
+        ) as stream:
             json.dump(records, stream)
-            stream.flush()
+            stream.close()
             call_command("import_catalog", stream.name, verbosity=0)
 
     def test_import_updates_derived_groups_even_when_signals_suspended(self):
