@@ -1,9 +1,12 @@
 """Recipe Book queries and transactional cooking. No stock reservations."""
 
+from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
+from zoneinfo import ZoneInfo
 
 from django.db import transaction
 from django.db.models import Q
+from django.utils import timezone
 
 from apps.accounts.choices import ALLERGEN_KEYS
 from apps.accounts.preferences import effective_allergens, profile_for
@@ -11,9 +14,17 @@ from apps.budget_planner.models import BudgetPlan, PlannedMeal
 from apps.budget_planner.planner import RICE_CODE, RICE_GRAMS_PER_SERVING, purchase_grams
 from apps.catalog.allergens import recipe_allowed
 from apps.catalog.models import Ingredient, Recipe
-from apps.pantry.services import StockError, execute_consumption, operation, plan_consumption
+from apps.pantry.services import (
+    StockError,
+    eligible_stock,
+    execute_consumption,
+    operation,
+    plan_consumption,
+)
 
 from .models import CookingHistory
+
+JAKARTA = ZoneInfo("Asia/Jakarta")
 
 # Curated by ingredient ID, not name matching. Never omitted from allergy screening.
 # Oil is deliberately NOT a staple: larger amounts are meaningful recipe stock.
@@ -75,6 +86,67 @@ def with_guidance(query):
         .exclude(Q(instruction_status="authored_reviewed", instruction_reviewed_on__isnull=True))
         .exclude(Q(recipe_code__startswith="RCP-MDL-", instruction_reviewed_on__isnull=True))
     )
+
+
+def stock_matches(user, servings, *, query=None):
+    """Recipes the user's pantry covers; one rule for Modul 2 and Modul 4. Reserves nothing.
+
+    Stock with an unknown date counts (it is physically there) but is flagged,
+    because cooking it later asks for explicit confirmation.
+    """
+    if type(servings) is not int or not 1 <= servings <= 10:
+        raise StockError("Porsi harus bilangan bulat 1–10.", 400)
+    # FEFO over trusted dates first; "unknown" batches go last even if a date is stored.
+    inventory = sorted(
+        eligible_stock(user, allow_unknown_expiry=True),
+        key=lambda b: (
+            b.estimated_expires_on is None or b.expiry_source == "unknown",
+            b.estimated_expires_on or date.max,
+            b.pk,
+        ),
+    )
+    if not inventory:
+        return []
+    query = with_guidance(recipe_query(user)) if query is None else query
+    soon = timezone.localdate(timezone=JAKARTA) + timedelta(days=2)
+    rows = []
+    for recipe in (
+        query.filter(recipeingredient__ingredient_id__in={b.ingredient_id for b in inventory})
+        .distinct()
+        .prefetch_related("recipeingredient_set__ingredient")
+    ):
+        try:
+            needs, _, _ = recipe_requirements(recipe, servings)
+            allocation = plan_consumption(
+                user, needs, allow_unknown_expiry=True, preview_batches=inventory
+            )
+        except StockError:
+            continue
+        if not needs:
+            continue
+        missing = allocation["missing"]
+        coverage = sum((grams - missing.get(code, 0)) / grams for code, grams in needs.items())
+        if coverage <= 0:
+            continue
+        used = [row["batch"] for row in allocation["allocations"]]
+        undated = [
+            b for b in used if b.estimated_expires_on is None or b.expiry_source == "unknown"
+        ]
+        rows.append(
+            {
+                "recipe_code": recipe.pk,
+                "name": recipe.name,
+                "complete": not missing,
+                "soon": any(b.estimated_expires_on <= soon for b in used if b not in undated),
+                "coverage": float(coverage / len(needs)),
+                "missing": [
+                    {"ingredient_code": code, "grams": format(grams.normalize(), "f")}
+                    for code, grams in missing.items()
+                ],
+                "unknown_expiry": bool(undated),
+            }
+        )
+    return sorted(rows, key=lambda row: (-row["coverage"], row["name"]))
 
 
 def get_recipe(user, code, *, inputs=None):

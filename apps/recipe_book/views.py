@@ -17,7 +17,6 @@ from apps.accounts.preferences import effective_allergens, profile_for
 from apps.budget_planner.models import PlannedMeal
 from apps.budget_planner.services import PreviewRateLimit, reserve_preview
 from apps.catalog.models import Recipe
-from apps.pantry.models import PantryItem
 from apps.pantry.services import StockError, plan_consumption
 
 from .models import CookingHistory, RecipeFavorite
@@ -31,6 +30,7 @@ from .services import (
     recipe_query,
     recipe_requirements,
     slot_has_rice,
+    stock_matches,
     with_guidance,
 )
 from .services import set_slot_status as change_slot_status
@@ -153,35 +153,10 @@ def book_page(request):
         query = query.filter(pk__in=[code for code, cost in costs.items() if cost <= max_price])
     else:
         max_price = None
-    # Pantry dates are Jakarta dates; the server clock runs on UTC.
-    today = timezone.localdate(timezone=JAKARTA)
     stock_filter = request.GET.get("stock", "")
     if stock_filter in {"complete", "soon"}:
-        inventory = list(
-            PantryItem.objects.filter(
-                user=request.user,
-                archived_at__isnull=True,
-                quantity__gt=0,
-                estimated_expires_on__gte=today,
-            )
-            .exclude(expiry_source="unknown")
-            .order_by("estimated_expires_on", "pk")
-        )
-        allowed = []
-        for recipe in query.prefetch_related("recipeingredient_set__ingredient"):
-            try:
-                needs, _, _ = recipe_requirements(recipe, profile.servings)
-                allocation = plan_consumption(request.user, needs, preview_batches=inventory)
-            except StockError:
-                continue
-            if stock_filter == "complete" and not allocation["missing"]:
-                allowed.append(recipe.pk)
-            elif stock_filter == "soon" and any(
-                row["batch"].estimated_expires_on <= today + timedelta(days=2)
-                for row in allocation["allocations"]
-            ):
-                allowed.append(recipe.pk)
-        query = query.filter(pk__in=allowed)
+        rows = stock_matches(request.user, profile.servings, query=query)
+        query = query.filter(pk__in=[row["recipe_code"] for row in rows if row[stock_filter]])
     page = Paginator(query.order_by("name"), 12).get_page(request.GET.get("page"))
     selection_error = None
     selected = None
@@ -210,8 +185,14 @@ def book_page(request):
             needs, ingredients, nutrition = recipe_requirements(
                 selected, servings, with_rice=slot_has_rice(slot)
             )
-            stock = plan_consumption(request.user, needs)
+            # Same stock rule as stock_matches: undated stock counts, but is flagged.
+            stock = plan_consumption(request.user, needs, allow_unknown_expiry=True)
             detail = {
+                "unknown_expiry": any(
+                    row["batch"].estimated_expires_on is None
+                    or row["batch"].expiry_source == "unknown"
+                    for row in stock["allocations"]
+                ),
                 "ingredients": ingredients,
                 "nutrition": nutrition,
                 "servings": servings,
@@ -256,6 +237,8 @@ def book_page(request):
     params.pop("recipe", None)
     history_params = request.GET.copy()
     history_params.pop("history_page", None)
+    review_params = request.GET.copy()
+    review_params.pop("review_page", None)
     response = render(
         request,
         "modul4.html",
@@ -281,6 +264,7 @@ def book_page(request):
             "filters": request.GET,
             "query_params": urlencode(params, doseq=True),
             "history_params": urlencode(history_params, doseq=True),
+            "review_params": urlencode(review_params, doseq=True),
             **(
                 review_context(request.user, selected, request.GET.get("review_page"))
                 if selected and not selection_error

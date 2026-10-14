@@ -135,7 +135,16 @@ test("delete carries a version and key, and recipe names render as text", async 
   assert.equal(app.row.removed, true);
   app.response(true, {recipes: [{name: "<script>unsafe</script>", complete: true}]});
   await app.get("stock-recipes-button").trigger();
-  assert.match(app.get("stock-recipes-output").children[0].textContent, /<script>unsafe<\/script>/);
+  assert.match(app.get("stock-recipes-output").children[0].children[0].textContent, /<script>unsafe<\/script>/);
+});
+
+test("stock matches link to the recipe in the Recipe Book and flag undated stock", async () => {
+  const app = setup();
+  app.response(true, {recipes: [{recipe_code: "RCP 1", name: "Sup", complete: true, unknown_expiry: true}]});
+  await app.get("stock-recipes-button").trigger();
+  const link = app.get("stock-recipes-output").children[0].children[0];
+  assert.equal(link.href, "/modul4/?recipe=RCP%201");
+  assert.match(link.textContent, /Sup · Bahan cukup · tanggal stok belum diketahui/);
 });
 
 test("cached AI autofill has an AI label and saving does not imply confirmation", async () => {

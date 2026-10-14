@@ -283,49 +283,6 @@ def execute_consumption(user, requirements, event, *, manual=None, allow_unknown
     return {"consumed": changes}
 
 
-def recipe_matches(user, servings=1):
-    """Read-only bridge to Recipe Book; matching does not reserve/deduct stock."""
-    from apps.catalog.content_policy import protect_recipe_instructions
-    from apps.recipe_book.services import recipe_query, recipe_requirements
-
-    totals = available_grams(user)
-    matches = []
-    if not totals:
-        return matches
-    recipes = recipe_query(user).prefetch_related(
-        "recipeingredient_set__ingredient", "recipetag_set"
-    )
-    for recipe in recipes:
-        if not recipe.base_servings or not any(
-            tag.tag == "halal" for tag in recipe.recipetag_set.all()
-        ):
-            continue
-        try:
-            required, _, _ = recipe_requirements(recipe, servings)
-        except StockError:
-            continue
-        if not required:
-            continue
-        covered = sum(
-            min(totals.get(code, 0), grams) / grams for code, grams in required.items()
-        ) / len(required)
-        if covered == 0:
-            continue
-        result = protect_recipe_instructions({"recipe_code": recipe.pk})
-        result.update(
-            name=recipe.name,
-            complete=all(totals.get(code, 0) >= grams for code, grams in required.items()),
-            coverage=float(covered),
-            missing=[
-                {"ingredient_code": code, "grams": str(grams - totals.get(code, 0))}
-                for code, grams in required.items()
-                if grams > totals.get(code, 0)
-            ],
-        )
-        matches.append(result)
-    return sorted(matches, key=lambda row: (-row["coverage"], row["name"]))[:20]
-
-
 @transaction.atomic
 def consume_stock(user, requirements, consumption_key, *, allow_unknown_expiry=False):
     """Internal cooking integration: all-or-nothing FEFO, idempotent across batches.

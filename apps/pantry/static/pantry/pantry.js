@@ -560,7 +560,10 @@ document.getElementById("stock-recipes-button").addEventListener("click", async 
     if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Hubungkan bahan ke katalog dan lengkapi berat/tanggal stok jika diketahui.";
     else output.replaceChildren(...data.recipes.map((recipe) => {
       const line = document.createElement("p");
-      line.textContent = `${recipe.name} · ${recipe.complete ? "Bahan cukup" : "Sebagian bahan tersedia"}${recipe.instructions_pending_review ? " · langkah memasak belum dipublikasikan" : ""}`;
+      const link = document.createElement("a");
+      link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`;
+      link.textContent = `${recipe.name} · ${recipe.complete ? "Bahan cukup" : "Sebagian bahan tersedia"}${recipe.unknown_expiry ? " · tanggal stok belum diketahui" : ""}`;
+      line.append(link);
       return line;
     }));
   } catch (error) { output.textContent = error.message; }

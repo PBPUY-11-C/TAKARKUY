@@ -18,7 +18,7 @@ from apps.pantry.models import PantryItem, PantryMovement, PantryOperation
 from apps.pantry.services import StockError, plan_consumption
 
 from .models import CookingHistory, RecipeFavorite
-from .services import cook, preview_cooking, recipe_query
+from .services import cook, preview_cooking, recipe_query, stock_matches
 
 
 class CookingTests(TestCase):
@@ -429,6 +429,48 @@ class CookingTests(TestCase):
         batch.save()
         self.assertContains(self.client.get(reverse("modul4"), {"stock": "complete"}), "Sup bayam")
         self.assertFalse(PantryMovement.objects.exists())
+
+    def test_stock_matches_counts_unknown_expiry_and_flags_it(self):
+        self.batch(estimated_expires_on=None, expiry_source="unknown")
+        [row] = stock_matches(self.user, 2)
+        self.assertEqual(row["recipe_code"], self.recipe.pk)
+        self.assertTrue(row["complete"])
+        self.assertTrue(row["unknown_expiry"])
+        self.assertFalse(row["soon"])
+        self.assertEqual(row["coverage"], 1.0)
+
+    def test_stock_matches_reports_partial_coverage_and_missing_grams(self):
+        self.batch(quantity=40)
+        [row] = stock_matches(self.user, 2)
+        self.assertFalse(row["complete"])
+        self.assertAlmostEqual(row["coverage"], 0.4)
+        self.assertEqual(row["missing"], [{"ingredient_code": "TEST-BAYAM", "grams": "60"}])
+
+    def test_pantry_and_book_agree_on_complete_recipes(self):
+        # Undated stock is where the two modules used to disagree.
+        self.batch(estimated_expires_on=None, expiry_source="unknown")
+        servings = profile_for(self.user).servings
+        pantry = self.client.get(reverse("modul2-recipes"), {"servings": servings}).json()
+        complete = [row["recipe_code"] for row in pantry["recipes"] if row["complete"]]
+        book = self.client.get(reverse("modul4"), {"stock": "complete"})
+        self.assertEqual(complete, [recipe.pk for recipe in book.context["recipes"]])
+        # The link from Modul 2 must land on a detail page that agrees.
+        detail = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk}).context["detail"]
+        self.assertTrue(detail["complete"])
+        self.assertTrue(detail["unknown_expiry"])
+
+    def test_stock_matches_uses_dated_stock_before_unknown_source_stock(self):
+        # A leftover date on an "unknown" batch must not jump ahead of a labelled batch.
+        today = timezone.localdate()
+        self.batch(expiry_source="unknown", estimated_expires_on=today + timedelta(days=1))
+        self.batch(expiry_source="manual", estimated_expires_on=today + timedelta(days=2))
+        [row] = stock_matches(self.user, 2)
+        self.assertTrue(row["soon"])
+        self.assertFalse(row["unknown_expiry"])
+
+    def test_stock_matches_rejects_servings_over_10(self):
+        with self.assertRaises(StockError):
+            stock_matches(self.user, 11)
 
 
 def get_recipe_for_test(code):
