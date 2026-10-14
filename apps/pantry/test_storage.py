@@ -10,8 +10,8 @@ from django.utils import timezone
 
 from apps.catalog.models import Ingredient, IngredientShelfLife
 
-from .models import PantryItem
-from .storage import storage_options
+from .models import PantryItem, ShelfLifeEstimate
+from .storage import shelf_key, storage_options
 from .test_helpers import authenticate
 
 
@@ -102,6 +102,16 @@ class PantryStorageTests(TestCase):
                 response.json()["estimated_expires_on"], item.estimated_expires_on.isoformat()
             )
 
+    def test_move_on_the_day_it_was_stored_uses_new_location_fully(self):
+        # Everything enters as room temperature; putting it in the fridge right away
+        # must give fridge shelf life. Later moves still never extend (test above).
+        self.add()
+        item = PantryItem.objects.get()
+        self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=2))
+        self.update(item, location="chiller", expiry_mode="auto")
+        item.refresh_from_db()
+        self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=5))
+
     def test_unknown_ingredient_is_saved_without_invented_expiry(self):
         self.add(name="Bahan Yang Tidak Ada XYZ")
         item = PantryItem.objects.get()
@@ -176,6 +186,56 @@ class PantryStorageTests(TestCase):
         self.assertEqual(item.starting_on, start)
         self.assertEqual(item.ingredient_id, self.ingredient.pk)
         self.assertEqual(item.estimated_expires_on, start + timedelta(days=5))
+
+    def test_ai_estimate_used_when_no_official_reference(self):
+        other = Ingredient.objects.create(
+            ingredient_code="ING-NO-REF", name="Tanpa Acuan", category="test", base_unit="g"
+        )
+        ShelfLifeEstimate.objects.create(
+            key=shelf_key(other.pk, "Tanpa Acuan"),
+            ingredient=other,
+            normalized_name="tanpa acuan",
+            suhu_ruang_days=1,
+            chiller_days=4,
+            freezer_days=None,
+        )
+        options = storage_options(other.pk)
+        self.assertEqual(set(options), {"suhu_ruang", "chiller"})
+        self.assertEqual(options["chiller"]["min_days"], 4)
+        self.assertEqual(options["chiller"]["status"], "ai_estimate")
+
+    def test_official_reference_beats_ai_estimate(self):
+        ShelfLifeEstimate.objects.create(
+            key=shelf_key(self.ingredient.pk, "Bahan Uji"),
+            ingredient=self.ingredient,
+            normalized_name="bahan uji",
+            suhu_ruang_days=9,
+        )
+        self.assertEqual(storage_options(self.ingredient.pk)["suhu_ruang"]["min_days"], 2)
+
+    def test_free_text_item_uses_name_key(self):
+        ShelfLifeEstimate.objects.create(
+            key=shelf_key(None, "Sosis  Kanzler!"), normalized_name="sosis kanzler", chiller_days=7
+        )
+        self.assertEqual(storage_options(None, "sosis kanzler")["chiller"]["min_days"], 7)
+        self.assertEqual(storage_options(None, None), {})
+
+    @patch("apps.pantry.shelf_life_ai.gemini_ready", return_value=True)
+    @patch(
+        "apps.pantry.shelf_life_ai.generate_json",
+        return_value={"items": [{"i": 0, "suhu_ruang": 1, "chiller": 6, "freezer": 60}]},
+    )
+    def test_new_free_text_item_gets_ai_expiry_and_move_uses_ai_fridge_days(self, call, ready):
+        self.assertEqual(self.add(name="Sosis Kanzler XYZ").status_code, 201)
+        item = PantryItem.objects.get()
+        self.assertIsNone(item.ingredient_id)
+        self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=1))
+        self.assertEqual(item.expiry_source, "estimate")
+        self.update(item, location="chiller", expiry_mode="auto")
+        item.refresh_from_db()
+        self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=6))
+        self.assertContains(self.client.get(reverse("modul2")), "Perkiraan AI")
+        call.assert_called_once()
 
     def test_storage_options_use_only_three_locations(self):
         options = storage_options(self.ingredient.pk)

@@ -1,0 +1,1862 @@
+[
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0000",
+  "fields": {
+   "instructions": "Potong ayam sesuai selera, cuci bersih, lalu tiriskan.\nRebus telur dalam air mendidih selama 10 menit hingga matang, lalu kupas.\nIris bawang merah, bawang putih, cabai merah keriting, dan cabai hijau, lalu biarkan cabai rawit merah tetap utuh.\nPotong tomat menjadi beberapa bagian.\nRebus ayam dalam 400 ml air bersama irisan bumbu, cabai rawit merah, dan daun salam selama 20 menit.\nMasukkan telur, tomat, dan 65 ml santan, lalu bumbui dengan garam, merica, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api kecil sambil diaduk hingga ayam matang sempurna dan kuah sedikit mengental, lalu sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0009",
+  "fields": {
+   "instructions": "Potong dadu tempe dan terong, iris tipis wortel, lalu potong-potong tomat.\nIris bawang bombay, cincang bawang putih, dan iris serong cabai merah keriting serta cabai rawit merah.\nGoreng tempe dan terong dengan sedikit minyak hingga kecokelatan, lalu angkat.\nTumis bawang putih dan bawang bombay hingga harum, lalu masukkan cabai dan wortel.\nKocok telur, tuang ke wajan, lalu orak-arik hingga telur matang.\nMasukkan tempe, terong, tomat, saus tomat, dan 50 ml air, lalu bumbui dengan garam, merica, dan gula pasir.\nMasak sambil diaduk selama 3-5 menit hingga wortel empuk dan bumbu meresap.\nTambahkan kemangi, aduk sebentar hingga layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0021",
+  "fields": {
+   "instructions": "Cuci 500 g ikan tongkol, potong-potong, lalu lumuri sedikit garam.\nGoreng ikan dalam minyak panas hingga matang dan kecokelatan, lalu tiriskan.\nHaluskan cabai merah keriting, bawang merah, bawang putih, kemiri, jahe, dan ketumbar.\nTumis bumbu halus bersama lengkuas yang dimemarkan hingga harum dan matang.\nMasukkan potongan tomat, masak hingga layu.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk, lalu aduk rata.\nMasukkan ikan, aduk hingga terbalut bumbu, masak 3 menit, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0023",
+  "fields": {
+   "instructions": "Cuci 180 g beras hingga air bilasannya jernih, lalu tiriskan.\nMemarkan serai dan sobek-sobek daun jeruk.\nMasukkan beras ke panci, tuang 200 g santan, lalu tambahkan air hingga total cairan sekitar 270 ml.\nTambahkan serai, daun salam, daun jeruk, garam, dan kaldu jamur bubuk, lalu aduk rata.\nMasak dengan api kecil sambil sesekali diaduk hingga cairan terserap habis.\nKukus nasi selama 20 menit hingga matang dan pulen.\nBuang serai, daun salam, dan daun jeruk, lalu aduk nasi sebelum disajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0024",
+  "fields": {
+   "instructions": "Kupas kentang, potong dadu, lalu goreng dalam minyak goreng hingga kecokelatan dan matang, tiriskan.\nBersihkan udang, buang kotorannya, lalu goreng sebentar hingga berubah warna merah, tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, kemiri, dan tomat.\nPanaskan sisa minyak, tumis bumbu halus bersama daun jeruk, lengkuas, dan serai yang dimemarkan hingga harum dan matang.\nMasukkan petai, aduk hingga sedikit layu.\nTambahkan garam, gula pasir, dan kaldu jamur bubuk, aduk rata lalu koreksi rasa.\nMasukkan udang dan kentang, aduk rata dan masak 3 menit hingga udang matang sempurna dan bumbu meresap.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0028",
+  "fields": {
+   "instructions": "Potong 500 g tahu putih menjadi dadu besar, lalu goreng dalam minyak panas hingga kulitnya kuning keemasan dan tiriskan.\nHaluskan kasar cabai merah keriting, bawang merah, dan bawang putih.\nSisakan sekitar 2 sendok makan minyak di wajan, lalu tumis bumbu halus hingga harum dan matang.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk, lalu aduk rata.\nMasukkan tahu goreng dan aduk hingga seluruh permukaannya terbalut sambal.\nMasak sebentar sambil diaduk hingga bumbu meresap, lalu angkat dan sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0039",
+  "fields": {
+   "instructions": "Bersihkan ikan patin, potong-potong, lalu lumuri sedikit garam.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, jahe, kemiri, ketumbar, dan merica.\nPanaskan 2 sdm minyak goreng, lalu tumis bumbu halus bersama lengkuas memar, serai memar, daun salam, dan daun jeruk hingga harum.\nTuang 500 ml santan dan masak sambil terus diaduk hingga mendidih agar santan tidak pecah.\nMasukkan ikan patin, cabai rawit merah utuh, dan potongan tomat.\nBumbui dengan sisa garam, gula pasir, dan kaldu ayam bubuk, lalu koreksi rasa.\nMasak dengan api kecil selama 15 menit tanpa terlalu sering diaduk hingga ikan matang sempurna dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0053",
+  "fields": {
+   "instructions": "Potong daging sapi menjadi potongan sedang, lalu rebus dalam 1 liter air selama 45-60 menit hingga empuk.\nHaluskan bawang merah, bawang putih, kemiri, ketumbar, merica, kunyit, dan jahe.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas yang dimemarkan dan daun salam hingga harum dan matang.\nMasukkan daging beserta sekitar 300 ml air rebusannya, lalu aduk rata.\nTambahkan kecap manis, gula pasir, garam, dan tomat yang sudah dipotong.\nTuang santan dan masak dengan api kecil sambil sesekali diaduk.\nMasak hingga kuah menyusut, mengental, dan bumbu meresap ke daging, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0056",
+  "fields": {
+   "instructions": "Rebus 1 kg ayam kampung dalam 2,5 liter air hingga mendidih, lalu buang busanya.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, jahe, merica, dan pala, lalu tumis dengan sedikit minyak hingga harum.\nMasukkan bumbu tumis ke rebusan ayam bersama serai, lengkuas, daun salam, daun jeruk, dan cengkeh.\nMasak dengan api kecil sekitar 45 menit hingga ayam empuk dan matang.\nBumbui kuah dengan garam dan kaldu jamur bubuk, lalu angkat ayam dan suwir dagingnya.\nSeduh soun dengan air panas hingga lunak, lalu tiriskan.\nTata soun dan ayam suwir di mangkuk, siram kuah panas, lalu taburi irisan daun bawang dan seledri.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0071",
+  "fields": {
+   "instructions": "Potong ayam kecil-kecil, cuci bersih, lalu tiriskan.\nHaluskan bawang putih dan merica hitam, lalu memarkan jahe dan lengkuas.\nTumis bumbu halus dengan sedikit minyak bersama jahe dan lengkuas hingga harum.\nMasukkan ayam dan aduk hingga berubah warna.\nTuang 500 ml air, tambahkan kecap manis dan sedikit garam, lalu masak hingga ayam matang dan empuk.\nMasukkan tomat potong dan seledri iris, lalu masak 2 menit hingga layu.\nKoreksi rasa dan sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0078",
+  "fields": {
+   "instructions": "Potong terong memanjang, lalu goreng dalam minyak goreng panas hingga layu dan matang, tiriskan.\nHaluskan cabai merah keriting, bawang merah, dan bawang putih.\nPanaskan 2 sendok makan minyak, tumis bumbu halus hingga harum dan tidak langu.\nMasukkan lengkuas dan serai yang dimemarkan, daun salam, serta daun jeruk, aduk hingga wangi.\nBumbui dengan gula pasir dan kaldu jamur bubuk, aduk rata dan koreksi rasa.\nMasukkan terong, aduk perlahan hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0082",
+  "fields": {
+   "instructions": "Potong tahu dan tempe bentuk dadu, lalu iris serong cabai merah keriting dan cabai rawit merah.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, kencur, merica, dan ketumbar.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas, serai, daun salam, dan daun jeruk hingga harum.\nTuang 300 ml air, lalu masukkan tahu dan tempe dan masak hingga mendidih.\nMasukkan irisan cabai merah keriting dan cabai rawit, lalu masak hingga cabai layu.\nTuang 200 ml santan dan bumbui dengan garam, lalu aduk perlahan agar santan tidak pecah.\nMasak dengan api kecil hingga kuah mendidih kembali dan sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0088",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, jahe, dan kemiri.\nPanaskan 4 sdm minyak goreng, lalu tumis bumbu halus bersama serai memar, lengkuas memar, dan daun jeruk hingga harum.\nMasukkan ayam dan aduk hingga berubah warna.\nTuang 300 ml air, tutup, lalu masak selama 20 menit hingga ayam empuk dan matang sempurna.\nTambahkan irisan cabai hijau dan daun bawang, lalu masak hingga kuah menyusut.\nMasukkan kemangi, aduk sebentar hingga layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0090",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong tahu dan tempe, lalu goreng sebentar hingga permukaannya kecokelatan.\nHaluskan cabai merah keriting, bawang merah, bawang putih, kemiri, dan jahe.\nTumis bumbu halus dengan minyak goreng hingga harum, lalu tambahkan kunyit bubuk, serai, lengkuas, daun jeruk, dan daun salam.\nTuang 300 ml air, lalu masukkan telur, tahu, dan tempe.\nBumbui dengan garam dan gula pasir, lalu masak hingga kuah sedikit menyusut.\nMasukkan tomat yang sudah dipotong dan kemangi, aduk hingga kemangi layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0096",
+  "fields": {
+   "instructions": "Potong ayam, kupas kentang, lalu potong kentang menjadi beberapa bagian.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, jahe, dan ketumbar.\nTumis bumbu halus dengan sedikit minyak bersama serai, lengkuas, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna.\nTuang santan dan 300 ml air, lalu masukkan kentang.\nBumbui dengan garam dan kaldu ayam bubuk.\nMasak dengan api kecil sambil sesekali diaduk hingga ayam matang, kentang empuk, dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0097",
+  "fields": {
+   "instructions": "Rendam ikan teri dalam air hangat selama 10 menit, lalu tiriskan.\nPotong dadu kentang, lalu goreng dengan minyak hingga matang dan kecokelatan.\nGoreng ikan teri hingga kering, lalu angkat dan tiriskan.\nUlek kasar cabai hijau, bawang merah, bawang putih, dan tomat.\nTumis bumbu ulek dengan sisa minyak hingga harum dan matang.\nTambahkan garam, gula pasir, dan perasan jeruk nipis, lalu aduk rata.\nMasukkan kentang dan ikan teri, aduk hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0106",
+  "fields": {
+   "instructions": "Rebus daging sapi dalam 500 ml air hingga empuk, tiriskan lalu potong dadu kecil.\nKupas kentang, potong dadu, lalu goreng dalam minyak goreng hingga kering dan matang, tiriskan.\nGoreng potongan daging sebentar hingga permukaannya agak kering, tiriskan.\nHaluskan cabai merah keriting dan bawang merah.\nTumis bumbu halus dengan 2 sendok makan minyak hingga harum dan matang.\nTambahkan garam dan kaldu jamur bubuk, aduk rata.\nMasukkan daging dan kentang, aduk hingga bumbu menyelimuti semua bahan, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0114",
+  "fields": {
+   "instructions": "Potong ayam menjadi beberapa bagian, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, kunyit, jahe, kemiri, merica, dan ketumbar.\nCampurkan bumbu halus dengan garam, gula pasir, dan kaldu jamur bubuk, lalu lumuri ayam hingga rata dan diamkan 15 menit.\nMemarkan serai dan lengkuas, lalu iris daun bawang dan cabai rawit merah.\nTata ayam berbumbu dalam wadah tahan panas bersama serai, lengkuas, daun salam, daun bawang, cabai rawit, dan kemangi, lalu tutup rapat.\nKukus selama 45 menit hingga ayam matang sempurna dan tidak ada cairan merah muda saat ditusuk.\nPanggang sebentar di atas wajan tanpa minyak bila ingin aroma lebih harum, lalu sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0145",
+  "fields": {
+   "instructions": "Kupas kentang, potong dadu kecil, cuci, lalu tiriskan.\nGoreng kentang dalam minyak goreng panas hingga matang dan bagian luarnya kering, lalu angkat.\nHaluskan cabai merah keriting, bawang merah, dan bawang putih.\nSisakan sekitar 2 sdm minyak di wajan, lalu tumis bumbu halus hingga harum dan matang.\nBumbui dengan garam dan gula pasir, lalu aduk rata.\nMasukkan kentang goreng, aduk hingga seluruhnya terbalut sambal, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0146",
+  "fields": {
+   "instructions": "Bersihkan ikan mas, potong menjadi beberapa bagian, lalu lumuri dengan sedikit garam.\nHaluskan bawang merah, bawang putih, kunyit, dan cabai merah keriting.\nTumis bumbu halus dengan sedikit minyak bersama serai yang dimemarkan hingga harum.\nTuang 400 ml air dan didihkan.\nMasukkan ikan, lalu bumbui dengan gula pasir, garam, dan kaldu ayam bubuk.\nMasak dengan api sedang selama 10-15 menit hingga daging ikan matang dan mudah lepas dari tulang.\nTambahkan tomat yang sudah dipotong, masak 2 menit lagi, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0162",
+  "fields": {
+   "instructions": "Kukus 250 g ikan tongkol sekitar 15 menit hingga matang, lalu suwir dan buang durinya.\nPotong tahu kecil-kecil, goreng hingga kuning kecokelatan, lalu tiriskan.\nHaluskan cabai merah keriting, bawang merah, bawang putih, dan tomat.\nTumis bumbu halus bersama lengkuas yang dimemarkan hingga harum dan minyak keluar.\nMasukkan tongkol suwir dan tahu, aduk rata.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk, lalu masak 5 menit hingga bumbu meresap.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0163",
+  "fields": {
+   "instructions": "Sangrai ketumbar lalu haluskan.\nPotong ikan tongkol, lumuri dengan perasan jeruk nipis, garam, dan ketumbar halus, lalu diamkan 15 menit.\nGoreng ikan dalam minyak panas hingga matang dan kecokelatan, lalu tiriskan.\nPotong kacang panjang sepanjang 3 cm.\nHaluskan kasar cabai merah keriting, bawang merah, bawang putih, dan tomat.\nTumis bumbu dengan sisa minyak hingga harum dan berminyak.\nMasukkan kacang panjang, gula pasir, dan sedikit air, lalu masak hingga kacang panjang layu.\nMasukkan ikan goreng, aduk perlahan hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0165",
+  "fields": {
+   "instructions": "Potong kacang panjang sepanjang 4 cm dan potong tempe dadu.\nHaluskan bawang merah, bawang putih, cabai merah keriting, dan kunyit.\nPanaskan minyak goreng, tumis bumbu halus bersama daun salam dan serai yang dimemarkan hingga harum.\nTuang 700 ml air, didihkan, lalu masukkan tempe dan masak 5 menit.\nMasukkan kacang panjang, masak hingga hampir empuk.\nTuang santan sambil terus diaduk agar tidak pecah.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk, masak hingga mendidih dan sayur matang.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0169",
+  "fields": {
+   "instructions": "Potong ikan tongkol, cuci bersih, lalu lumuri dengan sedikit garam.\nGoreng tongkol dalam minyak panas hingga matang dan kering di kedua sisi, lalu suwir kasar.\nUlek kasar cabai merah keriting, bawang merah, dan tomat.\nTumis sambal ulek dengan sisa minyak hingga harum dan airnya menyusut.\nMasukkan petai dan masak hingga petai sedikit layu.\nTambahkan suwiran tongkol dan sisa garam, lalu aduk hingga sambal meresap dan angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0174",
+  "fields": {
+   "instructions": "Cincang halus ayam, lalu hancurkan tahu dengan garpu.\nHaluskan bawang merah, bawang putih, dan merica.\nIris daun bawang, seledri, cabai rawit merah, dan tomat.\nCampur tahu, ayam, telur, bumbu halus, dan irisan sayuran, lalu bumbui dengan garam dan kaldu ayam bubuk.\nAduk hingga rata, lalu tuang adonan ke wadah tahan panas dan ratakan permukaannya.\nKukus selama 30 menit hingga adonan padat dan ayam matang sempurna.\nAngkat, diamkan sebentar, lalu potong dan sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0181",
+  "fields": {
+   "instructions": "Siangi kangkung, lalu cuci bersih bersama tauge.\nRebus kangkung dalam air mendidih bergaram selama 1-2 menit, angkat, lalu rebus tauge sebentar dan tiriskan.\nLarutkan asam jawa dengan 2 sendok makan air hangat, lalu saring.\nSangrai terasi sebentar hingga harum.\nUlek cabai rawit merah, bawang merah, terasi, dan gula merah hingga halus.\nTambahkan air asam jawa, garam, dan kaldu jamur bubuk ke sambal, lalu aduk rata.\nTata kangkung dan tauge di piring, lalu siram dengan sambal plecing.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0184",
+  "fields": {
+   "instructions": "Kupas kentang dan wortel, lalu potong dadu kecil.\nPanaskan minyak goreng, goreng kentang dan wortel hingga matang dan kentang kecokelatan, lalu tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, dan kunyit.\nTumis bumbu halus dengan sedikit sisa minyak bersama lengkuas dan daun salam hingga harum.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk, lalu tambahkan 3 sendok makan air.\nMasukkan kentang dan wortel, aduk hingga bumbu menyelimuti rata dan agak kering.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0194",
+  "fields": {
+   "instructions": "Rendam ikan teri dalam air hangat selama 10 menit, lalu tiriskan.\nIris bawang merah, bawang putih, cabai hijau, dan cabai merah keriting, lalu biarkan cabai rawit tetap utuh.\nPotong tomat menjadi beberapa bagian dan sisir gula merah.\nTumis bawang merah dan bawang putih dengan sedikit minyak hingga harum.\nMasukkan semua cabai dan ikan teri, lalu aduk hingga cabai layu.\nTambahkan tomat, gula merah, kaldu ayam bubuk, dan 200 ml air.\nMasak hingga tomat hancur dan kuah sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0203",
+  "fields": {
+   "instructions": "Cuci ati ampela, lumuri dengan air jeruk nipis dan sedikit garam, diamkan 10 menit.\nRebus ati ampela dalam 500 ml air hingga matang sempurna, tiriskan lalu potong-potong.\nKupas kentang, potong dadu, lalu goreng dalam minyak goreng hingga matang, tiriskan.\nGoreng ati ampela sebentar hingga kulitnya agak kering, tiriskan.\nHaluskan cabai merah keriting, bawang merah, dan bawang putih.\nTumis bumbu halus dengan sedikit minyak hingga harum dan matang, lalu tambahkan sisa garam dan gula pasir.\nMasukkan ati ampela dan kentang, aduk rata hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0208",
+  "fields": {
+   "instructions": "Potong ikan patin menjadi beberapa bagian dan cuci bersih, lalu potong tahu dadu dan buncis sepanjang 3 cm.\nHaluskan bawang merah, bawang putih, kunyit, dan cabai merah keriting.\nTumis bumbu halus dengan sedikit minyak goreng bersama serai yang sudah dimemarkan hingga harum.\nTuang 600 ml air, beri garam secukupnya, lalu didihkan.\nMasukkan potongan patin dan tahu, lalu masak dengan api sedang tanpa sering diaduk agar ikan tidak hancur.\nTambahkan buncis dan masak 5 menit hingga buncis empuk dan daging ikan matang serta mudah lepas dari tulang.\nKoreksi rasa, lalu angkat dan sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0214",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, jahe, ketumbar, dan merica.\nIris bawang bombay memanjang.\nPanaskan 2 sdm minyak goreng, tumis bawang bombay hingga layu, lalu masukkan bumbu halus, serai memar, daun salam, dan daun jeruk.\nTumis hingga bumbu harum dan matang, lalu masukkan ayam dan aduk rata.\nTuang 200 ml air dan tambahkan garam secukupnya.\nMasak dengan api sedang hingga ayam matang sempurna dan bumbu menyusut serta meresap, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0224",
+  "fields": {
+   "instructions": "Kukus atau rebus ikan tongkol selama 15 menit hingga matang, lalu suwir kasar dan buang tulangnya.\nIris tipis bawang merah, bawang putih, cabai merah keriting, dan cabai rawit merah.\nPotong tomat dan belah petai menjadi dua.\nPanaskan minyak goreng, lalu tumis bumbu iris bersama serai, lengkuas, dan daun salam hingga harum.\nMasukkan ikan suwir, petai, dan tomat, lalu aduk rata.\nBumbui dengan garam, merica, dan kaldu ayam bubuk, lalu tambahkan 50 ml air.\nMasak sambil diaduk hingga bumbu meresap dan airnya menyusut, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0227",
+  "fields": {
+   "instructions": "Rebus ayam dalam 1,5 liter air hingga mendidih, lalu buang busanya.\nHaluskan bawang merah, bawang putih, kunyit, kemiri, ketumbar, dan merica.\nTumis bumbu halus dengan minyak goreng bersama lengkuas, daun salam, dan daun jeruk hingga harum.\nMasukkan bumbu tumis ke dalam rebusan ayam.\nBumbui dengan garam dan gula pasir, lalu masak dengan api kecil sekitar 30 menit hingga ayam matang dan empuk.\nAngkat ayam, suwir dagingnya, lalu sajikan dengan kuah soto panas.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0234",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nGoreng telur rebus dalam minyak hingga kulitnya kecokelatan, lalu tiriskan.\nHaluskan cabai merah keriting, cabai rawit, bawang merah, bawang putih, dan tomat.\nTumis bumbu halus dengan sisa minyak hingga harum dan matang.\nTambahkan garam dan gula pasir, lalu aduk rata.\nMasukkan telur, aduk hingga terbalut sambal, masak 2 menit, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0255",
+  "fields": {
+   "instructions": "Bersihkan ikan mas, potong menjadi beberapa bagian, lalu lumuri sedikit garam.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, kunyit, jahe, dan merica hitam.\nPanaskan 2 sendok makan minyak goreng, tumis bumbu halus hingga harum dan matang.\nMasukkan serai dan lengkuas yang dimemarkan, daun salam, serta daun jeruk, aduk sebentar.\nTuang santan dan 300 ml air, aduk terus hingga mendidih agar santan tidak pecah.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk, lalu koreksi rasa.\nMasukkan ikan, masak dengan api kecil 15 menit tanpa sering diaduk hingga ikan matang dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0272",
+  "fields": {
+   "instructions": "Bersihkan kepala dan potongan ikan patin, lalu lumuri dengan air jeruk nipis dan sedikit garam selama 10 menit.\nHaluskan bawang merah, bawang putih, kunyit, dan cabai rawit merah.\nTumis bumbu halus dengan minyak goreng bersama serai yang dimemarkan hingga harum.\nTuang 700 ml air dan larutan asam jawa, lalu didihkan.\nMasukkan ikan patin dan masak 10 menit hingga daging ikan matang.\nTambahkan kacang panjang yang sudah dipotong dan irisan tomat, lalu masak hingga kacang panjang empuk.\nBumbui dengan garam, gula pasir, kaldu ayam bubuk, dan merica, lalu aduk perlahan dan angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0276",
+  "fields": {
+   "instructions": "Potong ayam dan cuci bersih, lalu potong tahu bentuk dadu.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, jahe, dan kemiri.\nTumis bumbu halus dengan 2 sdm minyak goreng bersama lengkuas memar, serai memar, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 400 ml air.\nMasak selama 20 menit, lalu masukkan tahu dan cabai rawit merah utuh.\nTuang 200 ml santan, bumbui dengan garam, gula pasir, dan kaldu ayam bubuk, lalu aduk perlahan agar santan tidak pecah.\nMasak hingga ayam matang sempurna dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0278",
+  "fields": {
+   "instructions": "Bersihkan ikan mas, potong menjadi beberapa bagian, lalu lumuri dengan sedikit garam.\nHaluskan cabai merah keriting, bawang merah, bawang putih, jahe, kunyit, dan ketumbar.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas, serai, daun jeruk, dan daun salam hingga harum.\nTuang santan dan 200 ml air, lalu didihkan sambil terus diaduk agar santan tidak pecah.\nMasukkan ikan dan kacang panjang yang sudah dipotong sepanjang 4 cm.\nTambahkan garam secukupnya, lalu masak dengan api kecil selama 15 menit.\nAngkat setelah ikan matang, kacang panjang empuk, dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0279",
+  "fields": {
+   "instructions": "Cuci ati ampela, lumuri air jeruk nipis, diamkan 10 menit, lalu bilas.\nRebus ati ampela dalam air mendidih sekitar 15 menit hingga matang, lalu tiriskan dan potong-potong.\nIris bawang merah, bawang putih, dan cabai merah keriting, lalu potong tomat.\nTumis bawang merah dan bawang putih dengan sedikit minyak hingga harum.\nMasukkan cabai merah keriting, cabai rawit merah utuh, tomat, dan daun salam, lalu masak hingga tomat layu.\nTambahkan ati ampela, santan, dan 200 ml air, lalu bumbui dengan garam dan gula pasir.\nMasak dengan api kecil sambil diaduk hingga kuah mendidih dan bumbu meresap.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0289",
+  "fields": {
+   "instructions": "Rebus daging sapi utuh dalam 1,5 liter air dengan sedikit garam selama sekitar 1,5 jam hingga empuk.\nAngkat daging, potong tebal, lalu pukul-pukul hingga agak pipih.\nGoreng daging dengan minyak hingga kecokelatan, lalu tiriskan.\nUlek kasar cabai merah keriting, cabai rawit, bawang merah, dan bawang putih.\nTumis bumbu ulek bersama daun jeruk hingga harum dan matang.\nTambahkan sisa garam dan gula pasir, lalu aduk rata.\nMasukkan empal, aduk hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0292",
+  "fields": {
+   "instructions": "Potong ayam, lumuri dengan air jeruk nipis dan sedikit garam, diamkan 15 menit.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kemiri, jahe, ketumbar, jintan, dan merica hitam.\nTumis bumbu halus tanpa banyak minyak hingga harum, lalu tambahkan kunyit bubuk.\nMasukkan lengkuas dan serai yang dimemarkan, daun jeruk, kayu manis, dan cengkeh, aduk hingga wangi.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang santan dan 200 ml air serta sisa garam.\nMasak dengan api kecil sambil sesekali diaduk hingga ayam empuk dan kuah menyusut menjadi bumbu kental.\nBakar ayam di atas teflon atau bara sambil diolesi sisa bumbu hingga kecokelatan dan matang sampai ke tulang.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0298",
+  "fields": {
+   "instructions": "Potong ikan patin menjadi beberapa bagian, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, jahe, dan kunyit.\nTumis bumbu halus dengan sedikit minyak goreng bersama lengkuas dan serai yang dimemarkan hingga harum.\nTuang 800 ml air, beri garam secukupnya, lalu didihkan.\nMasukkan potongan patin dan masak dengan api sedang selama 10 sampai 15 menit tanpa banyak diaduk.\nTambahkan irisan cabai merah keriting dan tomat, lalu masak hingga tomat layu dan ikan matang sempurna.\nKoreksi rasa, lalu angkat dan sajikan dengan kuahnya.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0299",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, lalu tiriskan.\nRebus cabai merah keriting sebentar, lalu haluskan bersama bawang merah, bawang putih, jahe, kencur, dan terasi.\nPanaskan 2 sdm minyak goreng, lalu tumis bumbu halus bersama kayu manis hingga harum dan berwarna merah tua.\nMasukkan ayam dan aduk hingga terbalut bumbu.\nTuang 300 ml air, lalu tambahkan gula merah, garam, dan kaldu ayam bubuk.\nMasak dengan api kecil hingga ayam matang sempurna dan kuah menyusut serta mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0309",
+  "fields": {
+   "instructions": "Potong dadu tahu dan potong kacang panjang sepanjang 4 cm.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kemiri, ketumbar, dan kunyit.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas, serai, dan daun salam hingga harum.\nTuang 1 liter santan dan masak sambil terus diaduk hingga mendidih.\nMasukkan tahu dan kacang panjang.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api kecil hingga kacang panjang empuk dan kuah sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0320",
+  "fields": {
+   "instructions": "Potong ayam berbentuk dadu kecil.\nHaluskan bawang merah, bawang putih, lengkuas, ketumbar, merica, dan gula merah.\nCampur bumbu halus dengan kecap manis, garam, dan kaldu ayam bubuk.\nLumuri ayam dengan bumbu, lalu diamkan minimal 30 menit agar meresap.\nTusuk potongan ayam dengan tusuk sate, 4 sampai 5 potong per tusuk.\nBakar sate di atas bara atau teflon sambil dibalik dan dioles sisa bumbu.\nPanggang hingga ayam matang merata dan permukaannya kecokelatan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0323",
+  "fields": {
+   "instructions": "Potong ayam dadu kecil, lumuri dengan garam, merica hitam, dan sebagian kecap manis, lalu diamkan 20 menit.\nTusuk ayam dengan tusukan sate.\nGoreng kacang tanah dengan sedikit minyak hingga matang, lalu angkat.\nHaluskan kacang tanah, bawang merah, bawang putih, kemiri, cabai merah keriting, dan gula merah.\nMasak bumbu kacang dengan 150 ml air hingga mengental dan berminyak.\nBakar sate di atas bara atau teflon sambil diolesi sisa kecap manis hingga ayam matang sampai ke dalam.\nSajikan sate dengan siraman bumbu kacang.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0327",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, kupas, lalu goreng sebentar dalam minyak goreng hingga permukaannya berkulit.\nRendam teri sebentar untuk mengurangi asin, tiriskan, lalu goreng hingga renyah.\nHaluskan cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, tomat, dan terasi.\nTumis bumbu halus dengan 3 sendok makan minyak hingga harum dan matang.\nTambahkan gula merah yang disisir, kecap manis, garam, dan kaldu ayam bubuk, aduk hingga gula larut.\nMasukkan telur dan teri, aduk hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0337",
+  "fields": {
+   "instructions": "Rebus telur dalam air mendidih selama 10 menit hingga matang, lalu rendam air dingin dan kupas.\nGoreng telur rebus dalam minyak panas sebentar hingga permukaannya kecokelatan, lalu tiriskan.\nHaluskan bawang merah, bawang putih, jahe, cabai merah keriting, dan cabai rawit merah.\nTumis bumbu halus dengan sisa minyak hingga harum dan matang.\nTambahkan kecap manis, saus tomat, gula merah, garam, kaldu ayam bubuk, dan 100 ml air, lalu aduk rata.\nMasukkan telur dan masak sambil diaduk hingga sambal kecap mengental dan melapisi telur.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0350",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, jahe, dan kemiri.\nTumis bumbu halus dengan 2 sdm minyak goreng bersama serai memar, lengkuas memar, daun salam, dan daun jeruk hingga harum.\nTuang 250 ml air, lalu masukkan telur rebus.\nBumbui dengan garam, gula pasir, dan kaldu jamur bubuk, lalu masak hingga mendidih.\nMasukkan potongan tomat dan irisan daun bawang, lalu masak hingga kuah sedikit menyusut.\nTambahkan kemangi, aduk sebentar hingga layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0355",
+  "fields": {
+   "instructions": "Cuci beras hingga air bilasannya cukup jernih, lalu tiriskan.\nPanaskan minyak goreng di panci, lalu tumis serai yang dimemarkan dan daun salam hingga harum.\nMasukkan beras, garam, dan sekitar 700 ml air, lalu aduk rata.\nMasak dengan api sedang sambil sesekali diaduk hingga air terserap habis.\nLetakkan cabai rawit merah utuh di atas nasi, lalu tutup panci.\nKecilkan api dan masak selama 15-20 menit hingga nasi matang dan tanak.\nAduk nasi perlahan sebelum disajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0365",
+  "fields": {
+   "instructions": "Potong ikan tongkol dan tahu, lalu goreng sebentar dalam minyak panas dan tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, dan cabai rawit merah.\nTumis bumbu halus bersama lengkuas dan daun salam hingga harum.\nMasukkan potongan tomat, masak hingga layu.\nTuang santan dan 300 ml air, aduk terus hingga mendidih agar santan tidak pecah.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk.\nMasukkan tongkol dan tahu, masak dengan api kecil hingga ikan matang dan kuah sedikit menyusut.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0367",
+  "fields": {
+   "instructions": "Bersihkan ikan tongkol, lalu potong sesuai selera.\nHaluskan bawang merah, bawang putih, cabai merah keriting, dan sebagian cabai rawit.\nTumis bumbu halus dengan sedikit minyak bersama daun jeruk hingga harum.\nTuang 700 ml air, tambahkan garam dan gula merah, lalu didihkan.\nMasukkan ikan dan sisa cabai rawit utuh, lalu masak dengan api sedang selama 15 menit hingga ikan matang.\nTambahkan tomat potong dan masak 3 menit hingga layu.\nKoreksi rasa dan sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0368",
+  "fields": {
+   "instructions": "Bersihkan ikan tongkol, potong beberapa bagian, lalu cuci bersih.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, kemiri, kunyit, dan jahe.\nPanaskan minyak goreng, tumis bumbu halus hingga harum dan matang.\nMasukkan serai dan lengkuas yang dimemarkan serta daun jeruk, aduk sebentar.\nTuang 600 ml air, didihkan, lalu bumbui dengan kaldu ayam bubuk, garam, dan sedikit gula pasir.\nMasukkan ikan tongkol, masak dengan api sedang 15 menit hingga ikan matang dan bumbu meresap.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0371",
+  "fields": {
+   "instructions": "Potong ayam sesuai selera, cuci bersih, lalu rebus sebentar dalam air mendidih dan tiriskan.\nHaluskan cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, kemiri, jahe, dan tomat.\nTumis bumbu halus dengan sedikit minyak goreng bersama serai yang dimemarkan dan daun salam hingga harum dan berminyak.\nMasukkan ayam dan aduk hingga terbalut bumbu.\nTuang 300 ml air, beri garam secukupnya, lalu masak dengan api sedang.\nMasak sekitar 25 menit hingga ayam matang empuk dan sambal mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0384",
+  "fields": {
+   "instructions": "Bersihkan ikan tongkol, potong-potong, lalu lumuri sedikit garam.\nHaluskan bawang merah, bawang putih, dan merica.\nPanaskan 2 sdm minyak goreng, lalu tumis bumbu halus hingga harum.\nMasukkan separuh tomat yang sudah dipotong, lalu aduk hingga layu.\nTuang 500 ml air, bumbui dengan sisa garam dan gula pasir, lalu didihkan.\nMasukkan ikan tongkol dan sisa tomat, lalu masak dengan api sedang selama 15 menit.\nPastikan ikan matang sempurna dan kuah terasa segar, lalu sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0394",
+  "fields": {
+   "instructions": "Rebus daging sapi utuh dalam air selama 45 menit hingga empuk, lalu tiriskan.\nIris tipis daging melawan serat, lalu pipihkan dengan cara dipukul-pukul.\nLumuri daging dengan garam, merica, dan sebagian bawang putih yang dihaluskan.\nGoreng daging dalam minyak panas hingga kering dan matang, lalu tiriskan.\nUlek kasar cabai merah keriting, cabai rawit merah, bawang merah, dan sisa bawang putih.\nTumis sambal dengan sedikit minyak bersama daun jeruk hingga harum dan matang.\nTambahkan air jeruk nipis dan sedikit garam, lalu masukkan dendeng dan aduk hingga rata.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0404",
+  "fields": {
+   "instructions": "Rebus ayam dalam 1,5 liter air hingga mendidih, lalu buang busanya.\nHaluskan bawang merah, bawang putih, kunyit, dan jahe.\nTumis bumbu halus dengan minyak goreng bersama lengkuas, daun salam, dan daun jeruk hingga harum.\nMasukkan bumbu ke rebusan ayam, lalu bumbui dengan garam, gula pasir, dan kaldu jamur bubuk.\nMasak dengan api kecil sekitar 30 menit hingga ayam matang, lalu angkat dan suwir.\nIris tipis kubis dan seledri, lalu seduh tauge dengan air panas.\nTata kubis, tauge, dan ayam suwir di mangkuk, siram kuah panas, taburi seledri, dan sajikan dengan perasan jeruk nipis.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0409",
+  "fields": {
+   "instructions": "Rebus ayam dalam 1,2 liter air hingga matang, angkat lalu suwir dagingnya, dan sisihkan kaldunya.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, dan merica hitam.\nTumis bumbu halus dengan minyak bersama daun salam dan serai memar hingga harum.\nMasukkan tumisan ke kaldu, tambahkan garam dan kaldu ayam bubuk, lalu didihkan 10 menit.\nIris halus kubis, daun bawang, dan seledri, lalu seduh tauge dengan air panas.\nTata kubis, tauge, dan ayam suwir di dalam mangkuk.\nSiram dengan kuah soto panas, lalu taburi daun bawang dan seledri.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0416",
+  "fields": {
+   "instructions": "Rebus daging sapi dalam 1,5 liter air hingga empuk, angkat dagingnya lalu potong kecil, sisihkan kaldunya.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, jahe, ketumbar, dan merica hitam.\nTumis bumbu halus dengan sedikit minyak goreng bersama lengkuas dan serai yang dimemarkan serta daun jeruk hingga harum.\nMasukkan tumisan bumbu ke dalam kaldu, lalu tambahkan potongan daging.\nBumbui dengan garam dan gula pasir, masak 10 menit hingga kuah mendidih dan bumbu meresap.\nIris daun bawang dan seledri, masukkan ke kuah sesaat sebelum diangkat atau taburkan saat penyajian.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0422",
+  "fields": {
+   "instructions": "Potong ayam dan kentang, lalu goreng kentang dalam minyak panas hingga setengah matang dan tiriskan.\nHaluskan bawang putih, bawang merah, merica, jahe, kemiri, cabai merah keriting, dan cabai rawit merah.\nTumis bumbu halus dengan sisa minyak bersama serai, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam dan aduk hingga berubah warna.\nTuang 400 ml air, lalu tambahkan kecap manis, gula pasir, dan garam.\nMasukkan kentang dan masak dengan api kecil sekitar 25 menit.\nMasak hingga ayam matang empuk, kentang lunak, dan kuah semur mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0427",
+  "fields": {
+   "instructions": "Potong ayam kecil-kecil, cuci bersih, lalu lumuri sedikit garam.\nGoreng ayam dalam minyak goreng panas hingga matang dan kecokelatan, lalu tiriskan.\nHaluskan bawang merah, bawang putih, dan cabai merah keriting, lalu iris bawang bombay dan potong tomat.\nTumis bumbu halus dan bawang bombay dengan 2 sdm minyak goreng hingga harum.\nMasukkan tomat, saus tomat, kecap manis, gula merah, dan 150 ml air, lalu aduk hingga gula larut.\nBumbui dengan sisa garam, lalu masak hingga saus mengental.\nMasukkan ayam goreng, aduk hingga terbalut saus, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0433",
+  "fields": {
+   "instructions": "Potong ayam, lumuri dengan garam dan jahe yang dihaluskan, lalu diamkan 15 menit.\nGoreng ayam dalam minyak panas hingga matang dan kecokelatan, lalu tiriskan.\nUlek kasar cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, dan tomat.\nTumis sambal dengan sedikit minyak hingga harum dan berubah warna.\nTambahkan kecap manis, gula pasir, dan kaldu ayam bubuk, lalu aduk rata.\nMasukkan ayam goreng, aduk hingga seluruh potongan terbalut sambal, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0436",
+  "fields": {
+   "instructions": "Rebus 500 g daging sapi hingga empuk dan matang, lalu tiriskan dan suwir halus.\nHaluskan bawang merah, bawang putih, ketumbar, dan merica.\nTumis bumbu halus dengan sedikit minyak bersama daun salam hingga harum.\nMasukkan telur yang sudah dikocok, aduk cepat hingga matang dan berbutir.\nTambahkan kelapa parut, daging, air asam jawa, gula pasir, garam, dan kecap manis, lalu aduk rata.\nSangrai dengan api kecil sambil terus diaduk sekitar 20 menit hingga kelapa kering dan kecokelatan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0438",
+  "fields": {
+   "instructions": "Potong tahu, lalu goreng dengan minyak hingga kulitnya kuning kecokelatan.\nHaluskan bawang merah, bawang putih, kemiri, jahe, ketumbar, jintan, dan merica hitam.\nTumis bumbu halus bersama kayu manis dan daun salam hingga harum.\nTuang 300 ml air, lalu tambahkan kecap manis, garam, gula pasir, dan kaldu ayam bubuk.\nMasukkan tahu dan masak dengan api kecil hingga kuah mengental dan bumbu meresap.\nAngkat dan sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0451",
+  "fields": {
+   "instructions": "Cuci beras hingga bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, dan kemiri, lalu tumis dengan sedikit minyak goreng hingga harum.\nMasukkan beras, tumisan bumbu, serai yang dimemarkan, daun salam, santan, dan garam ke dalam panci nasi.\nTambahkan air hingga 1 ruas jari di atas beras, lalu masak hingga nasi matang dan pulen.\nRendam bihun dalam air panas hingga lunak, tiriskan.\nTumis bihun dengan sisa minyak, beri kecap manis, merica hitam, dan kaldu ayam bubuk, aduk hingga rata.\nTambahkan irisan daun bawang ke bihun, aduk sebentar, lalu sajikan bersama nasi.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0454",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong tahu dan kentang bentuk dadu, lalu goreng sebentar dengan sedikit minyak goreng hingga kulitnya kuning.\nHaluskan bawang putih, bawang merah, cabai merah keriting, dan merica.\nTumis bumbu halus dengan sedikit minyak bersama daun salam hingga harum.\nTuang 400 ml air, lalu tambahkan kecap manis, gula pasir, kaldu ayam bubuk, dan garam.\nMasukkan telur, tahu, dan kentang, lalu masak dengan api kecil sekitar 15 menit.\nMasak hingga kentang empuk dan kuah semur mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0457",
+  "fields": {
+   "instructions": "Cuci beras hingga bersih, lalu tiriskan.\nIris tipis bawang merah dan bawang putih, lalu tumis dengan 1 sdm minyak goreng hingga harum.\nCampurkan 65 ml santan dengan air hingga totalnya sekitar 250 ml.\nMasukkan beras, campuran santan, tumisan bawang, serai memar, daun salam, dan daun jeruk ke dalam panci.\nBumbui dengan garam, merica, dan kaldu ayam bubuk, lalu aduk rata.\nMasak dengan api kecil sambil sesekali diaduk hingga cairan terserap.\nKukus selama 20 menit hingga nasi matang dan pulen.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0464",
+  "fields": {
+   "instructions": "Bersihkan ikan kembung, lalu lumuri dengan garam dan jahe yang dihaluskan.\nHaluskan cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, kemiri, dan tomat.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas, serai, daun jeruk, dan daun salam hingga harum dan matang.\nBumbui sambal dengan garam, gula pasir, dan kaldu ayam bubuk.\nLetakkan ikan di wadah tahan panas, lalu lumuri dengan sambal.\nKukus ikan selama 20-25 menit hingga daging ikan matang dan mudah lepas dari tulang.\nTaburi kemangi di atas ikan, kukus 2 menit lagi, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0470",
+  "fields": {
+   "instructions": "Rebus ati ampela dalam air mendidih sekitar 15 menit hingga matang, lalu tiriskan dan potong-potong.\nHaluskan bawang merah, bawang putih, kemiri, jahe, dan merica.\nTumis bumbu halus dengan sedikit minyak bersama serai dan daun salam hingga harum.\nMasukkan irisan cabai merah keriting dan cabai rawit merah utuh, aduk sebentar.\nTambahkan ati ampela, kecap manis, dan 300 ml air.\nBumbui dengan garam dan kaldu ayam bubuk.\nMasak dengan api kecil hingga kuah menyusut dan mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0479",
+  "fields": {
+   "instructions": "Potong ayam dan kentang, lalu cuci bersih.\nHaluskan bawang merah, bawang putih, kemiri, jahe, dan merica hitam.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas memar dan daun salam hingga harum.\nMasukkan ayam dan aduk hingga berubah warna.\nTuang 400 ml air, lalu tambahkan kecap manis, gula merah, garam, dan kaldu jamur bubuk.\nMasukkan kentang dan masak dengan api kecil hingga ayam dan kentang matang serta kuah mengental.\nKoreksi rasa, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0484",
+  "fields": {
+   "instructions": "Kupas kentang, iris tipis memanjang seperti korek api, cuci lalu keringkan.\nGoreng kentang dalam minyak goreng panas hingga kering dan renyah, tiriskan.\nHaluskan cabai merah keriting dan bawang putih.\nSisakan 2 sendok makan minyak, tumis bumbu halus hingga harum dan matang.\nTambahkan gula pasir, garam, dan kaldu ayam bubuk, masak hingga gula larut dan bumbu sedikit mengental.\nMatikan api, masukkan kentang, lalu aduk cepat hingga terbalut bumbu merata.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0489",
+  "fields": {
+   "instructions": "Bersihkan ikan bandeng, potong menjadi beberapa bagian, lalu tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kemiri, kunyit, jahe, dan terasi.\nCampurkan bumbu halus dengan garam, gula pasir, gula merah, kaldu jamur bubuk, dan telur, lalu aduk rata.\nLumuri bandeng dengan campuran bumbu dan diamkan 15 menit.\nTata bandeng dalam wadah tahan panas bersama irisan tomat, daun salam, dan kemangi, lalu tutup rapat.\nKukus selama 40 menit hingga ikan dan campuran telur matang sempurna.\nAngkat dan sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0492",
+  "fields": {
+   "instructions": "Rendam teri dalam air selama 10 menit untuk mengurangi rasa asin, lalu tiriskan.\nGoreng teri dalam minyak goreng panas hingga kering dan renyah, lalu angkat.\nGoreng kacang tanah dengan api kecil hingga matang dan renyah, lalu tiriskan.\nHaluskan kasar cabai merah keriting, bawang merah, dan bawang putih.\nTumis bumbu dengan 2 sdm minyak goreng hingga harum dan matang, lalu tambahkan sedikit gula pasir.\nMasukkan teri dan kacang tanah, aduk hingga rata, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0493",
+  "fields": {
+   "instructions": "Potong dadu tempe dan tahu, lalu potong kacang panjang sepanjang 4 cm.\nHaluskan bawang merah, bawang putih, cabai merah keriting, dan kunyit.\nPanaskan minyak goreng, lalu tumis bumbu halus bersama lengkuas dan daun salam hingga harum.\nTuang santan dan 200 ml air, lalu masak sambil diaduk hingga mendidih.\nMasukkan tempe, tahu, dan kacang panjang.\nBumbui dengan garam dan gula pasir.\nMasak dengan api kecil hingga kacang panjang empuk dan kuah sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0499",
+  "fields": {
+   "instructions": "Potong ayam menjadi 10 bagian, cuci bersih, dan tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, jahe, kemiri, ketumbar, dan merica, lalu beri garam.\nLumuri ayam dengan bumbu halus hingga rata, lalu diamkan 30 menit.\nLetakkan setiap potong ayam di atas daun pisang, lalu tambahkan kemangi, potongan serai, dan daun salam.\nBungkus rapat dan sematkan ujungnya dengan lidi.\nKukus selama 45 menit hingga ayam matang sempurna.\nPanggang sebentar di atas teflon hingga daun agak kering, lalu sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0504",
+  "fields": {
+   "instructions": "Hancurkan tahu dengan garpu dan suwir jamur tiram kecil-kecil.\nHaluskan bawang merah, bawang putih, jahe, cabai merah keriting, garam, dan merica hitam.\nIris daun bawang dan cabai rawit.\nCampur tahu, jamur, bumbu halus, daun bawang, dan cabai rawit hingga rata.\nBungkus adonan dengan aluminium foil menjadi beberapa bungkus.\nKukus selama 30 menit hingga matang dan padat.\nSajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0517",
+  "fields": {
+   "instructions": "Giling atau cincang halus daging sapi, lalu bentuk bulatan kecil atau biarkan berupa cacahan.\nKupas kentang, potong dadu, lalu goreng atau rebus hingga setengah matang.\nPanaskan margarin, tumis bawang putih cincang dan irisan bawang bombay hingga layu dan harum.\nMasukkan daging, aduk hingga berubah warna dan matang di permukaan.\nTambahkan potongan tomat, kecap manis, saus tomat, saus tiram, pala, dan merica hitam, aduk rata.\nTuang 400 ml air, masukkan kentang, lalu bumbui dengan garam, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api kecil hingga daging matang, kentang empuk, dan kuah mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0535",
+  "fields": {
+   "instructions": "Rebus daging sapi bersama jahe dalam 800 ml air selama 60 menit hingga empuk, lalu tiriskan dan iris tipis.\nUlek bawang merah, bawang putih, kencur, cabai merah keriting, dan cabai rawit merah hingga halus.\nTumis sambal kencur dengan minyak goreng hingga harum dan matang.\nBumbui dengan garam, kaldu ayam bubuk, dan gula pasir.\nMasukkan irisan daging sapi dan aduk rata.\nMasak sebentar hingga sambal meresap ke daging, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0550",
+  "fields": {
+   "instructions": "Potong daging sapi melawan serat dengan ukuran sekitar 3 cm, lalu cuci bersih.\nHaluskan bawang merah, bawang putih, kunyit, dan jintan.\nMasukkan 800 ml santan, bumbu halus, serai memar, daun salam, daun jeruk, cengkeh, dan kayu manis ke dalam wajan besar.\nMasak dengan api sedang sambil terus diaduk hingga santan mendidih dan mulai berminyak.\nMasukkan daging sapi, lalu bumbui dengan garam dan gula pasir.\nKecilkan api dan masak selama 2 sampai 3 jam sambil sesekali diaduk.\nAngkat setelah daging empuk dan matang sempurna serta bumbu mengering berwarna cokelat gelap.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0567",
+  "fields": {
+   "instructions": "Kupas udang, buang kotorannya, lalu cuci bersih.\nPotong dadu tahu, lalu goreng hingga kulitnya kecokelatan dan tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, dan tomat.\nTumis bumbu halus dengan sedikit minyak bersama daun salam dan daun jeruk hingga harum dan matang.\nMasukkan udang, lalu masak hingga udang berubah warna menjadi merah muda dan matang.\nTambahkan tahu, gula merah, garam, kaldu ayam bubuk, dan 50 ml air.\nAduk dan masak hingga bumbu meresap dan airnya menyusut, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0568",
+  "fields": {
+   "instructions": "Rebus ayam dalam air hingga matang, angkat, suwir dagingnya, dan sisihkan 500 ml kaldunya.\nHaluskan bawang merah, bawang putih, kemiri, ketumbar, dan merica.\nTumis bumbu halus dengan minyak goreng bersama serai, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam suwir, aduk hingga terbalut bumbu.\nTuang kaldu, lalu bumbui dengan garam, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api kecil sekitar 15 menit hingga kuah sedikit mengental dan bumbu meresap.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0572",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, jahe, ketumbar, dan merica hitam.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas memar, serai memar, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam dan aduk hingga berubah warna.\nTuang 600 ml air, lalu tambahkan gula merah, garam, kaldu ayam bubuk, dan kecap manis.\nMasak dengan api sedang hingga ayam matang dan kuah sedikit menyusut.\nMasukkan tomat potong dan cabai rawit utuh, masak 5 menit lagi, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0575",
+  "fields": {
+   "instructions": "Potong ayam, lumuri dengan garam dan merica hitam, lalu goreng dalam minyak goreng hingga matang dan kecokelatan.\nHaluskan cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, dan terasi.\nTumis bumbu halus dengan 3 sendok makan minyak bersama daun jeruk hingga harum dan berminyak.\nTambahkan gula merah, saus tiram, dan kaldu jamur bubuk, aduk hingga gula larut.\nLarutkan tepung tapioka dengan 3 sendok makan air, tuang ke sambal sambil diaduk hingga sedikit mengental.\nMasukkan ayam goreng, aduk hingga terbalut sambal bajak, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0581",
+  "fields": {
+   "instructions": "Kupas udang, buang kotoran di punggungnya, lalu cuci bersih.\nUlek kasar bawang merah, bawang putih, cabai rawit merah, cabai merah keriting, tomat, dan terasi.\nTumis bumbu ulek dengan minyak goreng hingga harum dan airnya menyusut.\nBumbui dengan garam, gula merah, dan kaldu ayam bubuk.\nMasukkan udang dan masak sambil diaduk sekitar 5 menit hingga udang berubah warna menjadi merah dan matang.\nTambahkan irisan daun bawang, aduk sebentar, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0589",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong tahu bentuk dadu dan potong kacang panjang sepanjang 4 cm.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, kunyit, ketumbar, dan merica.\nTumis bumbu halus dengan 2 sdm minyak goreng bersama lengkuas memar, serai memar, daun salam, dan daun jeruk hingga harum.\nTuang 400 ml air dan 30 ml santan, lalu aduk hingga mendidih.\nMasukkan telur, tahu, dan kacang panjang, lalu bumbui dengan garam.\nMasak hingga kacang panjang empuk dan kuah sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0610",
+  "fields": {
+   "instructions": "Potong ayam kampung, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, ketumbar, jintan, pala, dan merica.\nPanaskan minyak goreng, lalu tumis bumbu halus bersama serai, lengkuas, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam dan aduk hingga berubah warna.\nTuang 800 ml air, lalu masak sekitar 30 menit hingga ayam mulai empuk.\nTambahkan santan, garam, gula pasir, dan kaldu ayam bubuk sambil terus diaduk agar santan tidak pecah.\nMasak dengan api kecil hingga ayam matang, empuk, dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0621",
+  "fields": {
+   "instructions": "Potong ikan tongkol, lalu goreng dalam minyak panas hingga matang dan tiriskan.\nIris bawang merah, bawang putih, bawang bombay, cabai hijau, cabai merah keriting, dan daun bawang, lalu memarkan jahe.\nTumis bawang merah, bawang putih, bawang bombay, dan jahe dengan sedikit minyak hingga harum.\nMasukkan cabai hijau, cabai merah keriting, dan potongan tomat, masak hingga layu.\nTambahkan kecap manis, gula merah, gula pasir, garam, merica, kaldu ayam bubuk, dan 150 ml air.\nMasukkan ikan, masak hingga kuah mengental dan meresap.\nTambahkan daun bawang, aduk sebentar, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0624",
+  "fields": {
+   "instructions": "Potong ayam dadu kecil, lalu tusuk dengan tusukan sate.\nHaluskan cabai merah keriting, cabai rawit, bawang putih, kemiri, ketumbar, dan merica hitam.\nTumis bumbu halus dengan minyak hingga harum dan matang.\nTambahkan garam, kaldu jamur bubuk, gula merah, dan saus tomat, masak hingga mengental, lalu bagi bumbu menjadi dua.\nLumuri sate dengan separuh bumbu, lalu diamkan 20 menit.\nPanggang sate di atas teflon yang diolesi margarin sambil dibolak-balik hingga ayam matang sampai ke dalam.\nSajikan sate dengan sisa bumbu.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0626",
+  "fields": {
+   "instructions": "Potong ayam kecil-kecil dan potong tahu dadu.\nGoreng tahu dalam minyak goreng hingga kulitnya kuning keemasan, tiriskan.\nHaluskan cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, kunyit, dan jahe.\nTumis bumbu halus dengan sisa minyak bersama lengkuas dan serai yang dimemarkan serta daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 200 ml air.\nBumbui dengan garam, gula pasir, dan kaldu jamur bubuk, masak hingga ayam matang dan kuah menyusut.\nMasukkan tahu dan kemangi, aduk hingga kemangi layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0628",
+  "fields": {
+   "instructions": "Potong terong memanjang, lalu goreng dalam minyak panas hingga layu dan matang, kemudian tiriskan.\nGoreng teri hingga renyah, lalu tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, tomat, dan cabai merah keriting.\nTumis bumbu halus dengan sisa minyak hingga harum dan matang.\nBumbui dengan kecap manis, garam, gula pasir, dan kaldu ayam bubuk.\nMasukkan terong dan teri, lalu aduk perlahan hingga terbalut balado dan angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0633",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, kemiri, jahe, kunyit, ketumbar, merica, dan jintan.\nTumis bumbu halus dengan 2 sdm minyak goreng bersama serai memar, daun salam, daun jeruk, dan kayu manis hingga harum.\nMasukkan ayam dan aduk hingga berubah warna dan terbalut bumbu.\nTuang 700 ml air, lalu bumbui dengan garam, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api sedang selama 30 menit hingga ayam matang sempurna dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0638",
+  "fields": {
+   "instructions": "Bersihkan ikan patin, potong menjadi beberapa bagian, lalu lumuri dengan air jeruk nipis dan sedikit garam.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kemiri, ketumbar, dan jahe.\nPanaskan minyak goreng, lalu tumis bumbu halus bersama serai, lengkuas, daun salam, dan daun jeruk hingga harum.\nTuang 600 ml air dan didihkan.\nMasukkan ikan patin dan cabai rawit merah utuh, lalu bumbui dengan garam.\nMasak dengan api sedang selama 10-15 menit hingga ikan matang.\nTambahkan tomat, daun bawang, dan kemangi, masak sebentar hingga layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0639",
+  "fields": {
+   "instructions": "Haluskan 100 g daging ikan tongkol tanpa kulit dan duri bersama bawang putih.\nCampur ikan dengan telur, santan, garam, gula pasir, dan kaldu ayam bubuk, lalu aduk rata.\nMasukkan irisan daun bawang, tepung terigu, dan tepung tapioka sedikit demi sedikit sambil diaduk hingga adonan bisa dibentuk.\nBentuk adonan lonjong pipih, lalu bungkus dengan daun pisang atau letakkan di wadah kukusan.\nKukus selama 20 menit hingga adonan padat dan matang.\nPanggang sebentar di atas teflon hingga permukaan kecokelatan, lalu sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0649",
+  "fields": {
+   "instructions": "Cuci beras hingga bersih, lalu tiriskan.\nKukus labu kuning hingga lunak, lalu haluskan.\nHaluskan bawang merah, bawang putih, dan kemiri, lalu memarkan jahe, lengkuas, dan serai.\nTumis bumbu halus dengan sedikit minyak hingga harum.\nMasukkan beras, labu halus, santan, bumbu tumis, jahe, lengkuas, serai, daun salam, daun jeruk, sedikit garam, dan 300 ml air ke dalam panci.\nMasak sambil diaduk hingga air terserap habis.\nKukus selama 25 menit hingga nasi matang dan pulen, lalu buang rempah dan daunnya.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0651",
+  "fields": {
+   "instructions": "Potong daging sapi tipis melawan serat, lalu rebus dalam 700 ml air hingga empuk, sisihkan kaldunya.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, kemiri, kunyit, jahe, dan merica hitam.\nTumis bumbu halus dengan sedikit minyak goreng hingga harum dan matang.\nMasukkan lengkuas dan serai yang dimemarkan, daun salam, serta daun jeruk, aduk sebentar.\nMasukkan daging dan 300 ml kaldu rebusan, lalu tambahkan kecap manis, gula merah, garam, dan kaldu ayam bubuk.\nMasak dengan api kecil hingga kuah menyusut dan bumbu meresap ke daging.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0656",
+  "fields": {
+   "instructions": "Lumuri ayam dengan sedikit air jeruk nipis dan garam, lalu diamkan 10 menit.\nGoreng ayam dalam minyak goreng panas hingga kecokelatan dan matang sampai ke tulang.\nIris tempe, lalu goreng hingga kuning kecokelatan dan tiriskan.\nIris tipis bawang merah, bawang putih, cabai rawit merah, serai bagian putih, dan daun jeruk.\nSangrai terasi sebentar, lalu remas dan campurkan ke irisan bumbu.\nSiram campuran sambal dengan 2 sendok makan minyak panas, beri sisa air jeruk nipis dan garam, lalu aduk rata.\nSajikan ayam dan tempe goreng dengan sambal matah di atasnya.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0668",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, kupas, lalu goreng sebentar hingga kulitnya kecokelatan.\nKupas kentang, potong dadu, lalu goreng hingga matang dan bagian luarnya kering.\nHaluskan kasar cabai hijau, cabai rawit merah, bawang merah, dan bawang putih.\nTumis bumbu dengan 3 sdm minyak goreng hingga harum dan matang.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk, lalu aduk rata.\nMasukkan telur dan kentang, aduk hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0676",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, lalu tiriskan.\nHaluskan cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, kemiri, kunyit, dan jahe.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas, serai, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam dan aduk hingga berubah warna.\nTuang 200 ml air, lalu bumbui dengan garam, merica, dan gula pasir.\nMasak dengan api sedang hingga ayam matang dan kuah menyusut.\nMasukkan kemangi, aduk hingga layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0680",
+  "fields": {
+   "instructions": "Goreng ikan tongkol dalam minyak panas hingga matang, lalu suwir kasar dan buang durinya.\nIris bawang merah, bawang putih, cabai merah keriting, dan cabai rawit merah.\nTumis bawang merah dan bawang putih dengan sedikit minyak hingga harum.\nMasukkan cabai, daun salam, dan lengkuas yang dimemarkan, tumis hingga layu.\nMasukkan ikan suwir, lalu tambahkan kecap manis, gula merah, garam, merica, dan kaldu jamur bubuk.\nTuang 50 ml air, aduk hingga bumbu meresap dan agak kering.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0693",
+  "fields": {
+   "instructions": "Potong daging sapi kecil-kecil, rebus dalam 600 ml air hingga empuk, lalu sisihkan kaldunya.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, ketumbar, dan merica hitam.\nTumis bumbu halus dengan sedikit minyak bersama serai memar, daun salam, dan daun jeruk hingga harum.\nMasukkan daging beserta kaldunya, lalu tambahkan kecap manis, garam, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api sedang hingga bumbu meresap ke daging.\nMasukkan kubis, tomat, irisan cabai merah keriting, dan cabai rawit utuh.\nMasak 3 menit hingga kubis layu namun masih renyah, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0700",
+  "fields": {
+   "instructions": "Rendam teri sebentar, tiriskan, lalu goreng dalam minyak goreng hingga renyah.\nGoreng kacang tanah dengan api kecil hingga matang dan renyah, tiriskan.\nHaluskan cabai rawit merah, bawang merah, dan bawang putih.\nLarutkan asam jawa dengan 3 sendok makan air, lalu saring.\nTumis bumbu halus dengan 2 sendok makan minyak hingga harum dan matang.\nTambahkan air asam, garam, gula pasir, dan kaldu jamur bubuk, masak hingga mengental.\nMatikan api, masukkan teri dan kacang tanah, aduk rata.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0738",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nHaluskan bawang merah, bawang putih, kemiri, jintan, pala, jahe, dan merica.\nTumis bawang bombay yang diiris dengan minyak goreng hingga layu, lalu masukkan bumbu halus dan tumis hingga harum.\nTambahkan lengkuas, serai, kayu manis, cengkeh, daun salam, dan daun jeruk, lalu aduk rata.\nMasukkan potongan ayam dan aduk hingga berubah warna.\nTuang 600 ml air, lalu bumbui dengan garam dan gula merah dan masak 20 menit.\nMasukkan telur dan 150 ml santan, lalu aduk perlahan agar santan tidak pecah.\nMasak dengan api kecil hingga ayam matang empuk dan kuah sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0744",
+  "fields": {
+   "instructions": "Rebus daging sapi dalam 2 liter air bersama daun salam selama 1,5 jam hingga empuk, lalu potong kecil dan simpan kaldunya.\nSangrai beras hingga kecokelatan, lalu haluskan.\nHaluskan sebagian bawang merah bersama bawang putih, jahe, kunyit, merica, ketumbar, kemiri, dan ebi, lalu iris tipis sisa bawang merah.\nGoreng irisan bawang merah dalam minyak goreng hingga kering untuk taburan, lalu sisakan 3 sdm minyak untuk menumis.\nTumis bumbu halus bersama serai memar dan daun jeruk hingga harum, lalu masukkan ke dalam kaldu.\nMasukkan daging dan beras sangrai halus, bumbui dengan garam dan gula pasir, lalu masak hingga kuah mendidih dan sedikit mengental.\nRebus cabai rawit merah sebentar, lalu haluskan sebagai sambal.\nSajikan soto dengan taburan seledri, bawang goreng, perasan jeruk nipis, dan sambal.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0746",
+  "fields": {
+   "instructions": "Potong labu siam dan terong, potong jagung manis, lalu potong kacang panjang sepanjang 4 cm.\nIris bawang merah, bawang putih, cabai merah keriting, dan cabai rawit merah.\nTumis bumbu iris dan terasi dengan sedikit minyak bersama lengkuas dan daun salam hingga harum.\nTuang 500 ml air, lalu masukkan jagung dan masak hingga mendidih.\nMasukkan labu siam, kacang panjang, dan terong, lalu masak hingga sayuran setengah empuk.\nTuang santan sambil terus diaduk, lalu bumbui dengan garam dan kaldu ayam bubuk.\nMasak hingga semua sayuran empuk dan kuah mendidih, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0761",
+  "fields": {
+   "instructions": "Rendam teri dalam air selama 10 menit agar asinnya berkurang, lalu tiriskan.\nGoreng kacang tanah dalam minyak dengan api kecil hingga matang dan renyah, lalu tiriskan.\nGoreng teri hingga kering dan renyah, lalu tiriskan.\nHaluskan kasar cabai merah keriting, bawang merah, bawang putih, dan tomat.\nTumis bumbu dengan sedikit minyak hingga harum dan matang, lalu masukkan irisan cabai hijau.\nBumbui dengan saus tiram, garam, dan gula pasir.\nMasukkan teri dan kacang tanah, aduk cepat hingga rata, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0772",
+  "fields": {
+   "instructions": "Rebus jengkol dalam air mendidih selama 1 jam hingga empuk, lalu buang airnya.\nKupas kulit jengkol, lalu geprek hingga agak pipih.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, ketumbar, dan merica hitam.\nTumis bumbu halus dengan minyak bersama serai memar dan daun salam hingga harum.\nMasukkan jengkol, tuang 300 ml air, lalu tambahkan kecap manis, garam, dan kaldu ayam bubuk.\nTambahkan cabai rawit utuh dan masak dengan api kecil hingga kuah mengental dan bumbu meresap.\nAngkat dan sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0779",
+  "fields": {
+   "instructions": "Potong tempe kecil memanjang, lalu goreng dalam minyak goreng hingga kering, tiriskan.\nRendam teri sebentar, tiriskan, lalu goreng hingga renyah.\nIris bawang merah, bawang putih, cabai rawit merah, dan tomat.\nTumis bawang merah dan bawang putih dengan 2 sendok makan minyak hingga harum, lalu masukkan cabai rawit dan tomat.\nBumbui dengan garam, gula pasir, dan kaldu jamur bubuk, masak hingga tomat layu.\nMasukkan tempe, teri, dan irisan daun bawang, aduk rata hingga tercampur, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0784",
+  "fields": {
+   "instructions": "Rebus ayam dalam 800 ml air hingga matang, lalu angkat, suwir dagingnya, dan simpan kaldunya.\nTumis irisan bawang merah dengan sedikit minyak goreng hingga harum, lalu masukkan ke dalam kaldu.\nTuang 200 ml santan ke dalam kaldu, beri garam, lalu masak dengan api kecil sambil diaduk hingga mendidih.\nPotong tahu dadu, lalu goreng hingga kuning kecokelatan.\nSeduh bihun dan tauge dengan air panas hingga lunak, lalu tiriskan.\nSangrai kacang tanah hingga matang, lalu tumbuk kasar.\nTata bihun, tauge, tahu, dan ayam suwir di mangkuk, lalu siram dengan kuah santan panas.\nTaburi irisan seledri, tomat, dan kacang tanah, lalu sajikan dengan perasan jeruk nipis.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0790",
+  "fields": {
+   "instructions": "Bersihkan ikan tongkol, potong-potong, lalu lumuri sedikit garam.\nHaluskan cabai merah keriting, bawang merah, bawang putih, kunyit, dan jahe.\nMasukkan bumbu halus ke dalam panci bersama 600 ml air, serai memar, daun salam, dan daun jeruk.\nDidihkan kuah sambil diaduk agar bumbu tidak menggumpal.\nMasukkan ikan tongkol, lalu bumbui dengan sisa garam dan gula pasir.\nMasak dengan api sedang selama 20 menit tanpa terlalu sering diaduk hingga ikan matang sempurna dan kuah menyusut.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0811",
+  "fields": {
+   "instructions": "Bersihkan ikan kembung, lalu lumuri dengan sedikit garam.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, kunyit, dan jahe.\nTumis bumbu halus dengan sedikit minyak bersama serai, daun jeruk, dan daun salam hingga harum.\nTuang 300 ml air, lalu bumbui dengan garam dan kaldu jamur bubuk.\nMasukkan ikan kembung, lalu masak dengan api sedang selama 10-15 menit hingga ikan matang.\nTambahkan tomat dan daun bawang, masak sebentar, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0824",
+  "fields": {
+   "instructions": "Potong ikan tuna, lumuri air jeruk nipis dan sedikit garam, lalu diamkan 15 menit.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, jahe, dan kemiri.\nTumis bumbu halus dengan minyak goreng bersama serai dan daun jeruk hingga harum.\nTuang 300 ml air, lalu bumbui dengan garam dan gula pasir.\nMasukkan ikan, masak dengan api sedang sekitar 10 menit hingga ikan matang.\nTambahkan potongan tomat, daun bawang, dan kemangi, aduk sebentar hingga layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0837",
+  "fields": {
+   "instructions": "Potong ayam menjadi fillet tipis, lalu pipihkan sedikit dengan ulekan.\nLumuri ayam dengan garam dan kaldu ayam bubuk, lalu diamkan 15 menit.\nLarutkan tepung terigu dengan sedikit air hingga menjadi adonan kental.\nCelupkan ayam ke adonan terigu, lalu gulingkan ke tepung panir hingga rata.\nPanaskan minyak dengan api sedang.\nGoreng ayam sekitar 5 menit per sisi hingga kuning keemasan dan matang sampai ke dalam.\nTiriskan, lalu potong-potong sebelum disajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0849",
+  "fields": {
+   "instructions": "Bersihkan ikan tongkol, potong-potong, lalu goreng dalam minyak goreng hingga matang dan agak kering.\nHaluskan cabai merah keriting, bawang merah, bawang putih, dan tomat.\nTumis bumbu halus dengan 3 sendok makan minyak bersama daun jeruk hingga harum dan matang.\nMasukkan petai, aduk hingga sedikit layu.\nTambahkan gula merah yang disisir dan sejumput garam, aduk hingga gula larut.\nMasukkan ikan tongkol, aduk perlahan hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0862",
+  "fields": {
+   "instructions": "Haluskan daging ikan patin bersama sebagian bawang putih, lalu campur dengan telur, garam, dan 150 ml air es.\nMasukkan tepung tapioka sedikit demi sedikit dan uleni hingga adonan bisa dibentuk.\nBentuk adonan bulat pipih, lalu rebus dalam air mendidih hingga mengapung dan matang, kemudian tiriskan.\nHaluskan sisa bawang putih, bawang merah, kemiri, kunyit, ebi, dan merica.\nTumis bumbu halus dengan sedikit minyak goreng hingga harum.\nTuang 500 ml air dan 100 ml santan, beri garam, lalu masak sambil diaduk hingga mendidih.\nMasukkan celimpungan ke dalam kuah dan masak 5 menit hingga kuah sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0873",
+  "fields": {
+   "instructions": "Kupas kentang, potong dadu, lalu goreng dalam minyak goreng panas hingga matang dan bagian luarnya kering.\nHaluskan kasar cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, tomat, dan terasi.\nTumis bumbu dengan 3 sdm minyak goreng hingga harum dan matang.\nBumbui dengan garam, gula pasir, merica, dan kaldu jamur bubuk, lalu aduk rata.\nMasukkan kentang goreng, aduk hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0875",
+  "fields": {
+   "instructions": "Rebus 300 ml air bersama sebagian bawang putih yang dihaluskan, sebagian garam, dan gula pasir hingga mendidih.\nTuang air panas ke tepung terigu, aduk, lalu masukkan telur dan tepung tapioka sedikit demi sedikit hingga adonan bisa dibentuk.\nBentuk adonan menjadi bulatan pipih, lalu rebus dalam air mendidih yang diberi sedikit minyak goreng hingga mengapung dan matang.\nHaluskan bawang merah, sisa bawang putih, kemiri, kunyit, ebi, dan merica.\nTumis bumbu halus dengan sisa minyak goreng hingga harum.\nTuang santan dan 600 ml air, masak sambil diaduk hingga mendidih, lalu bumbui dengan sisa garam.\nMasukkan pempek dos ke dalam kuah, masak 5 menit, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0890",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong tahu, lalu goreng tahu dan telur rebus dalam minyak panas hingga permukaannya kecokelatan dan tiriskan.\nHaluskan kasar cabai merah keriting, cabai rawit merah, bawang merah, dan bawang putih.\nTumis bumbu dengan sisa minyak bersama serai, daun salam, dan daun jeruk hingga harum dan matang.\nBeri sedikit garam dan gula pasir, lalu aduk rata.\nMasukkan tahu dan telur, aduk hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0896",
+  "fields": {
+   "instructions": "Potong ikan tongkol, lumuri dengan perasan jeruk nipis dan sedikit garam, lalu diamkan 15 menit.\nHaluskan bawang merah, bawang putih, kunyit, jahe, kencur, dan merica hitam.\nTumis bumbu halus dengan minyak bersama lengkuas memar, serai memar, daun salam, dan daun jeruk hingga harum.\nTuang 400 ml air, lalu tambahkan santan, sisa garam, dan kaldu ayam bubuk sambil diaduk.\nSetelah mendidih, masukkan ikan dan cabai rawit utuh.\nMasak dengan api kecil selama 15 menit hingga ikan matang dan kuah sedikit mengental.\nMasukkan kemangi, aduk sebentar, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0899",
+  "fields": {
+   "instructions": "Masak beras bersama santan, 250 ml air, daun salam, serai, cengkeh, kayu manis, dan sedikit garam hingga menjadi nasi gurih.\nKukus atau rebus ikan tongkol hingga matang, lalu suwir dan buang durinya.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, dan kemiri.\nTumis bumbu halus dengan sedikit minyak goreng bersama daun jeruk hingga harum.\nMasukkan tongkol suwir, gula merah, sisa garam, dan kaldu ayam bubuk, masak hingga bumbu meresap dan agak kering.\nAmbil nasi, beri isian tongkol dan daun kemangi, lalu bungkus rapat dengan aluminium foil.\nBakar di atas teflon dengan api kecil 10 menit sambil dibalik hingga harum.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0900",
+  "fields": {
+   "instructions": "Potong ayam kecil-kecil, cuci bersih, lalu tiriskan.\nUlek kasar bawang merah, bawang putih, cabai merah keriting, dan cabai rawit merah, lalu potong tomat.\nTumis bumbu ulek dengan sedikit minyak goreng hingga harum, lalu tambahkan kunyit bubuk.\nMasukkan ayam dan aduk hingga berubah warna.\nTambahkan saus tiram, kecap manis, gula pasir, garam, kaldu ayam bubuk, dan 100 ml air.\nMasukkan tomat, lalu masak sambil diaduk hingga ayam matang dan bumbu mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0938",
+  "fields": {
+   "instructions": "Potong ayam dan cuci bersih, lalu potong tahu bentuk dadu.\nGoreng tahu dalam minyak goreng panas hingga kulitnya kecokelatan, lalu tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, dan jahe.\nTumis bumbu halus dengan 2 sdm minyak goreng bersama serai memar dan daun salam hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 400 ml santan.\nBumbui dengan garam dan gula pasir, lalu masukkan tahu goreng.\nMasak dengan api kecil sambil sesekali diaduk hingga ayam matang sempurna dan santan menyusut hingga hampir kering.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0940",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas dan tusuk-tusuk permukaannya.\nHaluskan bawang merah, bawang putih, dan cabai merah keriting.\nPanaskan minyak goreng, lalu tumis bumbu halus bersama serai dan daun salam hingga harum.\nTuang santan dan 200 ml air, lalu masak sambil terus diaduk hingga mendidih.\nBumbui dengan garam dan gula pasir, lalu masukkan telur.\nMasak dengan api kecil hingga kuah sedikit mengental dan bumbu meresap ke telur.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0942",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong tempe, lalu goreng tempe dan telur dalam minyak panas hingga kecokelatan dan tiriskan.\nHaluskan cabai merah keriting, bawang merah, bawang putih, dan kemiri.\nTumis bumbu halus bersama daun jeruk dan daun salam hingga harum dan matang.\nBumbui dengan gula merah, garam, dan kaldu jamur bubuk, lalu tambahkan 2 sendok makan air.\nMasukkan telur dan tempe, aduk hingga bumbu menyelimuti rata, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0948",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong ayam, kentang, dan tahu sesuai selera.\nHaluskan bawang merah, bawang putih, kemiri, jahe, dan merica hitam.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas memar dan daun salam hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 400 ml air.\nTambahkan kentang, tahu, telur, kecap manis, garam, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api kecil hingga ayam dan kentang matang serta kuah mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0958",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas kulitnya.\nGoreng telur dalam minyak goreng hingga permukaannya berkulit, tiriskan.\nHaluskan cabai rawit merah, bawang merah, dan tomat.\nTumis bumbu halus dengan sisa minyak hingga harum dan airnya menyusut.\nBumbui dengan garam dan kaldu ayam bubuk, aduk rata.\nMasukkan telur, aduk hingga terbalut bumbu balado, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0962",
+  "fields": {
+   "instructions": "Panaskan sedikit minyak goreng, lalu ceplok telur satu per satu hingga putih dan kuningnya matang, kemudian angkat.\nIris bawang merah dan bawang putih, lalu memarkan lengkuas.\nTumis bawang merah dan bawang putih hingga harum, lalu masukkan daun salam dan lengkuas.\nTuang 250 ml air, lalu tambahkan kecap manis, garam, gula pasir, dan merica.\nMasukkan telur ceplok dan masak dengan api kecil sekitar 10 menit.\nMasak hingga kuah semur meresap ke telur dan sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0967",
+  "fields": {
+   "instructions": "Potong ayam bentuk dadu kecil, lalu lumuri dengan bawang putih yang dihaluskan, merica, dan separuh kaldu ayam bubuk.\nDiamkan selama 15 menit, lalu tusuk ayam dengan tusuk sate.\nPanggang sate di atas wajan atau panggangan yang diolesi sedikit minyak goreng sambil dibolak-balik.\nPanggang hingga ayam matang sempurna dan tidak ada bagian yang masih merah muda.\nRebus cabai rawit merah dan bawang merah sebentar, lalu haluskan bersama daun jeruk, gula pasir, sisa kaldu ayam bubuk, dan sedikit garam.\nTumis sambal dengan 1 sdm minyak goreng hingga matang, lalu sajikan bersama sate.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0973",
+  "fields": {
+   "instructions": "Fillet ikan tenggiri, buang kulit dan durinya, lalu giling hingga halus.\nCampur ikan dengan bawang putih yang dihaluskan, garam, gula pasir, kaldu ayam bubuk, telur, dan 200 ml air es, lalu aduk rata.\nMasukkan tepung tapioka dan tepung terigu sedikit demi sedikit sambil diaduk hingga adonan kalis dan bisa dibentuk.\nBentuk adonan memanjang menjadi lenjer dengan tangan yang dibaluri tepung.\nRebus lenjer dalam air mendidih yang diberi sedikit minyak goreng selama 15-20 menit hingga mengapung dan matang.\nAngkat dan tiriskan pempek hingga dingin.\nPotong-potong lenjer, lalu goreng dalam minyak panas hingga permukaannya kecokelatan sebelum disajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0974",
+  "fields": {
+   "instructions": "Potong ayam dan tahu, lalu goreng tahu sebentar dalam minyak dan tiriskan.\nHaluskan bawang merah, bawang putih, jahe, kunyit, kemiri, ketumbar, dan merica.\nTumis bumbu halus bersama serai, lengkuas, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna.\nTuang 400 ml air, lalu tambahkan kecap manis, gula merah, gula pasir, garam, dan kaldu ayam bubuk.\nMasak dengan api kecil sekitar 25 menit hingga ayam matang dan empuk.\nMasukkan tahu, potongan tomat, dan cabai rawit merah utuh, lalu masak 5 menit hingga kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0986",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, rebus sebentar, lalu buang airnya.\nIris bawang merah dan bawang putih, lalu memarkan serai dan lengkuas.\nTumis irisan bawang dengan sedikit minyak hingga harum.\nMasukkan ayam, serai, lengkuas, daun salam, dan daun jeruk, lalu aduk rata.\nTuang 800 ml air, lalu tambahkan gula pasir, garam, merica hitam, dan kaldu ayam bubuk.\nMasak dengan api sedang hingga ayam matang dan empuk.\nMasukkan tomat potong dan cabai rawit utuh, lalu masak 5 menit hingga tomat layu dan kuah terasa asam segar.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0991",
+  "fields": {
+   "instructions": "Haluskan daging ikan tenggiri bersama bawang putih.\nHancurkan tahu, lalu campurkan dengan ikan, telur, garam, dan kaldu jamur bubuk.\nTambahkan 100 ml air dingin, aduk rata, lalu masukkan tepung tapioka sedikit demi sedikit hingga adonan bisa dibentuk.\nBentuk adonan lonjong atau bulat sesuai selera.\nRebus pempek dalam air mendidih hingga mengapung, lalu masak 5 menit lagi agar matang.\nTiriskan, lalu goreng sebentar dalam minyak goreng hingga kecokelatan bila suka.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-0994",
+  "fields": {
+   "instructions": "Lumuri ayam dengan air jeruk nipis dan sedikit garam, diamkan 10 menit, lalu bilas.\nHaluskan bawang merah, bawang putih, kemiri, jahe, dan ketumbar, lalu campur dengan kunyit bubuk.\nTumis bumbu halus dengan sedikit minyak goreng bersama daun salam, daun jeruk, lengkuas, dan serai hingga harum.\nMasukkan ayam dan aduk hingga berubah warna.\nTuang 500 ml air, lalu bumbui dengan sisa garam dan kaldu ayam bubuk dan masak 20 menit.\nTuang santan dan aduk perlahan agar tidak pecah.\nMasak dengan api kecil hingga ayam matang empuk dan kuah kuning sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1004",
+  "fields": {
+   "instructions": "Rebus jengkol dalam air selama 45 menit hingga empuk, lalu tiriskan, kupas, dan geprek.\nPotong kacang panjang sepanjang 4 cm.\nHaluskan kasar cabai merah keriting, bawang merah, bawang putih, dan tomat.\nTumis bumbu dengan 3 sdm minyak goreng hingga harum dan matang, lalu bumbui dengan garam dan gula pasir.\nMasukkan jengkol dan kacang panjang, lalu tambahkan 50 ml air.\nMasak sambil diaduk hingga kacang panjang matang dan bumbu meresap, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1006",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nCuci ikan teri, lalu goreng sebentar dengan minyak goreng hingga renyah dan tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, dan jahe.\nMasak santan bersama bumbu halus, serai, lengkuas, daun salam, dan daun jeruk sambil terus diaduk hingga mendidih.\nMasukkan telur, teri, dan petai, lalu bumbui dengan garam dan gula pasir.\nMasak dengan api kecil sambil sesekali diaduk hingga kuah menyusut dan mengental.\nAngkat setelah bumbu meresap dan santan mulai mengeluarkan minyak.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1010",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, lalu tiriskan.\nHaluskan cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, jahe, kunyit, kencur, lengkuas, ketumbar, merica, pala, dan terasi.\nTumis bumbu halus dengan minyak goreng hingga harum dan matang, lalu bumbui dengan garam dan kaldu ayam bubuk.\nLumuri ayam dengan bumbu tumis hingga rata, lalu diamkan 30 menit.\nMasukkan ayam ke panci bersama serai yang dimemarkan, daun jeruk, dan 300 ml air.\nMasak dengan api kecil sekitar 45 menit sambil sesekali dibalik hingga ayam empuk, matang, dan bumbu mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1017",
+  "fields": {
+   "instructions": "Haluskan daging ikan tenggiri bersama bawang putih.\nCampur ikan dengan telur, garam, kaldu ayam bubuk, dan 100 ml air es, lalu aduk rata.\nMasukkan tepung tapioka sedikit demi sedikit sambil diuleni hingga kalis.\nPotong tahu berbentuk segitiga, lalu belah bagian tengahnya.\nIsi celah tahu dengan adonan pempek dan ratakan sisa adonan di sekelilingnya.\nRebus dalam air mendidih hingga mengapung dan matang, lalu tiriskan.\nGoreng dengan minyak hingga kulitnya kecokelatan, lalu sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1018",
+  "fields": {
+   "instructions": "Potong ayam kecil-kecil, potong tahu dadu, dan potong buncis sepanjang 3 cm.\nHaluskan bawang merah, bawang putih, cabai rawit merah, kemiri, jahe, kunyit, ketumbar, jintan, dan merica hitam.\nTumis bumbu halus dengan sedikit minyak goreng bersama serai dan lengkuas yang dimemarkan serta daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna.\nTuang santan sambil terus diaduk hingga mendidih agar tidak pecah.\nMasukkan tahu dan buncis, lalu bumbui dengan garam, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api kecil hingga ayam matang, buncis empuk, dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1027",
+  "fields": {
+   "instructions": "Hancurkan tahu dengan garpu, lalu peras sedikit airnya.\nHaluskan bawang merah, bawang putih, dan cabai rawit merah, lalu tumis dengan minyak goreng hingga harum.\nCampurkan tahu, telur, bumbu tumis, irisan daun bawang, garam, dan gula pasir, lalu aduk rata.\nMasukkan adonan ke dalam wadah tahan panas dan tutup rapat.\nKukus selama 30 menit hingga adonan padat dan telur matang sempurna.\nAngkat, potong-potong, lalu sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1033",
+  "fields": {
+   "instructions": "Potong ayam, tempe, dan tahu sesuai selera.\nGoreng tempe dan tahu sebentar hingga kulitnya kecokelatan, lalu tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, dan merica.\nTumis bumbu halus dengan 2 sdm minyak goreng bersama kayu manis hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 300 ml air.\nTambahkan kecap manis dan garam, lalu masukkan tempe dan tahu.\nMasak dengan api kecil hingga ayam matang sempurna dan kuah mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1041",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nHaluskan bawang merah, bawang putih, kemiri, dan merica.\nTumis bumbu halus dengan sedikit minyak bersama lengkuas dan daun salam hingga harum.\nTuang 300 ml air, lalu tambahkan kecap manis, gula merah, garam, dan kaldu ayam bubuk.\nMasukkan telur dan masak dengan api kecil.\nMasak sekitar 15 menit hingga kuah mengental dan telur berwarna cokelat merata, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1042",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong ayam dan kentang, lalu goreng kentang dalam minyak hingga setengah matang.\nHaluskan bawang merah, bawang putih, cabai merah keriting, jahe, kunyit, ketumbar, dan merica.\nTumis bumbu halus bersama lengkuas, serai, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 400 ml air.\nMasak sekitar 20 menit, lalu masukkan kentang, telur, santan, dan garam secukupnya.\nMasak dengan api kecil sambil diaduk hingga ayam matang, kentang empuk, dan kuah mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1043",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, jahe, ketumbar, pala, dan merica hitam.\nTumis bumbu halus dengan sedikit minyak bersama cengkeh, kayu manis, serai, lengkuas, daun salam, dan daun jeruk hingga harum.\nTuang 400 ml air, lalu tambahkan kecap manis, garam, gula pasir, dan kaldu jamur bubuk.\nMasukkan telur dan cabai rawit utuh, lalu didihkan.\nMasak dengan api kecil hingga kuah mengental dan telur berwarna cokelat.\nAngkat dan sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1053",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong ayam sesuai selera dan cuci bersih.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, dan jahe.\nPanaskan minyak goreng, tumis bumbu halus bersama serai yang dimemarkan, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang santan dan 300 ml air.\nBumbui dengan garam dan gula pasir, masak dengan api kecil sambil diaduk agar santan tidak pecah.\nMasukkan telur, masak hingga ayam empuk dan matang serta kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1054",
+  "fields": {
+   "instructions": "Potong tahu, lalu goreng dalam minyak goreng panas hingga kuning kecokelatan dan tiriskan.\nGoreng kacang tanah hingga matang, lalu tiriskan.\nUlek kacang tanah bersama bawang putih, cabai rawit merah, dan garam hingga halus.\nTambahkan kecap manis dan sedikit air hangat, lalu aduk hingga sambal kacang mengental.\nSiramkan sambal kacang di atas tahu goreng, lalu sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1069",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong ayam, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, jahe, kemiri, pala, dan merica.\nPanaskan 4 sdm minyak goreng, lalu tumis bumbu halus bersama kunyit bubuk, daun salam, daun jeruk, serai memar, dan lengkuas memar hingga harum.\nMasukkan ayam dan potongan tomat, lalu aduk hingga ayam berubah warna.\nTuang 400 ml air, lalu tambahkan kecap manis, gula pasir, garam, dan kaldu ayam bubuk.\nMasukkan telur, lalu masak dengan api kecil hingga ayam matang sempurna dan kuah mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1082",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong ayam dan tempe sesuai selera.\nHaluskan bawang merah, bawang putih, jahe, kunyit, dan kemiri.\nPanaskan minyak goreng, lalu tumis bumbu halus bersama serai, lengkuas, daun jeruk, dan daun salam hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 500 ml air.\nMasak selama 20 menit, lalu masukkan tempe, telur, santan, garam, gula pasir, dan kaldu ayam bubuk.\nMasak dengan api kecil sambil diaduk hingga ayam matang dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1090",
+  "fields": {
+   "instructions": "Bersihkan ikan kembung, lumuri sedikit garam, lalu goreng hingga matang dan kering.\nRebus telur selama 10 menit hingga matang, kupas, lalu goreng sebentar hingga kulitnya kecokelatan.\nHaluskan kasar cabai merah keriting, bawang merah, dan bawang putih.\nTumis bumbu dengan sedikit minyak bersama daun salam dan serai hingga harum dan matang.\nBumbui dengan garam dan gula pasir, lalu aduk rata.\nMasukkan ikan kembung dan telur, aduk perlahan hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1097",
+  "fields": {
+   "instructions": "Rebus ayam hingga matang, lalu suwir-suwir.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kemiri, ketumbar, jahe, dan sedikit garam.\nCampur ayam suwir dengan bumbu halus dan kunyit bubuk hingga rata.\nIris tomat, cabai rawit, dan serai, lalu sobek-sobek daun jeruk.\nLetakkan ayam berbumbu di atas aluminium foil, beri tomat, cabai rawit, serai, dan daun jeruk, lalu bungkus rapat.\nKukus selama 30 menit hingga bumbu meresap dan pepes matang.\nSajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1105",
+  "fields": {
+   "instructions": "Rendam teri sebentar untuk mengurangi asin, lalu tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, cabai merah keriting, dan kunyit.\nCampur teri dengan bumbu halus, kelapa parut, irisan tomat, irisan daun bawang, dan kemangi.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk, lalu aduk rata.\nBagi adonan, letakkan potongan serai di atasnya, lalu bungkus rapat dengan aluminium foil.\nKukus selama 30 menit hingga matang dan bumbu meresap.\nPanggang sebentar di atas teflon hingga harum bila suka.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1107",
+  "fields": {
+   "instructions": "Potong tahu dadu, lalu goreng sebentar hingga kulitnya kuning dan tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, jahe, dan merica.\nTumis bumbu halus dengan minyak goreng bersama lengkuas, serai, daun jeruk, dan daun salam hingga harum.\nTuang 400 ml air, bumbui dengan garam dan gula pasir, lalu didihkan.\nMasukkan tahu dan masak 5 menit hingga bumbu meresap.\nTambahkan kubis yang diiris kasar, potongan tomat, dan cabai rawit merah.\nMasak sebentar hingga kubis layu namun masih renyah, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1116",
+  "fields": {
+   "instructions": "Cuci beras hingga bersih, lalu tiriskan.\nGoreng teri hingga renyah, lalu angkat dan tiriskan.\nIris bawang merah dan bawang putih, lalu tumis dengan 2 sdm minyak goreng hingga harum.\nMasukkan beras ke dalam panci bersama 600 ml air, tumisan bawang, lengkuas memar, serai memar, daun salam, daun jeruk, dan cabai rawit merah utuh.\nBumbui dengan garam dan kaldu ayam bubuk, lalu aduk rata.\nMasak dengan api kecil hingga air terserap, lalu tutup rapat dan biarkan 15 menit hingga nasi matang.\nTaburi teri goreng di atas nasi sebelum disajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1118",
+  "fields": {
+   "instructions": "Panaskan minyak goreng, lalu ceplok telur satu per satu hingga putih dan kuningnya matang, lalu angkat.\nUlek kasar cabai merah keriting, bawang merah, bawang putih, kemiri, dan tomat.\nTumis sambal dengan sisa minyak hingga harum dan matang.\nBumbui dengan garam, gula pasir, dan kaldu jamur bubuk, lalu aduk rata.\nMasukkan telur ceplok, aduk perlahan hingga terbalut sambal, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1120",
+  "fields": {
+   "instructions": "Haluskan daging ikan tenggiri, lalu campur dengan telur, garam, dan 100 ml air es.\nMasukkan tepung tapioka sedikit demi sedikit, uleni hingga bisa dibentuk, lalu bentuk lonjong.\nRebus adonan dalam air mendidih hingga mengapung dan matang, lalu tiriskan dan potong-potong.\nHaluskan bawang merah, bawang putih, cabai merah keriting, cabai rawit merah, kemiri, ebi, dan tomat.\nTumis bumbu halus dengan minyak goreng bersama kunyit bubuk dan merica hingga harum.\nTuang santan dan 400 ml air, aduk terus hingga mendidih.\nBumbui dengan garam, gula pasir, dan kaldu jamur bubuk, lalu masak hingga kuah mengental.\nSajikan potongan pempek dengan siraman kuah santan panas.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1127",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong terong memanjang, lalu goreng dengan minyak hingga layu dan matang.\nGoreng telur rebus sebentar hingga kulitnya kecokelatan, lalu tiriskan.\nUlek kasar cabai merah keriting, cabai rawit, bawang merah, tomat, dan terasi.\nTumis bumbu ulek dengan sisa minyak hingga harum dan matang.\nTambahkan garam, gula merah, dan kaldu jamur bubuk, lalu aduk rata.\nMasukkan terong dan telur, aduk hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1139",
+  "fields": {
+   "instructions": "Cuci bersih sayap ayam, potong menjadi dua bagian.\nHaluskan bawang merah, bawang putih, kunyit, dan jahe.\nTumis bumbu halus dengan sedikit minyak goreng hingga harum.\nMasukkan serai dan lengkuas yang dimemarkan, daun salam, serta daun jeruk, aduk sebentar.\nTuang 700 ml air, didihkan, lalu masukkan ayam.\nBumbui dengan garam dan kaldu ayam bubuk, masak dengan api sedang 25 menit hingga ayam empuk dan matang.\nMasukkan potongan tomat, masak 2 menit lagi, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1152",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong tempe dadu, lalu iris bawang merah, bawang putih, dan cabai rawit merah.\nTumis irisan bumbu dengan sedikit minyak goreng bersama lengkuas dan daun salam hingga harum.\nTuang 500 ml air, lalu masukkan tempe dan telur dan masak hingga mendidih.\nTuang santan, lalu bumbui dengan garam, gula pasir, dan kaldu jamur bubuk.\nMasak dengan api kecil sambil diaduk perlahan hingga kuah mendidih dan tempe matang, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1153",
+  "fields": {
+   "instructions": "Kukus ikan tuna selama 15 menit hingga matang, lalu suwir halus.\nCampurkan tuna, telur, sebagian bawang putih yang dihaluskan, garam, dan tepung tapioka, lalu uleni hingga bisa dibentuk.\nBentuk adonan bulat pipih, lalu rebus dalam air mendidih hingga mengapung dan matang, kemudian tiriskan.\nHaluskan bawang merah, sisa bawang putih, kemiri, kunyit, ebi, dan merica.\nTumis bumbu halus dengan 2 sdm minyak goreng hingga harum.\nTuang 500 ml air dan 65 ml santan, lalu didihkan sambil diaduk.\nMasukkan celimpungan dan irisan daun bawang, lalu masak hingga kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1157",
+  "fields": {
+   "instructions": "Potong ayam, cuci bersih, lalu tiriskan.\nHaluskan cabai merah keriting, cabai rawit merah, bawang merah, bawang putih, kemiri, kencur, dan terasi.\nTumis bumbu halus dengan sedikit minyak bersama serai dan daun jeruk hingga harum.\nMasukkan ayam, santan, gula merah, garam, kaldu ayam bubuk, dan 200 ml air.\nMasak dengan api sedang hingga ayam matang dan bumbu menyusut serta mengental.\nBakar ayam di atas bara atau wajan antilengket sambil diolesi sisa bumbu hingga kecokelatan.\nBolak-balik ayam beberapa kali hingga matang merata, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1158",
+  "fields": {
+   "instructions": "Haluskan 500 g daging ikan tenggiri tanpa kulit dan duri.\nCampur ikan dengan telur, garam, gula pasir, merica, kaldu ayam bubuk, dan 150 ml air es, lalu aduk rata.\nMasukkan tepung tapioka sedikit demi sedikit, aduk perlahan hingga adonan kalis dan tidak lengket.\nBentuk adonan lonjong atau bulat sesuai selera.\nRebus dalam air mendidih hingga pempek mengapung dan matang, lalu tiriskan.\nGoreng pempek dalam minyak panas hingga kulitnya kecokelatan, lalu sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1160",
+  "fields": {
+   "instructions": "Haluskan cabai rawit dan sebagian besar bawang putih untuk bumbu cuko.\nRebus 500 ml air dengan gula merah, gula pasir, bumbu cuko, dan sebagian garam hingga sedikit mengental, lalu saring.\nHaluskan ikan tenggiri bersama sisa bawang putih, lalu campur dengan sisa garam, merica hitam, dan 150 ml air es.\nMasukkan tepung tapioka dan tepung terigu sedikit demi sedikit sambil diuleni hingga kalis.\nAmbil adonan seukuran bola pingpong, lalu pipihkan dan bentuk seperti mangkuk.\nIsi dengan sekitar 1 sendok makan telur kocok, lalu rapatkan pinggirannya.\nRebus pempek dalam air mendidih sekitar 10 menit hingga mengapung dan telur di dalamnya matang.\nTiriskan dan sajikan dengan siraman cuko.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1174",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong tempe dadu besar.\nHaluskan bawang merah, bawang putih, ketumbar, kunyit, dan kemiri.\nTumis bumbu halus dengan sedikit minyak goreng bersama lengkuas dan serai yang dimemarkan, daun salam, dan daun jeruk hingga harum.\nTuang santan, aduk terus hingga mendidih agar santan tidak pecah.\nMasukkan tempe dan telur, lalu bumbui dengan garam dan gula pasir.\nMasak dengan api kecil sambil sesekali diaduk hingga kuah menyusut dan bumbu meresap.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1191",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong tahu dan tempe, lalu goreng dengan minyak goreng hingga kuning kecokelatan dan tiriskan.\nHaluskan bawang merah, bawang putih, cabai rawit merah, dan merica.\nTumis bumbu halus dengan sisa minyak hingga harum.\nTuang 300 ml air, lalu tambahkan kecap manis, garam, kaldu jamur bubuk, dan gula pasir.\nMasukkan telur, tahu, dan tempe, lalu masak dengan api kecil sekitar 15 menit.\nMasak hingga kuah semur meresap dan mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1199",
+  "fields": {
+   "instructions": "Bersihkan ikan kembung, lumuri dengan air jeruk nipis dan garam, lalu diamkan 10 menit.\nHaluskan bawang merah, bawang putih, cabai merah keriting, jahe, kemiri, dan kunyit bubuk.\nIris tomat tipis-tipis.\nBalurkan bumbu halus ke seluruh permukaan ikan, letakkan di wadah tahan panas, lalu tutup dengan irisan tomat.\nKukus selama 30 menit hingga ikan matang sempurna dan dagingnya mudah lepas dari tulang.\nAngkat dan sajikan selagi hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1215",
+  "fields": {
+   "instructions": "Giling ikan tenggiri, lalu campur dengan telur, sebagian bawang putih yang dihaluskan, garam, dan 100 ml air es.\nMasukkan tepung tapioka sedikit demi sedikit hingga adonan bisa dibentuk, lalu bentuk bulatan pipih.\nRebus adonan dalam air mendidih hingga mengapung dan matang, lalu tiriskan.\nHaluskan bawang merah, sisa bawang putih, kemiri, kunyit, ebi, dan merica, lalu tumis dengan sedikit minyak hingga harum.\nTuang santan dan 600 ml air, lalu bumbui dengan garam, gula pasir, dan kaldu ayam bubuk.\nMasukkan jamur kuping yang sudah diiris dan masak hingga mendidih.\nMasukkan bihun yang sudah direndam dan celimpungan, masak 3-5 menit, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1216",
+  "fields": {
+   "instructions": "Kupas udang, buang kepalanya, lalu cincang kasar.\nHaluskan bawang merah, bawang putih, kemiri, dan kunyit.\nHancurkan tahu, lalu campur dengan udang, telur, bumbu halus, garam, dan kaldu ayam bubuk.\nTambahkan irisan cabai merah keriting, cabai rawit merah, dan daun bawang, lalu aduk rata.\nBagi adonan ke atas daun pisang, beri selembar daun salam, lalu bungkus rapat.\nKukus selama 30 menit hingga adonan padat dan udang matang.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1227",
+  "fields": {
+   "instructions": "Lumuri ayam dengan perasan jeruk nipis dan sebagian garam, lalu diamkan 15 menit.\nHaluskan cabai merah keriting, cabai rawit, bawang merah, bawang putih, dan tomat.\nTumis bumbu halus dengan sedikit minyak bersama daun jeruk hingga harum dan matang.\nTambahkan sisa garam, gula pasir, dan kaldu jamur bubuk, lalu sisihkan sebagian bumbu untuk olesan.\nMasukkan ayam ke sisa bumbu, tuang 200 ml air, lalu masak hingga air menyusut dan bumbu meresap.\nPanggang ayam dalam oven bersuhu 200 derajat Celsius selama 30 menit sambil diolesi bumbu hingga matang sampai ke tulang.\nSajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1233",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong ayam kecil-kecil dan potong tahu kotak.\nHaluskan bawang merah, bawang putih, kemiri, kunyit, dan ketumbar.\nTumis bumbu halus dengan sedikit minyak goreng bersama daun salam dan lengkuas yang dimemarkan hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 400 ml air.\nTambahkan tahu, telur, gula merah, dan garam, aduk perlahan.\nMasak dengan api kecil hingga ayam matang dan kuah menyusut menjadi bumbu kental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1235",
+  "fields": {
+   "instructions": "Cincang ayam dan hancurkan tempe, lalu campur keduanya dalam wadah.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, kemiri, dan merica, lalu tumis dengan minyak goreng hingga harum.\nMasukkan bumbu tumis ke campuran ayam, lalu tambahkan telur, maizena, santan, gula pasir, kaldu jamur bubuk, dan garam, lalu aduk rata.\nTambahkan irisan tomat, cabai rawit merah, daun jeruk, kemangi, dan lengkuas yang diiris tipis.\nMasukkan adonan ke dalam wadah tahan panas dan tutup rapat.\nKukus selama 40 menit hingga ayam matang sempurna dan adonan padat.\nAngkat dan sajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1237",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang lalu kupas, kemudian potong ayam dan tahu sesuai selera.\nHaluskan bawang merah, bawang putih, cabai merah keriting, jahe, kunyit, jintan, ketumbar, dan merica.\nTumis bumbu halus dengan 2 sdm minyak goreng bersama serai memar, lengkuas memar, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 500 ml air.\nMasak selama 20 menit, lalu masukkan telur, tahu, dan 65 ml santan.\nBumbui dengan garam, gula pasir, dan kaldu jamur bubuk, lalu aduk perlahan agar santan tidak pecah.\nMasak hingga ayam matang sempurna dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1261",
+  "fields": {
+   "instructions": "Rebus ayam dalam 1,5 liter air hingga matang, lalu angkat, suwir dagingnya, dan simpan kaldunya.\nRebus telur selama 10 menit hingga matang, lalu kupas dan belah.\nHaluskan bawang merah, bawang putih, jahe, kunyit, dan kemiri.\nPanaskan minyak goreng, lalu tumis bumbu halus bersama serai, daun jeruk, dan daun salam hingga harum.\nMasukkan tumisan ke dalam kaldu, bumbui dengan garam dan gula pasir, lalu didihkan kembali.\nSeduh bihun dan tauge dengan air panas, lalu iris tipis kubis dan daun bawang.\nTata bihun, tauge, kubis, ayam suwir, dan telur di mangkuk, lalu siram dengan kuah panas dan taburi daun bawang.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1263",
+  "fields": {
+   "instructions": "Potong tempe, lalu lumuri dengan kunyit bubuk dan sedikit garam.\nKukus tempe selama 15 menit hingga matang.\nKukus cabai merah keriting, bawang merah, dan bawang putih selama 10 menit hingga layu.\nUlek cabai, bawang merah, dan bawang putih bersama garam hingga halus.\nMasukkan tempe kukus, lalu penyet dan aduk hingga tercampur dengan sambal.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1266",
+  "fields": {
+   "instructions": "Potong ayam dadu kecil, lalu lumuri dengan sebagian garam, merica hitam, dan kaldu jamur bubuk.\nTumis ayam dengan 2 sendok makan minyak hingga matang dan kecokelatan, lalu angkat.\nIris tipis bawang merah, cabai rawit, dan bagian putih serai.\nPanaskan sisa minyak, lalu larutkan terasi di dalamnya.\nSiramkan minyak panas ke irisan bawang merah, cabai rawit, dan serai, lalu aduk dengan sisa garam.\nCampurkan sambal matah ke ayam, aduk rata, lalu sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1270",
+  "fields": {
+   "instructions": "Potong ayam kampung kecil-kecil, cuci bersih, lalu tiriskan.\nHaluskan bawang merah, bawang putih, cabai rawit merah, kunyit, jahe, dan kemiri.\nPanaskan minyak goreng, tumis bumbu halus bersama serai yang dimemarkan, daun salam, dan daun jeruk hingga harum.\nMasukkan ayam, aduk hingga berubah warna, lalu tuang 500 ml air.\nBumbui dengan garam, gula pasir, gula merah, dan kaldu jamur bubuk.\nMasak dengan api kecil 40 menit hingga ayam kampung empuk, matang, dan kuah menyusut.\nMasukkan kemangi, aduk hingga layu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1278",
+  "fields": {
+   "instructions": "Potong ayam kecil-kecil dan kentang bentuk dadu.\nGoreng ayam dalam minyak goreng panas hingga matang dan kecokelatan, lalu tiriskan.\nGoreng kentang hingga matang dan kuning keemasan, lalu tiriskan.\nHaluskan kasar bawang merah, cabai merah keriting, dan tomat.\nTumis bumbu dengan sedikit sisa minyak hingga harum dan matang, lalu bumbui dengan garam dan kaldu ayam bubuk.\nMasukkan ayam dan kentang, lalu aduk hingga terbalut balado dan angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1284",
+  "fields": {
+   "instructions": "Rebus jengkol selama 45 menit hingga empuk, lalu kupas dan belah dua.\nLumuri ayam dengan bawang putih dan jahe yang dihaluskan, kunyit bubuk, dan garam, lalu diamkan 15 menit.\nGoreng ayam dalam minyak goreng panas hingga matang sempurna dan kecokelatan, lalu tiriskan.\nGoreng jengkol sebentar, lalu tiriskan.\nHaluskan kasar cabai merah keriting, cabai rawit merah, dan bawang merah.\nTumis bumbu dengan 3 sdm minyak goreng hingga harum dan matang, lalu bumbui dengan gula pasir dan kaldu jamur bubuk.\nMasukkan ayam goreng dan jengkol, aduk hingga terbalut balado, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1310",
+  "fields": {
+   "instructions": "Potong ayam, lalu rebus dalam air hingga matang dan tiriskan.\nGoreng ayam dengan sebagian minyak goreng hingga permukaannya kecokelatan, lalu angkat.\nUlek kasar cabai merah keriting, bawang merah, bawang putih, dan tomat.\nTumis sambal dengan sisa minyak bersama daun jeruk hingga harum dan matang.\nBumbui dengan garam, gula pasir, dan kaldu ayam bubuk.\nMasukkan ayam, aduk hingga terbalut sambal secara merata, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1324",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nPotong terong, rendam sebentar dalam air garam, lalu tiriskan.\nHaluskan bawang merah, bawang putih, cabai merah keriting, kunyit, jahe, merica, dan jintan.\nTumis bumbu halus dengan minyak goreng bersama lengkuas, serai, daun salam, dan daun jeruk hingga harum.\nTuang santan dan 250 ml air, aduk terus hingga mendidih.\nMasukkan terong dan telur, lalu bumbui dengan garam dan gula pasir.\nMasak dengan api kecil hingga terong empuk dan kuah sedikit mengental.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1325",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, lalu kupas.\nGoreng telur dalam minyak panas hingga kulitnya kecokelatan, lalu tiriskan.\nHaluskan kasar cabai merah keriting, bawang merah, dan bawang putih.\nPotong tomat kecil-kecil.\nTumis bumbu dengan sisa minyak hingga harum, lalu masukkan tomat dan masak hingga layu.\nTambahkan sedikit garam dan gula pasir, lalu aduk rata.\nMasukkan telur, aduk hingga terbalut bumbu, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1333",
+  "fields": {
+   "instructions": "Haluskan bawang merah, bawang putih, jahe, lengkuas, ketumbar, kemiri, dan merica hitam.\nCincang halus daging ayam, lalu campurkan dengan bumbu halus dan daun jeruk yang diiris sangat tipis.\nTambahkan telur, santan, kunyit bubuk, kecap manis, saus tiram, gula pasir, garam, dan kaldu ayam bubuk, aduk hingga rata dan lengket.\nAmbil sekepal adonan, lilitkan pada tusuk sate pipih sambil dipadatkan.\nPanggang di atas teflon atau bara dengan api sedang sambil dibalik.\nBakar hingga permukaannya kecokelatan dan ayam matang sempurna di bagian dalam.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1334",
+  "fields": {
+   "instructions": "Lumuri ayam dengan sedikit garam dan air jeruk nipis, lalu diamkan 10 menit.\nGoreng ayam dalam minyak goreng panas dengan api sedang hingga matang sampai ke dalam dan kulitnya renyah.\nIris tipis bawang merah dan cabai rawit merah.\nSangrai terasi sebentar, lalu campurkan dengan irisan bawang dan cabai.\nSiram campuran sambal dengan 2 sendok makan minyak panas, lalu beri sisa garam dan air jeruk nipis.\nGeprek ayam goreng hingga sedikit pipih, lalu sajikan dengan sambal matah di atasnya.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1354",
+  "fields": {
+   "instructions": "Rebus telur selama 10 menit hingga matang, kupas, lalu goreng sebentar hingga kulitnya kecokelatan.\nPotong ayam kecil-kecil, lumuri sedikit garam, lalu goreng hingga matang sempurna dan kecokelatan.\nHaluskan bawang merah, bawang putih, dan cabai merah keriting, lalu iris bawang bombay dan potong tomat.\nTumis bumbu halus dan bawang bombay dengan 2 sdm minyak goreng hingga harum.\nMasukkan tomat, saus tomat, kecap manis, gula merah, cabai rawit merah utuh, dan 150 ml air.\nBumbui dengan sisa garam dan kaldu jamur bubuk, lalu masak hingga saus mengental.\nMasukkan ayam dan telur, aduk hingga terbalut saus, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1358",
+  "fields": {
+   "instructions": "Haluskan bawang putih dan ebi.\nKocok telur, lalu campur dengan bumbu halus, garam, merica, dan irisan daun bawang.\nMasukkan tepung tapioka sedikit demi sedikit sambil diaduk hingga adonan rata dan tidak bergerindil.\nTuang adonan ke wadah tahan panas yang sudah diolesi sedikit minyak goreng.\nKukus selama 25-30 menit hingga adonan padat dan matang.\nDinginkan sebentar, lalu potong-potong sebelum disajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1364",
+  "fields": {
+   "instructions": "Belah terong memanjang, lalu olesi tipis dengan minyak goreng.\nBakar terong di atas api atau teflon sambil dibalik hingga lunak dan matang.\nGoreng sebentar bawang merah, cabai merah keriting, cabai rawit merah, dan terasi hingga layu.\nUlek bahan sambal bersama gula merah, gula pasir, garam, dan kaldu ayam bubuk hingga halus.\nTambahkan perasan jeruk nipis ke sambal, lalu aduk rata.\nSiram sambal di atas terong bakar dan sajikan.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1368",
+  "fields": {
+   "instructions": "Potong ikan patin, lumuri dengan perasan jeruk nipis dan sedikit garam, diamkan 10 menit, lalu bilas.\nHaluskan bawang merah, bawang putih, dan cabai merah keriting.\nCampur bumbu halus dengan sisa garam, gula pasir, dan kaldu ayam bubuk.\nIris tomat, cabai hijau, dan serai.\nLumuri ikan dengan bumbu, letakkan di atas aluminium foil, lalu beri tomat, cabai hijau, dan serai.\nBungkus rapat, lalu kukus selama 30 menit hingga ikan matang.\nSajikan hangat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1372",
+  "fields": {
+   "instructions": "Rendam beras 2 jam, tiriskan, lalu blender hingga halus menjadi tepung beras basah.\nRebus 400 ml air bersama bawang putih halus, garam, gula pasir, merica hitam, dan kaldu jamur bubuk hingga mendidih.\nSiram air bumbu ke campuran tepung beras dan tepung terigu, aduk rata, lalu masukkan telur.\nTambahkan tepung tapioka sedikit demi sedikit sambil diuleni hingga adonan kalis dan bisa dibentuk.\nBentuk adonan, rebus dalam air mendidih hingga mengapung, lalu tiriskan dan goreng sebentar hingga kecokelatan.\nUntuk cuko, rebus 500 ml air bersama gula merah, asam jawa, dan cabai rawit merah yang dihaluskan hingga mendidih dan gula larut.\nTumbuk ebi, lalu masukkan ke cuko bersama sedikit bawang putih, masak sebentar dan saring.\nGoreng irisan bawang merah hingga renyah, taburkan di atas pempek, lalu sajikan dengan cuko.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ },
+ {
+  "model": "catalog.recipe",
+  "pk": "RCP-MDL-1389",
+  "fields": {
+   "instructions": "Potong ikan tongkol, cuci bersih, lalu goreng sebentar dalam minyak goreng hingga bagian luarnya kokoh dan tiriskan.\nHaluskan bawang merah, bawang putih, kemiri, cabai rawit merah, cabai merah keriting, dan merica.\nTumis bumbu halus dengan sisa minyak bersama serai, lengkuas, daun salam, dan daun jeruk hingga harum.\nTuang 400 ml air, lalu bumbui dengan garam, kaldu ayam bubuk, dan gula pasir.\nMasukkan tongkol dan masak dengan api sedang selama 10 menit.\nTuang santan dan aduk perlahan agar tidak pecah.\nMasak hingga ikan matang sempurna dan kuah gulai sedikit mengental, lalu angkat.",
+   "instruction_status": "authored_reviewed",
+   "instruction_review_note": "Ditinjau tim TAKARKUY: langkah dan bahan sudah dicek.",
+   "instruction_reviewed_on": "2026-10-15"
+  }
+ }
+]

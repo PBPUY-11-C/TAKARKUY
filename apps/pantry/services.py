@@ -25,7 +25,7 @@ class StockError(Exception):
 
 def reserve_llm(user, kind):
     """Count paid attempts, including errors, across devices before making the call."""
-    if user is None or kind not in {"photo", "names"}:
+    if user is None or kind not in {"photo", "names", "shelf"}:
         raise StockError("Akun diperlukan untuk AI.", 400)
     with transaction.atomic():
         get_user_model().objects.select_for_update().get(pk=user.pk)

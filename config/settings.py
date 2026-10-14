@@ -189,7 +189,8 @@ LOGGING = {
     },
 }
 
-TIME_ZONE = "UTC"
+# Indonesian app: "today" everywhere (code, templates, tests) is a Jakarta date.
+TIME_ZONE = "Asia/Jakarta"
 
 USE_I18N = True
 

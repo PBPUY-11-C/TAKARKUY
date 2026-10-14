@@ -40,9 +40,11 @@ from .services import (
     session_scope,
     snapshot,
 )
+from .shelf_life_ai import estimate_shelf_life
 from .storage import (
     DEFAULT_LOCATION,
     expiry_estimate,
+    shelf_key,
     shelf_life_duration,
     storage_options,
     transfer_estimate,
@@ -85,9 +87,10 @@ def pantry_page(request):
     estimates = {}
     for item in items:
         code = item.ingredient_id or legacy_codes.get(item.pk)
-        if code not in references:
-            references[code] = storage_options(code)
-        options = references[code]
+        reference_key = code or shelf_key(None, item.name)
+        if reference_key not in references:
+            references[reference_key] = storage_options(code, item.name)
+        options = references[reference_key]
         location = item.location or DEFAULT_LOCATION
         item.display_location = location
         state = transfer_estimate(item, options, location, _starting_on(item))
@@ -264,6 +267,19 @@ def save_pantry_items(request):
     local_codes = _local_codes(
         [form.cleaned_data["name"] for form in forms], session_id, request.user
     )
+    codes = [
+        (accepted[index][1] if source == "ocr" else None) or local_codes[index]
+        for index in range(len(forms))
+    ]
+    # Ask Gemini once, before the transaction, about food with no shelf-life reference.
+    estimate_shelf_life(
+        request.user,
+        [
+            (shelf_key(code, form.cleaned_data["name"]), form.cleaned_data["name"], code)
+            for code, form in zip(codes, forms)
+            if not storage_options(code, form.cleaned_data["name"])
+        ],
+    )
     references = {}
     try:
         with transaction.atomic():
@@ -275,10 +291,13 @@ def save_pantry_items(request):
                 fields = form.cleaned_data.copy()
                 starting_on = fields.pop("starting_on") or today
                 fields["location"] = fields["location"] or DEFAULT_LOCATION
-                code = (accepted[index][1] if source == "ocr" else None) or local_codes[index]
-                if code not in references:
-                    references[code] = storage_options(code)
-                estimate = expiry_estimate(references[code], fields["location"], starting_on)
+                code = codes[index]
+                reference_key = code or shelf_key(None, fields["name"])
+                if reference_key not in references:
+                    references[reference_key] = storage_options(code, fields["name"])
+                estimate = expiry_estimate(
+                    references[reference_key], fields["location"], starting_on
+                )
                 explicit_date = fields.pop("estimated_expires_on")
                 expiry_source = fields.pop("expiry_source")
                 manual_days = fields["shelf_life_days"]
@@ -345,8 +364,14 @@ def update_pantry_details(request, item_id):
     if not isinstance(payload, dict):
         return JsonResponse({"error": "Data bahan tidak valid."}, status=400)
 
-    if not PantryItem.objects.filter(pk=item_id, user=request.user).exists():
+    current = PantryItem.objects.filter(pk=item_id, user=request.user).first()
+    if current is None:
         return JsonResponse({"error": "Stok tidak ditemukan."}, status=404)
+    if not storage_options(current.ingredient_id, current.name):
+        estimate_shelf_life(
+            request.user,
+            [(shelf_key(current.ingredient_id, current.name), current.name, current.ingredient_id)],
+        )
     try:
         with transaction.atomic():
             event, replay = operation(
@@ -385,7 +410,7 @@ def update_pantry_details(request, item_id):
                 setattr(item, key, value)
             item.location = item.location or DEFAULT_LOCATION
             item.starting_on = item.starting_on or _starting_on(item)
-            options = storage_options(item.ingredient_id)
+            options = storage_options(item.ingredient_id, item.name)
             explicit = mode == "manual" or (
                 "estimated_expires_on" in payload
                 and mode != "auto"

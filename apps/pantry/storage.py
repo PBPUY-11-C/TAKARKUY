@@ -1,9 +1,15 @@
 """Location-specific estimates; a location change never resets the item's age."""
 
 from datetime import date, timedelta
+from zoneinfo import ZoneInfo
+
+from django.utils import timezone
 
 from apps.catalog.models import IngredientShelfLife
 
+from .models import ShelfLifeEstimate
+
+JAKARTA = ZoneInfo("Asia/Jakarta")
 DEFAULT_LOCATION = "suhu_ruang"
 LOCATION_MAP = {
     "kulkas": ("chiller",),
@@ -12,10 +18,23 @@ LOCATION_MAP = {
 }
 
 
-def storage_options(ingredient_code):
-    options = {}
+AI_LOCATIONS = ("suhu_ruang", "chiller", "freezer")
+
+
+def shelf_key(ingredient_code, name):
+    """Cache key for an AI estimate: per catalog ingredient, else per normalized name."""
+    from .catalog_context import normalize_name
+
+    if ingredient_code:
+        return f"ing:{ingredient_code}"
+    name = normalize_name(name)
+    return f"name:{name}" if name else None
+
+
+def storage_options(ingredient_code, name=None):
     if not ingredient_code:
-        return options
+        return _ai_options(None, name)
+    options = {}
     records = IngredientShelfLife.objects.filter(ingredient_id=ingredient_code).order_by(
         "min_days", "max_days", "shelf_life_code"
     )
@@ -37,7 +56,28 @@ def storage_options(ingredient_code):
                     "status": record.shelf_life_status,
                 },
             )
-    return options
+    # Official references always win; the AI guess only fills a gap.
+    return options or _ai_options(ingredient_code, name)
+
+
+def _ai_options(ingredient_code, name):
+    key = shelf_key(ingredient_code, name)
+    estimate = ShelfLifeEstimate.objects.filter(pk=key).first() if key else None
+    if estimate is None:
+        return {}
+    return {
+        location: {
+            "location": location,
+            "min_days": days,
+            "max_days": days,
+            "starting_event": "mulai_disimpan",
+            "source": "Perkiraan AI",
+            "source_url": "",
+            "status": "ai_estimate",
+        }
+        for location in AI_LOCATIONS
+        if (days := getattr(estimate, f"{location}_days"))
+    }
 
 
 def expiry_estimate(options, location, starting_on):
@@ -52,9 +92,11 @@ def expiry_estimate(options, location, starting_on):
         "estimated_expires_on": (starting_on + timedelta(days=reference["min_days"])).isoformat(),
         "shelf_life_days": reference["min_days"],
         "message": (
-            f"Estimasi dari acuan {reference['min_days']}–{reference['max_days']} hari; "
-            f"dihitung sejak {starting_on.strftime('%d/%m/%Y')}. Bukan jaminan keamanan bahan."
-        ),
+            f"Perkiraan AI sekitar {reference['min_days']} hari"
+            if reference["status"] == "ai_estimate"
+            else f"Estimasi dari acuan {reference['min_days']}–{reference['max_days']} hari"
+        )
+        + f"; dihitung sejak {starting_on.strftime('%d/%m/%Y')}. Bukan jaminan keamanan bahan.",
         "source_url": reference["source_url"],
     }
 
@@ -72,7 +114,10 @@ def transfer_estimate(item, options, location, starting_on):
             "message": "Tanggal label/manual/lama dipertahankan; pindah lokasi tidak mereset umur.",
         }
     result = expiry_estimate(options, location, starting_on)
-    if result["estimated_expires_on"] and item.estimated_expires_on:
+    # Items enter as room temperature; a move on the day storage started is the real
+    # first placement, so it is not capped. Later moves can shorten but never extend.
+    placed_today = starting_on and starting_on >= timezone.localdate(timezone=JAKARTA)
+    if result["estimated_expires_on"] and item.estimated_expires_on and not placed_today:
         result["estimated_expires_on"] = min(
             date.fromisoformat(result["estimated_expires_on"]), item.estimated_expires_on
         ).isoformat()

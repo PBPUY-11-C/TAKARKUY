@@ -235,11 +235,14 @@ class AuditRegressionTests(TestCase):
                 days_conversion_method="test",
                 shelf_life_status="test",
             )
-        self.create()
+        # Stored since yesterday: a later move may shorten but never extend the estimate.
+        # (A move on the storage day itself counts as the first placement.)
+        start = self.today - timedelta(days=1)
+        self.create(starting_on=start.isoformat())
         item = PantryItem.objects.get()
         self.assertEqual(self.edit(item, location="freezer", expiry_mode="auto").status_code, 200)
         item.refresh_from_db()
-        self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=2))
+        self.assertEqual(item.estimated_expires_on, start + timedelta(days=2))
         self.assertEqual(item.shelf_life_days, 2)
 
     def test_date_validation_uses_jakarta_when_utc_is_previous_day(self):

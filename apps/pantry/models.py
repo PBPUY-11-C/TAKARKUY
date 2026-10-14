@@ -153,7 +153,9 @@ class PantryMovement(models.Model):
 class PantryLLMUsage(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     day = models.DateField()
-    kind = models.CharField(max_length=10, choices=[("photo", "Photo"), ("names", "Names")])
+    kind = models.CharField(
+        max_length=10, choices=[("photo", "Photo"), ("names", "Names"), ("shelf", "Shelf life")]
+    )
     attempts = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
@@ -198,3 +200,16 @@ class PantryNameCorrection(models.Model):
                 fields=["session_id", "normalized_name"], name="pantry_session_ocr_name_unique"
             ),
         ]
+
+
+class ShelfLifeEstimate(models.Model):
+    """AI shelf-life guess for food without an official reference; shared by all accounts."""
+
+    key = models.CharField(max_length=255, primary_key=True)
+    ingredient = models.ForeignKey("catalog.Ingredient", null=True, on_delete=models.CASCADE)
+    normalized_name = models.CharField(max_length=255)
+    suhu_ruang_days = models.PositiveSmallIntegerField(null=True)
+    chiller_days = models.PositiveSmallIntegerField(null=True)
+    freezer_days = models.PositiveSmallIntegerField(null=True)
+    model = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
