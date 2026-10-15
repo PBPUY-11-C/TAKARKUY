@@ -6,8 +6,9 @@ from collections import Counter, defaultdict
 from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_HALF_UP, Decimal, InvalidOperation
 from heapq import nsmallest
-from itertools import combinations_with_replacement, product
+from itertools import combinations_with_replacement, product, repeat
 from math import ceil
+from operator import eq, ge
 from random import Random
 
 from django.utils import timezone
@@ -137,8 +138,14 @@ def round_up_price(value, multiple):
     )
 
 
-def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot_codes=()):
-    """Find each reachable meal cost without enumerating recipe combinations."""
+def _recipe_patterns(
+    candidates, slots, preferred_tags, recent_codes, prior_slot_codes=(), cost_step=100
+):
+    """Find each reachable meal cost without enumerating recipe combinations.
+
+    The search keeps the best recipe set per `cost_step` of total cost; each kept
+    set still carries its exact cost, so budgets are always checked exactly.
+    """
     max_uses = max(1, ceil(slots / len(candidates)))
     patterns_by_cost = {}
     if len(candidates) >= slots:
@@ -154,18 +161,27 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
             0,
             0,
             0,
+            0,
         )  # indexes, all-target hits, total hits, recent hits, prior hits, protein repeats,
-        # pantry hits
+        # pantry hits, exact cost
         prior_codes = set(prior_slot_codes)
 
         def rank(state):
             return (-state[4], state[1], state[6], -state[5], state[2], -state[3])
 
+        groups = [candidate["protein_group"] for candidate in candidates]
         for index, item in enumerate(candidates):
             code = item["recipe"].pk
             group = item["protein_group"]
+            # Everything that depends only on this recipe, computed once (not per state).
+            matched = len(preferred_tags & item["tags"])
+            all_hit = matched == len(preferred_tags)
+            recent_hit = code in recent_codes
+            prior_hit = code in prior_codes
+            item_pantry = item.get("pantry_hits", 0)
+            same_group = repeat(group)
             for count in range(min(slots, index + 1), 0, -1):
-                for cost, (
+                for (
                     indexes,
                     all_hits,
                     target_hits,
@@ -173,22 +189,24 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
                     prior_hits,
                     protein_repeats,
                     pantry_hits,
-                ) in states[count - 1].items():
+                    cost,
+                ) in states[count - 1].values():
                     new_cost = cost + item["cost"]
-                    matched = len(preferred_tags & item["tags"])
                     candidate = (
                         (*indexes, index),
-                        all_hits + (matched == len(preferred_tags)),
+                        all_hits + all_hit,
                         target_hits + matched,
-                        recent_hits + (code in recent_codes),
-                        prior_hits + (code in prior_codes),
+                        recent_hits + recent_hit,
+                        prior_hits + prior_hit,
                         protein_repeats
-                        + sum(candidates[i]["protein_group"] == group for i in indexes),
-                        pantry_hits + item.get("pantry_hits", 0),
+                        + sum(map(eq, map(groups.__getitem__, indexes), same_group)),
+                        pantry_hits + item_pantry,
+                        new_cost,
                     )
-                    old = states[count].get(new_cost)
+                    key = new_cost // cost_step
+                    old = states[count].get(key)
                     if old is None or rank(candidate) > rank(old):
-                        states[count][new_cost] = candidate
+                        states[count][key] = candidate
         patterns = (
             tuple(candidates[index] for index in state[0]) for state in states[slots].values()
         )
@@ -524,6 +542,7 @@ def _nutrition_plan(
         for index, meal in enumerate(meals)
     }
     repeat_caps = {meal: max(1, ceil(days / len(eligible_codes[meal]))) for meal in meals}
+    caps = tuple(repeat_caps[meal] for meal in meals)
     min_daily_cost = bundles[0][0]
     max_daily_cost = bundles[-1][0]
     if round_up_price(min_daily_cost * days, 500) > budget_limit:
@@ -545,6 +564,11 @@ def _nutrition_plan(
     for day in range(days):
         next_states = []
         remaining_days = days - day - 1
+        # Per-day constants for the rank, so the hot loop below only does C-level maps.
+        day_prior = tuple(
+            prior[day] if day < len(prior) else None
+            for prior in (prior_slot_recipes.get(meal, ()) for meal in meals)
+        )
         for spent, selected, uses in states:
             remaining_budget = budget_limit - spent - remaining_days * min_daily_cost
             target_cost = min(daily_target, (budget_limit - spent) / (remaining_days + 1))
@@ -560,31 +584,26 @@ def _nutrition_plan(
                 ranking every affordable bundle.
                 """
 
+                used = uses.__getitem__  # Counter: missing codes count 0
+
                 def rank(bundle):
                     cost, items, day_repeats, groups, tie_break, codes, pantry_hits, recent = bundle
-                    prior_hits = sum(
-                        day < len(prior_slot_recipes.get(meal, ()))
-                        and prior_slot_recipes[meal][day] == code
-                        for meal, code in zip(meals, codes)
-                    )
                     # Costs within one band count as equally close to the daily
                     # target, so protein variety and the seeded tie-break decide.
                     return (
                         abs(cost - target_cost) // cost_band,
                         -pantry_hits,
                         day_repeats,
-                        sum(uses[code] for code in codes),
-                        prior_hits,
+                        sum(map(used, codes)),
+                        sum(map(eq, codes, day_prior)),
                         recent,
-                        sum(a == b for a, b in zip(groups, yesterday)),
+                        sum(map(eq, groups, yesterday)),
                         tie_break,
                         codes,
                     )
 
                 def allowed(bundle):
-                    return not enforce_repeat_cap or not any(
-                        uses[code] >= repeat_caps[meal] for meal, code in zip(meals, bundle[5])
-                    )
+                    return not enforce_repeat_cap or not any(map(ge, map(used, bundle[5]), caps))
 
                 end = bisect_right(costs, remaining_budget)
                 left = bisect_left(costs, target_cost, 0, end) - 1
@@ -1135,11 +1154,22 @@ def build_plan(*, stock=(), starts_on=None, frozen_days=frozenset(), **inputs):
         catalog[4](code, grams) for code, grams, _ in stock if code in usable and code in catalog[1]
     )
     widen = min(int(value) // STOCK_VALUE_SHARE, budget)
-    if widen >= 500:
-        widened, _ = _build_plan(**inputs, **plain, search_budget=budget + widen, catalog=catalog)
-        if widened["within_budget"]:
-            return widened
-    return _build_plan(**inputs, **plain, catalog=catalog)[0]
+
+    def search(**extra):
+        return _build_plan(**inputs, **plain, catalog=catalog, **extra)[0]
+
+    if widen < 500:
+        return search()
+    # Calorie/protein limits already bound the menu, so widening rarely helps there:
+    # run the safe search first and widen only when it does not fit the budget.
+    nutrition = set(inputs["targets"]) != {"seimbang"}
+    safe = search() if nutrition else None
+    if safe is not None and safe["within_budget"]:
+        return safe
+    widened = search(search_budget=budget + widen)
+    if widened["within_budget"]:
+        return widened
+    return safe if safe is not None else search()
 
 
 def _build_plan(
@@ -1329,6 +1359,9 @@ def _build_plan(
                 preferred,
                 recent_recipe_codes,
                 prior_slot_recipes.get(meal, []),
+                # Recipe costs grow with servings; a coarser step keeps the search
+                # size (and time) about the same. Rp100 up to 3 servings.
+                cost_step=100 * max(1, servings // 2),
             )
             for meal in available_meals
         }
@@ -1399,19 +1432,6 @@ def _build_plan(
                 if extra_uses == 0:
                     break
 
-    min_total = minimum_plan_cost(servings, days)
-    feasible_days = [
-        option
-        for option in range(1, days)
-        if round_up_price(minimum_plan_cost(servings, option), 500) <= budget
-    ]
-    feasible_servings = [
-        option
-        for option in range(1, servings)
-        if round_up_price(minimum_plan_cost(option, days), 500) <= budget
-    ]
-    required_budget = round_up_price(min_total, 500)
-
     def codes_of(chosen):
         return [
             {meal: chosen[meal][day]["recipe"].pk for meal in available_meals}
@@ -1458,8 +1478,25 @@ def _build_plan(
         # Several meals can share one fruit purchase, and pantry stock lowers the
         # bill. A conservative per-recipe search can reject a plan that still fits.
         feasible = True
-    required_budget = min(required_budget, net)
     within_budget = feasible and net <= budget
+    if within_budget:
+        # The "what would fit" hints are only shown on an over-budget result, and
+        # each minimum_plan_cost call walks every candidate; skip them otherwise.
+        feasible_days = feasible_servings = []
+        required_budget, smallest_budget = net, None
+    else:
+        feasible_days = [
+            option
+            for option in range(1, days)
+            if round_up_price(minimum_plan_cost(servings, option), 500) <= budget
+        ]
+        feasible_servings = [
+            option
+            for option in range(1, servings)
+            if round_up_price(minimum_plan_cost(option, days), 500) <= budget
+        ]
+        required_budget = min(round_up_price(minimum_plan_cost(servings, days), 500), net)
+        smallest_budget = round_up_price(minimum_plan_cost(1, 1), 500)
     if fixed_schedule is not None:
         required_budget = net
     result = protect_plan_instructions(
@@ -1494,7 +1531,7 @@ def _build_plan(
             "catalog_cannot_use_all_budget": rounded_ceiling < budget,
             "feasible_days": max(feasible_days) if feasible_days else None,
             "feasible_servings": max(feasible_servings) if feasible_servings else None,
-            "smallest_scenario_budget": round_up_price(minimum_plan_cost(1, 1), 500),
+            "smallest_scenario_budget": smallest_budget,
             "repeated_recipes": len(
                 {meal["recipe_code"] for day in schedule for meal in day["meals"]}
             )
