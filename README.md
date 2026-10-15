@@ -113,7 +113,7 @@ Daftar CRUD dan model yang direncanakan tidak semuanya sudah diimplementasikan; 
 - **Pengukuran AI:** `ai_usage` pada respons dan log `pantry_ai_call` berisi status/durasi/token dari metadata provider, tanpa isi struk/API key. Belum ada benchmark struk live atau klaim penghematan persentase. Maksimal satu panggilan adalah kontrak alur scan normal; client jahat masih bisa membuat request baru dan dibatasi kuota akun, bukan flag browser. Validasi Django berbahasa Indonesia. Rincian ada di [docs/PANTRY.md](docs/PANTRY.md).
 - **Batch dan audit:** `PantryItem` adalah satu batch pembelian, bukan total gabungan. Migrasi mempertahankan ID, pemilik, kuantitas dan tanggal lama, lalu menulis pergerakan masuk awal. `PantryMovement` menyimpan kuantitas sebelum/sesudah serta snapshot perubahan. Edit memakai version wajib (konflik 409); create/edit/delete memakai UUID `operation_key` yang tetap saat retry. Hapus mengarsipkan batch dan mencatat stok dibuang. Constraint database melarang kuantitas negatif.
 - **Konversi dan kecocokan menu:** berat `g/kg`, konversi katalog yang ditinjau (misalnya telur large 50 g/butir), atau berat per unit/pack yang diisi pengguna disimpan sebagai snapshot. **Tidak mengasumsikan 1 ml = 1 g** atau berat bungkus yang tidak diketahui. Stok tanpa padanan katalog/konversi/tanggal yang diketahui, atau tanggal sudah lewat, tidak dihitung sebagai stok resep secara default. Halaman menampilkan hingga 20 menu halal dengan kecocokan bahan per porsi; tidak memanggil AI atau mengurangi stok. Langkah yang ditahan kebijakan publikasi tetap tidak ditampilkan.
-- **Layanan integrasi:** `apps.pantry.services.consume_stock(user, requirements, consumption_key)` menerima gram per kode bahan dan mengurangi batch FEFO, tanggal terdekat lalu ID. Satu operasi dapat memakai banyak batch; key unik per akun mencegah konsumsi dua kali. Lock dan ledger ditulis dalam transaksi yang sama, stok kurang membatalkan seluruh operasi. Pecahan unit dibulatkan ke atas maksimal 0,000001 unit dan gram aktual dicatat. Tombol **Sudah Masak** memakai algoritme yang sama melalui `execute_consumption()` dalam transaksi luar dengan `CookingHistory`. Generate/simpan rencana tidak mengurangi stok.
+- **Layanan integrasi:** `apps.pantry.services.execute_consumption()` menerima gram per kode bahan dan mengurangi batch FEFO, tanggal terdekat lalu ID. Satu operasi dapat memakai banyak batch; key unik per akun mencegah konsumsi dua kali. Lock dan ledger ditulis dalam transaksi yang sama, stok kurang membatalkan seluruh operasi. Pecahan unit dibulatkan ke atas maksimal 0,000001 unit dan gram aktual dicatat. Tombol **Sudah Masak** memanggilnya dalam transaksi luar bersama `CookingHistory`. Generate/simpan rencana tidak mengurangi stok.
 - **Data yang dipegang:** stok, koreksi pribadi, kuota dan operasi milik FK akun. Akun lain tidak dapat membaca atau memutasi ID stok/riwayat tersebut; stok legacy tanpa pemilik tidak diklaim otomatis. `expiry_source` membedakan label/manual/estimate/legacy/unknown. Migrasi 0012 mempertahankan tanggal lama dan menandainya `legacy`, bukan mengarang asalnya sebagai estimasi; stok bertanggal valid dapat dihitung kembali. Cache AI bersama hanya menyimpan nama bahan dan kode kandidat, bukan foto/teks struk lengkap.
 - **Halaman:** 1 halaman berisi dua panel input dan tabel inventaris.
 
@@ -155,7 +155,7 @@ Login dan logout merupakan operasi autentikasi.
 
 - **Recipe book:** pencarian dan detail resep, dengan filter bahan cukup di pantry, di bawah harga tertentu, halal, serta prioritas bahan kritis (mendekati estimasi kedaluwarsa).
 - **Resep favorit:** pengguna dapat menyimpan dan menghapus resep dari daftar favorit pribadi.
-- **Sudah Masak:** memanggil `apps.pantry.services.consume_stock()` milik Modul 2 untuk mengurangi bahan yang terpakai.
+- **Sudah Masak:** memanggil `apps.pantry.services.execute_consumption()` milik Modul 2 untuk mengurangi bahan yang terpakai.
 - **Cooking tracker:** mencatat riwayat masak berupa resep, waktu, dan bahan terpakai.
 - **Data yang dipegang:** `Resep`, `FavoritResep`, `CookingHistory`.
 - **Halaman:** 1 halaman yang menggabungkan list/detail resep, favorit, dan tracker dalam satu tampilan, mengikuti mockup terakhir.
@@ -225,9 +225,9 @@ Planner memakai katalog lokal yang telah diimpor, bukan memanggil API resep/gizi
 | API / Sumber | Pemakaian saat ini |
 | --- | --- |
 | Gemini API | Fallback pembacaan foto struk dan pencocokan nama ke kandidat katalog melalui backend. Opsional; key hanya berada di server. |
-| [TheMealDB API](https://www.themealdb.com/docs_api_guide.php) | Mengumpulkan kandidat resep melalui `data/fetch_themealdb.py` dan `data/fetch_themealdb_candidates.py`; bukan runtime planner. |
+| [TheMealDB API](https://www.themealdb.com/docs_api_guide.php) | Mengumpulkan kandidat resep melalui `data/fetch_themealdb_candidates.py`; bukan runtime planner. |
 | Open Food Facts API | Mengumpulkan kandidat produk melalui `data/fetch_openfoodfacts_products.py`; belum otomatis menjadi stok atau bahan aktif. |
-| Bapanas, TKPI, USDA SR Legacy | Snapshot/arsip komposisi bahan untuk gizi. Sebagian memakai estimasi/proksi yang diberi status; PDF TKPI lokal belum diekstrak ke katalog. USDA FoodData Central API tidak dipanggil runtime. |
+| Bapanas, TKPI, USDA SR Legacy | Snapshot/arsip komposisi bahan untuk gizi. Sebagian memakai estimasi/proksi yang diberi status; PDF pindai TKPI belum diekstrak ke katalog dan tidak disimpan di repo. USDA FoodData Central API tidak dipanggil runtime. |
 | Bapokting Garut, PIHPS, referensi toko daring | Snapshot harga dan pelengkap non-Garut, bukan harga supermarket real-time. |
 | Kaggle dan Mendeley Data | 18 adaptasi Kaggle dan 191 resep Mendeley siap simulasi. Mendeley v3 berlisensi CC BY 4.0; takaran/slot diadaptasi dan teks instruksi ditahan untuk review. Kandidat tidak lengkap tetap diblokir. |
 | Sayurbox dan Tokopedia | 20 harga tambahan dalam `mapping/mendeley_sources.json`; melengkapi 44 referensi retail sebelumnya tanpa mengganti harga Garut. Snapshot non-Garut, bukan harga live/ongkir atau pembelian seluruh kemasan. |
@@ -235,7 +235,7 @@ Planner memakai katalog lokal yang telah diimpor, bukan memanggil API resep/gizi
 | [Open-Meteo Forecast API](https://open-meteo.com/en/docs) | Direncanakan untuk cuaca; belum terintegrasi. |
 | [OpenStreetMap](https://www.openstreetmap.org/) — Nominatim dan Overpass | Direncanakan untuk market locator; belum terintegrasi. |
 
-Tautan sumber, status verifikasi, lisensi, dan asumsi setiap kelompok data dicatat di [data/README.md](data/README.md) dan [data/DATASETS.md](data/DATASETS.md). `raw/` menyimpan sumber, `processed/` dan `mapping/` membangun katalog, sedangkan `scratch/` serta `staging/` menyimpan kandidat/audit. Folder kandidat bukan data runtime dan tidak boleh dihapus hanya karena belum aktif.
+Tautan sumber, status verifikasi, lisensi, dan asumsi setiap kelompok data dicatat di [data/PIPELINE_DATA.md](data/PIPELINE_DATA.md) dan [data/DATASETS.md](data/DATASETS.md). `raw/` menyimpan sumber, `processed/` dan `mapping/` membangun katalog, sedangkan `scratch/` serta `staging/` menyimpan kandidat/audit. Folder kandidat bukan data runtime dan tidak boleh dihapus hanya karena belum aktif.
 
 ### Struktur folder dan sumber tunggal
 

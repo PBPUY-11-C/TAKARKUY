@@ -17,7 +17,7 @@ from .models import BudgetPlan, ShoppingListItem
 from .planner import RICE_CODE, _candidate_pool, build_plan, rice_included
 from .services import (
     clean_inputs,
-    pantry_priority,
+    expiring_stock_codes,
     save_plan,
     stored_inputs,
     sync_children,
@@ -159,7 +159,7 @@ class PlanPantryTests(TestCase):
         self.client.force_login(self.user)
         form, result = lunch(self.lauk, rice="yes")
         draft = write_draft(self.user, stored_inputs(form), result)
-        self.plan = save_plan(self.user, draft.pk, draft.version, "Belanja", TODAY)
+        self.plan = save_plan(self.user, draft.pk, draft.version, "Belanja")
 
     def batch(self, code, grams, days):
         return PantryItem.objects.create(
@@ -182,13 +182,13 @@ class PlanPantryTests(TestCase):
             content_type="application/json",
         )
 
-    def test_pantry_priority_only_counts_stock_expiring_soon(self):
+    def test_expiring_stock_codes_only_counts_stock_expiring_soon(self):
         self.batch(RICE_CODE, 500, 2)
         self.batch("ING-TOMAT", 500, 10)
         unknown = self.batch("ING-KENTANG", 500, None)
         unknown.expiry_source = "unknown"
         unknown.save()
-        self.assertEqual(pantry_priority(self.user), {RICE_CODE})
+        self.assertEqual(expiring_stock_codes(self.user), {RICE_CODE})
 
     def test_bought_items_move_into_pantry_once(self):
         response = self.add([{"ingredient_code": RICE_CODE, "grams": 80}])

@@ -2,7 +2,6 @@ import json
 from datetime import timedelta
 from functools import wraps
 from urllib.parse import urlencode
-from zoneinfo import ZoneInfo
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -35,7 +34,6 @@ from .services import (
 )
 from .services import set_slot_status as change_slot_status
 
-JAKARTA = ZoneInfo("Asia/Jakarta")
 # Price ceilings offered in the filter, for the profile's servings.
 PRICE_LIMITS = (10000, 15000, 25000, 50000)
 

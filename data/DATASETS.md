@@ -72,18 +72,16 @@ Estimasi dibuat setelah pengguna menyetujui perkiraan takaran/porsi. Gizi makana
 | `staging/product_ingredient_candidates.csv` | 38 usulan | Usulan produk bernama mi/noodle → konsep `ING-MIE-INSTAN` berdasar kata pada nama saja. **Belum disetujui**, bukan bukti merek benar, kandungan gizi sama, isi kemasan sama, atau semua produk mi cocok untuk resep tertentu. |
 | `staging/recipe_candidates.csv` | 1.500 kandidat | 1.400 resep Indonesia dari [Purwanto dkk., Mendeley Data v3](https://data.mendeley.com/datasets/8b4ztns76h/3) (CC BY 4.0; langkah, bahan, porsi, makro terlapor) dan 100 kandidat internasional dari [TheMealDB](https://www.themealdb.com/docs_api_guide.php). Belum siap planner; hak penggunaan konten resep, satuan, porsi, mapping bahan, gizi, harga, dan keamanan harus diperiksa. TheMealDB hanya diindeks sebagai metadata pada CSV ini; detail mentahnya ada di `scratch/`. |
 | `staging/mendeley_unmatched_ingredients.csv` | 1.716 istilah | Istilah bahan yang oleh dataset Mendeley dilaporkan belum terpetakan, total 5.898 kemunculan. Ini **istilah mentah**, bukan 1.716 bahan makanan baru: termasuk `air`, `garam`, sinonim, bumbu campuran, dan kata bising. Perlu deduplikasi dan verifikasi nutrisi. |
-| `staging/themealdb_breakfast_review.csv` | 189 baris review | Antrean lama 26 kandidat sarapan/pisang dari TheMealDB; jangan digabung begitu saja dengan 100 kandidat baru karena mungkin tumpang tindih. |
 
 Sumber asli berada di `raw/openfoodfacts_indonesia_sample.json`, `scratch/mendeley_indonesian_recipe_nutrition_v3.json`, dan `scratch/themealdb_100_candidates.json`. Snapshot Open Food Facts mencakup 231 barcode berbeda dari 238 hasil halaman sebelum deduplikasi. Banyak resep Mendeley memiliki variasi nama/duplikasi; **1.400 baris bukan 1.400 hidangan unik**. Gizi Mendeley dilaporkan oleh penyusun dataset dan sebagian konversi satuan menggunakan LLM; jangan menganggap angka itu terverifikasi untuk target diet pengguna.
 
 ## Sumber mentah lain yang tersedia
 
-- `raw/tkpi_2020.pdf`: [TKPI Kemenkes](https://repository.kemkes.go.id/book/668), masih berupa pindai dan **belum** diekstrak ke katalog.
+- [TKPI Kemenkes](https://repository.kemkes.go.id/book/668): PDF pindai tidak disimpan di repo karena **belum** diekstrak ke katalog; nilai TKPI dibaca dari mirror yang tercatat di `mapping/`.
 - `raw/usda_sr_legacy_2018-04.zip`: [USDA SR Legacy](https://fdc.nal.usda.gov/download-datasets/), fallback komposisi pangan luar negeri; padanan ke bahan Indonesia perlu tinjauan. [USDA menyatakan data FoodData Central CC0](https://fdc.nal.usda.gov/api-guide/).
 - `raw/foodkeeper_mirror_2019.csv`: mirror historis rujukan [FoodKeeper](https://catalog.data.gov/dataset/fsis-foodkeeper-data); perlu cocokkan ulang dengan sumber resmi saat bisa diakses.
 - `raw/bapanas_fresh_nutrition.html`, `raw/garut_prices_2026-09-28.html`, `raw/pihps_prices_2026-09-28.json`: snapshot yang mendasari tabel aktif.
 - `raw/indonesian_food_recipes.zip`: arsip Kaggle lama; bahan dipakai untuk audit/estimasi. Resep tambahan yang aktif menggunakan langkah adaptasi TAKARKUY.
-- `raw/themealdb_breakfast_snapshot.json`: snapshot kandidat sarapan yang terpisah dari kumpulan 100 resep.
 
 ## Gap sebelum fitur yang diinginkan siap penuh
 

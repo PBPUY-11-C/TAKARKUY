@@ -80,9 +80,7 @@ class SavedPlanTests(TestCase):
         )
 
     def saved(self):
-        return save_plan(
-            self.user, self.draft.pk, self.draft.version, "Minggu Ini", date(2026, 10, 5)
-        )
+        return save_plan(self.user, self.draft.pk, self.draft.version, "Minggu Ini")
 
     def generation_data(self, **changes):
         return {
@@ -196,7 +194,7 @@ class SavedPlanTests(TestCase):
             expected_draft_id=self.draft.pk,
             expected_draft_version=self.draft.version,
         )
-        save_plan(self.user, self.draft.pk, self.draft.version, "Plan B", date(2026, 10, 6))
+        save_plan(self.user, self.draft.pk, self.draft.version, "Plan B")
         draft = apply_preview(self.user, self.replacement(first).pk)
         self.assertEqual(draft.source_plan_id, first.pk)
 
@@ -221,7 +219,7 @@ class SavedPlanTests(TestCase):
     def test_saved_plan_date_cannot_be_changed(self):
         saved = self.saved()
         start = saved.starts_on
-        saved = save_plan(self.user, saved.pk, saved.version, "Baru", start + timedelta(days=3))
+        saved = save_plan(self.user, saved.pk, saved.version, "Baru")
         self.assertEqual((saved.title, saved.starts_on), ("Baru", start))
         self.assertEqual(saved.meals.get().scheduled_on, start)
 
@@ -490,7 +488,7 @@ class SavedPlanTests(TestCase):
     def test_repeat_save_is_idempotent_and_invalidates_old_preview(self):
         preview = self.replacement()
         saved = self.saved()
-        same = save_plan(self.user, self.draft.pk, 1, "Minggu Ini", date(2026, 10, 5))
+        same = save_plan(self.user, self.draft.pk, 1, "Minggu Ini")
         self.assertEqual(same.pk, saved.pk)
         self.assertEqual(BudgetPlan.objects.filter(status="saved").count(), 1)
         with self.assertRaises(PlanConflict):
@@ -813,9 +811,7 @@ class SavedPlanTests(TestCase):
         saved.refresh_from_db()
         self.assertEqual(saved.snapshot, before)
         self.assertEqual(draft.source_plan_id, saved.pk)
-        updated = save_plan(
-            self.user, draft.pk, draft.version, saved.title, saved.starts_on, replace_original=True
-        )
+        updated = save_plan(self.user, draft.pk, draft.version, saved.title, replace_original=True)
         self.assertEqual(updated.pk, saved.pk)
         self.assertEqual(updated.meals.get().recipe_id, self.quotes[-1][1])
         self.assertEqual(BudgetPlan.objects.filter(status="saved").count(), 1)
@@ -823,7 +819,7 @@ class SavedPlanTests(TestCase):
     def test_edit_saved_can_save_as_new_instead(self):
         saved = self.saved()
         draft = apply_preview(self.user, self.replacement(saved).pk)
-        copied = save_plan(self.user, draft.pk, draft.version, "Plan B", saved.starts_on)
+        copied = save_plan(self.user, draft.pk, draft.version, "Plan B")
         self.assertNotEqual(copied.pk, saved.pk)
         self.assertEqual(BudgetPlan.objects.filter(status="saved").count(), 2)
         saved.refresh_from_db()
@@ -832,7 +828,7 @@ class SavedPlanTests(TestCase):
     def test_original_changed_rejects_overwrite_and_preserves_source_version_on_regeneration(self):
         saved = self.saved()
         draft = apply_preview(self.user, self.replacement(saved).pk)
-        save_plan(self.user, saved.pk, 1, "Renamed", saved.starts_on)
+        save_plan(self.user, saved.pk, 1, "Renamed")
         draft = write_draft(
             self.user,
             draft.inputs,
@@ -848,7 +844,6 @@ class SavedPlanTests(TestCase):
                 draft.pk,
                 draft.version,
                 draft.title,
-                draft.starts_on,
                 replace_original=True,
             )
 
@@ -897,7 +892,7 @@ class SavedPlanTests(TestCase):
             **clean_inputs(inputs).cleaned_data, fixed_schedule=[{"sarapan": self.quotes[0][1]}] * 2
         )
         draft = write_draft(self.user, inputs, result)
-        saved = save_plan(self.user, draft.pk, draft.version, "Dua hari", timezone.localdate())
+        saved = save_plan(self.user, draft.pk, draft.version, "Dua hari")
         first = saved.meals.get(day=1)
         first.status = "cooked"
         first.save()
@@ -916,7 +911,6 @@ class SavedPlanTests(TestCase):
             edited.pk,
             edited.version,
             saved.title,
-            saved.starts_on,
             replace_original=True,
         )
         first.refresh_from_db()

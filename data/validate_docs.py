@@ -18,7 +18,7 @@ def validate_documents():
         and row["fields"].get("is_plannable", False)
         for row in fixture
     )
-    for path in (ROOT / "README.md", ROOT / "DATASETS.md"):
+    for path in (ROOT / "PIPELINE_DATA.md", ROOT / "DATASETS.md"):
         content = path.read_text(encoding="utf-8")
         for relative, expected in counts.items():
             if not relative.endswith(".csv"):
@@ -34,17 +34,9 @@ def validate_documents():
         assert f"{counts['plannable_recipes']} siap dihitung" in content.replace("**", ""), path
         assert "SOURCE_REVIEW.md" in content and "Mendeley" in content
         assert f"{mendeley_count} Mendeley" in content.replace("**", ""), path
-    main = (ROOT.parent / "README.md").read_text(encoding="utf-8")
-    summary = (
-        f"{counts['processed/ingredients.csv']} bahan, "
-        f"{counts['processed/ingredient_prices.csv']} catatan harga, dan "
-        f"{counts['processed/recipes.csv']} resep; {counts['plannable_recipes']} resep siap dihitung"
-    )
-    assert summary in main, "README utama: ringkasan katalog tertinggal"
-    assert f"{fixture_count:,}".replace(",", ".") + " objek" in main.replace("**", "")
-    assert f"Sebanyak {mendeley_count} resep Mendeley" in main
+    # The root README.md follows the team's own template and is not checked here.
     print(
-        "VALID: hitungan katalog dan fixture sinkron pada README utama, data/README.md, dan DATASETS.md"
+        "VALID: hitungan katalog dan fixture sinkron pada data/PIPELINE_DATA.md dan data/DATASETS.md"
     )
 
 

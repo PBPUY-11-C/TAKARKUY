@@ -14,8 +14,8 @@ from django.utils import timezone
 from apps.catalog.models import Ingredient
 
 from .ai_cache import claim
-from .models import NameResolution, PantryItem, PantryLLMUsage, PantryMovement, PantryOperation
-from .services import StockError, consume_stock, reserve_llm
+from .models import NameResolution, PantryItem, PantryLLMUsage, PantryMovement
+from .services import StockError, reserve_llm
 
 
 @skipUnlessDBFeature("has_select_for_update")
@@ -66,22 +66,6 @@ class PantryConcurrencyTests(TransactionTestCase):
         outcomes = self.race(lambda: reserve_llm(self.user, "photo"))
         self.assertCountEqual(outcomes, [None, "conflict"])
         self.assertEqual(PantryLLMUsage.objects.get().attempts, 10)
-
-    def test_different_consumption_keys_cannot_overdraw(self):
-        outcomes = self.race(lambda: consume_stock(self.user, {self.ingredient.pk: 80}, uuid4()))
-        self.assertEqual(outcomes.count("conflict"), 1)
-        self.item.refresh_from_db()
-        self.assertEqual(self.item.quantity, 20)
-        self.assertEqual(PantryMovement.objects.count(), 1)
-
-    def test_same_cooking_key_only_consumes_once(self):
-        key = uuid4()
-        outcomes = self.race(lambda: consume_stock(self.user, {self.ingredient.pk: 60}, key))
-        self.assertEqual(outcomes[0], outcomes[1])
-        self.item.refresh_from_db()
-        self.assertEqual(self.item.quantity, 40)
-        self.assertEqual(PantryMovement.objects.count(), 1)
-        self.assertEqual(PantryOperation.objects.count(), 1)
 
     def test_global_cache_only_one_lease_is_owned(self):
         outcomes = self.race(lambda: claim("test", "test-version")[1])

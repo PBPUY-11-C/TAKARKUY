@@ -43,13 +43,6 @@
     "sha256": "697becb8d56b9961ca615123e9a2ef0173e6066ec89d4e8c156b72e035d46a24"
   },
   {
-    "file": "tkpi_2020.pdf",
-    "source_url": "https://repository.kemkes.go.id/book/668",
-    "retrieved_at": "2026-09-28",
-    "bytes": 6270131,
-    "sha256": "cc4f26dd7612222d0e5d458d52ed8275a16e045d4038536ff08296304de6c12b"
-  },
-  {
     "file": "usda_sr_legacy_2018-04.zip",
     "source_url": "https://fdc.nal.usda.gov/download-datasets/",
     "retrieved_at": "2026-09-28",

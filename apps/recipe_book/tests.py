@@ -410,9 +410,7 @@ class CookingTests(TestCase):
         cook(self.user, self.payload)
         history = CookingHistory.objects.get()
         actual = history.cooked_at
-        save_plan(
-            self.user, slot.plan_id, 2, "Tanggal berubah", timezone.localdate() + timedelta(days=5)
-        )
+        save_plan(self.user, slot.plan_id, 2, "Tanggal berubah")
         history.refresh_from_db()
         slot.refresh_from_db()
         self.assertEqual(history.cooked_at, actual)

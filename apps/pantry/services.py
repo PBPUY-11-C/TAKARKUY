@@ -145,15 +145,6 @@ def eligible_stock(user, *, allow_unknown_expiry=False):
     return query
 
 
-def available_grams(user, *, allow_unknown_expiry=False):
-    totals = {}
-    for batch in eligible_stock(user, allow_unknown_expiry=allow_unknown_expiry):
-        totals[batch.ingredient_id] = (
-            totals.get(batch.ingredient_id, Decimal(0)) + batch.quantity * batch.grams_per_unit
-        )
-    return totals
-
-
 def stock_for_planning(user):
     """[(ingredient_id, grams, expires_on or None)] in FEFO order; undated stock last.
 
@@ -301,35 +292,6 @@ def execute_consumption(user, requirements, event, *, manual=None, allow_unknown
             }
         )
     return {"consumed": changes}
-
-
-@transaction.atomic
-def consume_stock(user, requirements, consumption_key, *, allow_unknown_expiry=False):
-    """Internal cooking integration: all-or-nothing FEFO, idempotent across batches.
-
-    Unknown dates require explicit caller confirmation. This is not a food-safety check.
-    """
-    if not isinstance(requirements, dict) or not requirements or len(requirements) > 100:
-        raise StockError("Kebutuhan bahan tidak valid.", 400)
-    try:
-        needs = {code: Decimal(str(value)) for code, value in requirements.items()}
-        if any(
-            not isinstance(code, str) or not value.is_finite() or value <= 0 or value > 100000000
-            for code, value in needs.items()
-        ):
-            raise ValueError
-    except (ValueError, InvalidOperation, TypeError) as exc:
-        raise StockError("Kebutuhan gram harus positif dan valid.", 400) from exc
-    event, replay = operation(
-        user, consumption_key, "consume", {"needs": needs, "allow_unknown": allow_unknown_expiry}
-    )
-    if replay:
-        return event.response
-    event.response = execute_consumption(
-        user, needs, event, allow_unknown_expiry=allow_unknown_expiry
-    )
-    event.save(update_fields=["response"])
-    return event.response
 
 
 def session_scope(user):

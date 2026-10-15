@@ -26,7 +26,6 @@ else:
 ROOT = Path(__file__).resolve().parent
 RAW, MAP, OUT, FIX = (ROOT / x for x in ("raw", "mapping", "processed", "fixtures"))
 BPN_URL = "https://badanpangan.go.id/tabel-komposisi-pangan-segar-indonesia"
-GARUT_URL = "https://bapokting.disperindag.garutkab.go.id/Bapokting/"
 BI_URL = "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
 KAGGLE_URL = "https://www.kaggle.com/datasets/canggih/indonesian-food-recipes"
 FK_URL = (
