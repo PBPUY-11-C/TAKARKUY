@@ -2,7 +2,7 @@
 
 import hashlib
 import json
-from datetime import timedelta
+from datetime import date, timedelta
 from decimal import ROUND_UP, Decimal, InvalidOperation
 from uuid import NAMESPACE_URL, UUID, uuid5
 from zoneinfo import ZoneInfo
@@ -152,6 +152,26 @@ def available_grams(user, *, allow_unknown_expiry=False):
             totals.get(batch.ingredient_id, Decimal(0)) + batch.quantity * batch.grams_per_unit
         )
     return totals
+
+
+def stock_for_planning(user):
+    """[(ingredient_id, grams, expires_on or None)] in FEFO order; undated stock last.
+
+    Read-only input for the meal planner. Nothing is reserved.
+    """
+    if user is None or not getattr(user, "is_authenticated", False):
+        return []
+    rows = [
+        (
+            batch.ingredient_id,
+            batch.quantity * batch.grams_per_unit,
+            None if batch.expiry_source == "unknown" else batch.estimated_expires_on,
+            batch.pk,
+        )
+        for batch in eligible_stock(user, allow_unknown_expiry=True)
+    ]
+    rows.sort(key=lambda row: (row[2] is None, row[2] or date.max, row[3]))
+    return [row[:3] for row in rows]
 
 
 def plan_consumption(

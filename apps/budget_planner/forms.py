@@ -1,9 +1,6 @@
-from datetime import timedelta
 from decimal import Decimal
-from zoneinfo import ZoneInfo
 
 from django import forms
-from django.utils import timezone
 
 from apps.accounts.choices import ALLERGEN_CHOICES
 
@@ -110,14 +107,9 @@ class PlannerForm(forms.Form):
 
 
 class PlanMetadataForm(forms.Form):
+    """Only the title is chosen; a plan starts on the day it is saved."""
+
     title = forms.CharField(max_length=100)
-    starts_on = forms.DateField(input_formats=["%Y-%m-%d"])
 
     def clean_title(self):
         return " ".join(self.cleaned_data["title"].split())
-
-    def clean_starts_on(self):
-        day = self.cleaned_data["starts_on"]
-        if day > timezone.localdate(timezone=ZoneInfo("Asia/Jakarta")) + timedelta(days=366):
-            raise forms.ValidationError("Tanggal mulai maksimal satu tahun dari hari ini.")
-        return day

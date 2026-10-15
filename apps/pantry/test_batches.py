@@ -24,6 +24,7 @@ from .services import (
     consume_stock,
     conversion,
     reserve_llm,
+    stock_for_planning,
 )
 from .test_helpers import authenticate
 
@@ -150,6 +151,28 @@ class BatchTests(TestCase):
         self.assertEqual(item.grams_per_unit, 250)
         self.assertEqual(item.movements.count(), 2)
         self.assertEqual(item.movements.last().snapshot["before"]["quantity"], "100.000000")
+
+    def test_stock_for_planning_orders_fefo_and_keeps_unknown_last(self):
+        later = self.batch()
+        undated = self.batch()
+        sooner = self.batch()
+        PantryItem.objects.filter(pk=later.pk).update(
+            estimated_expires_on=self.today + timedelta(days=5)
+        )
+        PantryItem.objects.filter(pk=undated.pk).update(expiry_source="unknown")
+        PantryItem.objects.filter(pk=sooner.pk).update(
+            estimated_expires_on=self.today + timedelta(days=1)
+        )
+        rows = stock_for_planning(self.user)
+        self.assertEqual(
+            [(code, grams, expires) for code, grams, expires in rows],
+            [
+                (self.ingredient.pk, Decimal(100), self.today + timedelta(days=1)),
+                (self.ingredient.pk, Decimal(100), self.today + timedelta(days=5)),
+                (self.ingredient.pk, Decimal(100), None),
+            ],
+        )
+        self.assertEqual(stock_for_planning(None), [])
 
     def test_location_only_change_logged_as_move(self):
         item = self.batch()

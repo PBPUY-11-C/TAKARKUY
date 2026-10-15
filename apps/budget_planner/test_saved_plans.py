@@ -14,6 +14,7 @@ from apps.catalog.models import Recipe, RecipeTag
 from apps.pantry.models import PantryItem
 
 from .models import BudgetPlan, PlannedMeal, PlanPreview, ShoppingListItem
+from .plan_views import preview_data
 from .planner import build_plan
 from .services import (
     PlanConflict,
@@ -22,6 +23,7 @@ from .services import (
     make_preview,
     save_plan,
     schedule_codes,
+    stock_context,
     write_draft,
 )
 from .snapshots import freeze, thaw
@@ -205,6 +207,106 @@ class SavedPlanTests(TestCase):
             draft = write_draft(self.other, self.inputs, self.quotes[0][2])
         self.assertEqual(draft.starts_on, date(2026, 10, 15))
 
+    def test_save_always_starts_today(self):
+        response = self.api(
+            "modul1-plan-save",
+            self.draft.pk,
+            {"version": self.draft.version, "title": "Plan", "starts_on": "2026-01-01"},
+        )
+        self.assertEqual(response.status_code, 200)
+        saved = BudgetPlan.objects.get(status="saved")
+        self.assertEqual(saved.starts_on, timezone.localdate())
+        self.assertEqual(saved.meals.get().scheduled_on, timezone.localdate())
+
+    def test_saved_plan_date_cannot_be_changed(self):
+        saved = self.saved()
+        start = saved.starts_on
+        saved = save_plan(self.user, saved.pk, saved.version, "Baru", start + timedelta(days=3))
+        self.assertEqual((saved.title, saved.starts_on), ("Baru", start))
+        self.assertEqual(saved.meals.get().scheduled_on, start)
+
+    def stocked_draft(self):
+        """A draft that fits its budget only because the pantry covers part of it."""
+        code = self.quotes[-1][1]
+        quote = self.quotes[-1][2]
+        inputs = {**self.inputs, "budget": str(quote["total"] - 1000)}
+        stock = [
+            (row["ingredient_code"], Decimal(row["quantity"]), None)
+            for group in quote["shopping_groups"]
+            for row in group["items"]
+        ]
+        result = build_plan(
+            **clean_inputs(inputs).cleaned_data, fixed_schedule=[{"sarapan": code}], stock=stock
+        )
+        self.assertTrue(result["within_budget"])
+        self.draft.refresh_from_db()
+        draft = write_draft(
+            self.user, inputs, result, previous=self.draft, expected_version=self.draft.version
+        )
+        return draft, stock
+
+    def add_pantry(self, stock):
+        for code, grams, _ in stock:
+            PantryItem.objects.create(
+                user=self.user,
+                session_id="t",
+                name=code,
+                ingredient_id=code,
+                quantity=grams,
+                unit="g",
+                grams_per_unit=1,
+                expiry_source="unknown",
+            )
+
+    def test_stock_saving_note_not_repeated_under_net_cost(self):
+        draft, stock = self.stocked_draft()
+        self.add_pantry(stock)
+        page = self.client.get(reverse("modul1") + f"?plan={draft.pk}")
+        self.assertContains(page, "Nilai menu")
+        self.assertNotContains(page, "belanja bisa berkurang")
+
+    def test_stock_context_for_new_draft_starts_today_without_past_days(self):
+        self.draft.refresh_from_db()
+        self.draft.starts_on = timezone.localdate() - timedelta(days=3)
+        self.draft.save()
+        context = stock_context(self.user, self.draft)
+        self.assertEqual(context["starts_on"], timezone.localdate())
+        self.assertEqual(context["frozen_days"], frozenset())
+
+    def test_save_rejects_when_stock_vanished_and_net_exceeds_budget(self):
+        draft, _ = self.stocked_draft()  # the pantry itself is empty
+        with self.assertRaisesMessage(PlanConflict, "Stok Pantry atau harga katalog berubah"):
+            save_plan(self.user, draft.pk, draft.version, "Plan")
+        draft.refresh_from_db()
+        self.assertEqual(draft.status, "draft")
+        self.assertFalse(BudgetPlan.objects.filter(status="saved").exists())
+
+    def test_save_requotes_with_current_stock_and_keeps_draft_clean(self):
+        draft, stock = self.stocked_draft()
+        for code, grams, _ in stock:
+            PantryItem.objects.create(
+                user=self.user,
+                session_id="t",
+                name=code,
+                ingredient_id=code,
+                quantity=grams,
+                unit="g",
+                grams_per_unit=1,
+                expiry_source="unknown",
+            )
+        saved = save_plan(self.user, draft.pk, draft.version, "Plan")
+        draft.refresh_from_db()
+        self.assertEqual(draft.snapshot, saved.snapshot)
+        self.assertLessEqual(thaw(saved.snapshot)["net_total"], int(draft.inputs["budget"]))
+
+    def test_pages_show_net_shopping_cost_not_full_menu_value(self):
+        draft, stock = self.stocked_draft()
+        net = thaw(draft.snapshot)["net_total"]
+        page = self.client.get(reverse("modul1") + f"?plan={draft.pk}")
+        self.assertContains(page, f"Uang belanja Rp {net:,}".replace(",", "."))
+        preview = preview_data(self.replacement(draft, code=self.quotes[0][1]))
+        self.assertEqual(preview["before"], net)
+
     def test_preview_detects_recreated_draft_even_with_same_version(self):
         saved = self.saved()
         preview = self.replacement(saved)
@@ -334,10 +436,10 @@ class SavedPlanTests(TestCase):
                 snapshot=self.draft.snapshot,
             )
 
-    def test_save_copies_snapshot_and_children_with_start_date(self):
+    def test_save_copies_snapshot_and_children_starting_today(self):
         saved = self.saved()
         self.assertEqual(saved.status, "saved")
-        self.assertEqual(saved.meals.get().scheduled_on, date(2026, 10, 5))
+        self.assertEqual(saved.meals.get().scheduled_on, timezone.localdate())
         self.assertEqual(saved.meals.get().recipe_id, self.quotes[0][1])
         self.assertEqual(saved.shopping_items.count(), self.draft.shopping_items.count())
         self.assertEqual(saved.snapshot, self.draft.snapshot)
@@ -379,7 +481,8 @@ class SavedPlanTests(TestCase):
         self.assertEqual(response.status_code, 200)
         saved.refresh_from_db()
         self.assertEqual(saved.title, "Bekal Kantor")
-        self.assertEqual(saved.meals.get().scheduled_on, date(2026, 10, 6))
+        # The date in the payload is ignored: a saved plan never moves.
+        self.assertEqual(saved.meals.get().scheduled_on, timezone.localdate())
         self.assertEqual(self.api("modul1-plan-delete", saved.pk, {"version": 1}).status_code, 409)
         self.assertEqual(self.api("modul1-plan-delete", saved.pk, {"version": 2}).status_code, 200)
         self.assertFalse(PlannedMeal.objects.filter(plan_id=saved.pk).exists())
@@ -455,8 +558,6 @@ class SavedPlanTests(TestCase):
             {"title": ""},
             {"title": "x" * 101},
             {"title": {}},
-            {"starts_on": "invalid"},
-            {"starts_on": "9999-12-31"},
         ):
             response = self.api(
                 "modul1-plan-save",

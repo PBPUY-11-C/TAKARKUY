@@ -222,6 +222,14 @@ class PlanPantryTests(TestCase):
         response = self.add([{"ingredient_code": RICE_CODE, "grams": 80}], plan=draft)
         self.assertEqual(response.status_code, 409)
 
+    def test_unknown_expiry_stock_reduces_to_buy_and_is_flagged(self):
+        item = self.batch(RICE_CODE, 50, None)
+        item.expiry_source = "unknown"
+        item.save()
+        response = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
+        self.assertContains(response, "Sudah ada di Pantry 50 g · perlu beli 30 g")
+        self.assertContains(response, "tanggal stok belum diketahui")
+
     def test_plan_page_shows_pantry_stock_and_rice(self):
         self.batch(RICE_CODE, 50, 30)
         response = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
@@ -243,6 +251,34 @@ class PlanPantryTests(TestCase):
         self.assertIsNone(item.added_to_pantry_at)
         self.assertEqual(self.add([{"ingredient_code": RICE_CODE, "grams": 80}]).status_code, 201)
         self.assertEqual(PantryItem.objects.filter(user=self.user).count(), 2)
+
+    def test_stock_expiring_before_a_meal_day_is_not_shown_as_covering_it(self):
+        form = clean_inputs(
+            {
+                "budget": "1000000",
+                "days": 2,
+                "servings": 1,
+                "meal_types": ["makan_siang"],
+                "targets": ["seimbang"],
+                "exclude_ingredients": "",
+                "rice": "yes",
+            }
+        )
+        result = build_plan(**form.cleaned_data, fixed_schedule=[{"makan_siang": self.lauk}] * 2)
+        draft = BudgetPlan.objects.get(user=self.user, status="draft")
+        draft = write_draft(
+            self.user,
+            stored_inputs(form),
+            result,
+            replace_draft=True,
+            expected_draft_id=draft.pk,
+            expected_draft_version=draft.version,
+        )
+        plan = save_plan(self.user, draft.pk, draft.version, "Dua hari")
+        self.batch(RICE_CODE, 500, 0)  # good for today's lunch only
+        response = self.client.get(reverse("modul1") + f"?plan={plan.pk}")
+        self.assertContains(response, "Sudah ada di Pantry 80 g · perlu beli 80 g")
+        self.assertContains(response, f'data-ingredient="{RICE_CODE}"')
 
     def test_item_fully_covered_by_pantry_cannot_be_added_again(self):
         self.batch(RICE_CODE, 500, 30)

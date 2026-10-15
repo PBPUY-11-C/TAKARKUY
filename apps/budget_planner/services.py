@@ -22,7 +22,7 @@ from apps.catalog.models import Ingredient, Recipe
 from .forms import PlannerForm
 from .models import BudgetPlan, PlannedMeal, PlanPreview, PlanPreviewQuota, ShoppingListItem
 from .planner import budget_preference_notes, build_plan, meal_cost_cap, spend_floor
-from .snapshots import decode_value, freeze, thaw
+from .snapshots import decode_value, freeze, net_total, thaw
 
 
 class PlanConflict(ValueError):
@@ -53,6 +53,30 @@ def account_recent_recipe_codes(user, *, today=None):
 
 JAKARTA = ZoneInfo("Asia/Jakarta")
 PANTRY_PRIORITY_DAYS = 3
+
+
+def stock_context(user, plan=None):
+    """Planner arguments that make a quote use the account's pantry stock first.
+
+    A saved plan, or a draft editing one, keeps its date; a new draft starts today.
+    Days already cooked or in the past take no stock: that stock is gone or the
+    meal is history, so those days count at full price.
+    """
+    from apps.pantry.services import stock_for_planning
+
+    today = timezone.localdate(timezone=JAKARTA)
+    dated = plan is not None and (plan.status == "saved" or plan.source_plan_id)
+    starts_on = plan.starts_on if dated else today
+    frozen = set()
+    if plan is not None:
+        frozen = {item.day for item in cooked_slots(plan)}
+        days = len(thaw(plan.snapshot).get("schedule", []))
+        frozen |= {day for day in range(1, days + 1) if starts_on + timedelta(days=day - 1) < today}
+    return {
+        "stock": stock_for_planning(user),
+        "starts_on": starts_on,
+        "frozen_days": frozenset(frozen),
+    }
 
 
 def pantry_priority(user, *, today=None):
@@ -398,7 +422,9 @@ def make_preview(plan, version, payload):
         slots[day - 1][meal_type] = recipe
         reserve_preview(plan.user)
         cleanup_previews(user=plan.user)
-        result = build_plan(**form.cleaned_data, fixed_schedule=slots)
+        result = build_plan(
+            **form.cleaned_data, fixed_schedule=slots, **stock_context(plan.user, plan)
+        )
     elif action in {"regenerate", "parameters"}:
         assert_editable(plan)
         if action == "parameters":
@@ -419,7 +445,7 @@ def make_preview(plan, version, payload):
             | set(old["planned_recipe_codes"]),
             prior_slot_recipes=prior,
             seed=secrets.randbits(32),
-            priority_ingredients=pantry_priority(plan.user),
+            **stock_context(plan.user, plan),
         )
         if not result["within_budget"]:
             raise ValueError(
@@ -473,17 +499,17 @@ def apply_preview(user, preview_id, *, new_budget=None):
         raise PlanConflict(
             "Pratinjau tidak sesuai alergi terbaru atau ada bahan belum ditinjau. Buat pratinjau baru; rencana lama tidak diubah."
         )
-    if result["total"] > Decimal(inputs["budget"]):
+    if net_total(result) > Decimal(inputs["budget"]):
         if new_budget is None:
             raise ValueError(
                 "Estimasi melewati budget. Setujui kenaikan budget atau pilih menu lain."
             )
         form = clean_inputs({**inputs, "budget": str(new_budget)})
-        if form.cleaned_data["budget"] < result["total"]:
+        if form.cleaned_data["budget"] < net_total(result):
             raise ValueError("Budget baru masih di bawah estimasi belanja.")
         inputs = stored_inputs(form)
         budget = form.cleaned_data["budget"]
-        result.update(within_budget=True, difference=int(budget) - result["total"])
+        result.update(within_budget=True, difference=int(budget) - net_total(result))
         cap = meal_cost_cap(budget, len(result["schedule"]), result["meal_count"])
         result.update(
             spend_floor=spend_floor(budget),
@@ -511,8 +537,55 @@ def apply_preview(user, preview_id, *, new_budget=None):
     return draft
 
 
+def _requote_with_stock(user, plan, starts_on, saved=None):
+    """Re-check a draft's shopping bill against the pantry as it is now.
+
+    Only pantry-dependent figures change (stock used, net cost, remaining
+    budget); the menu, prices and notes stay as they were quoted.
+    """
+    result = thaw(plan.snapshot)
+    form = clean_inputs({**plan.inputs, "allergens": effective_allergens(user, plan.inputs)})
+    context = {**stock_context(user, saved), "starts_on": starts_on}
+    try:
+        quote = build_plan(**form.cleaned_data, fixed_schedule=schedule_codes(result), **context)
+    except ValueError as exc:
+        raise PlanConflict(
+            "Menu atau data katalog berubah. Cari susunan baru sebelum menyimpan."
+        ) from exc
+    budget = int(form.cleaned_data["budget"])
+    net = quote["net_total"]
+    if net > budget:
+        money = lambda value: f"Rp{value:,}".replace(",", ".")  # noqa: E731
+        raise PlanConflict(
+            f"Stok Pantry atau harga katalog berubah: belanja sekarang {money(net)} "
+            f"(lewat {money(net - budget)}). Ganti menu atau cari susunan baru."
+        )
+    fresh = {
+        row["ingredient_code"]: row for group in quote["shopping_groups"] for row in group["items"]
+    }
+    for group in result["shopping_groups"]:
+        for row in group["items"]:
+            match = fresh.get(row["ingredient_code"], {})
+            row["from_stock"] = match.get("from_stock", 0)
+            row["net_cost"] = match.get("net_cost", row["cost"])
+    result.update(
+        net_total=net,
+        stock_used=quote["stock_used"],
+        within_budget=True,
+        difference=max(0, (budget - net) // 100 * 100),
+    )
+    plan.snapshot = freeze(result)
+
+
 @transaction.atomic
-def save_plan(user, plan_id, version, title, starts_on, *, replace_original=False):
+def save_plan(user, plan_id, version, title, starts_on=None, *, replace_original=False):
+    """Save a draft as a plan, or rename a saved plan.
+
+    A new plan always starts today (Jakarta) and a saved plan keeps its date;
+    `starts_on` is accepted from older callers and ignored. Before a draft is
+    saved its bill is re-quoted with the current pantry, so stock that was used
+    up or went off since generating cannot push a saved plan over budget.
+    """
     get_user_model().objects.select_for_update().get(pk=user.pk)
     plan = BudgetPlan.objects.select_for_update().get(pk=plan_id, user=user)
     if (
@@ -523,20 +596,17 @@ def save_plan(user, plan_id, version, title, starts_on, *, replace_original=Fals
         and plan.version == version + 1
         and plan.last_saved_plan_id
         and plan.title == title
-        and plan.starts_on == starts_on
     ):
         return plan.last_saved_plan
     check_version(plan, version)
     if not thaw(plan.snapshot)["within_budget"]:
         raise ValueError("Rencana belum memenuhi budget.")
     if plan.status == "saved":
-        date_changed = starts_on != plan.starts_on
-        plan.title, plan.starts_on = title, starts_on
+        plan.title = title
         plan.version += 1
         plan.save()
-        if date_changed:
-            reschedule_meals(plan)
         return plan
+    saved = None
     if replace_original:
         if not plan.source_plan_id:
             raise ValueError("Draft ini tidak berasal dari rencana tersimpan.")
@@ -544,19 +614,22 @@ def save_plan(user, plan_id, version, title, starts_on, *, replace_original=Fals
             pk=plan.source_plan_id, user=user, status="saved"
         )
         check_version(saved, plan.source_version)
+        starts_on = saved.starts_on
+    else:
+        assert_editable(plan)
+        starts_on = timezone.localdate(timezone=JAKARTA)
+    before = plan.snapshot
+    _requote_with_stock(user, plan, starts_on, saved)
+    if saved is not None:
         assert_cooked_preserved(saved, plan.inputs, thaw(plan.snapshot))
         snapshot_changed = saved.snapshot != plan.snapshot or saved.inputs != plan.inputs
-        date_changed = saved.starts_on != starts_on
         saved.inputs, saved.snapshot = plan.inputs, plan.snapshot
-        saved.title, saved.starts_on = title, starts_on
+        saved.title = title
         saved.version += 1
         saved.save()
         if snapshot_changed:
             sync_children(saved)
-        elif date_changed:
-            reschedule_meals(saved)
     else:
-        assert_editable(plan)
         saved = BudgetPlan.objects.create(
             user=user,
             status="saved",
@@ -572,7 +645,9 @@ def save_plan(user, plan_id, version, title, starts_on, *, replace_original=Fals
     plan.version += 1
     plan.source_plan, plan.source_version = saved, saved.version
     plan.save()
-    if date_changed:
+    if plan.snapshot != before:
+        sync_children(plan)
+    elif date_changed:
         reschedule_meals(plan)
     return saved
 
