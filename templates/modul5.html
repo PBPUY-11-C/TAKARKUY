@@ -72,12 +72,16 @@
       <a class="summary-card" href="{% url 'modul2' %}"><span>Segera digunakan</span><strong>{{ stock_counts.soon }} <small>batch</small></strong></a>
       <a class="summary-card" href="{% url 'modul4' %}#cooking-history"><span>Total masak</span><strong>{{ cooking_count }} <small>kali</small></strong></a>
     </section>
+    {% if unsaved_draft %}<p class="small-note" role="status">Ada rencana yang belum disimpan ke jadwal. <a href="{% url 'modul1' %}?plan={{ unsaved_draft.pk }}#hasil">Buka dan simpan →</a></p>{% endif %}
     <div class="dashboard-grid">
       <section class="dashboard-panel"><div class="section-title"><h2>Menu hari ini</h2><a href="{% url 'modul1' %}">Rencana →</a></div>
         {% for plan in plans %}<article class="today-plan"><div class="plan-title"><h3>{{ plan.title }}</h3><a href="{% url 'modul1' %}?plan={{ plan.pk }}#hasil">Buka</a></div><p class="budget-caption">{% if plan.remaining is None %}Estimasi budget belum tersedia{% elif plan.over_budget %}Estimasi melebihi budget · {{ plan.remaining|rupiah }}{% else %}Estimasi sisa budget · {{ plan.remaining|rupiah }}{% endif %}</p>
           <ul class="dashboard-list">{% for meal in plan.today_meals %}<li><div><small>{{ meal.display_time }} · {{ meal.servings }} porsi</small><strong>{{ meal.display_name }}</strong></div>{% if meal.status == 'cooked' %}<span class="status-chip">Sudah masak</span>{% elif meal.status == 'skipped' %}<a class="row-action muted" href="{% url 'modul4' %}?slot={{ meal.pk }}#recipe-detail">Dilewati · ubah →</a>{% else %}<a class="row-action" href="{% url 'modul4' %}?slot={{ meal.pk }}#recipe-detail">Lihat resep →</a>{% endif %}</li>{% empty %}<li class="empty">Tidak ada jadwal hari ini.</li>{% endfor %}</ul>
         </article>{% empty %}<div class="dashboard-empty"><span aria-hidden="true">◷</span><p>Belum ada rencana untuk hari ini.</p><a class="primary" href="{% url 'modul1' %}">Buat rencana</a></div>{% endfor %}
         {% if plans %}<p class="small-note">Harga referensi, bukan saldo atau penghematan aktual.</p>{% endif %}
+      </section>
+      <section class="dashboard-panel"><div class="section-title"><h2>7 hari ke depan</h2><a href="{% url 'modul1' %}">Rencana →</a></div>
+        <ul class="dashboard-list">{% for day in week %}{% if day.meals %}<li><div><small>{{ day.date|date:"l, d M" }}</small>{% for meal in day.meals %}<strong>{{ meal.label }} · {{ meal.name }}</strong><small>{{ meal.plan_title }}{% if meal.status == 'skipped' %} · dilewati{% endif %}</small>{% endfor %}</div></li>{% endif %}{% empty %}{% endfor %}{% if not week_has_meals %}<li class="empty">Belum ada jadwal minggu ini.</li>{% endif %}</ul>
       </section>
       <section class="dashboard-panel"><div class="section-title"><h2>Segera digunakan</h2><a href="{% url 'modul2' %}">Pantry →</a></div><ul class="dashboard-list">
         {% for batch in stock_groups.soon %}<li><div><strong>{{ batch.name }}</strong><small>{{ batch.quantity|floatformat:-6 }} {{ batch.get_unit_display }} · {{ batch.get_expiry_source_display }}</small></div><span class="status-chip amber">{% if batch.days_left == 0 %}Hari ini{% else %}{{ batch.days_left }} hari lagi{% endif %}</span></li>{% empty %}<li class="empty">Tidak ada bahan yang mendekati tanggal kedaluwarsa.</li>{% endfor %}

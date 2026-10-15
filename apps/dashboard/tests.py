@@ -106,9 +106,16 @@ class DashboardTests(TestCase):
         self.assertContains(response, "Rp 50.000")
         self.assertContains(response, "Rp 80.000")
         self.assertNotContains(response, "Rp 130.000")
-        for title in ("Draft rahasia", "Rencana tetangga", "Sudah lewat", "Belum mulai"):
+        for title in ("Draft rahasia", "Rencana tetangga", "Sudah lewat"):
             self.assertNotContains(response, title)
-        self.assertContains(response, "Nama snapshot", count=2)
+        # A plan starting later is not active today, but its days show in the 7-day panel.
+        self.assertNotIn("Belum mulai", {plan.title for plan in response.context["plans"]})
+        self.assertContains(response, "Belum mulai", count=3)
+        # Today: one meal from each active plan (2). The 7-day panel adds the next
+        # days of those plans (2 + 2) and of "Belum mulai" (3); drafts and other
+        # accounts never appear.
+        self.assertContains(response, "Nama snapshot", count=9)
+        self.assertNotContains(response, "Rencana tetangga")
         self.assertNotContains(response, "Resep baru")
 
     def test_jakarta_today_not_utc_and_cooked_slot_not_offered_as_new_cooking(self):
@@ -149,23 +156,24 @@ class DashboardTests(TestCase):
         for text in ("Stok habis", "Diarsipkan", "Milik tetangga"):
             self.assertNotContains(response, text)
 
-    def test_six_queries_do_not_grow_with_number_of_plans_and_batches(self):
+    def test_eight_queries_do_not_grow_with_number_of_plans_and_batches(self):
+        # +2 bounded queries since the 7-day schedule and unsaved-draft notice.
         self.plan()
         self.stock()
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(8):
             dashboard_data(self.user)
         for index in range(12):
             self.plan(title=f"Plan {index}")
             self.stock(name=f"Item {index}")
             self.stock(name=f"Unknown {index}", estimated_expires_on=None)
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(8):
             data = dashboard_data(self.user)
         self.assertEqual(len(data["plans"]), 13)
         self.assertEqual(len(data["stock_groups"]["soon"]), 3)
         self.assertEqual(len(data["stock_groups"]["unknown"]), 3)
         # Includes two extra queries for session and auth; templates must not
-        # secretly load relations after the six business-data queries.
-        with self.assertNumQueries(8):
+        # secretly load relations after the eight business-data queries.
+        with self.assertNumQueries(10):
             self.client.get(reverse("modul5"))
 
     def test_history_survives_plan_delete_and_is_limited_to_three(self):
@@ -198,3 +206,57 @@ class DashboardTests(TestCase):
         response = self.client.get(reverse("modul5"))
         self.assertNotContains(response, plan.title)
         self.assertContains(response, "&lt;script&gt;")
+
+
+class DashboardWeekTests(TestCase):
+    setUp = DashboardTests.setUp
+    plan = DashboardTests.plan
+
+    def test_week_includes_future_meals_in_one_query(self):
+        self.plan(offset=2)
+        data = dashboard_data(self.user)
+        week = data["week"]
+        self.assertEqual(
+            [day["date"] for day in week], [self.today + timedelta(days=d) for d in range(1, 8)]
+        )
+        self.assertEqual([len(day["meals"]) for day in week], [0, 1, 1, 1, 0, 0, 0])
+        self.assertEqual(week[1]["meals"][0]["name"], "Nama snapshot")
+        baseline = self.week_queries()  # measured before more plans exist
+        self.plan(title="Rencana B", offset=1)
+        self.plan(title="Rencana C", offset=3)
+        with self.assertNumQueries(baseline):
+            dashboard_data(self.user)
+
+    def test_week_panel_names_the_plan_and_marks_skipped_meals(self):
+        plan = self.plan(title="Bekal Kos", offset=1)
+        plan.meals.filter(day=1).update(status="skipped")
+        response = self.client.get(reverse("modul5"))
+        self.assertContains(response, "Bekal Kos")
+        self.assertContains(response, "dilewati")
+
+    def week_queries(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        with CaptureQueriesContext(connection) as captured:
+            dashboard_data(self.user)
+        return len(captured)
+
+    def test_remaining_budget_uses_net_shopping_cost(self):
+        plan = self.plan()
+        plan.snapshot = {"total": 100000, "net_total": 40000}
+        plan.save()
+        [shown] = dashboard_data(self.user)["plans"]
+        self.assertEqual(shown.pk, plan.pk)
+        self.assertEqual(shown.remaining, 110000)
+
+    def test_dashboard_shows_unsaved_draft_link_but_not_clean_draft(self):
+        draft = self.plan(status="draft", title="Draft")
+        self.assertEqual(dashboard_data(self.user)["unsaved_draft"], draft)
+        response = self.client.get(reverse("modul5"))
+        self.assertContains(response, f"?plan={draft.pk}")
+        saved = self.plan(title="Tersimpan")
+        draft.source_plan, draft.source_version = saved, saved.version
+        draft.snapshot, draft.inputs = saved.snapshot, saved.inputs
+        draft.save()
+        self.assertIsNone(dashboard_data(self.user)["unsaved_draft"])

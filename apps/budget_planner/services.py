@@ -281,6 +281,18 @@ def assert_cooked_preserved(plan, inputs, result, *, include_source=True):
             )
 
 
+def draft_is_clean(draft):
+    """True when the draft is an unchanged copy of the saved plan it came from."""
+    source = draft.source_plan
+    return (
+        source is not None
+        and source.status == "saved"
+        and draft.source_version == source.version
+        and draft.snapshot == source.snapshot
+        and draft.inputs == source.inputs
+    )
+
+
 @transaction.atomic
 def write_draft(
     user,
@@ -325,31 +337,7 @@ def write_draft(
         if previous is not None and previous.status == "draft" and draft.pk != previous.pk:
             raise PlanConflict("Draft sudah diganti. Muat ulang halaman.")
         # A draft identical to its own saved source holds no unsaved work, so it may be reused.
-        own_source = draft.source_plan
-        if (
-            previous is not None
-            and previous.status == "saved"
-            and (
-                (
-                    draft.source_plan_id != previous.pk
-                    and not (
-                        own_source is not None
-                        and own_source.status == "saved"
-                        and draft.source_version == own_source.version
-                        and draft.snapshot == own_source.snapshot
-                        and draft.inputs == own_source.inputs
-                    )
-                )
-                or (
-                    draft.source_plan_id == previous.pk
-                    and (
-                        draft.source_version != previous.version
-                        or draft.snapshot != previous.snapshot
-                        or draft.inputs != previous.inputs
-                    )
-                )
-            )
-        ):
+        if previous is not None and previous.status == "saved" and not draft_is_clean(draft):
             raise PlanConflict(
                 "Masih ada perubahan draft yang belum disimpan. Simpan atau hapus draft itu sebelum mengubah rencana tersimpan."
             )
