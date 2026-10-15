@@ -13,8 +13,10 @@ def planner_defaults(user):
         "meal_types": profile.meal_types,
         "servings": profile.servings,
         "allergens": profile.allergens,
+        # The planner field is comma-separated, so names keep their words but lose commas.
         "exclude_ingredients": ", ".join(
-            profile.avoided_ingredients.values_list("name", flat=True)
+            name.replace(",", "")
+            for name in profile.avoided_ingredients.values_list("name", flat=True)
         ),
     }
 

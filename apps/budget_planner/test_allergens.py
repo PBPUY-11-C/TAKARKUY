@@ -232,3 +232,43 @@ class AllergenPlannerTests(TestCase):
             self.assertTrue(
                 recipe_allowed(recipe, list(recipe.recipeingredient_set.all()), ["telur"])
             )
+
+
+class CommaNamedAvoidanceTests(TestCase):
+    fixtures = ["catalog_seed"]
+
+    def test_avoiding_comma_named_cut_only_excludes_that_cut(self):
+        from apps.accounts.preferences import planner_defaults, profile_for
+        from apps.catalog.models import Ingredient
+
+        from .forms import PlannerForm
+        from .planner import MEALS, _load_candidates
+
+        user = get_user_model().objects.create_user("koma")
+        cut = Ingredient.objects.get(name="Daging Sapi, Lokal, Tetelan")
+        profile_for(user).avoided_ingredients.add(cut)
+        defaults = planner_defaults(user)
+        form = PlannerForm(
+            {
+                "budget": "100000",
+                "days": 1,
+                "servings": 1,
+                "meal_types": ["makan_siang"],
+                "targets": ["seimbang"],
+                "rice": "auto",
+                "exclude_ingredients": defaults["exclude_ingredients"],
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        terms = form.cleaned_data["exclude_ingredients"]
+        self.assertEqual(len(terms), 1)
+        catalog = _load_candidates(MEALS, 1, terms)
+        names = {
+            link.ingredient.name
+            for items in catalog[5].values()
+            for item in items
+            for link in item["ingredients"]
+        }
+        self.assertNotIn(cut.name, names)
+        # Only that cut may be excluded, never other "Lokal" items or other beef cuts.
+        self.assertLessEqual(catalog[7], {cut.name})
