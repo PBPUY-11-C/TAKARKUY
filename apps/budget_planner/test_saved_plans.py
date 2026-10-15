@@ -273,6 +273,21 @@ class SavedPlanTests(TestCase):
         self.assertEqual(context["starts_on"], timezone.localdate())
         self.assertEqual(context["frozen_days"], frozenset())
 
+    def test_save_without_any_stock_does_not_requote(self):
+        # Nothing in the pantry and no stock in the plan: the bill cannot have changed.
+        # (A minimal snapshot, like the PostgreSQL concurrency tests use, must still save.)
+        self.draft.refresh_from_db()
+        minimal = {
+            "within_budget": True,
+            "total": Decimal("0"),
+            "schedule": [],
+            "shopping_groups": [],
+            "planned_recipe_codes": [],
+        }
+        draft = write_draft(self.other, self.inputs, minimal)
+        saved = save_plan(self.other, draft.pk, draft.version, "Kosong")
+        self.assertEqual(saved.status, "saved")
+
     def test_save_rejects_when_stock_vanished_and_net_exceeds_budget(self):
         draft, _ = self.stocked_draft()  # the pantry itself is empty
         with self.assertRaisesMessage(PlanConflict, "Stok Pantry atau harga katalog berubah"):

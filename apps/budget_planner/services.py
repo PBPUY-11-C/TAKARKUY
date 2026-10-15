@@ -543,7 +543,12 @@ def _requote_with_stock(user, plan, starts_on, saved=None):
     Only pantry-dependent figures change (stock used, net cost, remaining
     budget); the menu, prices and notes stay as they were quoted.
     """
+    from apps.pantry.services import stock_for_planning
+
     result = thaw(plan.snapshot)
+    # No stock in the plan and none in the pantry: the bill cannot have changed.
+    if not result.get("stock_used") and not stock_for_planning(user):
+        return
     form = clean_inputs({**plan.inputs, "allergens": effective_allergens(user, plan.inputs)})
     context = {**stock_context(user, saved), "starts_on": starts_on}
     try:
