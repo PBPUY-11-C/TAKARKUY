@@ -735,14 +735,15 @@ def _load_candidates(
         ingredients = list(recipe.recipeingredient_set.all())
         if not recipe_allowed(recipe, ingredients, allergens):
             continue
+        # Commas are ignored so a profile name like "Daging Sapi, Lokal, Tetelan" matches.
         if any(
-            term in link.ingredient.name.casefold()
+            term in link.ingredient.name.casefold().replace(",", "")
             for link in ingredients
             for term in exclude_ingredients
         ):
             for link in ingredients:
                 for term in exclude_ingredients:
-                    if term in link.ingredient.name.casefold():
+                    if term in link.ingredient.name.casefold().replace(",", ""):
                         matched_terms.add(term)
                         excluded_names.add(link.ingredient.name)
             continue
