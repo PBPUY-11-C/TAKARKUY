@@ -204,7 +204,8 @@ class StockPreferenceTests(TestCase):
             ]
             for name, cat in (("soon", soon), ("later", later))
         }
-        self.assertEqual(score["soon"], 3 * score["later"])
+        # Scores are rounded to whole grams after weighting, so allow the rounding gap.
+        self.assertAlmostEqual(score["soon"], 3 * score["later"], delta=2)
         self.assertGreater(score["later"], 0)
 
     def test_plan_prefers_recipes_that_use_up_stock(self):
