@@ -13,7 +13,7 @@ from django.utils import timezone
 from apps.catalog.models import Recipe, RecipeTag
 from apps.pantry.models import PantryItem
 
-from .models import BudgetPlan, PlannedMeal, PlanPreview, ShoppingListItem
+from .models import BudgetPlan, PlannedMeal, PlanPreview, PlanPreviewQuota, ShoppingListItem
 from .plan_views import preview_data
 from .planner import build_plan
 from .services import (
@@ -257,6 +257,27 @@ class SavedPlanTests(TestCase):
                 grams_per_unit=1,
                 expiry_source="unknown",
             )
+
+    def test_stock_reserved_by_another_saved_plan_is_not_counted_again(self):
+        draft, stock = self.stocked_draft()
+        self.add_pantry(stock)
+        saved = save_plan(self.user, draft.pk, draft.version, "Plan A")
+        used = thaw(saved.snapshot)["stock_used"]
+        self.assertTrue(used)
+        available = {}
+        for code, grams, _ in stock_context(self.user)["stock"]:
+            available[code] = available.get(code, 0) + grams
+        for code, grams in used.items():
+            self.assertEqual(
+                available.get(code, 0), dict((c, g) for c, g, _ in stock)[code] - grams
+            )
+        # The plan's own quote still sees its stock, so re-checking it never fails.
+        own = {c: g for c, g, _ in stock_context(self.user, saved)["stock"]}
+        self.assertEqual(own, {c: g for c, g, _ in stock})
+        # Once the plan's days are cooked, its reservation is released.
+        saved.meals.update(status="cooked")
+        released = {c: g for c, g, _ in stock_context(self.user)["stock"]}
+        self.assertEqual(released, {c: g for c, g, _ in stock})
 
     def test_stock_saving_note_not_repeated_under_net_cost(self):
         draft, stock = self.stocked_draft()
@@ -608,6 +629,52 @@ class SavedPlanTests(TestCase):
         rows = response.json()["recipes"]
         self.assertTrue(rows)
         self.assertTrue(all(isinstance(row["delta"], int) for row in rows))
+
+    def exhaust_quota(self):
+        PlanPreviewQuota.objects.create(
+            user=self.user, window_started_at=timezone.now(), attempts=20
+        )
+
+    def test_generate_uses_the_preview_quota(self):
+        self.exhaust_quota()
+        with patch("apps.budget_planner.views.build_plan") as builder:
+            response = self.client.post(reverse("modul1"), self.generation_data())
+        self.assertEqual(response.status_code, 429)
+        builder.assert_not_called()
+
+    def test_alternatives_use_the_preview_quota(self):
+        self.exhaust_quota()
+        response = self.client.get(
+            reverse("modul1-plan-alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
+        )
+        self.assertEqual(response.status_code, 429)
+        self.assertIn("Retry-After", response)
+
+    def test_alternative_and_preview_deltas_compare_with_live_stock(self):
+        draft, stock = self.stocked_draft()
+        self.add_pantry(stock)
+        # A stale snapshot figure must not be the baseline once the pantry covers more.
+        snapshot = thaw(draft.snapshot)
+        snapshot["net_total"] = snapshot["total"]
+        draft.snapshot = freeze(snapshot)
+        draft.save()
+        response = self.client.get(
+            reverse("modul1-plan-alternatives", args=[draft.pk]), {"day": 1, "meal": "sarapan"}
+        )
+        live = build_plan(
+            **clean_inputs(draft.inputs).cleaned_data,
+            fixed_schedule=schedule_codes(thaw(draft.snapshot)),
+            stock=stock,
+        )["net_total"]
+        option = response.json()["recipes"][0]
+        replaced = [dict(slots) for slots in schedule_codes(thaw(draft.snapshot))]
+        replaced[0]["sarapan"] = option["recipe_code"]
+        after = build_plan(
+            **clean_inputs(draft.inputs).cleaned_data, fixed_schedule=replaced, stock=stock
+        )["net_total"]
+        self.assertEqual(option["delta"], after - live)
+        preview = preview_data(self.replacement(draft, code=option["recipe_code"]))
+        self.assertEqual(preview["before"], live)
 
     def test_alternatives_offer_only_halal_recipes(self):
         hidden = self.quotes[-1][1]

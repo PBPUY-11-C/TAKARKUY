@@ -105,18 +105,27 @@ class StockAllocationTests(TestCase):
 
     def test_fruit_net_cost_uses_whole_fruit_quote_on_remaining_grams(self):
         base = self.item(self.quote(FRUIT_RECIPE), "ING-PISANG")
+        rule = self.catalog[3]["ING-PISANG"]
+        # Whole-fruit weight that holds exactly the edible need.
+        whole = Decimal(base["quantity"]) * rule["gross_grams"] / rule["edible_grams"]
         covered = self.item(
-            self.quote(FRUIT_RECIPE, stock=[("ING-PISANG", Decimal(base["quantity"]), None)]),
-            "ING-PISANG",
+            self.quote(FRUIT_RECIPE, stock=[("ING-PISANG", whole, None)]), "ING-PISANG"
         )
         self.assertEqual(covered["net_cost"], 0)
         partial = self.item(
-            self.quote(FRUIT_RECIPE, stock=[("ING-PISANG", Decimal(base["quantity"]) - 1, None)]),
-            "ING-PISANG",
+            self.quote(FRUIT_RECIPE, stock=[("ING-PISANG", whole - 1, None)]), "ING-PISANG"
         )
         # One gram short still means buying one whole banana, not a fraction of the price.
         self.assertGreater(partial["net_cost"], 0)
         self.assertLess(partial["net_cost"], base["cost"])
+
+    def test_fruit_stock_counts_only_its_edible_part(self):
+        rule = self.catalog[3]["ING-PISANG"]
+        need = Decimal(self.item(self.quote(FRUIT_RECIPE), "ING-PISANG")["quantity"])
+        # Whole bananas weighing exactly the edible need cover only their edible share.
+        row = self.item(self.quote(FRUIT_RECIPE, stock=[("ING-PISANG", need, None)]), "ING-PISANG")
+        self.assertEqual(row["from_stock"], int(need * rule["edible_grams"] / rule["gross_grams"]))
+        self.assertGreater(row["net_cost"], 0)
 
     def test_frozen_days_do_not_use_stock(self):
         main = self.main_ingredient(self.quote(self.plain))

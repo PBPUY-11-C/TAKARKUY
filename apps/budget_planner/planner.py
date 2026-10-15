@@ -1,6 +1,7 @@
 """Seeded planner over the curated local recipe and price catalog."""
 
 import json
+from bisect import bisect_left, bisect_right
 from collections import Counter, defaultdict
 from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_HALF_UP, Decimal, InvalidOperation
@@ -490,6 +491,7 @@ def _nutrition_plan(
         if calorie_cap is not None and calories > calorie_cap:
             continue
         groups = tuple(item["protein_group"] for item in items)
+        codes = tuple(item["recipe"].pk for item in items)
         bundles.append(
             (
                 sum(item["cost"] for item in items),
@@ -497,6 +499,10 @@ def _nutrition_plan(
                 len(groups) - len(set(groups)),
                 groups,
                 rng.random(),
+                # Day-independent parts of the rank, computed once per bundle.
+                codes,
+                sum(item.get("pantry_hits", 0) for item in items),
+                sum(code in recent_codes for code in codes),
             )
         )
     if not bundles:
@@ -512,6 +518,7 @@ def _nutrition_plan(
         )
 
     bundles.sort(key=lambda bundle: bundle[0])
+    costs = [bundle[0] for bundle in bundles]
     eligible_codes = {
         meal: {bundle[1][index]["recipe"].pk for bundle in bundles}
         for index, meal in enumerate(meals)
@@ -545,39 +552,59 @@ def _nutrition_plan(
             cost_band = max(MIN_NUTRITION_COST_BAND, target_cost * NUTRITION_COST_BAND_RATIO)
 
             def rank_options(enforce_repeat_cap):
-                ranked = []
-                for cost, items, day_repeats, groups, tie_break in bundles:
-                    if cost > remaining_budget:
-                        break
-                    if enforce_repeat_cap and any(
-                        uses[item["recipe"].pk] >= repeat_caps[meal]
-                        for meal, item in zip(meals, items)
-                    ):
-                        continue
-                    codes = tuple(item["recipe"].pk for item in items)
+                """The NUTRITION_BEAM_WIDTH best-ranked bundles, scanning outward from the target.
+
+                The first rank key is the distance band to the target cost, and bundles
+                are sorted by cost, so bundles in farther bands can be skipped once the
+                beam is full and its last band is complete. The result is identical to
+                ranking every affordable bundle.
+                """
+
+                def rank(bundle):
+                    cost, items, day_repeats, groups, tie_break, codes, pantry_hits, recent = bundle
                     prior_hits = sum(
                         day < len(prior_slot_recipes.get(meal, ()))
                         and prior_slot_recipes[meal][day] == code
                         for meal, code in zip(meals, codes)
                     )
-                    repeats = sum(uses[code] for code in codes)
-                    recent_hits = sum(code in recent_codes for code in codes)
-                    pantry_hits = sum(item.get("pantry_hits", 0) for item in items)
-                    same_as_yesterday = sum(a == b for a, b in zip(groups, yesterday))
                     # Costs within one band count as equally close to the daily
                     # target, so protein variety and the seeded tie-break decide.
-                    rank = (
+                    return (
                         abs(cost - target_cost) // cost_band,
                         -pantry_hits,
                         day_repeats,
-                        repeats,
+                        sum(uses[code] for code in codes),
                         prior_hits,
-                        recent_hits,
-                        same_as_yesterday,
+                        recent,
+                        sum(a == b for a, b in zip(groups, yesterday)),
                         tie_break,
                         codes,
                     )
-                    ranked.append((rank, cost, items))
+
+                def allowed(bundle):
+                    return not enforce_repeat_cap or not any(
+                        uses[code] >= repeat_caps[meal] for meal, code in zip(meals, bundle[5])
+                    )
+
+                end = bisect_right(costs, remaining_budget)
+                left = bisect_left(costs, target_cost, 0, end) - 1
+                right = left + 1
+                ranked, full_band = [], None
+                while left >= 0 or right < end:
+                    if right >= end or (
+                        left >= 0
+                        and abs(costs[left] - target_cost) <= abs(costs[right] - target_cost)
+                    ):
+                        bundle, left = bundles[left], left - 1
+                    else:
+                        bundle, right = bundles[right], right + 1
+                    band = abs(bundle[0] - target_cost) // cost_band
+                    if full_band is not None and band > full_band:
+                        break
+                    if allowed(bundle):
+                        ranked.append((rank(bundle), bundle[0], bundle[1]))
+                        if full_band is None and len(ranked) >= NUTRITION_BEAM_WIDTH:
+                            full_band = band
                 return ranked
 
             ranked = rank_options(True)
@@ -647,6 +674,20 @@ def _prefer_stock(chosen_by_meal, candidates, avoid=frozenset()):
     return result if changed else None
 
 
+def edible_stock(stock, fruit_rules):
+    """Pantry fruit is weighed whole; recipes and fruit quotes count the edible part."""
+    return [
+        (
+            code,
+            Decimal(grams) * fruit_rules[code]["edible_grams"] / fruit_rules[code]["gross_grams"]
+            if code in fruit_rules
+            else grams,
+            expires,
+        )
+        for code, grams, expires in stock
+    ]
+
+
 def stock_weights(stock, today=None):
     """Grams in stock per ingredient, and a weight from its soonest expiry.
 
@@ -680,8 +721,6 @@ def _load_candidates(
     """
     from apps.catalog.allergens import recipe_allowed
 
-    available, weights = stock_weights(stock)
-
     snapshot = (
         IngredientPrice.objects.filter(region=REGION, price_status="published", unit="kg")
         .order_by("-recorded_at")
@@ -706,6 +745,7 @@ def _load_candidates(
             prices[price.ingredient_id] = Decimal(price.price_rupiah) / Decimal(str(price.quantity))
             price_records[price.ingredient_id] = price
     fruit_rules = load_fruit_rules()
+    available, weights = stock_weights(edible_stock(stock, fruit_rules))
 
     def ingredient_purchase_cost(ingredient_code, edible_grams):
         if ingredient_code in fruit_rules:
@@ -834,12 +874,13 @@ def budget_preference_notes(schedule, total, budget):
     return notes
 
 
-def allocate_stock(day_needs, stock, starts_on, frozen_days=frozenset()):
+def allocate_stock(day_needs, stock, starts_on, frozen_days=frozenset(), by_day=None):
     """Grams per ingredient taken from pantry stock for the whole plan.
 
     Days run in order and batches in FEFO order; a batch counts only for meals
     on or before its expiry date and is never used twice. Frozen days (cooked or
-    past) take nothing. Reserves nothing in the pantry.
+    past) take nothing. Reserves nothing in the pantry. If `by_day` is a dict,
+    it is filled with {day: {code: grams}} so other plans can see the allocation.
     """
     remaining = [[code, Decimal(grams), expires] for code, grams, expires in stock]
     used = defaultdict(Decimal)
@@ -857,6 +898,9 @@ def allocate_stock(day_needs, stock, starts_on, frozen_days=frozenset()):
                 batch[1] -= take
                 need -= take
                 used[code] += take
+                if by_day is not None:
+                    day_used = by_day.setdefault(day, defaultdict(Decimal))
+                    day_used[code] += take
     return used
 
 
@@ -945,8 +989,13 @@ def quote_schedule(
         output_schedule.append(
             {"number": day, "meals": meals, "protein": money(protein), "calories": money(calories)}
         )
+    by_day = {}
     from_stock = allocate_stock(
-        day_needs, stock, starts_on or timezone.localdate(), frozenset(frozen_days)
+        day_needs,
+        edible_stock(stock, fruit_rules),
+        starts_on or timezone.localdate(),
+        frozenset(frozen_days),
+        by_day=by_day,
     )
     groups = defaultdict(list)
     for code, item in shopping.items():
@@ -998,6 +1047,11 @@ def quote_schedule(
         {
             "net_total": round_up_price(sum(item["net_cost"] for item in shopping.values()), 500),
             "stock_used": {code: money(grams) for code, grams in from_stock.items() if grams},
+            # Per day, so another plan only reserves days that are still ahead.
+            "stock_used_by_day": {
+                str(day): {code: money(grams) for code, grams in used.items() if grams}
+                for day, used in by_day.items()
+            },
             "schedule": output_schedule,
             "shopping_groups": [
                 {
@@ -1487,6 +1541,17 @@ def replacement_options(
     )
     candidates = catalog[5]
     current_code = schedule[day - 1][meal]
+    if stock:
+        # Compare with the current menu under today's pantry, not the stored figure.
+        current_total = quote_schedule(
+            schedule,
+            servings=servings,
+            targets=targets,
+            catalog=catalog,
+            stock=stock,
+            starts_on=starts_on,
+            frozen_days=frozen_days,
+        )["net_total"]
     options = []
     for item in candidates.get(meal, []):
         if item["recipe"].pk == current_code:

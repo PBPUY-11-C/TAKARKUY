@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
 
-from apps.catalog.models import Ingredient
+from apps.catalog.models import Ingredient, IngredientShelfLife
 
 from .gemini_transport import GeminiUnavailable
 from .models import PantryItem, PantryLLMUsage, ShelfLifeEstimate
@@ -88,6 +88,49 @@ class ShelfLifeAITests(TestCase):
         self.assertEqual(item.expiry_source, "estimate")
         self.assertEqual(item.version, 2)
         call.assert_called_once()
+
+    def test_command_moves_ai_dates_to_a_new_official_reference(self, ready):
+        start = timezone.localdate() - timedelta(days=1)
+        ingredient = Ingredient.objects.create(
+            ingredient_code="ING-ACUAN-T", name="Bahan Acuan", category="sayur", base_unit="g"
+        )
+        ShelfLifeEstimate.objects.create(
+            key=shelf_key(ingredient.pk, ingredient.name),
+            ingredient=ingredient,
+            normalized_name="bahan acuan",
+            suhu_ruang_days=2,
+        )
+        item = PantryItem.objects.create(
+            user=self.user,
+            session_id="t",
+            name="Bahan Acuan",
+            quantity=1,
+            unit="g",
+            ingredient=ingredient,
+            location="suhu_ruang",
+            starting_on=start,
+            expiry_source="estimate",
+            estimated_expires_on=start + timedelta(days=2),
+        )
+        # Synthetic reference for the test only, not food guidance.
+        IngredientShelfLife.objects.create(
+            shelf_life_code="SHF-ACUAN-T",
+            ingredient=ingredient,
+            storage_location="suhu_ruang",
+            min_days=5,
+            max_days=6,
+            warning_days=1,
+            starting_event="tanggal_pembelian",
+            source="Test only",
+            source_url="https://example.org/test",
+            source_duration="test",
+            days_conversion_method="test",
+            shelf_life_status="test",
+        )
+        call_command("fill_shelf_life", verbosity=0)
+        item.refresh_from_db()
+        self.assertEqual(item.estimated_expires_on, start + timedelta(days=5))
+        self.assertEqual(item.version, 2)
 
     @patch(CALL, return_value={"items": []})
     def test_prompt_marks_names_as_data(self, call, ready):
