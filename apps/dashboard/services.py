@@ -1,4 +1,4 @@
-"""Six bounded queries; dashboard reads source data without changing it."""
+"""Eight bounded queries; dashboard reads source data without changing it."""
 
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation
@@ -9,6 +9,7 @@ from django.db.models.functions import RowNumber
 from django.utils import timezone
 
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
+from apps.budget_planner.services import draft_is_clean
 from apps.pantry.models import PantryItem
 from apps.recipe_book.models import CookingHistory
 
@@ -46,7 +47,9 @@ def dashboard_data(user):
     for plan in plans:
         inputs = plan.inputs if isinstance(plan.inputs, dict) else {}
         snapshot = plan.snapshot if isinstance(plan.snapshot, dict) else {}
-        budget, total = money(inputs.get("budget")), money(snapshot.get("total"))
+        # The budget limits money still to spend after pantry stock (older plans: total).
+        budget = money(inputs.get("budget"))
+        total = money(snapshot.get("net_total", snapshot.get("total")))
         plan.remaining = budget - total if budget is not None and total is not None else None
         plan.over_budget = plan.remaining is not None and plan.remaining < 0
         if plan.over_budget:
@@ -103,8 +106,40 @@ def dashboard_data(user):
     recent = list(history.select_related("recipe").order_by("-cooked_at", "-pk")[:3])
     for entry in recent:
         entry.display_time = timezone.localtime(entry.cooked_at, JAKARTA)
+    # Next seven days of every saved plan, including plans that start later.
+    upcoming = (
+        PlannedMeal.objects.filter(
+            plan__user=user,
+            plan__status="saved",
+            scheduled_on__range=(today + timedelta(days=1), today + timedelta(days=7)),
+        )
+        .select_related("plan", "recipe")
+        .order_by("scheduled_on", "plan__title", "pk")
+    )
+    week = [{"date": today + timedelta(days=offset), "meals": []} for offset in range(1, 8)]
+    for meal in upcoming:
+        snapshot = meal.snapshot if isinstance(meal.snapshot, dict) else {}
+        week[(meal.scheduled_on - today).days - 1]["meals"].append(
+            {
+                "slot_id": meal.pk,
+                "plan_title": meal.plan.title,
+                "label": MEALS.get(meal.meal_type, meal.meal_type),
+                "order": list(MEALS).index(meal.meal_type) if meal.meal_type in MEALS else 99,
+                "name": (snapshot.get("name") or meal.recipe.name)
+                + (" + Nasi" if snapshot.get("with_rice") else ""),
+                "status": meal.status,
+            }
+        )
+    for day in week:
+        day["meals"].sort(key=lambda meal: meal["order"])
+    draft = (
+        BudgetPlan.objects.filter(user=user, status="draft").select_related("source_plan").first()
+    )
     return {
         "today": today,
+        "week": week,
+        "week_has_meals": any(day["meals"] for day in week),
+        "unsaved_draft": draft if draft is not None and not draft_is_clean(draft) else None,
         "plans": plans,
         "stock_counts": stock_counts,
         "stock_groups": groups,
