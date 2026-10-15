@@ -18,6 +18,7 @@ from apps.catalog.models import Ingredient, IngredientPrice, Recipe
 
 from .protein_groups import main_protein_group
 from .purchase_units import load_fruit_rules, whole_fruit_quote
+from .templatetags.planner_format import rupiah
 
 REGION = "Kabupaten Garut"
 MEALS = ("sarapan", "makan_siang", "makan_malam")
@@ -548,9 +549,7 @@ def _nutrition_plan(
     if round_up_price(min_daily_cost * days, 500) > budget_limit:
         raise ValueError(
             f"Budget belum cukup untuk target gizi ini. Perkiraan batas bawah biaya "
-            f"{days} hari adalah Rp {round_up_price(min_daily_cost * days, 500):,}.".replace(
-                ",", "."
-            )
+            f"{days} hari adalah {rupiah(round_up_price(min_daily_cost * days, 500))}."
         )
     daily_ceiling = min(max_daily_cost, budget_limit / days)
     daily_floor = max(min_daily_cost, spend_floor(budget_limit) / days)

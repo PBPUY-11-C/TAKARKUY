@@ -24,6 +24,7 @@ from .forms import PlannerForm
 from .models import BudgetPlan, PlannedMeal, PlanPreview, PlanPreviewQuota, ShoppingListItem
 from .planner import budget_preference_notes, build_plan, meal_cost_cap, spend_floor
 from .snapshots import decode_value, freeze, net_total, thaw
+from .templatetags.planner_format import rupiah
 
 
 class PlanConflict(ValueError):
@@ -127,7 +128,7 @@ def _without_reserved(stock, reserved):
     return left
 
 
-def pantry_priority(user, *, today=None):
+def expiring_stock_codes(user, *, today=None):
     """Catalog ingredients in the user's pantry that expire within a few days."""
     from apps.pantry.services import eligible_stock
 
@@ -607,10 +608,9 @@ def _requote_with_stock(user, plan, starts_on, saved=None):
     budget = int(form.cleaned_data["budget"])
     net = quote["net_total"]
     if net > budget:
-        money = lambda value: f"Rp{value:,}".replace(",", ".")  # noqa: E731
         raise PlanConflict(
-            f"Stok Pantry atau harga katalog berubah: belanja sekarang {money(net)} "
-            f"(lewat {money(net - budget)}). Ganti menu atau cari susunan baru."
+            f"Stok Pantry atau harga katalog berubah: belanja sekarang {rupiah(net)} "
+            f"(lewat {rupiah(net - budget)}). Ganti menu atau cari susunan baru."
         )
     fresh = {
         row["ingredient_code"]: row for group in quote["shopping_groups"] for row in group["items"]
@@ -630,12 +630,11 @@ def _requote_with_stock(user, plan, starts_on, saved=None):
 
 
 @transaction.atomic
-def save_plan(user, plan_id, version, title, starts_on=None, *, replace_original=False):
+def save_plan(user, plan_id, version, title, *, replace_original=False):
     """Save a draft as a plan, or rename a saved plan.
 
-    A new plan always starts today (Jakarta) and a saved plan keeps its date;
-    `starts_on` is accepted from older callers and ignored. Before a draft is
-    saved its bill is re-quoted with the current pantry, so stock that was used
+    A new plan always starts today (Jakarta) and a saved plan keeps its date.
+    Before a draft is saved its bill is re-quoted with the current pantry, so stock that was used
     up or went off since generating cannot push a saved plan over budget.
     """
     get_user_model().objects.select_for_update().get(pk=user.pk)

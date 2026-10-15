@@ -15,8 +15,7 @@ from apps.catalog.models import Ingredient, IngredientShelfLife
 
 from .models import NameResolution, PantryItem, PantryNameCorrection
 from .recommendations import resolve_names
-from .services import available_grams
-from .test_helpers import authenticate
+from .test_helpers import authenticate, available_grams
 
 
 class AuditRegressionTests(TestCase):

@@ -67,9 +67,7 @@ class PlannerRefinementTests(TestCase):
         )
 
     def saved(self):
-        return save_plan(
-            self.user, self.draft.pk, self.draft.version, "Rencana", timezone.localdate()
-        )
+        return save_plan(self.user, self.draft.pk, self.draft.version, "Rencana")
 
     def test_quote_is_database_free_and_same_as_build_for_shared_fruit(self):
         catalog = _load_candidates(("sarapan",), 1, [])
@@ -173,7 +171,7 @@ class PlannerRefinementTests(TestCase):
         meal_ids = list(saved.meals.values_list("pk", flat=True))
         shopping_ids = list(saved.shopping_items.values_list("pk", flat=True))
         with CaptureQueriesContext(connection) as queries:
-            saved = save_plan(self.user, saved.pk, saved.version, "Judul Baru", saved.starts_on)
+            saved = save_plan(self.user, saved.pk, saved.version, "Judul Baru")
         children = ("budget_planner_plannedmeal", "budget_planner_shoppinglistitem")
         writes = [
             row["sql"]
@@ -188,7 +186,6 @@ class PlannerRefinementTests(TestCase):
                 saved.pk,
                 saved.version,
                 "Tanggal Baru",
-                saved.starts_on + timedelta(days=2),
             )
             sync.assert_not_called()
         self.assertEqual(meal_ids, list(saved.meals.values_list("pk", flat=True)))

@@ -2,7 +2,7 @@
 
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from copy import deepcopy
-from datetime import date, timedelta
+from datetime import timedelta
 from decimal import Decimal
 from threading import Barrier, Event
 
@@ -131,7 +131,6 @@ class PlanConcurrencyTests(TransactionTestCase):
                     draft.pk,
                     1,
                     "Minggu ini",
-                    date(2026, 10, 5),
                 ).pk
             )
         )

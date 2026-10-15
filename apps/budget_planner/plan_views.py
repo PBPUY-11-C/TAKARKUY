@@ -27,8 +27,8 @@ from .services import (
     check_version,
     clean_inputs,
     cooked_slots,
+    expiring_stock_codes,
     make_preview,
-    pantry_priority,
     purchases_to_pantry,
     reserve_preview,
     save_plan,
@@ -123,7 +123,7 @@ def pantry_annotations(user, plan, result, display_schedule):
             item["added_to_pantry"] = bool(added.get(item["ingredient_code"]))
             if have > 0 and need > 0:
                 saving += int(Decimal(item["cost"]) * have / need)
-    priority = pantry_priority(user)
+    priority = expiring_stock_codes(user)
     codes = {meal["recipe_code"] for day in display_schedule for meal in day["meals"]}
     uses = {}
     for link in RecipeIngredient.objects.filter(

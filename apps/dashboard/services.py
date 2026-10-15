@@ -17,7 +17,7 @@ JAKARTA = ZoneInfo("Asia/Jakarta")
 MEALS = {"sarapan": "Sarapan", "makan_siang": "Makan siang", "makan_malam": "Makan malam"}
 
 
-def money(value):
+def parse_money(value):
     if isinstance(value, bool) or not isinstance(value, (str, int, float, Decimal)):
         return None
     try:
@@ -48,8 +48,8 @@ def dashboard_data(user):
         inputs = plan.inputs if isinstance(plan.inputs, dict) else {}
         snapshot = plan.snapshot if isinstance(plan.snapshot, dict) else {}
         # The budget limits money still to spend after pantry stock (older plans: total).
-        budget = money(inputs.get("budget"))
-        total = money(snapshot.get("net_total", snapshot.get("total")))
+        budget = parse_money(inputs.get("budget"))
+        total = parse_money(snapshot.get("net_total", snapshot.get("total")))
         plan.remaining = budget - total if budget is not None and total is not None else None
         plan.over_budget = plan.remaining is not None and plan.remaining < 0
         if plan.over_budget:

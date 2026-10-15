@@ -20,13 +20,11 @@ from .models import NameResolution, PantryItem, PantryLLMUsage, PantryMovement, 
 from .recommendations import resolve_names
 from .services import (
     StockError,
-    available_grams,
-    consume_stock,
     conversion,
     reserve_llm,
     stock_for_planning,
 )
-from .test_helpers import authenticate
+from .test_helpers import authenticate, available_grams
 
 
 class BatchTests(TestCase):
@@ -292,30 +290,6 @@ class BatchTests(TestCase):
     def test_liquid_uses_user_pack_weight(self):
         self.assertEqual(conversion("liter", None, Decimal("920"))[:2], ("ml", Decimal("920")))
         self.assertEqual(conversion("ml", None, Decimal("0.92"))[:2], ("ml", Decimal("0.92")))
-
-    def test_fefo_and_replay_across_multiple_batches(self):
-        first = self.batch()
-        second = self.batch()
-        PantryItem.objects.filter(pk=second.pk).update(
-            estimated_expires_on=self.today + timedelta(days=1)
-        )
-        key = uuid4()
-        answer = consume_stock(self.user, {self.ingredient.pk: 150}, key)
-        self.assertEqual([row["batch_id"] for row in answer["consumed"]], [second.pk, first.pk])
-        self.assertEqual(consume_stock(self.user, {self.ingredient.pk: 150}, key), answer)
-        self.assertEqual(PantryMovement.objects.count(), 2)
-        self.assertEqual(available_grams(self.user)[self.ingredient.pk], 50)
-        with self.assertRaises(StockError):
-            consume_stock(self.user, {self.ingredient.pk: 10}, key)
-
-    def test_insufficient_second_ingredient_rolls_back_everything(self):
-        item = self.batch()
-        with self.assertRaises(StockError):
-            consume_stock(self.user, {self.ingredient.pk: 50, "ING-MISSING": 10}, uuid4())
-        item.refresh_from_db()
-        self.assertEqual(item.quantity, 100)
-        self.assertFalse(PantryMovement.objects.exists())
-        self.assertFalse(PantryOperation.objects.exists())
 
     def test_unknown_expired_and_unmapped_stock_are_not_implicitly_consumed(self):
         self.batch()

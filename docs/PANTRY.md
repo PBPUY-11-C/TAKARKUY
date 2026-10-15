@@ -8,7 +8,7 @@ Create/edit/archive menulis `PantryMovement` dan saldo dalam transaksi yang sama
 
 Lock selalu berurutan: akun → operasi → batch FEFO (expiry lalu ID). Kuota AI memakai lock akun dan increment bersyarat database. SQLite lokal memakai `transaction_mode=IMMEDIATE` dengan busy timeout 20 detik: transaksi penulis diserialkan sejak BEGIN, bukan dikunci per baris. Ada tes dua koneksi SQLite berbasis file; pengujian ini bukan pengganti tes konkurensi layanan pada PostgreSQL/CI. Beban yang melampaui timeout tetap dapat menghasilkan lock error; gunakan PostgreSQL untuk deployment multi-user.
 
-`consume_stock(user, {ingredient_code: grams}, consumption_key)` hanya layanan internal, belum endpoint memasak. Event unik per akun/UUID, bukan per baris movement; satu event boleh mengonsumsi banyak batch. Stok kurang membatalkan seluruh transaksi. CookingHistory nantinya harus ditulis di transaksi luar yang sama dan memakai key yang sama. Tidak ada reservasi stok oleh hasil rekomendasi. Pengurangan count dibulatkan ke atas pada presisi 0,000001 unit; ledger mengembalikan gram aktual.
+Pengurangan stok saat memasak memakai `execute_consumption()` (dipanggil `apps.recipe_book.services.cook()`), dengan alokasi FEFO yang sama seperti pratinjau (`plan_consumption()`). Event unik per akun/UUID, bukan per baris movement; satu event boleh mengonsumsi banyak batch. Stok kurang membatalkan seluruh transaksi, dan `CookingHistory` ditulis di transaksi luar yang sama dengan key yang sama. Tidak ada reservasi stok oleh hasil rekomendasi. Pengurangan count dibulatkan ke atas pada presisi 0,000001 unit; ledger mengembalikan gram aktual.
 
 ## Tanggal dan migrasi
 
