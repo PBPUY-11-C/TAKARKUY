@@ -4,6 +4,7 @@ from zoneinfo import ZoneInfo
 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db.models import Prefetch
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
@@ -16,7 +17,7 @@ from .ai_usage import collect_usage
 from .forms import PantryDetailsForm, PantryItemForm, PantryOCRItemForm
 from .gemini import gemini_ready
 from .json_input import load_payload
-from .models import PantryItem, PantryNameCorrection
+from .models import PantryItem, PantryMovement, PantryNameCorrection
 from .receipt_ocr import (
     MAX_IMAGE_BYTES,
     ReceiptOCRUnavailable,
@@ -120,6 +121,17 @@ def pantry_page(request):
         "modul2.html",
         {
             "pantry_items": items,
+            # Used-up batches leave the list but keep their ledger readable for a while.
+            "used_up_items": PantryItem.objects.filter(
+                user=request.user,
+                archived_at__isnull=True,
+                quantity=0,
+                updated_at__gte=timezone.now() - timedelta(days=30),
+            )
+            .prefetch_related(
+                Prefetch("movements", queryset=PantryMovement.objects.order_by("-pk"))
+            )
+            .order_by("-updated_at")[:20],
             "pantry_storage": estimates,
             "category_choices": PantryItem.MANUAL_CATEGORY_CHOICES,
             "manual_unit_choices": PantryItem.MANUAL_UNIT_CHOICES,

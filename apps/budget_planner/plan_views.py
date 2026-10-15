@@ -30,6 +30,7 @@ from .services import (
     make_preview,
     pantry_priority,
     purchases_to_pantry,
+    reserve_preview,
     save_plan,
     schedule_codes,
     stock_context,
@@ -59,9 +60,10 @@ def preview_data(preview):
         "id": str(preview.pk),
         "apply_url": reverse("modul1-preview-apply", args=[preview.pk]),
         # Money still to spend after pantry stock, the figure the budget limits.
-        "before": int(net_total(previous)),
+        # Baseline re-quoted with today's pantry when stock is involved (see make_preview).
+        "before": int(result.get("previous_net_total", net_total(previous))),
         "after": int(net_total(result)),
-        "delta": int(net_total(result) - net_total(previous)),
+        "delta": int(net_total(result) - result.get("previous_net_total", net_total(previous))),
         "budget": budget,
         "over_budget": max(0, int(net_total(result)) - budget),
         "days": preview.inputs["days"],
@@ -79,8 +81,10 @@ def pantry_annotations(user, plan, result, display_schedule):
     from apps.catalog.models import RecipeIngredient
     from apps.pantry.services import stock_for_planning
 
-    # Same stock rule as the planner: undated stock counts, but is flagged.
-    live = stock_for_planning(user)
+    # Same stock rule as the planner: undated stock counts, but is flagged, and
+    # stock other saved plans still need is set aside.
+    context = stock_context(user, plan) if plan is not None else None
+    live = context["stock"] if context else stock_for_planning(user)
     stock, undated = {}, set()
     for code, grams, expires in live:
         stock[code] = stock.get(code, Decimal(0)) + grams
@@ -95,7 +99,7 @@ def pantry_annotations(user, plan, result, display_schedule):
                     {**plan.inputs, "allergens": effective_allergens(user, plan.inputs)}
                 ).cleaned_data,
                 fixed_schedule=schedule_codes(result),
-                **{**stock_context(user, plan), "stock": live},
+                **context,
             )
             stock = {
                 row["ingredient_code"]: Decimal(row["from_stock"])
@@ -216,6 +220,9 @@ def account_page(request, builder):
             else:
                 prior = schedule_codes(result) if result else []
                 recent = account_recent_recipe_codes(request.user)
+                # Generating is the most expensive request; it shares the preview quota.
+                with transaction.atomic():
+                    reserve_preview(request.user)
                 candidate = builder(
                     **form.cleaned_data,
                     recent_recipe_codes=recent,
@@ -422,6 +429,8 @@ def recipe_alternatives(request, plan_id):
             raise ValueError("Slot menu tidak valid.")
         if any(item.day == day and item.meal_type == meal for item in cooked_slots(plan)):
             raise ValueError("Menu sudah dimasak.")
+        with transaction.atomic():
+            reserve_preview(request.user)  # quotes every alternative: shares the preview quota
         # The same basket quote as preview, including pooled fruit purchases.
         recipes = replacement_options(
             **clean_inputs(
@@ -434,6 +443,9 @@ def recipe_alternatives(request, plan_id):
             **stock_context(request.user, plan),
         )
         response = JsonResponse({"recipes": recipes, "version": plan.version})
+    except PreviewRateLimit as exc:
+        response = JsonResponse({"error": str(exc), "retry_after": exc.retry_after}, status=429)
+        response["Retry-After"] = str(exc.retry_after)
     except Http404:
         response = JsonResponse({"error": NOT_FOUND_MESSAGE}, status=404)
     except ValueError as exc:

@@ -2,6 +2,7 @@
 
 import json
 import secrets
+from collections import defaultdict
 from collections.abc import Mapping
 from datetime import timedelta
 from decimal import Decimal
@@ -60,7 +61,8 @@ def stock_context(user, plan=None):
 
     A saved plan, or a draft editing one, keeps its date; a new draft starts today.
     Days already cooked or in the past take no stock: that stock is gone or the
-    meal is history, so those days count at full price.
+    meal is history, so those days count at full price. Stock other saved plans
+    still need for days ahead is set aside first, so it is never counted twice.
     """
     from apps.pantry.services import stock_for_planning
 
@@ -73,10 +75,56 @@ def stock_context(user, plan=None):
         days = len(thaw(plan.snapshot).get("schedule", []))
         frozen |= {day for day in range(1, days + 1) if starts_on + timedelta(days=day - 1) < today}
     return {
-        "stock": stock_for_planning(user),
+        "stock": _without_reserved(stock_for_planning(user), reserved_stock(user, plan, today)),
         "starts_on": starts_on,
         "frozen_days": frozenset(frozen),
     }
+
+
+def reserved_stock(user, plan, today):
+    """Grams per ingredient other saved plans still take on days not yet past or cooked.
+
+    A day with any meal still to cook keeps its whole share (conservative). Plans
+    saved before per-day figures existed reserve their full stock while active.
+    """
+    exclude = [
+        pk for pk in (getattr(plan, "pk", None), getattr(plan, "source_plan_id", None)) if pk
+    ]
+    open_days = defaultdict(set)
+    for plan_id, day in (
+        PlannedMeal.objects.filter(
+            plan__user=user, plan__status="saved", scheduled_on__gte=today, status="planned"
+        )
+        .exclude(plan_id__in=exclude)
+        .values_list("plan_id", "day")
+    ):
+        open_days[plan_id].add(day)
+    reserved = defaultdict(Decimal)
+    for other in BudgetPlan.objects.filter(pk__in=open_days).only("pk", "snapshot"):
+        snapshot = thaw(other.snapshot)
+        by_day = snapshot.get("stock_used_by_day")
+        rows = (
+            [snapshot.get("stock_used", {})]
+            if by_day is None
+            else [by_day.get(str(day), {}) for day in open_days[other.pk]]
+        )
+        for row in rows:
+            for code, grams in row.items():
+                reserved[code] += Decimal(grams)
+    return reserved
+
+
+def _without_reserved(stock, reserved):
+    """Remove reserved grams from the earliest-expiring batches first, like FEFO use."""
+    reserved = dict(reserved)
+    left = []
+    for code, grams, expires in stock:
+        take = min(grams, reserved.get(code, 0))
+        if take:
+            reserved[code] -= take
+        if grams - take > 0:
+            left.append((code, grams - take, expires))
+    return left
 
 
 def pantry_priority(user, *, today=None):
@@ -445,6 +493,17 @@ def make_preview(plan, version, payload):
             )
     else:
         raise ValueError("Aksi pratinjau tidak dikenal.")
+    context = stock_context(plan.user, plan)
+    if context["stock"]:
+        # Baseline for "before/after": the current menu under today's pantry.
+        try:
+            result["previous_net_total"] = build_plan(
+                **clean_inputs(inputs).cleaned_data,
+                fixed_schedule=schedule_codes(old),
+                **context,
+            )["net_total"]
+        except ValueError:
+            pass  # the old menu cannot be re-quoted any more; fall back to its snapshot
     if action == "replace":
         # Re-quoting the schedule must not rewrite a cooked meal's historical
         # metadata merely because current catalog/review fields have changed.

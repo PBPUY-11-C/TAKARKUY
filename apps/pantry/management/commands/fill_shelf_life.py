@@ -4,7 +4,8 @@ from django.core.management.base import BaseCommand
 from django.db.models import F
 from django.utils import timezone
 
-from apps.pantry.models import PantryItem
+from apps.catalog.models import IngredientShelfLife
+from apps.pantry.models import PantryItem, ShelfLifeEstimate
 from apps.pantry.shelf_life_ai import estimate_shelf_life
 from apps.pantry.storage import DEFAULT_LOCATION, expiry_estimate, shelf_key, storage_options
 
@@ -48,3 +49,33 @@ class Command(BaseCommand):
                 version=F("version") + 1,
             )
         self.stdout.write(f"{filled} stok mendapat perkiraan tanggal.")
+        self.stdout.write(f"{self.refresh_ai_dates()} tanggal perkiraan AI diganti acuan resmi.")
+
+    def refresh_ai_dates(self):
+        """Items dated from an AI guess move to an official reference added later."""
+        official = set(IngredientShelfLife.objects.values_list("ingredient_id", flat=True))
+        guessed = set(ShelfLifeEstimate.objects.values_list("pk", flat=True))
+        refreshed = 0
+        for item in PantryItem.objects.filter(
+            archived_at__isnull=True,
+            quantity__gt=0,
+            expiry_source="estimate",
+            ingredient_id__in=official,
+        ):
+            if shelf_key(item.ingredient_id, item.name) not in guessed:
+                continue  # dated from the official reference already
+            start = item.starting_on or timezone.localdate(item.added_at)
+            estimate = expiry_estimate(
+                storage_options(item.ingredient_id, item.name),
+                item.location or DEFAULT_LOCATION,
+                start,
+            )
+            if not estimate["estimated_expires_on"]:
+                continue
+            refreshed += PantryItem.objects.filter(pk=item.pk, version=item.version).update(
+                estimated_expires_on=estimate["estimated_expires_on"],
+                shelf_life_days=estimate["shelf_life_days"],
+                starting_on=start,
+                version=F("version") + 1,
+            )
+        return refreshed
