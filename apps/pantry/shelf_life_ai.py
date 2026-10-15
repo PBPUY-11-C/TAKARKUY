@@ -54,7 +54,7 @@ def estimate_shelf_life(user, entries):
     try:
         result = generate_json(
             [{"text": PROMPT + json.dumps(pending, ensure_ascii=False)}],
-            timeout=5,
+            timeout=8,  # real calls take ~5 s; a slower answer still beats "unknown"
             generation_config={
                 "maxOutputTokens": 40 * len(pending) + 250,
                 "responseSchema": {
