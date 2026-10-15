@@ -398,7 +398,8 @@ class CookingTests(TestCase):
         self.assertFalse(PantryOperation.objects.exists())
         self.assertTrue(get_user_model().objects.filter(pk=self.other.pk).exists())
 
-    def test_start_date_change_does_not_move_actual_cooking_time(self):
+    def test_renaming_plan_does_not_move_dates_or_actual_cooking_time(self):
+        # Plans start on the day they are saved; renaming never moves meals.
         from apps.budget_planner.services import save_plan
 
         self.batch()
@@ -415,7 +416,7 @@ class CookingTests(TestCase):
         history.refresh_from_db()
         slot.refresh_from_db()
         self.assertEqual(history.cooked_at, actual)
-        self.assertEqual(slot.scheduled_on, timezone.localdate() + timedelta(days=5))
+        self.assertEqual(slot.scheduled_on, timezone.localdate())
 
     def test_stock_filters_are_read_only_and_portion_aware(self):
         batch = self.batch(

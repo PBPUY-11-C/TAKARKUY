@@ -27,3 +27,8 @@ def freeze(result):
 
 def thaw(snapshot):
     return protect_plan_instructions(json.loads(json.dumps(snapshot), object_hook=decode_value))
+
+
+def net_total(result):
+    """Money still to spend; snapshots made before pantry-aware quotes only have `total`."""
+    return result.get("net_total", result["total"])

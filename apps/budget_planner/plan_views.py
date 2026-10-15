@@ -17,7 +17,7 @@ from apps.catalog.allergens import unsafe_schedule
 
 from .forms import PlanMetadataForm, PlannerForm
 from .models import BudgetPlan, PlanPreview
-from .planner import budget_preference_notes, replacement_options
+from .planner import budget_preference_notes, build_plan, replacement_options
 from .services import (
     PlanConflict,
     PreviewRateLimit,
@@ -32,10 +32,11 @@ from .services import (
     purchases_to_pantry,
     save_plan,
     schedule_codes,
+    stock_context,
     stored_inputs,
     write_draft,
 )
-from .snapshots import thaw
+from .snapshots import net_total, thaw
 
 NOT_FOUND_MESSAGE = "Rencana tidak ditemukan atau sudah diganti. Muat ulang halaman."
 
@@ -57,11 +58,12 @@ def preview_data(preview):
     return {
         "id": str(preview.pk),
         "apply_url": reverse("modul1-preview-apply", args=[preview.pk]),
-        "before": int(previous["total"]),
-        "after": int(result["total"]),
-        "delta": int(result["total"] - previous["total"]),
+        # Money still to spend after pantry stock, the figure the budget limits.
+        "before": int(net_total(previous)),
+        "after": int(net_total(result)),
+        "delta": int(net_total(result) - net_total(previous)),
         "budget": budget,
-        "over_budget": max(0, int(result["total"]) - budget),
+        "over_budget": max(0, int(net_total(result)) - budget),
         "days": preview.inputs["days"],
         "servings": preview.inputs["servings"],
         "schedule": result["schedule"],
@@ -75,9 +77,33 @@ def preview_data(preview):
 def pantry_annotations(user, plan, result, display_schedule):
     """Live pantry facts for display only; never written into the plan snapshot."""
     from apps.catalog.models import RecipeIngredient
-    from apps.pantry.services import available_grams
+    from apps.pantry.services import stock_for_planning
 
-    stock = available_grams(user)
+    # Same stock rule as the planner: undated stock counts, but is flagged.
+    live = stock_for_planning(user)
+    stock, undated = {}, set()
+    for code, grams, expires in live:
+        stock[code] = stock.get(code, Decimal(0)) + grams
+        if expires is None:
+            undated.add(code)
+    if plan is not None and live:
+        # Allocate today's stock with the planner's rules (per day, FEFO, nothing used
+        # after it expires), so a ✓ never covers a meal the stock will not last until.
+        try:
+            quote = build_plan(
+                **clean_inputs(
+                    {**plan.inputs, "allergens": effective_allergens(user, plan.inputs)}
+                ).cleaned_data,
+                fixed_schedule=schedule_codes(result),
+                **{**stock_context(user, plan), "stock": live},
+            )
+            stock = {
+                row["ingredient_code"]: Decimal(row["from_stock"])
+                for group in quote["shopping_groups"]
+                for row in group["items"]
+            }
+        except ValueError:
+            pass  # catalog changed since the plan was made: fall back to plain totals
     added = {
         item.ingredient_id: item.added_to_pantry_at
         for item in (plan.shopping_items.all() if plan else ())
@@ -88,6 +114,7 @@ def pantry_annotations(user, plan, result, display_schedule):
             need = Decimal(str(item["quantity"]))
             have = min(stock.get(item["ingredient_code"], Decimal(0)), need)
             item["in_pantry"] = int(have)
+            item["unknown_expiry"] = have > 0 and item["ingredient_code"] in undated
             item["to_buy"] = max(0, int((need - have).to_integral_value(rounding=ROUND_CEILING)))
             item["added_to_pantry"] = bool(added.get(item["ingredient_code"]))
             if have > 0 and need > 0:
@@ -136,6 +163,8 @@ def account_page(request, builder):
         initial=initial,
     )
     result = thaw(plan.snapshot) if plan else None
+    if result:
+        result.setdefault("net_total", result["total"])  # plans saved before net costs
     if result:
         # Explain preferences for older immutable snapshots too, without
         # rewriting their menu, shopping list, or stored prices.
@@ -195,7 +224,7 @@ def account_page(request, builder):
                         for meal in form.cleaned_data["meal_types"]
                     },
                     seed=secrets.randbits(32),
-                    priority_ingredients=pantry_priority(request.user),
+                    **stock_context(request.user, plan),
                 )
                 result = candidate
                 if candidate["within_budget"]:
@@ -251,7 +280,10 @@ def account_page(request, builder):
             "plan": plan,
             "trial": None,
             "pending_preview": pending,
-            "saved_plans": BudgetPlan.objects.filter(user=request.user, status="saved"),
+            "saved_plans": [
+                setattr(saved, "net_total", net_total(thaw(saved.snapshot))) or saved
+                for saved in BudgetPlan.objects.filter(user=request.user, status="saved")
+            ],
             "active_draft": BudgetPlan.objects.filter(user=request.user, status="draft").first(),
             "allergy_warning": bool(
                 result
@@ -334,13 +366,13 @@ def apply_plan_preview(request, payload, preview_id):
 @plan_api
 def save_account_plan(request, payload, plan_id):
     owned_plan(request, plan_id)
-    if not isinstance(payload.get("title"), str) or not isinstance(payload.get("starts_on"), str):
-        raise ValueError("Judul dan tanggal mulai harus berupa teks.")
+    if not isinstance(payload.get("title"), str):
+        raise ValueError("Judul harus berupa teks.")
     form = PlanMetadataForm(payload)
     if not form.is_valid():
         return JsonResponse(
             {
-                "error": "Isi judul maksimal 100 karakter dan tanggal mulai yang valid.",
+                "error": "Isi judul maksimal 100 karakter.",
                 "fields": form.errors.get_json_data(),
             },
             status=400,
@@ -398,7 +430,8 @@ def recipe_alternatives(request, plan_id):
             schedule=slots,
             day=day,
             meal=meal,
-            current_total=snapshot["total"],
+            current_total=net_total(snapshot),
+            **stock_context(request.user, plan),
         )
         response = JsonResponse({"recipes": recipes, "version": plan.version})
     except Http404:

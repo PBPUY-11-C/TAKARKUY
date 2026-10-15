@@ -112,7 +112,7 @@ def planner_page(request):
         "budget_planner/planner.html",
         {
             "form": form,
-            "result": result,
+            "result": result and {"net_total": result.get("total"), **result},
             "error": error,
             "trial": state,
             "trial_blocked": status == 429,

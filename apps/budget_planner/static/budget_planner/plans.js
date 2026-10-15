@@ -171,7 +171,7 @@
     try {
       const values = new FormData(form);
       const data = await request(form.dataset.url, { version: Number(form.dataset.version),
-        title: values.get("title"), starts_on: values.get("starts_on"), replace_original: replaceOriginal });
+        title: values.get("title"), replace_original: replaceOriginal });
       window.location.assign(data.url);
     } catch (error) { feedback.textContent = error.message; feedback.scrollIntoView({ block: "center" }); }
     finally { buttons.forEach((button) => { button.disabled = false; }); }

@@ -2,11 +2,14 @@
 
 import json
 from collections import Counter, defaultdict
+from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_HALF_UP, Decimal, InvalidOperation
 from heapq import nsmallest
 from itertools import combinations_with_replacement, product
 from math import ceil
 from random import Random
+
+from django.utils import timezone
 
 from apps.catalog.content_policy import protect_plan_instructions
 from apps.catalog.models import Ingredient, IngredientPrice, Recipe
@@ -155,7 +158,7 @@ def _recipe_patterns(candidates, slots, preferred_tags, recent_codes, prior_slot
         prior_codes = set(prior_slot_codes)
 
         def rank(state):
-            return (-state[4], state[1], -state[5], state[2], state[6], -state[3])
+            return (-state[4], state[1], state[6], -state[5], state[2], -state[3])
 
         for index, item in enumerate(candidates):
             code = item["recipe"].pk
@@ -328,6 +331,54 @@ def _candidate_pool(items, size, days, rng, recent_codes, targets):
     return pool
 
 
+def _day_penalty(chosen_by_meal, meals, prior_slot_recipes):
+    """Variety penalty: same protein twice in a day, last plan's slot, back-to-back repeat."""
+    score = 0
+    for day in range(len(chosen_by_meal[meals[0]])):
+        day_groups = Counter(chosen_by_meal[meal][day]["protein_group"] for meal in meals)
+        score += 2 * sum(count - 1 for count in day_groups.values())
+        for meal in meals:
+            item = chosen_by_meal[meal][day]
+            prior = prior_slot_recipes.get(meal, ())
+            if day < len(prior) and prior[day] == item["recipe"].pk:
+                score += 3
+            if day and chosen_by_meal[meal][day - 1]["recipe"].pk == item["recipe"].pk:
+                score += 2
+    return score
+
+
+def _order_days_by_expiry(chosen_by_meal, meals, stock, prior_slot_recipes):
+    """Move whole days so the ones using the soonest-expiring stock come first.
+
+    Whole days move together, so each day's nutrition is unchanged. The new
+    order is kept only if the variety penalty does not get worse.
+    """
+    soonest = {}
+    for code, _, expires in stock:
+        if expires:
+            soonest[code] = min(soonest.get(code, expires), expires)
+    if not soonest:
+        return chosen_by_meal
+    days = len(chosen_by_meal[meals[0]])
+
+    def day_key(day):
+        dates = [
+            soonest[link.ingredient_id]
+            for meal in meals
+            for link in chosen_by_meal[meal][day]["ingredients"]
+            if link.ingredient_id in soonest
+        ]
+        return (min(dates) if dates else date.max, day)
+
+    order = sorted(range(days), key=day_key)
+    reordered = {meal: [chosen_by_meal[meal][day] for day in order] for meal in meals}
+    if _day_penalty(reordered, meals, prior_slot_recipes) <= _day_penalty(
+        chosen_by_meal, meals, prior_slot_recipes
+    ):
+        return reordered
+    return chosen_by_meal
+
+
 def _balance_days(chosen_by_meal, meals, prior_slot_recipes):
     """Reorder each meal's recipes so one day rarely repeats a protein.
 
@@ -339,18 +390,7 @@ def _balance_days(chosen_by_meal, meals, prior_slot_recipes):
     days = len(chosen_by_meal[meals[0]])
 
     def penalty():
-        score = 0
-        for day in range(days):
-            day_groups = Counter(chosen_by_meal[meal][day]["protein_group"] for meal in meals)
-            score += 2 * sum(count - 1 for count in day_groups.values())
-            for meal in meals:
-                item = chosen_by_meal[meal][day]
-                prior = prior_slot_recipes.get(meal, ())
-                if day < len(prior) and prior[day] == item["recipe"].pk:
-                    score += 3
-                if day and chosen_by_meal[meal][day - 1]["recipe"].pk == item["recipe"].pk:
-                    score += 2
-        return score
+        return _day_penalty(chosen_by_meal, meals, prior_slot_recipes)
 
     best = penalty()
     for _ in range(4):
@@ -528,10 +568,10 @@ def _nutrition_plan(
                     # target, so protein variety and the seeded tie-break decide.
                     rank = (
                         abs(cost - target_cost) // cost_band,
+                        -pantry_hits,
                         day_repeats,
                         repeats,
                         prior_hits,
-                        -pantry_hits,
                         recent_hits,
                         same_as_yesterday,
                         tie_break,
@@ -575,6 +615,53 @@ def _nutrition_plan(
     )
 
 
+STOCK_SWAP_COST_RATIO = Decimal("0.30")
+
+
+def _prefer_stock(chosen_by_meal, candidates, avoid=frozenset()):
+    """Swap a slot for a similar-cost recipe that uses more pantry stock.
+
+    Recipes already in the plan or in `avoid` (recent menus) are never brought in.
+    Returns a new selection, or None when nothing improves.
+    """
+    changed, result = False, {}
+    for meal, items in chosen_by_meal.items():
+        items = list(items)
+        used = {item["recipe"].pk for item in items}
+        for index, item in enumerate(items):
+            tolerance = item["cost"] * STOCK_SWAP_COST_RATIO
+            best = item
+            for candidate in candidates[meal]:
+                if (
+                    candidate["recipe"].pk not in used
+                    and candidate["recipe"].pk not in avoid
+                    and candidate["pantry_hits"] > best["pantry_hits"]
+                    and abs(candidate["cost"] - item["cost"]) <= tolerance
+                ):
+                    best = candidate
+            if best is not item:
+                used.discard(item["recipe"].pk)
+                used.add(best["recipe"].pk)
+                items[index], changed = best, True
+        result[meal] = items
+    return result if changed else None
+
+
+def stock_weights(stock, today=None):
+    """Grams in stock per ingredient, and a weight from its soonest expiry.
+
+    Weight 3 when stock expires within 3 days, 2 within 7 days, otherwise 1.
+    """
+    today = today or timezone.localdate()
+    available, weights = defaultdict(Decimal), {}
+    for code, grams, expires in stock:
+        available[code] += Decimal(grams)
+        days = (expires - today).days if expires else None
+        weight = 3 if days is not None and days <= 3 else 2 if days is not None and days <= 7 else 1
+        weights[code] = max(weights.get(code, 0), weight)
+    return available, weights
+
+
 def _load_candidates(
     requested_meals,
     servings,
@@ -582,15 +669,18 @@ def _load_candidates(
     allergens=(),
     *,
     with_rice=False,
-    priority_ingredients=frozenset(),
+    stock=(),
 ):
     """Price and nutrition-complete halal recipes per meal for the given servings.
 
     With rice, a lunch/dinner lauk gets RICE_GRAMS_PER_SERVING of rice per serving
-    unless the user avoids rice. priority_ingredients are pantry stock that
-    expires soon; each recipe counts how many of them it uses.
+    unless the user avoids rice. With pantry `stock`, each recipe gets a
+    "pantry_hits" score: grams of stock it would use, weighted by how soon that
+    stock expires (see stock_weights).
     """
     from apps.catalog.allergens import recipe_allowed
+
+    available, weights = stock_weights(stock)
 
     snapshot = (
         IngredientPrice.objects.filter(region=REGION, price_status="published", unit="kg")
@@ -702,8 +792,12 @@ def _load_candidates(
                 "nutrition": nutrition,
                 "protein_group": main_protein_group(ingredients),
                 "with_rice": added_rice,
-                "pantry_hits": len(
-                    {link.ingredient_id for link in ingredients} & priority_ingredients
+                "pantry_hits": int(
+                    sum(
+                        min(available.get(link.ingredient_id, 0), purchase_grams(link) * scale)
+                        * weights.get(link.ingredient_id, 0)
+                        for link in ingredients
+                    )
                 ),
             }
         )
@@ -739,12 +833,42 @@ def budget_preference_notes(schedule, total, budget):
     return notes
 
 
-def quote_schedule(schedule, *, servings, targets, catalog):
+def allocate_stock(day_needs, stock, starts_on, frozen_days=frozenset()):
+    """Grams per ingredient taken from pantry stock for the whole plan.
+
+    Days run in order and batches in FEFO order; a batch counts only for meals
+    on or before its expiry date and is never used twice. Frozen days (cooked or
+    past) take nothing. Reserves nothing in the pantry.
+    """
+    remaining = [[code, Decimal(grams), expires] for code, grams, expires in stock]
+    used = defaultdict(Decimal)
+    for day, needs in enumerate(day_needs, start=1):
+        if day in frozen_days:
+            continue
+        meal_date = starts_on + timedelta(days=day - 1)
+        for code, need in needs.items():
+            for batch in remaining:
+                if need <= 0:
+                    break
+                if batch[0] != code or batch[1] <= 0 or (batch[2] and batch[2] < meal_date):
+                    continue
+                take = min(need, batch[1])
+                batch[1] -= take
+                need -= take
+                used[code] += take
+    return used
+
+
+def quote_schedule(
+    schedule, *, servings, targets, catalog, stock=(), starts_on=None, frozen_days=frozenset()
+):
     """Quote fixed recipe codes without searching or querying the database.
 
     Both alternatives and previews use this basket calculation. Load the
     catalog once per request, combine fruit needs across every slot, then
     round the final shopping total. Nutrition is checked for every whole day.
+    `total` is the full value of the menu; `net_total` is what still has to be
+    bought after pantry `stock` ([(code, grams, expires_on)]) is used.
     """
     _, prices, price_records, fruit_rules, _, candidates, _, _ = catalog
     meals_available = tuple(meal for meal in MEALS if candidates.get(meal))
@@ -754,7 +878,7 @@ def quote_schedule(schedule, *, servings, targets, catalog):
     if not schedule or not meals_available:
         raise ValueError("Susunan menu kosong atau tidak tersedia.")
     protein_floor, calorie_cap = daily_limits(targets, meals_available)
-    shopping, output_schedule, selected = {}, [], []
+    shopping, output_schedule, selected, day_needs = {}, [], [], []
     nutrition_total = {nutrient: Decimal("0") for nutrient in NUTRIENTS}
     for day, slots in enumerate(schedule, start=1):
         if set(slots) != set(meals_available):
@@ -783,6 +907,7 @@ def quote_schedule(schedule, *, servings, targets, catalog):
         for nutrient in NUTRIENTS:
             nutrition_total[nutrient] += day_nutrition[nutrient]
         meals = []
+        day_needs.append(defaultdict(Decimal))
         for meal, item in zip(meals_available, day_items):
             for link in item["ingredients"]:
                 code = link.ingredient_id
@@ -794,6 +919,7 @@ def quote_schedule(schedule, *, servings, targets, catalog):
                         "cost": 0,
                     }
                 shopping[code]["quantity"] += purchase_grams(link) * item["scale"]
+                day_needs[-1][code] += purchase_grams(link) * item["scale"]
                 shopping[code]["cost"] += item["ingredient_costs"][link.recipe_ingredient_code]
             meals.append(
                 {
@@ -818,18 +944,37 @@ def quote_schedule(schedule, *, servings, targets, catalog):
         output_schedule.append(
             {"number": day, "meals": meals, "protein": money(protein), "calories": money(calories)}
         )
+    from_stock = allocate_stock(
+        day_needs, stock, starts_on or timezone.localdate(), frozenset(frozen_days)
+    )
     groups = defaultdict(list)
     for code, item in shopping.items():
         fruit_purchase = None
         if code in fruit_rules:
             fruit_purchase = whole_fruit_quote(item["quantity"], prices[code], fruit_rules[code])
             item["cost"] = fruit_purchase["cost"]
+        used = from_stock.get(code, Decimal(0))
+        if not used:
+            item["net_cost"] = item["cost"]
+        elif code in fruit_rules:
+            item["net_cost"] = whole_fruit_quote(
+                item["quantity"] - used, prices[code], fruit_rules[code]
+            )["cost"]
+        else:
+            # Round up: a covered share never makes the remaining purchase cheaper than it is.
+            item["net_cost"] = int(
+                (item["cost"] * (item["quantity"] - used) / item["quantity"]).to_integral_value(
+                    rounding=ROUND_CEILING
+                )
+            )
         groups[item["category"]].append(
             {
                 "ingredient_code": code,
                 "name": item["name"],
                 "quantity": money(item["quantity"]),
                 "cost": item["cost"],
+                "from_stock": money(used),
+                "net_cost": item["net_cost"],
                 "purchase_units": fruit_purchase["units"] if fruit_purchase else None,
                 "purchase_unit": fruit_rules[code]["unit"] if fruit_purchase else None,
                 "purchase_gross_grams": money(fruit_purchase["gross_grams"])
@@ -850,6 +995,8 @@ def quote_schedule(schedule, *, servings, targets, catalog):
     rounded_total = round_up_price(purchase_total, 500)
     return protect_plan_instructions(
         {
+            "net_total": round_up_price(sum(item["net_cost"] for item in shopping.values()), 500),
+            "stock_used": {code: money(grams) for code, grams in from_stock.items() if grams},
             "schedule": output_schedule,
             "shopping_groups": [
                 {
@@ -895,7 +1042,52 @@ def quote_schedule(schedule, *, servings, targets, catalog):
     )
 
 
-def build_plan(
+# shortcut: half the usable stock value is a guess at how much a plan really uses;
+# measure stock savings per plan if widened searches start failing often.
+STOCK_VALUE_SHARE = 2
+
+
+def build_plan(*, stock=(), starts_on=None, frozen_days=frozenset(), **inputs):
+    """Return varied halal recipes whose net shopping cost fits the budget.
+
+    The budget caps money still to spend after pantry `stock` is used. With
+    usable stock, one search first aims higher (budget + part of the stock value)
+    and is kept only when its exact net cost fits; otherwise the plain search at
+    the budget runs, which is always safe because net never exceeds full price.
+    So a user with stock is never worse off and pays at most one extra search.
+    """
+    plain = {"stock": stock, "starts_on": starts_on, "frozen_days": frozen_days}
+    requested = tuple(meal for meal in MEALS if meal in inputs.get("meal_types", ()))
+    if not stock or inputs.get("fixed_schedule") is not None or not requested:
+        return _build_plan(**inputs, **plain)[0]
+    catalog = _load_candidates(
+        requested,
+        inputs["servings"],
+        inputs["exclude_ingredients"],
+        inputs.get("allergens", ()),
+        with_rice=rice_included(inputs.get("rice", "no"), inputs["servings"], inputs["targets"]),
+        stock=stock,
+    )
+    budget = int(inputs["budget"])
+    # Only stock some candidate recipe can use may justify a wider search.
+    usable = {
+        link.ingredient_id
+        for items in catalog[5].values()
+        for item in items
+        for link in item["ingredients"]
+    }
+    value = sum(
+        catalog[4](code, grams) for code, grams, _ in stock if code in usable and code in catalog[1]
+    )
+    widen = min(int(value) // STOCK_VALUE_SHARE, budget)
+    if widen >= 500:
+        widened, _ = _build_plan(**inputs, **plain, search_budget=budget + widen, catalog=catalog)
+        if widened["within_budget"]:
+            return widened
+    return _build_plan(**inputs, **plain, catalog=catalog)[0]
+
+
+def _build_plan(
     *,
     budget,
     days,
@@ -909,12 +1101,18 @@ def build_plan(
     fixed_schedule=None,
     seed=None,
     rice="no",
-    priority_ingredients=(),
+    stock=(),
+    starts_on=None,
+    frozen_days=frozenset(),
+    search_budget=None,
+    catalog=None,
 ):
-    """Return varied halal recipes with a mandatory budget ceiling.
+    """One search. Returns (result, catalog).
 
     A 60% spending target and a 2x average menu cap are soft preferences.
     The same seed gives the same plan; callers pass a fresh seed per generate.
+    `search_budget` only widens the search; feasibility is always judged on the
+    net cost against `budget`.
     """
     rng = Random(0 if seed is None else seed)
     requested_meals = tuple(meal for meal in MEALS if meal in meal_types)
@@ -926,13 +1124,13 @@ def build_plan(
         raise ValueError("Seimbang tidak bisa digabung dengan target gizi lain.")
     recent_recipe_codes = set(recent_recipe_codes)
     prior_slot_recipes = prior_slot_recipes or {}
-    catalog = _load_candidates(
+    catalog = catalog or _load_candidates(
         requested_meals,
         servings,
         exclude_ingredients,
         allergens,
         with_rice=rice_included(rice, servings, targets),
-        priority_ingredients=frozenset(priority_ingredients),
+        stock=stock,
     )
     (
         snapshot,
@@ -966,7 +1164,8 @@ def build_plan(
                 candidates[meal] = alternatives
     # Search uses a bounded pool; minimum cost and catalog ceiling below still
     # read the full candidate lists.
-    cap = meal_cost_cap(budget, days, len(available_meals))
+    limit = search_budget or budget
+    cap = meal_cost_cap(limit, days, len(available_meals))
 
     def search_pools(capped):
         return {
@@ -1006,7 +1205,8 @@ def build_plan(
                 total += repeats * sum(scaled_costs) + sum(scaled_costs[:extras])
         return total
 
-    budget_limit = int(budget // Decimal("500")) * 500
+    budget_limit = int(Decimal(limit) // Decimal("500")) * 500
+    preferred_path = False
     protein_floor = calorie_cap = None
     if fixed_schedule is not None:
         if len(fixed_schedule) != days:
@@ -1065,6 +1265,7 @@ def build_plan(
             )
         feasible = True
     else:
+        preferred_path = True
         preferred = {TARGET_TAGS[target] for target in targets}
         meal_patterns = {
             meal: _recipe_patterns(
@@ -1156,24 +1357,57 @@ def build_plan(
     ]
     required_budget = round_up_price(min_total, 500)
 
-    selected_codes = [
-        {meal: chosen_by_meal[meal][day]["recipe"].pk for meal in available_meals}
-        for day in range(days)
-    ]
-    quote = quote_schedule(selected_codes, servings=servings, targets=targets, catalog=catalog)
-    schedule, rounded_total = quote["schedule"], quote["total"]
+    def codes_of(chosen):
+        return [
+            {meal: chosen[meal][day]["recipe"].pk for meal in available_meals}
+            for day in range(days)
+        ]
+
+    def quote_codes(codes):
+        return quote_schedule(
+            codes,
+            servings=servings,
+            targets=targets,
+            catalog=catalog,
+            stock=stock,
+            starts_on=starts_on,
+            frozen_days=frozen_days,
+        )
+
+    if stock and fixed_schedule is None:
+        chosen_by_meal = _order_days_by_expiry(
+            chosen_by_meal, available_meals, stock, prior_slot_recipes
+        )
+    selected_codes = codes_of(chosen_by_meal)
+    quote = quote_codes(selected_codes)
+    if stock and fixed_schedule is None and preferred_path:
+        swapped = _prefer_stock(chosen_by_meal, candidates, avoid=recent_recipe_codes)
+        if swapped is not None:
+            # A swap can put the same protein twice in a day; rebalance like the search did.
+            swapped = _balance_days(swapped, available_meals, prior_slot_recipes)
+            swapped = _order_days_by_expiry(swapped, available_meals, stock, prior_slot_recipes)
+            try:
+                swapped_quote = quote_codes(codes_of(swapped))
+            except ValueError:
+                swapped_quote = None
+            # Keep the swap only if it still fits the budget the original fitted.
+            if swapped_quote and (
+                swapped_quote["net_total"] <= budget or quote["net_total"] > budget
+            ):
+                chosen_by_meal, quote = swapped, swapped_quote
+    schedule, rounded_total, net = quote["schedule"], quote["total"], quote["net_total"]
 
     # Upper estimate only: per-recipe fruit quotes are summed, not shared.
     rounded_ceiling = round_up_price(catalog_ceiling, 500)
-    if not feasible and rounded_total <= budget:
-        # Several meals can share one fruit purchase. A conservative per-recipe
-        # search can reject a plan whose combined shopping quote still fits.
+    if not feasible and net <= budget:
+        # Several meals can share one fruit purchase, and pantry stock lowers the
+        # bill. A conservative per-recipe search can reject a plan that still fits.
         feasible = True
-    required_budget = min(required_budget, rounded_total)
-    within_budget = feasible and rounded_total <= budget
+    required_budget = min(required_budget, net)
+    within_budget = feasible and net <= budget
     if fixed_schedule is not None:
-        required_budget = rounded_total
-    return protect_plan_instructions(
+        required_budget = net
+    result = protect_plan_instructions(
         {
             "schedule": schedule,
             "meal_count": len(available_meals),
@@ -1188,8 +1422,8 @@ def build_plan(
             ),
             **quote,
             "difference": (
-                max(0, (int(budget) - rounded_total) // 100 * 100)
-                if rounded_total <= budget
+                max(0, (int(budget) - net) // 100 * 100)
+                if net <= budget
                 else round_up_price(required_budget - int(budget), 100)
             ),
             "within_budget": within_budget,
@@ -1214,6 +1448,7 @@ def build_plan(
             "snapshot": snapshot,
         }
     )
+    return result, catalog
 
 
 def replacement_options(
@@ -1230,11 +1465,15 @@ def replacement_options(
     current_total,
     allergens=(),
     rice="no",
+    stock=(),
+    starts_on=None,
+    frozen_days=frozenset(),
 ):
     """Quote each full alternative schedule using the preview's shopping rules.
 
     Load the catalog once, not once per alternative. Fruit is pooled across all
-    days before buying whole units and rounding the final total.
+    days before buying whole units and rounding the final total. `current_total`
+    and each option's delta are net shopping costs (after pantry stock).
     """
     requested_meals = tuple(item for item in MEALS if item in meal_types)
     catalog = _load_candidates(
@@ -1243,6 +1482,7 @@ def replacement_options(
         exclude_ingredients,
         allergens,
         with_rice=rice_included(rice, servings, targets),
+        stock=stock,
     )
     candidates = catalog[5]
     current_code = schedule[day - 1][meal]
@@ -1253,16 +1493,24 @@ def replacement_options(
         slots = [dict(slots) for slots in schedule]
         slots[day - 1][meal] = item["recipe"].pk
         try:
-            quote = quote_schedule(slots, servings=servings, targets=targets, catalog=catalog)
+            quote = quote_schedule(
+                slots,
+                servings=servings,
+                targets=targets,
+                catalog=catalog,
+                stock=stock,
+                starts_on=starts_on,
+                frozen_days=frozen_days,
+            )
         except ValueError:
             continue
-        if quote["total"] > budget:
+        if quote["net_total"] > budget:
             continue
         options.append(
             {
                 "recipe_code": item["recipe"].pk,
                 "name": item["recipe"].name,
-                "delta": int(quote["total"] - Decimal(current_total)),
+                "delta": int(quote["net_total"] - Decimal(current_total)),
             }
         )
     return sorted(options, key=lambda option: (option["name"].casefold(), option["recipe_code"]))
