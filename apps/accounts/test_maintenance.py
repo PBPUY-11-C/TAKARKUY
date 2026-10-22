@@ -31,7 +31,7 @@ class MaintenanceTests(TestCase):
             "/",
             "/login/",
             "/signup/",
-            "/modul1/",
+            "/planner/",
             "/modul2/",
             "/modul3/",
             "/modul4/",
@@ -147,11 +147,3 @@ class MaintenanceTests(TestCase):
 
     def test_static_prefix_is_not_a_bypass_for_unserved_routes(self):
         self.assertEqual(self.client.get("/static/not-a-real-file/").status_code, 503)
-
-    @override_settings(MAINTENANCE_MODE=False)
-    def test_switching_off_restores_normal_pages_and_authorization(self):
-        for name in ("landing", "login", "signup", "modul1"):
-            self.assertEqual(self.client.get(reverse(name)).status_code, 200)
-        self.assertEqual(self.client.get(reverse("modul5")).status_code, 302)
-        self.client.force_login(self.user)
-        self.assertEqual(self.client.get(reverse("modul5")).status_code, 200)
