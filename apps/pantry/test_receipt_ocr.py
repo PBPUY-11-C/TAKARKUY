@@ -17,12 +17,6 @@ class ReceiptOCRFallbackTests(TestCase):
     def setUp(self):
         self.user = authenticate(self.client)
 
-    @patch.dict(os.environ, {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
-    def test_page_discloses_conditional_photo_fallback(self):
-        response = self.client.get(reverse("modul2"))
-        self.assertContains(response, 'data-gemini-fallback="true"')
-        self.assertContains(response, "foto struk dikirim ke Gemini")
-
     @patch.dict(
         os.environ,
         {

@@ -49,7 +49,7 @@ class PlannerCatalogTests(TestCase):
         self.assertTrue(result["purchase_yield_estimates"])
         self.assertIn("Daun Salam Segar (Estimasi)", result["nutrition_proxy_names"])
         response = self.client.post(
-            "/modul1/",
+            "/planner/",
             {
                 "budget": "100000",
                 "days": "1",
@@ -89,7 +89,7 @@ class PlannerCatalogTests(TestCase):
             ingredients["Parsley Segar"]["price_reference"], "UbiFresh Pasar Modern BSD"
         )
         response = self.client.post(
-            "/modul1/",
+            "/planner/",
             {
                 "budget": "100000",
                 "days": "1",
@@ -179,7 +179,7 @@ class PlannerCatalogTests(TestCase):
             self.assertEqual(first[name]["cost"], second[name]["cost"])
             self.assertGreater(first[name]["leftover_edible_grams"], 0)
         response = self.client.post(
-            "/modul1/",
+            "/planner/",
             {
                 "budget": "18.000",
                 "days": "3",
@@ -342,7 +342,7 @@ class PlannerCatalogTests(TestCase):
 
     def test_nutritional_result_renders_daily_targets(self):
         response = self.client.post(
-            "/modul1/",
+            "/planner/",
             {
                 "budget": "300.000",
                 "days": "1",

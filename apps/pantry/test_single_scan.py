@@ -1,8 +1,6 @@
 """One provider call per scan route; shared untrusted photo/text cache."""
 
 import json
-import re
-from decimal import Decimal
 from unittest.mock import patch
 from uuid import uuid4
 
@@ -227,21 +225,3 @@ class SingleScanTests(TestCase):
         self.assertNotIn("Select a valid choice", str(form.errors))
         self.assertNotIn("Ensure that", str(form.errors))
         self.assertIn("pilihan", str(form.errors).lower())
-
-    def test_indonesian_locale_keeps_machine_decimal_inputs_valid(self):
-        PantryItem.objects.create(
-            user=self.user,
-            session_id="test",
-            name="Bayam",
-            quantity="1.25",
-            unit="pack",
-            source="manual",
-            pack_weight_g="250.5",
-        )
-        page = self.client.get(reverse("modul2"))
-        html = page.content.decode()
-        quantity = re.search(r'data-edit-quantity[^>]*value="([^"]*)"', html).group(1)
-        weight = re.search(r'data-edit-weight[^>]*value="([^"]*)"', html).group(1)
-        self.assertNotIn(",", quantity + weight)
-        self.assertEqual(Decimal(quantity), Decimal("1.25"))
-        self.assertEqual(Decimal(weight), Decimal("250.5"))

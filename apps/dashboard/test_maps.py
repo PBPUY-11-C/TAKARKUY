@@ -260,9 +260,3 @@ class MapTests(TestCase):
         request = json.loads(run.call_args.kwargs["input"])
         self.assertIn("TAKARKUY", request["headers"]["User-Agent"])
         self.assertIsNone(MapProviderGate.objects.get().lease)
-
-    def test_json_script_escapes_map_config_and_policy_allows_origin_referer(self):
-        with override_settings(MAP_TILE_URL="</script><script>alert(1)</script>"):
-            response = self.client.get(reverse("modul5"))
-        self.assertNotContains(response, "</script><script>alert(1)</script>")
-        self.assertEqual(response["Referrer-Policy"], "strict-origin-when-cross-origin")

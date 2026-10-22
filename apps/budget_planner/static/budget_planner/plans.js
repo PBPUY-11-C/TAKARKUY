@@ -156,8 +156,9 @@
     try {
       const data = await request(proposal.apply_url, proposal.over_budget > 0
         ? { new_budget: budgetField.value } : {});
+      globalThis.TakarKuy?.flash("Perubahan diterapkan ke draft. Simpan untuk memakainya.");
       window.location.assign(data.url);
-    } catch (error) { previewFeedback.textContent = error.message; }
+    } catch (error) { previewFeedback.textContent = error.message; globalThis.TakarKuy?.toast(error.message, "error"); }
     finally { applyButton.disabled = false; }
   });
 
@@ -172,16 +173,17 @@
       const values = new FormData(form);
       const data = await request(form.dataset.url, { version: Number(form.dataset.version),
         title: values.get("title"), replace_original: replaceOriginal });
+      globalThis.TakarKuy?.flash("Rencana tersimpan.");
       window.location.assign(data.url);
-    } catch (error) { feedback.textContent = error.message; feedback.scrollIntoView({ block: "center" }); }
+    } catch (error) { feedback.textContent = error.message; globalThis.TakarKuy?.toast(error.message, "error"); feedback.scrollIntoView({ block: "center" }); }
     finally { buttons.forEach((button) => { button.disabled = false; }); }
   }));
 
   document.querySelectorAll("[data-delete-plan]").forEach((button) => button.addEventListener("click", async () => {
     if (!window.confirm(`Hapus rencana “${button.dataset.title}”? Stok pantry tidak berubah.`)) return;
     button.disabled = true;
-    try { const data = await request(button.dataset.url, { version: Number(button.dataset.version) }); window.location.assign(data.url); }
-    catch (error) { feedback.textContent = error.message; feedback.scrollIntoView({ block: "center" }); }
+    try { const data = await request(button.dataset.url, { version: Number(button.dataset.version) }); globalThis.TakarKuy?.flash(`Rencana “${button.dataset.title}” dihapus.`); window.location.assign(data.url); }
+    catch (error) { feedback.textContent = error.message; globalThis.TakarKuy?.toast(error.message, "error"); feedback.scrollIntoView({ block: "center" }); }
     finally { button.disabled = false; }
   }));
 
@@ -201,6 +203,7 @@
     }));
     if (!items.length) {
       feedback.textContent = "Centang minimal satu bahan yang sudah dibeli.";
+      globalThis.TakarKuy?.toast(feedback.textContent, "error");
       return;
     }
     button.disabled = true;
@@ -218,10 +221,12 @@
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body.error || `Request belum berhasil (kode ${response.status}).`);
-      feedback.textContent = `${body.saved} bahan masuk ke Pantry. Atur lokasi/tanggal di Smart Pantry bila perlu.`;
+      feedback.textContent = `${body.saved} bahan masuk ke Pantry. Atur lokasi/tanggal di Pantry bila perlu.`;
+      globalThis.TakarKuy?.flash(feedback.textContent);
       location.reload();
     } catch (error) {
       feedback.textContent = error.message;
+      globalThis.TakarKuy?.toast(error.message, "error");
       button.disabled = false;
     }
   });

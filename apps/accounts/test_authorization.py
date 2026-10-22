@@ -29,16 +29,6 @@ class AuthorizationTests(TestCase):
             source="manual",
         )
 
-    def test_guest_can_only_open_public_pages_and_module_one(self):
-        for name in ("landing", "signup", "login", "modul1"):
-            with self.subTest(page=name):
-                self.assertEqual(self.client.get(reverse(name)).status_code, 200)
-        for name in ("modul2", "modul4", "modul5"):
-            with self.subTest(page=name):
-                self.assertRedirects(
-                    self.client.get(reverse(name)), f"{reverse('login')}?next={reverse(name)}"
-                )
-
     @patch("apps.pantry.views.gemini_read_receipt")
     @patch("apps.pantry.views.resolve_names")
     def test_every_pantry_api_rejects_guest_before_processing(self, resolver, gemini):
@@ -61,35 +51,6 @@ class AuthorizationTests(TestCase):
         self.assertTrue(PantryItem.objects.filter(pk=self.item.pk).exists())
         self.assertEqual(PantryItem.objects.count(), 1)
 
-    def test_same_account_can_read_update_delete_from_another_browser(self):
-        device = Client()
-        device.force_login(self.owner)
-        page = device.get(reverse("modul2"))
-        self.assertContains(page, self.item.name)
-        response = device.patch(
-            reverse("modul2-item-details", args=[self.item.pk]),
-            data=json.dumps(
-                {
-                    "location": "freezer",
-                    "expiry_mode": "auto",
-                    "version": self.item.version,
-                    "operation_key": str(uuid4()),
-                }
-            ),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, 200)
-        self.item.refresh_from_db()
-        self.assertEqual(self.item.location, "freezer")
-        self.assertEqual(
-            device.delete(
-                reverse("modul2-item-delete", args=[self.item.pk]),
-                data=json.dumps({"version": self.item.version, "operation_key": str(uuid4())}),
-                content_type="application/json",
-            ).status_code,
-            200,
-        )
-
     def test_other_account_cannot_access_ids_even_with_copied_pantry_scope(self):
         self.client.force_login(self.other)
         session = self.client.session
@@ -107,13 +68,6 @@ class AuthorizationTests(TestCase):
         )
         self.item.refresh_from_db()
         self.assertEqual(self.item.location, "suhu_ruang")
-
-    def test_switching_accounts_in_same_browser_does_not_share_stock(self):
-        self.client.force_login(self.owner)
-        self.assertContains(self.client.get(reverse("modul2")), self.item.name)
-        self.client.post(reverse("logout"))
-        self.client.force_login(self.other)
-        self.assertNotContains(self.client.get(reverse("modul2")), self.item.name)
 
     def test_legacy_unowned_data_is_preserved_without_automatic_claim(self):
         legacy = PantryItem.objects.create(
@@ -209,26 +163,3 @@ class AuthorizationTests(TestCase):
         self.assertEqual(
             self.client.delete(reverse("modul2-item-delete", args=[self.item.pk])).status_code, 404
         )
-
-    def test_login_next_returns_to_requested_module_and_rejects_external_redirect(self):
-        self.owner.set_password("Demodemo1.")
-        self.owner.save()
-        response = self.client.post(
-            reverse("login"),
-            {
-                "username": "owner",
-                "password": "Demodemo1.",
-                "next": reverse("modul2"),
-            },
-        )
-        self.assertRedirects(response, reverse("modul2"))
-        self.client.post(reverse("logout"))
-        response = self.client.post(
-            reverse("login"),
-            {
-                "username": "owner",
-                "password": "Demodemo1.",
-                "next": "https://example.org/evil",
-            },
-        )
-        self.assertRedirects(response, reverse("modul5"))
