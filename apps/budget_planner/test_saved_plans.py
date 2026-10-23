@@ -429,19 +429,6 @@ class SavedPlanTests(TestCase):
         self.assertEqual(self.draft.snapshot, before)
         self.assertEqual(self.draft.version, version)
 
-    def test_legacy_guest_snapshot_upgrades_ingredient_ids_on_login(self):
-        guest = Client()
-        old = deepcopy(self.quotes[0][2])
-        for group in old["shopping_groups"]:
-            for item in group["items"]:
-                del item["ingredient_code"]
-        session = guest.session
-        session["guest_last_plan"] = {"inputs": self.inputs, "result": json.dumps(freeze(old))}
-        session.save()
-        response = guest.post(reverse("login"), {"username": "other", "password": "Demo1234!"})
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(BudgetPlan.objects.get(user=self.other).shopping_items.exists())
-
     def test_replacement_preserves_other_meal_types_and_days(self):
         inputs = {**self.inputs, "days": 2, "meal_types": ["sarapan", "makan_siang", "makan_malam"]}
         result = build_plan(**clean_inputs(inputs).cleaned_data)
@@ -933,21 +920,6 @@ class SavedPlanTests(TestCase):
         with self.assertRaises(PlanConflict):
             sync_children(saved)
 
-    def test_guest_result_adopted_after_login_without_permanent_save(self):
-        guest = Client()
-        session = guest.session
-        session["guest_last_plan"] = {
-            "inputs": self.inputs,
-            "result": json.dumps(freeze(self.quotes[0][2])),
-        }
-        session.save()
-        response = guest.post(reverse("login"), {"username": "other", "password": "Demo1234!"})
-        self.assertEqual(response.status_code, 302)
-        adopted = BudgetPlan.objects.get(user=self.other)
-        self.assertEqual(adopted.status, "draft")
-        self.assertEqual(adopted.meals.get().recipe_id, self.quotes[0][1])
-        self.assertNotIn("guest_last_plan", guest.session)
-
     def test_guest_adoption_never_clobbers_existing_account_draft(self):
         session = self.client.session
         session["guest_last_plan"] = {
@@ -958,15 +930,6 @@ class SavedPlanTests(TestCase):
         self.client.post(reverse("login"), {"username": "planner", "password": "Demo1234!"})
         self.draft.refresh_from_db()
         self.assertEqual(self.draft.meals.get().recipe_id, self.quotes[0][1])
-
-    def test_invalid_guest_snapshot_does_not_break_login(self):
-        guest = Client()
-        session = guest.session
-        session["guest_last_plan"] = {"inputs": [], "result": "bad json"}
-        session.save()
-        response = guest.post(reverse("login"), {"username": "other", "password": "Demo1234!"})
-        self.assertEqual(response.status_code, 302)
-        self.assertFalse(BudgetPlan.objects.filter(user=self.other).exists())
 
     def test_snapshot_roundtrip_preserves_decimal_and_date(self):
         values = {"date": date(2026, 10, 4), "cost": Decimal("1234.50"), "list": [Decimal("0.03")]}

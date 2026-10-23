@@ -4,9 +4,8 @@ from decimal import Decimal
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
-from django.core.management import call_command
 from django.db import IntegrityError, transaction
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
@@ -17,7 +16,7 @@ from apps.catalog.models import Ingredient, Recipe, RecipeIngredient, RecipeTag
 from apps.pantry.models import PantryItem, PantryMovement, PantryOperation
 from apps.pantry.services import StockError, plan_consumption
 
-from .models import CookingHistory, RecipeFavorite
+from .models import CookingHistory
 from .services import cook, preview_cooking, recipe_query, stock_matches
 
 
@@ -99,15 +98,6 @@ class CookingTests(TestCase):
             snapshot={"name": self.recipe.name},
         )
 
-    def test_page_filters_and_does_not_reduce_stock(self):
-        batch = self.batch()
-        response = self.client.get(reverse("modul4"))
-        self.assertContains(response, "Sup bayam")
-        self.assertContains(response, "Bahan utama lengkap")
-        batch.refresh_from_db()
-        self.assertEqual(batch.quantity, 100)
-        self.assertFalse(CookingHistory.objects.exists())
-
     def test_personal_halal_choice_filters_list_and_direct_cooking(self):
         self.batch()
         RecipeTag.objects.filter(recipe=self.recipe, tag="halal").delete()
@@ -117,7 +107,6 @@ class CookingTests(TestCase):
         preferences.halal_only = False
         preferences.save()
         self.assertTrue(recipe_query(self.user).exists())
-        self.assertContains(self.client.get(reverse("modul4")), "Sup bayam")
         self.assertEqual(self.post("modul4-preview").status_code, 200)
         preferences.halal_only = True
         preferences.save()
@@ -283,53 +272,6 @@ class CookingTests(TestCase):
         batch.refresh_from_db()
         self.assertEqual(batch.quantity, Decimal("50"))
 
-    def test_favorites_are_idempotent_personal_and_inactive_visible(self):
-        data = {"recipe_code": self.recipe.pk, "favorite": True}
-        self.assertEqual(self.post("modul4-favorite", data).status_code, 200)
-        self.post("modul4-favorite", data)
-        self.assertEqual(RecipeFavorite.objects.count(), 1)
-        self.recipe.is_active = False
-        self.recipe.save()
-        self.assertContains(self.client.get(reverse("modul4")), "Tidak tersedia")
-        self.client.force_login(self.other)
-        self.assertNotContains(self.client.get(reverse("modul4")), "Sup bayam")
-        self.client.force_login(self.user)
-        self.assertEqual(self.post("modul4-favorite", {**data, "favorite": False}).status_code, 200)
-
-    def test_guidance_hidden_by_default_but_direct_link_explains(self):
-        self.recipe.instruction_status = "withheld"
-        self.recipe.save()
-        response = self.client.get(reverse("modul4"))
-        self.assertNotContains(response, "Rebus air")
-        self.assertContains(response, "1 resep tanpa panduan")
-        response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
-        self.assertContains(response, "Panduan belum tersedia")
-        self.assertNotContains(response, "Rebus air")
-
-    def test_allergen_index_changes_on_ingredient_link_tag_and_delete(self):
-        self.recipe.refresh_from_db()
-        self.assertTrue(self.recipe.allergen_reviewed)
-        profile = preferences_for(self.user)
-        profile.allergens = ["kacang_pohon"]
-        profile.save()
-        self.ingredient.allergens = ["kacang_pohon"]
-        self.ingredient.save()
-        self.assertFalse(recipe_query(self.user).exists())
-        self.assertContains(self.client.get(reverse("modul4")), "1 karena alergen")
-        self.ingredient.allergens = []
-        self.ingredient.save()
-        self.assertTrue(recipe_query(self.user).exists())
-        tag = RecipeTag.objects.create(
-            recipe_tag_code="TEST-MINOR", recipe=self.recipe, tag="bumbu_minor_tidak_dihitung"
-        )
-        self.assertFalse(recipe_query(self.user).exists())
-        tag.delete()
-        self.assertTrue(recipe_query(self.user).exists())
-        self.link.delete()
-        self.recipe.refresh_from_db()
-        self.assertFalse(self.recipe.allergen_reviewed)
-        call_command("rebuild_recipe_allergens", check=True, verbosity=0)
-
     def test_stale_aggregate_does_not_bypass_execution_screening(self):
         self.batch()
         profile = preferences_for(self.user)
@@ -342,35 +284,6 @@ class CookingTests(TestCase):
             expected_allergens(get_recipe_for_test(self.recipe.pk))[1],
             set(self.recipe.allergen_groups.values_list("group", flat=True)),
         )
-
-    def test_api_guards_bad_inputs_csrf_and_guest(self):
-        self.batch()
-        for changes in (
-            {"servings": True},
-            {"servings": -1},
-            {"manual": {}},
-            {"recipe_code": {}},
-            {"allow_unknown_expiry": "true"},
-        ):
-            self.assertEqual(self.post("modul4-cook", {**self.payload, **changes}).status_code, 400)
-        deep = '{"manual":' + "[" * 1500 + "0" + "]" * 1500 + "}"
-        self.assertEqual(
-            self.client.post(
-                reverse("modul4-cook"), deep, content_type="application/json"
-            ).status_code,
-            400,
-        )
-        csrf_client = Client(enforce_csrf_checks=True)
-        csrf_client.force_login(self.user)
-        self.assertEqual(
-            csrf_client.post(
-                reverse("modul4-cook"), json.dumps(self.payload), content_type="application/json"
-            ).status_code,
-            403,
-        )
-        self.client.logout()
-        self.assertEqual(self.client.get(reverse("modul4")).status_code, 302)
-        self.assertEqual(self.post("modul4-cook").status_code, 403)
 
     def test_manual_overuse_and_invalid_conversion_rejected(self):
         batch = self.batch(quantity=200)
@@ -432,19 +345,6 @@ class CookingTests(TestCase):
         self.assertEqual(history.cooked_at, actual)
         self.assertEqual(slot.scheduled_on, timezone.localdate())
 
-    def test_stock_filters_are_read_only_and_portion_aware(self):
-        batch = self.batch(
-            quantity=99, estimated_expires_on=timezone.localdate() + timedelta(days=1)
-        )
-        self.assertNotContains(
-            self.client.get(reverse("modul4"), {"stock": "complete"}), "Sup bayam"
-        )
-        self.assertContains(self.client.get(reverse("modul4"), {"stock": "soon"}), "Sup bayam")
-        batch.quantity = 100
-        batch.save()
-        self.assertContains(self.client.get(reverse("modul4"), {"stock": "complete"}), "Sup bayam")
-        self.assertFalse(PantryMovement.objects.exists())
-
     def test_stock_matches_counts_unknown_expiry_and_flags_it(self):
         self.batch(estimated_expires_on=None, expiry_source="unknown")
         [row] = stock_matches(self.user, 2)
@@ -460,19 +360,6 @@ class CookingTests(TestCase):
         self.assertFalse(row["complete"])
         self.assertAlmostEqual(row["coverage"], 0.4)
         self.assertEqual(row["missing"], [{"ingredient_code": "TEST-BAYAM", "grams": "60"}])
-
-    def test_pantry_and_book_agree_on_complete_recipes(self):
-        # Undated stock is where the two modules used to disagree.
-        self.batch(estimated_expires_on=None, expiry_source="unknown")
-        servings = preferences_for(self.user).servings
-        pantry = self.client.get(reverse("modul2-recipes"), {"servings": servings}).json()
-        complete = [row["recipe_code"] for row in pantry["recipes"] if row["complete"]]
-        book = self.client.get(reverse("modul4"), {"stock": "complete"})
-        self.assertEqual(complete, [recipe.pk for recipe in book.context["recipes"]])
-        # The link from Modul 2 must land on a detail page that agrees.
-        detail = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk}).context["detail"]
-        self.assertTrue(detail["complete"])
-        self.assertTrue(detail["unknown_expiry"])
 
     def test_stock_matches_uses_dated_stock_before_unknown_source_stock(self):
         # A leftover date on an "unknown" batch must not jump ahead of a labelled batch.

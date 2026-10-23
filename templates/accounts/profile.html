@@ -1,12 +1,12 @@
 {% extends "accounts/base.html" %}
 {% load static %}
 {% block title %}Profil & Preferensi{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/app_header.css' %}"><link rel="stylesheet" href="{% static 'accounts/profile.css' %}">{% endblock %}
-{% block body_class %}profile-page{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/profile.css' %}">{% endblock %}
+{% block body_class %}has-app-nav profile-page{% endblock %}
 {% block header %}{% include "partials/app_header.html" %}{% endblock %}
 {% block content %}
-<main class="profile-card">
-  <a class="back-home" href="{% url 'modul5' %}">← Kembali ke beranda</a>
+<main id="main" class="profile-card">
+  <a class="back-home" href="{% url 'modul1' %}">← Kembali ke beranda</a>
   <h1>Profil & Preferensi</h1>
   <p class="profile-intro">Kelola informasi akun dan kebutuhan makanmu. Preferensi ini digunakan untuk menyusun rencana dan memilih resep.</p>
   {% for message in messages %}<p class="success-message" role="status">{{ message }}</p>{% endfor %}

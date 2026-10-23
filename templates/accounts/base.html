@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   {% include "partials/head.html" %}
   <title>{% block title %}Akun{% endblock %} — TAKARKUY</title>
   <style>
-    :root { --ink: #172235; --muted: #56646b; --green: #007452; --line: #d8e2f3; --canvas: #f7f9fe; --field: #eef2ff; }
+    :root { --field: var(--green-soft); }
     *, *::before, *::after { box-sizing: border-box; }
-    body { min-height: 100vh; display: grid; place-items: center; margin: 0; padding: 28px 16px; background: var(--canvas); color: var(--ink); font-family: "DM Sans", Arial, sans-serif; }
+    body { min-height: 100vh; display: grid; place-items: center; margin: 0; padding: 28px 16px; background: var(--canvas); color: var(--ink); font-family: var(--font); }
     a { color: var(--green); text-decoration: none; font-weight: 700; }
     a:hover { text-decoration: underline; }
     button, input { font: inherit; }
-    .auth-card { width: min(100%, 510px); padding: 36px; border: 1px solid #e9eef5; border-radius: 18px; background: #fff; box-shadow: 0 16px 40px rgba(34, 52, 82, .07); }
+    .auth-card { width: min(100%, 510px); padding: 36px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: 0 16px 40px rgba(15, 61, 46, .07); }
     .auth-card.login { max-width: 430px; }
     .back-home { display: inline-block; margin-bottom: 24px; font-size: 13px; }
     .back-home:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; border-radius: 3px; }

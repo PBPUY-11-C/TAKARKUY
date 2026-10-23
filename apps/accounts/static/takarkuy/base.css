@@ -1,0 +1,178 @@
+/* TAKARKUY shared design tokens, layout shell and components. Page CSS builds on these. */
+:root {
+  --green: #0f3d2e;
+  --green-dark: #0a2c21;
+  --green-mid: #15503c;
+  --lime: #d4f45a;
+  --green-soft: #e6f5ec;
+  --green-line: #b8dcc7;
+  --ink: #10251c;
+  --muted: #5a6f64;
+  --line: #dcebe2;
+  --canvas: #f2f8f4;
+  --surface: #ffffff;
+  --soft: #e6f5ec;
+  --warn: #8a4b0f;
+  --warn-soft: #fff3e0;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --bad: #a52a1c;
+  --bad-soft: #ffd9d4;
+  --soon: #8a4b0f;
+  --soon-soft: #ffe7c2;
+  --unknown: #4a5a52;
+  --unknown-soft: #e9eeeb;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(15, 61, 46, .04), 0 6px 20px rgba(15, 61, 46, .06);
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --header-h: 68px;
+  --bottom-nav-h: 64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--canvas);
+  color: var(--ink);
+  font: 400 15px/1.55 var(--font);
+}
+h1, h2, h3, h4 { font-family: var(--font); color: var(--ink); }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: .55; }
+img, svg { max-width: 100%; }
+[hidden] { display: none !important; }
+
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible, label:focus-within > input[type="file"] + span {
+  outline: 3px solid #2f9e72;
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 14px;
+  border-radius: var(--radius-sm); background: var(--ink); color: #fff; font-weight: 700;
+}
+.skip-link:focus { top: 12px; }
+
+/* Header + navigation (same on every signed-in page). */
+.app-header {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  min-height: var(--header-h); padding: 10px clamp(16px, 4vw, 48px);
+  background: var(--green); color: #fff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .06);
+}
+.app-brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: .02em; }
+.app-brand img { width: 34px; height: 40px; flex: none; }
+.app-nav { display: flex; align-items: center; gap: 4px; }
+.app-nav a {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px;
+  border-radius: 999px; color: #cfe3d8; font-size: 14px; font-weight: 600;
+}
+.app-nav a:hover { color: #fff; background: var(--green-mid); }
+.app-nav a[aria-current="page"] { color: var(--green); background: var(--lime); font-weight: 700; }
+.app-nav svg { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.app-account { display: flex; align-items: center; gap: 10px; }
+.app-account form { margin: 0; }
+.profile-link { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 4px 12px 4px 4px; border-radius: 999px; font-size: 14px; font-weight: 600; }
+.profile-link { color: #fff; }
+.profile-link:hover, .profile-link[aria-current="page"] { background: var(--green-mid); }
+.app-header .btn-ghost { color: #cfe3d8; }
+.app-header .btn-ghost:hover { background: var(--green-mid); color: #fff; }
+.app-header .btn-primary { background: var(--lime); color: var(--green); }
+.app-header .btn-primary:hover { background: #e2fa83; }
+.avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--lime); color: var(--green); font-size: 14px; font-weight: 700; text-transform: uppercase; }
+
+/* Buttons. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 10px 18px; border: 1px solid transparent; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 700; line-height: 1.2; text-align: center; transition: background .15s, border-color .15s, transform .15s;
+}
+.btn-primary { background: var(--green); color: var(--lime); }
+.btn-primary:hover { background: var(--green-mid); }
+.btn-lime { background: var(--lime); color: var(--green); }
+.btn-lime:hover { background: #e2fa83; }
+.btn-secondary { background: var(--surface); border-color: var(--line); color: var(--green-dark); }
+.btn-secondary:hover { border-color: var(--green-line); background: var(--green-soft); }
+.btn-ghost { background: transparent; color: var(--muted); }
+.btn-ghost:hover { background: var(--soft); color: var(--ink); }
+.btn-danger { background: var(--surface); border-color: #f1c6c1; color: var(--danger); }
+.btn-danger:hover { background: var(--danger-soft); }
+.btn[aria-busy="true"]::after {
+  content: ""; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent;
+  border-radius: 50%; animation: tk-spin .7s linear infinite;
+}
+@keyframes tk-spin { to { transform: rotate(1turn); } }
+
+/* Status pills and filter chips. */
+.pill { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 10px; border-radius: 999px; background: var(--unknown-soft); color: var(--unknown); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.pill-bad { background: var(--bad-soft); color: var(--bad); }
+.pill-warn { background: var(--soon-soft); color: var(--soon); }
+.pill-ok { background: var(--lime); color: var(--green); }
+.pill-unknown { background: var(--unknown-soft); color: var(--unknown); }
+.chip { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: 14px; font-weight: 600; cursor: pointer; }
+.chip:hover { border-color: var(--green-line); background: var(--soft); }
+.chip[aria-pressed="true"], input:checked + .chip { border-color: var(--green); background: var(--green); color: var(--lime); }
+
+/* Page scaffolding. */
+.page-shell { max-width: 1160px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 32px) 72px; }
+.page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.page-head h1 { margin: 4px 0 0; font-size: clamp(26px, 3.4vw, 34px); line-height: 1.2; letter-spacing: -.02em; }
+.page-head .lead { margin: 6px 0 0; max-width: 640px; color: var(--muted); }
+.eyebrow { margin: 0; color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.card { padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.hint { color: var(--muted); font-size: 13px; line-height: 1.55; }
+.kbd { display: inline-block; min-width: 20px; padding: 0 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; background: var(--surface); font-size: 12px; font-weight: 700; text-align: center; }
+
+/* Toasts: short, visual confirmation of an action (the page's own live region speaks it). */
+.toast-stack {
+  position: fixed; z-index: 60; right: 16px; bottom: 16px; display: grid; gap: 10px;
+  width: min(380px, calc(100vw - 32px)); pointer-events: none;
+}
+.toast {
+  display: flex; align-items: flex-start; gap: 10px; padding: 13px 14px; border-radius: 12px;
+  background: var(--ink); color: #fff; box-shadow: 0 12px 30px rgba(15, 61, 46, .25);
+  font-size: 14px; line-height: 1.45; pointer-events: auto; animation: tk-toast-in .2s ease-out;
+}
+.toast::before { content: ""; flex: none; width: 10px; height: 10px; margin-top: 6px; border-radius: 50%; background: #5fd3a5; }
+.toast.error::before { background: #ff8a7a; }
+.toast p { flex: 1; margin: 0; }
+.toast button { flex: none; min-width: 32px; min-height: 32px; margin: -6px -6px -6px 0; border: 0; border-radius: 8px; background: transparent; color: #cfd6df; font-size: 18px; }
+.toast button:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+@keyframes tk-toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Phones: the main navigation becomes a bottom tab bar within thumb reach. */
+@media (max-width: 760px) {
+  body.has-app-nav { padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom)); }
+  /* backdrop-filter would make the header the containing block of the fixed tab bar. */
+  .app-header { min-height: 60px; gap: 10px; background: var(--green); backdrop-filter: none; }
+  .app-brand { font-size: 15px; }
+  .app-brand img { width: 29px; height: 34px; }
+  .app-nav {
+    position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; justify-content: space-around; gap: 0;
+    height: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom)); padding: 4px 6px env(safe-area-inset-bottom);
+    background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -4px 16px rgba(15, 61, 46, .08);
+  }
+  .app-nav a { flex: 1; color: var(--muted); flex-direction: column; justify-content: center; gap: 2px; min-height: 56px; padding: 4px; border-radius: 12px; font-size: 12px; }
+  .app-nav a:hover { background: transparent; color: var(--ink); }
+  .app-nav a[aria-current="page"] { background: transparent; color: var(--green); }
+  .app-nav a[aria-current="page"] svg { stroke: var(--green); }
+  .profile-name { display: none; }
+  .profile-link { padding: 4px; }
+  .toast-stack { bottom: calc(var(--bottom-nav-h) + 12px + env(safe-area-inset-bottom)); left: 16px; right: 16px; width: auto; }
+  .page-shell { padding-top: 22px; }
+}

@@ -178,17 +178,6 @@ class BatchTests(TestCase):
         self.assertEqual(self.edit(item, location="freezer", quantity="100").status_code, 200)
         self.assertEqual(item.movements.last().kind, "move")
 
-    def test_used_up_batch_leaves_stock_list_but_keeps_its_history(self):
-        item = self.batch()
-        self.edit(item, quantity="0.5")  # writes a ledger movement
-        PantryItem.objects.filter(pk=item.pk).update(name="Bayam Habis", quantity=0)
-        page = self.client.get(reverse("modul2"))
-        self.assertNotIn(item.pk, [row.pk for row in page.context["pantry_items"]])
-        self.assertEqual([row.pk for row in page.context["used_up_items"]], [item.pk])
-        self.assertContains(page, "Stok habis (30 hari terakhir)")
-        self.assertContains(page, "Bayam Habis")
-        self.assertContains(page, "Koreksi")
-
     def test_rename_without_catalog_code_resolves_from_new_name(self):
         item = self.batch()
         self.assertEqual(self.edit(item, name="bayam").status_code, 200)

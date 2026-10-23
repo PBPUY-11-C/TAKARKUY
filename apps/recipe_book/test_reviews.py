@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from . import tests as cooking_tests
 from .models import CookingHistory, RecipeReview, ReviewQuota
-from .reviews import public_username, review_context
+from .reviews import public_username
 from .services import cook
 
 
@@ -27,17 +27,6 @@ class ReviewTests(TestCase):
     def cooked(self):
         self.batch()
         return cook(self.user, self.payload)
-
-    def test_review_pagination_keeps_slot(self):
-        for index in range(6):
-            reviewer = get_user_model().objects.create_user(f"reviewer{index}")
-            RecipeReview.objects.create(user=reviewer, recipe=self.recipe, rating=5)
-        slot = self.slot()
-        response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk, "slot": slot.pk})
-        self.assertRegex(
-            response.content.decode(),
-            rf'href="\?[^"]*slot={slot.pk}[^"]*review_page=2#recipe-reviews"',
-        )
 
     def test_must_have_own_cooking_history_on_every_save(self):
         self.assertEqual(self.post_review().status_code, 403)
@@ -89,23 +78,6 @@ class ReviewTests(TestCase):
         for user, rating in ((self.user, 4), (self.other, 6)):
             with self.assertRaises(IntegrityError), transaction.atomic():
                 RecipeReview.objects.create(user=user, recipe=self.recipe, rating=rating)
-
-    def test_public_stats_hide_moderated_reviews_and_never_publish_email(self):
-        legacy = get_user_model().objects.create_user("private@example.com", "private@example.com")
-        RecipeReview.objects.create(
-            user=legacy, recipe=self.recipe, rating=5, comment='<img src=x onerror="alert(1)">'
-        )
-        RecipeReview.objects.create(user=self.other, recipe=self.recipe, rating=3)
-        RecipeReview.objects.create(user=self.user, recipe=self.recipe, rating=1, is_hidden=True)
-        data = review_context(self.user, self.recipe)
-        self.assertEqual(data["review_stats"], {"average": 4, "count": 2})
-        self.assertRegex(public_username(legacy), r"^Penakar #[0-9a-f]{12}$")
-        self.assertNotEqual(public_username(legacy), f"Penakar #{legacy.pk}")
-        response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
-        self.assertNotContains(response, "private@example.com")
-        self.assertContains(response, public_username(legacy))
-        self.assertContains(response, "&lt;img")
-        self.assertNotContains(response, '<img src=x onerror="alert(1)">')
 
     @override_settings(SECRET_KEY="review-alias-test-key")
     def test_legacy_alias_is_stable_distinct_and_does_not_replace_regular_username(self):

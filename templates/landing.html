@@ -2,180 +2,231 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  {% include "partials/head.html" %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="TAKARKUY membantu Anda mengatur budget makan dan menghabiskan stok pantry tanpa sisa.">
-  <title>TAKARKUY — Makan enak, hemat, tanpa sisa</title>
+  <title>TAKARKUY</title>
+  <link rel="icon" href="{% static 'takarkuy/logo.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'takarkuy/base.css' %}?v=20261022-layout2">
   <style>
-    :root {
-      --green: #007452;
-      --green-dark: #005b40;
-      --mint: #c9f8e5;
-      --ink: #172235;
-      --muted: #4b5563;
-      --line: #e4eaf2;
-      --canvas: #f7f9fe;
-      --panel: #ecf2ff;
-      --gold: #ecaa00;
-    }
+    .wrap { max-width: 1160px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 32px); }
+    .site-nav { display: flex; align-items: center; gap: 4px; }
+    .site-nav .nav-link { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; color: #cfe3d8; font-weight: 600; font-size: 15px; }
+    .site-nav .nav-link:hover { color: #fff; }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      font-family: "DM Sans", Arial, sans-serif;
-      background: var(--canvas);
-    }
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; }
+    .hero { background: var(--green); color: #fff; padding: 64px 0 96px; }
+    .hero-in { display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
+    .hero-copy { flex: 1 1 420px; }
+    .pill-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: var(--green-mid); color: var(--lime); font-size: 13px; font-weight: 700; }
+    .hero h1 { margin: 18px 0 16px; color: #fff; font-size: clamp(36px, 5vw, 54px); line-height: 1.08; letter-spacing: -.035em; }
+    .hero h1 .accent { color: var(--lime); }
+    .hero .lead { max-width: 480px; margin: 0 0 28px; color: #cfe3d8; font-size: 18px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-actions .btn { min-height: 52px; padding-inline: 24px; font-size: 16px; }
+    .btn-outline { border-color: #2f7a57; color: #fff; background: transparent; }
+    .btn-outline:hover { background: var(--green-mid); border-color: #fff; }
+    .hero-note { margin: 16px 0 0; color: #9fcbb4; font-size: 13px; }
+    .hero-visual { flex: 1 1 360px; max-width: 460px; display: grid; gap: 12px; }
+    .mock { padding: 20px; border-radius: 20px; background: #fff; color: var(--ink); box-shadow: 0 20px 40px rgba(0, 0, 0, .18); }
+    .mock-head { display: flex; justify-content: space-between; align-items: baseline; }
+    .mock-head span, .mock-meta { color: var(--muted); font-size: 13px; }
+    .mock-total { margin: 6px 0 10px; font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+    .mock-bar { height: 8px; border-radius: 99px; background: var(--soft); overflow: hidden; }
+    .mock-bar span { display: block; width: 82%; height: 100%; background: var(--green); }
+    .mock-meta { display: flex; justify-content: space-between; margin-top: 6px; }
+    .mock-meta strong { color: var(--green); }
+    .mock-day { margin-left: 32px; padding-block: 16px; }
+    .mock-day ul { margin: 0; padding: 0; list-style: none; }
+    .mock-day li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--soft); font-size: 14px; }
+    .mock-day li:last-child { border-bottom: 0; padding-bottom: 0; }
+    .mock-day b { color: var(--green-mid); }
 
-    .site-header {
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 clamp(24px, 4vw, 54px);
-      background: rgba(255, 255, 255, .9);
-      border-bottom: 1px solid #edf0f5;
-      box-shadow: 0 3px 14px rgba(28, 40, 62, .04);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      backdrop-filter: blur(12px);
-    }
-    .brand { display: flex; align-items: center; gap: 10px; font: 700 17px "Plus Jakarta Sans", sans-serif; color: var(--green-dark); }
-    .brand-mark {
-      display: grid; place-items: center; width: 31px; height: 31px; color: white;
-      background: var(--green); border-radius: 9px; transform: rotate(-6deg);
-      box-shadow: 0 4px 10px rgba(0, 116, 82, .17);
-    }
-    .brand-mark svg { transform: rotate(6deg); width: 19px; }
-    .nav-links { display: flex; position: absolute; left: 50%; align-items: center; gap: clamp(22px, 3.4vw, 42px); margin: 0; transform: translateX(-50%); }
-    .nav-links a, .header-actions a { font-size: 14px; font-weight: 600; color: #26312e; }
-    .nav-links a:hover, .login-link:hover { color: var(--green); }
-    .header-actions { display: flex; align-items: center; gap: 17px; }
-    .login-link { color: var(--green) !important; }
-    .button {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0;
-      border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .2s, background .2s;
-    }
-    .button:hover { transform: translateY(-2px); }
-    .button.button-primary { min-height: 40px; padding: 0 18px; color: #fff; background: var(--green); box-shadow: 0 5px 10px rgba(0, 93, 66, .17); }
-    .button-primary:hover { background: var(--green-dark); }
-    .profile-button { width: 32px; height: 32px; padding: 0; border-radius: 50%; color: white; background: var(--green-dark); }
+    .perks { margin-top: -36px; }
+    .perk-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .perk { display: flex; align-items: center; gap: 14px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .perk strong { display: block; font-size: 15px; }
+    .perk span:not(.perk-icon) { color: var(--muted); font-size: 13px; }
+    .perk-icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--soft); color: var(--green); }
+    .perk-icon svg, .check { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    .hero { max-width: 1120px; margin: 0 auto; padding: 93px 24px 28px; text-align: center; }
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: 7px; padding: 5px 17px;
-      color: var(--green-dark); background: #dce9ff; border-radius: 999px; font-size: 12px; font-weight: 600;
+    .band { padding-block: 72px 24px; scroll-margin-top: var(--header-h); }
+    .band h2 { margin: 6px 0 28px; font-size: clamp(26px, 3vw, 32px); letter-spacing: -.02em; }
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+    .step { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .step b { font-size: 28px; color: var(--green-mid); }
+    .step h3 { margin: 10px 0 4px; font-size: 16px; }
+    .step p { margin: 0; color: var(--muted); font-size: 14px; }
+    .step.dark { background: var(--green); border-color: var(--green); color: #fff; }
+    .step.dark b { color: var(--lime); }
+    .step.dark h3 { color: #fff; }
+    .step.dark p { color: #cfe3d8; }
+
+    .features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .feature { padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+    .feature h3 { margin: 0 0 4px; font-size: 18px; }
+    .feature > p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+    .feature ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 14px; }
+    .feature li { display: flex; align-items: center; gap: 8px; }
+    .feature .check { width: 16px; height: 16px; flex: none; color: var(--green-mid); stroke-width: 3; }
+    .feature-main { grid-row: span 2; display: flex; flex-direction: column; gap: 16px; padding: 28px; background: var(--green); border-color: var(--green); color: #fff; }
+    .feature-main h3 { font-size: 26px; color: #fff; }
+    .feature-main > p { margin: 0; color: #cfe3d8; font-size: 15px; }
+    .feature-main ul { gap: 10px; font-size: 15px; }
+    .feature-main .check { width: 18px; height: 18px; color: var(--lime); }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .stats div { padding: 12px; border-radius: 12px; background: var(--green-mid); }
+    .stats b { display: block; color: var(--lime); font-size: 22px; }
+    .stats span { color: #cfe3d8; font-size: 12px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chips span { padding: 8px 12px; border-radius: 999px; background: var(--green-mid); font-size: 13px; font-weight: 700; }
+    .feature-main .btn { align-self: flex-start; }
+
+    .cta { padding-block: 48px 88px; }
+    .cta-box { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding: 48px 32px; border-radius: 24px; background: var(--green); color: #fff; }
+    .cta-box h2 { margin: 0 0 6px; color: #fff; font-size: clamp(24px, 3vw, 30px); }
+    .cta-box p { margin: 0; color: #cfe3d8; }
+    .site-footer { padding: 24px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; text-align: center; }
+
+    @media (max-width: 900px) {
+      .perk-grid, .features { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .feature-main { grid-row: auto; }
+      .mock-day { margin-left: 0; }
     }
-    .leaf { width: 12px; height: 12px; position: relative; display: inline-block; background: var(--green); border-radius: 12px 0 12px 0; transform: rotate(-42deg); }
-    .leaf::after { content: ""; position: absolute; width: 1px; height: 11px; background: white; left: 5px; top: 2px; transform: rotate(45deg); opacity: .8; }
-    h1 { max-width: 850px; margin: 21px auto 14px; font: 800 clamp(36px, 4.35vw, 55px)/1.14 "Plus Jakarta Sans", sans-serif; letter-spacing: -2.8px; }
-    .accent { color: var(--green); text-decoration: underline; text-decoration-color: #65e7bb; text-decoration-thickness: 4px; text-underline-offset: 8px; }
-    .intro { max-width: 665px; margin: 0 auto; color: #4f555d; font-size: 16px; line-height: 1.6; }
-    .hero-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 23px; }
-    .hero-actions .button { min-height: 43px; padding: 0 23px; }
-    .button-secondary { color: var(--green); background: white; box-shadow: 0 1px 3px rgba(24, 37, 58, .08); }
-    .play-icon { display: grid; place-items: center; width: 16px; height: 16px; color: white; background: var(--green); border-radius: 50%; font-size: 8px; }
-    .proof { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 17px; margin-top: 27px; color: #525a5b; font-size: 13px; }
-    .stars { color: var(--gold); font-size: 18px; letter-spacing: -1px; }
-    .proof strong { color: var(--ink); margin-left: 7px; }
-    .dot { width: 4px; height: 4px; border-radius: 50%; background: #afc7bc; }
-    .badge-check { display: inline-grid; place-items: center; width: 15px; height: 15px; margin-right: 5px; border-radius: 50%; border: 1.5px solid var(--green); color: var(--green); font-size: 10px; }
-
-    .dashboard-shell { max-width: 1162px; margin: 5px auto 26px; padding: 35px; border-radius: 15px; background: var(--panel); box-shadow: 0 9px 19px rgba(35, 52, 84, .16); text-align: left; }
-    .browser-bar { height: 47px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: white; border-radius: 9px; font-size: 12px; }
-    .traffic { display: flex; gap: 7px; align-items: center; }
-    .traffic span { width: 12px; height: 12px; border-radius: 50%; }
-    .traffic span:nth-child(1) { background: #e64635; }.traffic span:nth-child(2) { background: #f3a712; }.traffic span:nth-child(3) { background: #61d5a5; }
-    .week { margin-left: 11px; color: #37413f; font-weight: 600; }
-    .calendar { color: var(--green); margin-right: 6px; }
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 15px; }
-    .stat-card { min-height: 169px; padding: 23px 16px 15px; background: white; border-radius: 13px; box-shadow: 0 1px 2px rgba(40, 52, 74, .03); }
-    .stat-top { display: flex; align-items: center; justify-content: space-between; color: #475052; font-size: 12px; }
-    .stat-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; color: var(--green); background: #e2ecff; font-size: 16px; }
-    .alert .stat-top { color: #a95c00; }.alert .stat-icon { color: #c37a00; background: #fff1c8; }
-    .stat-card h3 { margin: 10px 0 3px; font: 700 20px "Plus Jakarta Sans", sans-serif; letter-spacing: -1px; }
-    .stat-card p { margin: 0; color: #4d5657; font-size: 11px; line-height: 1.45; }
-    .green-text { color: var(--green); font-weight: 700; }.warm { color: #af5e00; }
-    .progress { height: 8px; overflow: hidden; margin: 23px 0 8px; border-radius: 10px; background: #dce9ff; }.progress span { display: block; width: 52%; height: 100%; border-radius: inherit; background: var(--green); }
-    .small-row { display: flex; justify-content: space-between; color: #4f5657; font-size: 10px; }.small-row strong { color: var(--green); }
-    .expiry { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 5px 7px; color: #be6800; background: #fff8e5; border-radius: 8px; font-size: 10px; }.expiry strong { color: var(--green); text-decoration: underline; }
-    .recommendation h3 { font-size: 17px; }.price { display: block; margin-top: 27px; color: var(--green); font-size: 13px; font-weight: 700; }.match { float: right; padding: 3px 5px; color: var(--green); background: #e6f8f1; border-radius: 6px; font-size: 10px; }
-    .saved { color: white; background: #007659; }.saved .stat-top, .saved p { color: white; }.saved .stat-icon { color: white; background: #0b916e; }.saved h3 { margin-top: 15px; color: white; font-size: 22px; }.saved p { font-size: 11px; }.saved-foot { margin-top: 22px; color: #c8f6e2; font-size: 10px; }
-    .schedule { margin-top: 15px; padding: 17px 15px 15px; border-radius: 13px; background: white; }.schedule-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 11px; }.schedule h2 { margin: 0; font: 700 17px "Plus Jakarta Sans", sans-serif; letter-spacing: -.6px; }.schedule a { color: var(--green); font-size: 11px; font-weight: 700; }
-    .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }.day { min-height: 67px; padding: 8px 4px; border-radius: 8px; text-align: center; background: #eaf0ff; }.day.today { background: #d1fae7; }.day-name { display: block; color: #40484b; font-size: 9px; font-weight: 700; }.today .day-name { color: var(--green); }.meal { display: block; margin-top: 3px; color: #192638; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.day:last-child .meal { white-space: normal; }.day small { color: var(--green); font-size: 10px; }.day:last-child small { color: #526063; }
-
-    @media (max-width: 850px) { .nav-links { display: none; }.stats { grid-template-columns: repeat(2, 1fr); }.dashboard-shell { margin-inline: 18px; padding: 18px; }.days { grid-template-columns: repeat(4, 1fr); }.day { min-height: 58px; } }
-    @media (max-width: 550px) { .site-header { padding: 0 18px; }.brand { font-size: 15px; }.header-actions .login-link, .profile-button { display: none; }.button-primary { padding: 0 12px; }.hero { padding-top: 62px; } h1 { letter-spacing: -1.7px; }.intro { font-size: 14px; }.stats { grid-template-columns: 1fr; gap: 10px; }.stat-card { min-height: 142px; }.browser-bar { padding: 0 9px; }.days { grid-template-columns: repeat(2, 1fr); }.dashboard-shell { padding: 12px; }.schedule-head { align-items: flex-start; gap: 12px; }.schedule h2 { font-size: 14px; } }
-    .info-section { max-width: 1100px; margin: 64px auto; padding: 0 24px; scroll-margin-top: 90px; }
-    .info-section h2 { font: 800 clamp(24px, 4vw, 34px) "Plus Jakarta Sans", sans-serif; letter-spacing: -1px; }
-    .section-intro, .info-section p { color: var(--muted); line-height: 1.8; }
-    .info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-    .info-card, .budget-calculator, .faq-item { padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: white; }
-    .info-card h3 { font-size: 18px; }
-    .step-number { color: var(--green); font-weight: 800; font-size: 26px; }
-    .calculator-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-    .calculator-fields label { display: block; font-weight: 700; font-size: 14px; }
-    .calculator-fields input { width: 100%; margin-top: 8px; padding: 12px; border: 1px solid #bacfc6; border-radius: 8px; font: inherit; }
-    .calculator-result { display: block; margin: 22px 0; color: var(--green-dark); font-weight: 700; line-height: 1.8; }
-    .faq-item { margin-bottom: 12px; }
+    @media (max-width: 560px) {
+      .site-nav .nav-link:not(.keep) { display: none; }
+      .steps { grid-template-columns: 1fr; }
+      .hero-actions .btn { width: 100%; }
+    }
+    .budget-calculator { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+    .calculator-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .calculator-fields label { display: grid; gap: 8px; font-weight: 700; }
+    .calculator-fields input { width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--green-line); border-radius: 10px; background: var(--canvas); font: inherit; }
+    .calculator-result { display: block; margin: 20px 0; }
+    .faq-item { padding: 18px 0; border-bottom: 1px solid var(--line); }
     .faq-item summary { cursor: pointer; font-weight: 700; }
-    a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
-    .preview-note { text-align: center; color: var(--muted); font-size: 13px; padding: 12px; }
-    .site-footer { padding: 30px 24px; text-align: center; border-top: 1px solid var(--line); color: var(--muted); }
-    @media (max-width: 650px) { .info-grid, .calculator-fields { grid-template-columns: 1fr; } .info-section { margin-block: 44px; } }
-    @media (max-width: 550px) { .header-actions { gap: 10px; } .header-actions .login-link { display: inline; font-size: 12px; } .header-actions .button { padding-inline: 10px; font-size: 12px; } }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .button { transition: none; } }
+    @media (max-width: 600px) { .calculator-fields { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  {% include "partials/app_header.html" with variant="landing" %}
+  <a class="skip-link" href="#main">Langsung ke konten</a>
+  <header class="app-header">
+    <a class="app-brand" href="{% url 'landing' %}" aria-label="TAKARKUY, ke beranda"><img src="{% static 'takarkuy/logo-light.svg' %}" alt="" width="34" height="40"><span>TAKARKUY</span></a>
+    <nav class="site-nav" aria-label="Halaman">
+      <a class="nav-link" href="#fitur">Fitur</a>
+      <a class="nav-link" href="#cara-kerja">Cara kerja</a>
+      <a class="nav-link keep" href="{% url 'login' %}">Masuk</a>
+      <a class="btn btn-lime" href="{% url 'signup' %}">Daftar</a>
+    </nav>
+  </header>
 
-  <main id="home">
+  <main id="main">
     <section class="hero" aria-labelledby="hero-title">
-      <h1 id="hero-title">Masak Enak Sesuai Budget,<br><span class="accent">Habiskan Stok Kulkas</span> Tanpa Sisa</h1>
-      <p class="intro">Rencanakan menu dari budget dan bahan yang kamu punya. Simpan target makan, alergi, serta pilihan halal dalam satu akun.</p>
-      <div class="hero-actions">
-        <a class="button button-primary" href="{% url 'modul1' %}">Coba Gratis Sekarang <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="proof" aria-label="Akses percobaan">
-        <span><strong>Coba tanpa akun</strong></span><span class="dot" aria-hidden="true"></span><span>3 simulasi berhasil per 24 jam per browser</span>
+      <div class="wrap hero-in">
+        <div class="hero-copy">
+          <span class="pill-tag">Perencana makan hemat</span>
+          <h1 id="hero-title">Masak enak sesuai budget, <span class="accent">habiskan stok kulkas</span></h1>
+          <p class="lead">Masukkan budget, dapat menu dan daftar belanja untuk 1–7 hari.</p>
+          <div class="hero-actions">
+            <a class="btn btn-lime" href="{% url 'modul1' %}">Coba Planner gratis <span aria-hidden="true">→</span></a>
+            <a class="btn btn-outline" href="#cara-kerja">Lihat cara kerja</a>
+          </div>
+          <p class="hero-note">Tanpa akun 3x per hari · akun gratis untuk menyimpan rencana</p>
+        </div>
+        <div class="hero-visual" aria-label="Contoh tampilan">
+          <div class="mock">
+            <div class="mock-head"><strong>Rencana 3 hari</strong><span>Contoh</span></div>
+            <div class="mock-total">Rp 123.500</div>
+            <div class="mock-bar"><span></span></div>
+            <div class="mock-meta"><span>Budget Rp 150.000</span><strong>Sisa Rp 26.500</strong></div>
+          </div>
+          <div class="mock mock-day">
+            <strong>Hari ini</strong>
+            <ul>
+              <li><span><b>Pagi</b> · Bubur ayam</span><span>Rp 7rb</span></li>
+              <li><span><b>Siang</b> · Tumis tempe</span><span>Rp 7rb</span></li>
+              <li><span><b>Malam</b> · Sup bayam</span><span>Rp 8rb</span></li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="dashboard-shell" id="demo" aria-label="Preview dashboard TAKARKUY">
-      <p class="preview-note">Contoh ilustrasi tampilan. Angka, menu, dan jadwal berikut bukan data akun atau hasil penghematan terverifikasi.</p>
-      <div class="browser-bar"><div class="traffic"><span></span><span></span><span></span></div></div>
-      <div class="stats">
-        <article class="stat-card"><div class="stat-top"><span>Budget Mingguan</span><span class="stat-icon">▣</span></div><h3>Rp 350.000</h3><p>Terpakai: <span class="green-text">Rp 182.000</span> (52%)</p><div class="progress"><span></span></div><div class="small-row"><span>Sisa Rp 168.000</span><strong>Aman (4 hari lagi)</strong></div></article>
-        <article class="stat-card alert"><div class="stat-top"><span>Virtual Pantry Alert</span><span class="stat-icon">⚠</span></div><h3>2 Bahan Mendesak</h3><p>Bayam (1 ikat) &amp; Tahu Putih (1 pack)<br>harus diolah sebelum besok.</p><div class="expiry"><span>◴ &nbsp;&lt;24 jam tersisa</span><strong>Olah Sekarang →</strong></div></article>
-        <article class="stat-card recommendation"><div class="stat-top"><span>Rekomendasi Hari Ini</span><span class="stat-icon">♨</span></div><h3>Sup Bening Bayam Tahu</h3><p>Memanfaatkan stok bayam &amp; tahu yang<br>mendekati kedaluwarsa.</p><span class="price">Rp 12.000<span class="match">◎ 100% Cocok</span><small>/porsi</small></span></article>
-        <article class="stat-card saved"><div class="stat-top"><span>Estimasi Terhemat</span><span class="stat-icon">♧</span></div><h3>Rp 420.000</h3><p>Total penghematan bulan ini dari cegah food waste &amp; belanja terencana.</p><div class="saved-foot">↗ &nbsp;28% lebih hemat dari rata-rata</div></article>
-      </div>
-      <section class="schedule" aria-labelledby="schedule-title"><div class="schedule-head"><h2 id="schedule-title">Contoh Jadwal Masak Pekan Ini</h2><a href="{% url 'modul1' %}">Buat Rencana →</a></div><div class="days">
-        <div class="day"><span class="day-name">Senin</span><span class="meal">Tumis Kangkung</span><small>Rp 9k/porsi</small></div><div class="day"><span class="day-name">Selasa</span><span class="meal">Ayam Ungkep Kecap</span><small>Rp 18k/porsi</small></div><div class="day"><span class="day-name">Rabu</span><span class="meal">Sayur Lodeh Labu</span><small>Rp 11k/porsi</small></div><div class="day today"><span class="day-name">Kamis (Hari Ini)</span><span class="meal">Sup Bayam Tahu</span><small>Rp 12k/porsi</small></div><div class="day"><span class="day-name">Jumat</span><span class="meal">Tempe Mendoan &amp; S...</span><small>Rp 8k/porsi</small></div><div class="day"><span class="day-name">Sabtu</span><span class="meal">Nasi Goreng Kulkas</span><small>Rp 7k/porsi</small></div><div class="day"><span class="day-name">Minggu</span><span class="meal">Belanja Stok &amp; Evaluasi</span><small>Rencana pekan depan</small></div>
-      </div></section>
-    </section>
-    <section class="info-section" id="masalah" aria-labelledby="problem-title">
-      <h2 id="problem-title">Budget terbatas, isi kulkas sering terlupakan?</h2>
-      <p class="section-intro">Belanja dan memasak lebih mudah ketika kamu tahu apa yang tersedia, berapa yang bisa dibelanjakan, dan menu apa yang sesuai.</p>
-      <div class="info-grid">
-        <article class="info-card"><h3>Budget makan sulit diatur</h3><p>Susun menu dan estimasi belanja sesuai batas anggaran sebelum membeli bahan.</p></article>
-        <article class="info-card"><h3>Bahan menumpuk di dapur</h3><p>Catat stok dan perhatikan bahan yang perlu segera diolah agar tidak terlupakan.</p></article>
-        <article class="info-card"><h3>Bingung memilih menu</h3><p>Gunakan target makan, alergi, bahan yang dihindari, dan pilihan halal untuk menyaring menu.</p></article>
+    <section class="wrap perks" aria-label="Keunggulan">
+      <div class="perk-grid">
+        <div class="perk"><span class="perk-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span><div><strong>Tidak lewat budget</strong><span>Total selalu dicek</span></div></div>
+        <div class="perk"><span class="perk-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 10h14M9 6.5v1M9 13v3"/></svg></span><div><strong>Stok dipakai dulu</strong><span>Belanja jadi lebih kecil</span></div></div>
+        <div class="perk"><span class="perk-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg></span><div><strong>Gizi terhitung</strong><span>Kalori dan protein harian</span></div></div>
       </div>
     </section>
-    <section class="info-section" id="cara-kerja" aria-labelledby="how-title">
-      <h2 id="how-title">Dari rencana ke meja makan</h2>
-      <div class="info-grid">
-        <article class="info-card"><span class="step-number">01</span><h3>Tentukan budget</h3><p>Masukkan anggaran, jumlah hari, orang, dan waktu makan. Kamu bisa mencoba planner tanpa akun.</p></article>
-        <article class="info-card"><span class="step-number">02</span><h3>Sesuaikan kebutuhan</h3><p>Daftar untuk menyimpan preferensi makanan dan stok bahan milikmu.</p></article>
-        <article class="info-card"><span class="step-number">03</span><h3>Pilih menu dan masak</h3><p>Tinjau estimasi belanja, simpan rencana, lalu gunakan panduan resep yang tersedia.</p></article>
+
+    <section class="wrap band" id="cara-kerja" aria-labelledby="how-title">
+      <p class="eyebrow">Cara kerja</p>
+      <h2 id="how-title">Dari budget ke piring</h2>
+      <ol class="steps">
+        <li class="step"><b>01</b><h3>Atur budget</h3><p>Uang, hari, porsi</p></li>
+        <li class="step"><b>02</b><h3>Dapat menu</h3><p>Jadwal per hari</p></li>
+        <li class="step"><b>03</b><h3>Belanja</h3><p>Daftar lengkap + harga</p></li>
+        <li class="step dark"><b>04</b><h3>Simpan</h3><p>Ubah kapan saja</p></li>
+      </ol>
+    </section>
+
+    <section class="wrap band" id="fitur" aria-labelledby="features-title">
+      <p class="eyebrow">Fitur</p>
+      <h2 id="features-title">Satu tempat untuk dapur</h2>
+      <div class="features">
+        <article class="feature feature-main">
+          <h3>Meal Planner</h3>
+          <p>Menu 1–7 hari dengan target gizi, pantangan, dan pilihan nasi.</p>
+          <ul>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Total belanja tidak pernah lewat budget</li>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Daftar belanja per kategori lengkap dengan harga</li>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Estimasi kalori dan protein per hari</li>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Ganti satu menu atau cari susunan lain</li>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Simpan, ubah, dan hapus rencana kapan saja</li>
+          </ul>
+          <div class="stats">
+            <div><b>294</b><span>resep</span></div>
+            <div><b>1–7</b><span>hari per rencana</span></div>
+            <div><b>1–10</b><span>orang</span></div>
+          </div>
+          <div class="chips"><span>Seimbang</span><span>Tinggi protein</span><span>Rendah kalori</span></div>
+          <a class="btn btn-lime" href="{% url 'modul1' %}">Buka Planner</a>
+        </article>
+        <article class="feature">
+          <h3>Pantry</h3>
+          <p>Stok dapur rapi, tidak ada yang terlupa.</p>
+          <ul>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Scan struk belanja atau input manual</li>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Perkiraan kedaluwarsa tiap bahan</li>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Pengingat bahan yang harus segera dipakai</li>
+          </ul>
+        </article>
+        <article class="feature">
+          <h3>Resep &amp; riwayat masak</h3>
+          <p>Masak dari bahan yang sudah ada.</p>
+          <ul>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Cari resep dari stok, harga, atau waktu makan</li>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Simpan favorit dan beri ulasan</li>
+            <li><svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Sudah masak? Stok berkurang otomatis</li>
+          </ul>
+        </article>
       </div>
     </section>
-    <section class="info-section" id="kalkulator" aria-labelledby="calculator-title">
+
+    <section class="wrap cta" aria-labelledby="cta-title">
+      <div class="cta-box">
+        <div>
+          <h2 id="cta-title">Siap menakar minggu ini?</h2>
+          <p>Mulai dari budget yang kamu punya.</p>
+        </div>
+        <a class="btn btn-lime" href="{% url 'modul1' %}">Coba Planner gratis</a>
+      </div>
+    </section>
+    <section class="wrap band" id="kalkulator" aria-labelledby="calculator-title">
       <h2 id="calculator-title">Cek pembagian budget makanmu</h2>
       <p>Hitung jatah rata-rata per orang untuk 3 waktu makan sehari. Ini pembagian anggaran sederhana; estimasi harga bahan dan rekomendasi menu tersedia di planner.</p>
       <form class="budget-calculator" id="budget-calculator">
@@ -184,21 +235,21 @@
           <label for="trial-days">Jumlah hari<input id="trial-days" name="days" type="number" min="1" max="7" step="1" value="3" required></label>
           <label for="trial-servings">Jumlah orang<input id="trial-servings" name="servings" type="number" min="1" max="10" step="1" value="2" required></label>
         </div>
-        <button class="button button-primary" type="submit">Hitung pembagian</button>
+        <button class="btn btn-primary" type="submit">Hitung pembagian</button>
         <output class="calculator-result" id="budget-result" for="trial-budget trial-days trial-servings" aria-live="polite">Rp25.000 per orang per hari, sekitar Rp8.333 per waktu makan.</output>
-        <a class="button button-primary" href="{% url 'modul1' %}">Cari menu sesuai budget →</a>
+        <a class="btn btn-primary" href="{% url 'modul1' %}">Cari menu sesuai budget →</a>
         <noscript><p>Aktifkan JavaScript untuk menghitung pembagian di sini, atau buka planner melalui tombol di atas.</p></noscript>
       </form>
     </section>
-    <section class="info-section" id="faq" aria-labelledby="faq-title">
+    <section class="wrap band" id="faq" aria-labelledby="faq-title">
       <h2 id="faq-title">Sebelum mulai</h2>
       <details class="faq-item"><summary>Apakah harus punya akun?</summary><p>Tidak untuk mencoba planner. Guest mendapat 3 simulasi berhasil per 24 jam per browser. Daftar untuk menyimpan rencana, stok, dan preferensi.</p></details>
       <details class="faq-item"><summary>Apakah harga belanja pasti sama?</summary><p>Tidak. Planner memakai snapshot dan referensi harga katalog. Harga di tempat belanjamu bisa berbeda.</p></details>
       <details class="faq-item"><summary>Bagaimana pilihan halal dan alergi digunakan?</summary><p>Atur keduanya di Profil &amp; Preferensi. Pilihan halal menyaring label katalog, bukan sertifikasi. Filter alergi membantu menyaring resep; tetap periksa komposisi bahan dan kontaminasi silang.</p></details>
-      <p><a class="button button-primary" href="{% url 'signup' %}">Daftar dan atur preferensimu →</a></p>
+      <p><a class="btn btn-primary" href="{% url 'signup' %}">Daftar dan atur preferensimu →</a></p>
     </section>
   </main>
-  <footer class="site-footer">TAKARKUY · Tata Kelola Anggaran dan Resep, Kuy!</footer>
+  <footer class="site-footer">TAKARKUY · harga dan gizi adalah estimasi</footer>
   <script src="{% static 'accounts/landing.js' %}" defer></script>
 </body>
 </html>

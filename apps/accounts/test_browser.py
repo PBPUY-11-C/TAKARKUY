@@ -16,6 +16,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.db import connections
 
+from apps.budget_planner.models import BudgetPlan
 from apps.catalog.models import Ingredient
 
 from .models import FoodPreference, UserProfile
@@ -63,8 +64,8 @@ class AccountBrowserTests(StaticLiveServerTestCase):
                         width: innerWidth, content: document.documentElement.scrollWidth,
                         background: getComputedStyle(document.body).backgroundColor,
                         font: getComputedStyle(document.body).fontFamily,
-                        headerWidth: document.querySelector('.site-header')?.getBoundingClientRect().width ?? null,
-                        primary: (() => { const button = document.querySelector('.submit, .button-primary, .logout-button');
+                        headerWidth: document.querySelector('.app-header')?.getBoundingClientRect().width ?? null,
+                        primary: (() => { const button = document.querySelector('.submit, .btn-primary');
                             return button ? getComputedStyle(button).backgroundColor : null; })(),
                         duplicateIds: [...document.querySelectorAll('[id]')].map(e => e.id)
                             .filter((id, index, ids) => ids.indexOf(id) !== index)
@@ -73,11 +74,16 @@ class AccountBrowserTests(StaticLiveServerTestCase):
                     (artifacts / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
                     self.assertLessEqual(metrics["content"], width + 1, f"Overflow: {name} at {width}: {metrics}")
                     self.assertEqual(metrics["duplicateIds"], [], f"Duplicate IDs: {name}")
-                    self.assertEqual(metrics["background"], "rgb(247, 249, 254)")
-                    self.assertIn("DM Sans", metrics["font"])
-                    if name in {"landing", "login", "signup", "profile", "dashboard"}:
-                        self.assertEqual(metrics["primary"], "rgb(0, 116, 82)")
-                    if name in {"profile", "dashboard"}:
+                    expected_background = (
+                        "rgb(246, 248, 252)" if name.startswith("planner")
+                        else "rgb(255, 255, 255)" if name.endswith("placeholder")
+                        else "rgb(242, 248, 244)"
+                    )
+                    self.assertEqual(metrics["background"], expected_background)
+                    self.assertIn("Plus Jakarta Sans", metrics["font"])
+                    if name in {"landing", "login", "signup", "profile"}:
+                        self.assertEqual(metrics["primary"], "rgb(15, 61, 46)")
+                    if name in {"profile", "planner-after-signup"}:
                         self.assertEqual(metrics["headerWidth"], width)
                 page.set_viewport_size({"width": 1440, "height": 1000})
 
@@ -117,13 +123,33 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             page.locator('[name="password1"]').fill("BrowserTest!827")
             page.locator('[name="password2"]').fill("BrowserTest!827")
             page.get_by_role("button", name="Jadi Penakar").click()
-            expect(page).to_have_url(self.live_server_url + "/modul5/")
+            expect(page).to_have_url(self.live_server_url + "/planner/")
             user = database(lambda: get_user_model().objects.get(username="penguji_modul3"))
             self.assertTrue(database(lambda: UserProfile.objects.filter(user=user).exists()))
             self.assertTrue(database(lambda: FoodPreference.objects.filter(user=user).exists()))
-            capture("dashboard", widths=(1440, 390))
+            capture("planner-after-signup", widths=(1440, 390))
+            # The guest result must survive signup and remain editable through the UI.
+            draft = database(lambda: BudgetPlan.objects.get(user=user, status="draft"))
+            expect(page.locator("#plan-title")).to_be_visible()
+            page.locator("#plan-title").fill("Rencana uji browser")
+            with page.expect_navigation(wait_until="networkidle"):
+                page.get_by_role("button", name="Simpan Rencana", exact=True).click()
+            expect(page.locator(".saved-plan-card")).to_contain_text("Rencana uji browser")
+            saved = database(lambda: BudgetPlan.objects.get(user=user, status="saved"))
+            self.assertEqual(saved.snapshot, draft.snapshot)
+            page.locator("#plan-title").fill("Rencana diperbarui")
+            with page.expect_navigation(wait_until="networkidle"):
+                page.get_by_role("button", name="Simpan Judul / Tanggal", exact=True).click()
+            expect(page.locator(".saved-plan-card")).to_contain_text("Rencana diperbarui")
+            database(saved.refresh_from_db)
+            self.assertEqual(saved.title, "Rencana diperbarui")
+            page.once("dialog", lambda dialog: dialog.accept())
+            with page.expect_navigation(wait_until="networkidle"):
+                page.locator("[data-delete-plan]").click()
+            expect(page.locator(".saved-empty")).to_be_visible()
+            self.assertFalse(database(lambda: BudgetPlan.objects.filter(pk=saved.pk).exists()))
             open_page("/modul3/")
-            expect(page.locator('.account-avatar')).to_have_text("P")
+            expect(page.locator('.avatar')).to_have_text("P")
             expect(page.get_by_role("link", name="Profil dan preferensi")).to_be_visible()
             capture("profile")
             page.locator('[name="halal_only"][value="no"]').check()
@@ -163,7 +189,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             expect(page.get_by_text("Tidak membatasi", exact=False)).to_be_visible()
             capture("planner", widths=(1440, 390))
             open_page("/modul4/")
-            capture("recipe-book", widths=(1440, 390))
+            capture("recipe-placeholder", widths=(1440, 390))
             open_page("/modul3/")
             logout = page.locator('form[action="/logout/"] button')
             expect(logout).to_be_visible()
@@ -177,7 +203,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             expect(page.get_by_text("Email/username atau kata sandi salah.")).to_be_visible()
             page.locator('[name="password"]').fill("BrowserChanged!938")
             page.get_by_role("button", name="Masuk ke TAKARKUY").click()
-            expect(page).to_have_url(self.live_server_url + "/modul5/")
+            expect(page).to_have_url(self.live_server_url + "/planner/")
             session = next(c for c in context.cookies() if c["name"] == settings.SESSION_COOKIE_NAME)
             self.assertEqual(session["expires"], -1)
             # Re-authenticating in the same browser must also honor Remember me.
@@ -186,7 +212,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             page.locator('[name="password"]').fill("BrowserChanged!938")
             page.locator('[name="remember_me"]').check()
             page.get_by_role("button", name="Masuk ke TAKARKUY").click()
-            expect(page).to_have_url(self.live_server_url + "/modul5/")
+            expect(page).to_have_url(self.live_server_url + "/planner/")
             session = next(c for c in context.cookies() if c["name"] == settings.SESSION_COOKIE_NAME)
             self.assertGreater(session["expires"], 0)
             self.assertEqual(errors, [])

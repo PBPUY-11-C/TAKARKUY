@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 380" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+  <title>TAKARKUY</title>
+  <path fill="none" d="M40 130H134L146 123C150 120 150 114 146 108C136 96 130 84 130 72C130 50 143 34 160 34C177 34 190 50 190 72C190 84 184 96 174 108C170 114 170 120 174 123L186 130H280L290 140V340L280 350H40L30 340V140Z"/>
+  <circle cx="160" cy="70" r="15"/>
+  <path d="M50 168L94 160M73 164V230"/>
+  <path d="M102 230L121 162L140 230M109 206H133"/>
+  <path d="M152 162V230M182 164L154 198L184 230"/>
+  <path d="M192 230L211 162L230 230M199 206H223"/>
+  <path d="M242 230V164H256C268 164 274 172 274 182C274 194 266 200 254 200H242M256 200L276 230"/>
+  <path d="M62 264V330M100 264L66 298L102 330"/>
+  <path d="M122 284V298C122 320 136 334 152 334C168 334 182 320 182 298V284"/>
+  <circle cx="122" cy="262" r="3" fill="#ffffff"/>
+  <circle cx="182" cy="262" r="3" fill="#ffffff"/>
+  <path d="M206 264L233 298M260 264L233 298V330"/>
+</svg>
