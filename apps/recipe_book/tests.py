@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.accounts.preferences import profile_for
+from apps.accounts.preferences import preferences_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
 from apps.catalog.aggregation import expected_allergens
 from apps.catalog.models import Ingredient, Recipe, RecipeIngredient, RecipeTag
@@ -17,7 +17,7 @@ from apps.pantry.models import PantryItem, PantryMovement, PantryOperation
 from apps.pantry.services import StockError, plan_consumption
 
 from .models import CookingHistory
-from .services import cook, preview_cooking, stock_matches
+from .services import cook, preview_cooking, recipe_query, stock_matches
 
 
 class CookingTests(TestCase):
@@ -97,6 +97,21 @@ class CookingTests(TestCase):
             servings=2,
             snapshot={"name": self.recipe.name},
         )
+
+    def test_personal_halal_choice_filters_list_and_direct_cooking(self):
+        self.batch()
+        RecipeTag.objects.filter(recipe=self.recipe, tag="halal").delete()
+        self.assertFalse(recipe_query(self.user).exists())
+        self.assertEqual(self.post("modul4-preview").status_code, 404)
+        preferences = preferences_for(self.user)
+        preferences.halal_only = False
+        preferences.save()
+        self.assertTrue(recipe_query(self.user).exists())
+        self.assertEqual(self.post("modul4-preview").status_code, 200)
+        preferences.halal_only = True
+        preferences.save()
+        self.assertEqual(self.post("modul4-cook").status_code, 404)
+        self.assertFalse(CookingHistory.objects.exists())
 
     def test_preview_cook_and_replay_use_same_ledger(self):
         early = self.batch(
@@ -259,7 +274,7 @@ class CookingTests(TestCase):
 
     def test_stale_aggregate_does_not_bypass_execution_screening(self):
         self.batch()
-        profile = profile_for(self.user)
+        profile = preferences_for(self.user)
         profile.allergens = ["telur"]
         profile.save()
         Ingredient.objects.filter(pk=self.ingredient.pk).update(allergens=["telur"])

@@ -49,6 +49,7 @@ def planner_page(request):
         if previous_form:
             form = previous_form
     elif request.method == "POST" and form.is_valid():
+        form.cleaned_data["halal_only"] = True
         try:
             today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
             history = request.session.get("planner_meal_history", {})

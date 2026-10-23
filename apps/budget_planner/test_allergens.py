@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.accounts.models import UserProfile
+from apps.accounts.models import FoodPreference
 from apps.catalog.allergens import recipe_allowed
 from apps.catalog.models import Ingredient, IngredientPrice, Recipe, RecipeIngredient, RecipeTag
 
@@ -25,7 +25,7 @@ class AllergenPlannerTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user("allergy-user")
-        cls.profile = UserProfile.objects.create(user=cls.user)
+        cls.profile = FoodPreference.objects.create(user=cls.user)
         cls.inputs = {
             "budget": "100000",
             "days": 1,
@@ -110,6 +110,43 @@ class AllergenPlannerTests(TestCase):
             row["recipe"].pk
             for row in _load_candidates(("sarapan",), 1, [], allergens)[5]["sarapan"]
         }
+
+    def test_halal_opt_out_applies_to_replacement_and_preview_is_rechecked(self):
+        RecipeTag.objects.filter(recipe_id="SOY", tag="halal").delete()
+        self.assertNotIn("SOY", self.candidate_codes([]))
+        plan = self.draft()
+        self.profile.halal_only = False
+        self.profile.save()
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("modul1-plan-alternatives", args=[plan.pk]),
+            {"day": 1, "meal": "sarapan"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("SOY", {row["recipe_code"] for row in response.json()["recipes"]})
+        preview = make_preview(
+            plan, plan.version,
+            {"action": "replace", "day": 1, "meal": "sarapan", "recipe": "SOY"},
+        )
+        self.assertFalse(preview.inputs["halal_only"])
+        self.profile.halal_only = True
+        self.profile.save()
+        with self.assertRaisesMessage(PlanConflict, "halal terbaru"):
+            apply_preview(self.user, preview.pk)
+        plan.refresh_from_db()
+        self.assertEqual(schedule_codes(plan.snapshot), [{"sarapan": "BASE"}])
+
+    def test_account_halal_choice_cannot_be_overridden_by_planner_payload(self):
+        RecipeTag.objects.exclude(tag="bumbu_minor_tidak_dihitung").delete()
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("modul1"), {**self.inputs, "halal_only": False})
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(BudgetPlan.objects.filter(user=self.user).exists())
+        self.profile.halal_only = False
+        self.profile.save()
+        response = self.client.post(reverse("modul1"), self.inputs)
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(BudgetPlan.objects.get(user=self.user).inputs["halal_only"])
 
     def test_group_mapping_not_substrings_drives_screening(self):
         self.assertEqual(self.candidate_codes(["telur"]), {"BASE", "SOY"})
@@ -238,7 +275,7 @@ class CommaNamedAvoidanceTests(TestCase):
     fixtures = ["catalog_seed"]
 
     def test_avoiding_comma_named_cut_only_excludes_that_cut(self):
-        from apps.accounts.preferences import planner_defaults, profile_for
+        from apps.accounts.preferences import planner_defaults, preferences_for
         from apps.catalog.models import Ingredient
 
         from .forms import PlannerForm
@@ -246,7 +283,7 @@ class CommaNamedAvoidanceTests(TestCase):
 
         user = get_user_model().objects.create_user("koma")
         cut = Ingredient.objects.get(name="Daging Sapi, Lokal, Tetelan")
-        profile_for(user).avoided_ingredients.add(cut)
+        preferences_for(user).avoided_ingredients.add(cut)
         defaults = planner_defaults(user)
         form = PlannerForm(
             {

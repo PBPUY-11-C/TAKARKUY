@@ -12,7 +12,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.cache import patch_cache_control
 
-from apps.accounts.preferences import effective_allergens, planner_defaults
+from apps.accounts.preferences import (
+    effective_allergens,
+    effective_preferences,
+    non_halal_schedule,
+    planner_defaults,
+)
 from apps.catalog.allergens import unsafe_schedule
 
 from .forms import PlanMetadataForm, PlannerForm
@@ -96,7 +101,7 @@ def pantry_annotations(user, plan, result, display_schedule):
         try:
             quote = build_plan(
                 **clean_inputs(
-                    {**plan.inputs, "allergens": effective_allergens(user, plan.inputs)}
+                    {**plan.inputs, **effective_preferences(user, plan.inputs)}
                 ).cleaned_data,
                 fixed_schedule=schedule_codes(result),
                 **context,
@@ -180,8 +185,8 @@ def account_page(request, builder):
     error, pending = None, None
     status, retry_after = 200, None
     if request.method == "POST" and form.is_valid():
-        form.cleaned_data["allergens"] = effective_allergens(
-            request.user, plan.inputs if plan else {}, form.cleaned_data
+        form.cleaned_data.update(
+            effective_preferences(request.user, plan.inputs if plan else {}, form.cleaned_data)
         )
         try:
             expected = required_version(request.POST) if plan else None
@@ -298,6 +303,12 @@ def account_page(request, builder):
                     schedule_codes(result),
                     effective_allergens(request.user, plan.inputs if plan else {}),
                 )
+            ),
+            "halal_only": effective_preferences(request.user)["halal_only"],
+            "halal_warning": bool(
+                result
+                and effective_preferences(request.user)["halal_only"]
+                and non_halal_schedule(schedule_codes(result))
             ),
             "allergy_active": effective_allergens(request.user, plan.inputs if plan else {}),
         },
@@ -434,7 +445,7 @@ def recipe_alternatives(request, plan_id):
         # The same basket quote as preview, including pooled fruit purchases.
         recipes = replacement_options(
             **clean_inputs(
-                {**plan.inputs, "allergens": effective_allergens(request.user, plan.inputs)}
+                {**plan.inputs, **effective_preferences(request.user, plan.inputs)}
             ).cleaned_data,
             schedule=slots,
             day=day,

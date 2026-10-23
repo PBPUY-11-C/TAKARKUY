@@ -1,9 +1,10 @@
 {% extends "accounts/base.html" %}
+{% load static %}
 {% block title %}Masuk{% endblock %}
 {% block content %}
 <main class="auth-card login">
   <a class="back-home" href="{% url 'landing' %}">← Kembali ke beranda</a>
-  <a class="brand" href="{% url 'landing' %}"><span class="brand-mark" aria-hidden="true">✳</span><span>TAKARKUY</span></a>
+  <a class="brand" href="{% url 'landing' %}"><img class="auth-logo" src="{% static 'takarkuy/logo.svg' %}" width="32" height="38" alt=""><span>TAKARKUY</span></a>
   <h1>Selamat Datang Kembali</h1>
 
   <form method="post" novalidate>

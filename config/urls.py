@@ -16,9 +16,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 from django.views.generic import TemplateView
+
+from apps.accounts.forms import EmailOrUsernameAuthenticationForm
+from apps.accounts.views import AccountLoginView, landing_view, profile_view, signup_view
 
 from apps.budget_planner.plan_views import (
     add_plan_purchases,
@@ -47,19 +51,23 @@ from apps.recipe_book.views import (
     set_slot_status,
 )
 
-# Only the launch page and Modul 1 have pages; login/signup are blank until Modul 3 lands,
-# and the other modules' pages are placeholders. Their backend
-# endpoints stay because Modul 1 reuses the pantry and recipe services.
-kosong = TemplateView.as_view(template_name="kosong.html")
-blank = TemplateView.as_view(template_name="blank.html")
+# Modul 1 and Modul 3 are active. Other module pages remain placeholders;
+# their backend endpoints are reused by the planner.
+kosong = login_required(TemplateView.as_view(template_name="kosong.html"))
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="landing.html"), name="landing"),
-    path("signup/", blank, name="signup"),
-    path("login/", blank, name="login"),
+    path("", landing_view, name="landing"),
+    path("signup/", signup_view, name="signup"),
+    path(
+        "login/",
+        AccountLoginView.as_view(authentication_form=EmailOrUsernameAuthenticationForm),
+        name="login",
+    ),
     path("logout/", LogoutView.as_view(next_page="landing"), name="logout"),
-    path("modul3/", kosong, name="modul3"),
+    path("modul3/", profile_view, name="modul3"),
     path("planner/", planner_page, name="modul1"),
+    path("planner/", planner_page, name="planner"),
+    path("modul1/", planner_page),
     path("planner/plans/<uuid:plan_id>/save/", save_account_plan, name="modul1-plan-save"),
     path("planner/plans/<uuid:plan_id>/delete/", delete_account_plan, name="modul1-plan-delete"),
     path("planner/plans/<uuid:plan_id>/pantry/", add_plan_purchases, name="modul1-plan-pantry"),

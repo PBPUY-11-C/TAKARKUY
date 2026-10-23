@@ -170,6 +170,7 @@ class AccountDetailsForm(forms.Form):
     def __init__(self, *args, user, **kwargs):
         self.user = user
         super().__init__(*args, **kwargs)
+        self.fields["version"].widget.attrs["id"] = "account-version"
 
     def clean_username(self):
         return clean_username(self.cleaned_data["username"], user=self.user)
@@ -183,7 +184,23 @@ class AccountDetailsForm(forms.Form):
         return email
 
 
+class IngredientChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, ingredient):
+        return ingredient.name
+
+
 class PreferenceForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["version"].widget.attrs["id"] = "preference-version"
+
+    halal_only = forms.TypedChoiceField(
+        label="Preferensi halal",
+        choices=(("yes", "Halal saja"), ("no", "Tidak membatasi")),
+        coerce=lambda value: value == "yes",
+        initial="yes",
+        widget=forms.RadioSelect,
+    )
     targets = forms.MultipleChoiceField(
         choices=PlannerForm.TARGET_CHOICES,
         widget=forms.CheckboxSelectMultiple,
@@ -199,10 +216,11 @@ class PreferenceForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         label="Alergi",
     )
-    avoided_ingredients = forms.ModelMultipleChoiceField(
+    avoided_ingredients = IngredientChoiceField(
         queryset=Ingredient.objects.order_by("name"),
         required=False,
         label="Bahan yang ingin dihindari (bukan alergi)",
+        help_text="Maksimal 10 bahan. Tahan Ctrl (Windows) atau ⌘ (Mac) untuk memilih beberapa bahan.",
         widget=forms.SelectMultiple(attrs={"size": 8}),
     )
     version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)

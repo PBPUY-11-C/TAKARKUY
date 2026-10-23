@@ -729,8 +729,9 @@ def _load_candidates(
     *,
     with_rice=False,
     stock=(),
+    halal_only=True,
 ):
-    """Price and nutrition-complete halal recipes per meal for the given servings.
+    """Price and nutrition-complete recipes, optionally restricted to halal labels.
 
     With rice, a lunch/dinner lauk gets RICE_GRAMS_PER_SERVING of rice per serving
     unless the user avoids rice. With pantry `stock`, each recipe gets a
@@ -788,7 +789,7 @@ def _load_candidates(
         if not recipe.base_servings or recipe.meal_type not in requested_meals:
             continue
         tags = {tag.tag for tag in recipe.recipetag_set.all()}
-        if HALAL_TAG not in tags:
+        if halal_only and HALAL_TAG not in tags:
             continue
         ingredients = list(recipe.recipeingredient_set.all())
         if not recipe_allowed(recipe, ingredients, allergens):
@@ -1121,7 +1122,7 @@ STOCK_VALUE_SHARE = 2
 
 
 def build_plan(*, stock=(), starts_on=None, frozen_days=frozenset(), **inputs):
-    """Return varied halal recipes whose net shopping cost fits the budget.
+    """Return varied recipes matching preferences whose net cost fits the budget.
 
     The budget caps money still to spend after pantry `stock` is used. With
     usable stock, one search first aims higher (budget + part of the stock value)
@@ -1138,6 +1139,7 @@ def build_plan(*, stock=(), starts_on=None, frozen_days=frozenset(), **inputs):
         inputs["servings"],
         inputs["exclude_ingredients"],
         inputs.get("allergens", ()),
+        halal_only=inputs.get("halal_only", True),
         with_rice=rice_included(inputs.get("rice", "no"), inputs["servings"], inputs["targets"]),
         stock=stock,
     )
@@ -1181,6 +1183,7 @@ def _build_plan(
     exclude_ingredients,
     allergens=(),
     recent_recipe_codes=(),
+    halal_only=True,
     prior_slot_recipes=None,
     fixed_schedule=None,
     seed=None,
@@ -1214,6 +1217,7 @@ def _build_plan(
         exclude_ingredients,
         allergens,
         with_rice=rice_included(rice, servings, targets),
+        halal_only=halal_only,
         stock=stock,
     )
     (
@@ -1555,6 +1559,7 @@ def replacement_options(
     meal,
     current_total,
     allergens=(),
+    halal_only=True,
     rice="no",
     stock=(),
     starts_on=None,
@@ -1573,6 +1578,7 @@ def replacement_options(
         exclude_ingredients,
         allergens,
         with_rice=rice_included(rice, servings, targets),
+        halal_only=halal_only,
         stock=stock,
     )
     candidates = catalog[5]

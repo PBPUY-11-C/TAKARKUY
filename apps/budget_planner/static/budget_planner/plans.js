@@ -174,7 +174,14 @@
       const data = await request(form.dataset.url, { version: Number(form.dataset.version),
         title: values.get("title"), replace_original: replaceOriginal });
       globalThis.TakarKuy?.flash("Rencana tersimpan.");
-      window.location.assign(data.url);
+      // Renaming a saved plan returns its current URL. Assigning that URL only
+      // changes the fragment, leaving the old title and version in the DOM.
+      const destination = new URL(data.url, window.location.origin);
+      if (destination.pathname === window.location.pathname && destination.search === window.location.search) {
+        window.location.reload();
+      } else {
+        window.location.assign(data.url);
+      }
     } catch (error) { feedback.textContent = error.message; globalThis.TakarKuy?.toast(error.message, "error"); feedback.scrollIntoView({ block: "center" }); }
     finally { buttons.forEach((button) => { button.disabled = false; }); }
   }));

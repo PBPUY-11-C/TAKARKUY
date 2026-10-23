@@ -1,0 +1,49 @@
+from django.conf import settings
+from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
+from django.test import TransactionTestCase
+
+
+class PreferenceMigrationTests(TransactionTestCase):
+    def test_existing_preferences_and_avoided_ingredients_survive_split_and_rollback(self):
+        before = [("accounts", "0002_case_insensitive_identity")]
+        after = [("accounts", "0003_foodpreference_and_more")]
+        executor = MigrationExecutor(connection)
+        latest = executor.loader.graph.leaf_nodes()
+        executor.migrate(before)
+        try:
+            old_apps = executor.loader.project_state(before).apps
+            User = old_apps.get_model(settings.AUTH_USER_MODEL)
+            user = User.objects.create(username="migration-owner")
+            Ingredient = old_apps.get_model("catalog", "Ingredient")
+            ingredient = Ingredient.objects.create(
+                ingredient_code="MIGRATION-AVOID", name="Bahan dihindari",
+                category="sayur", base_unit="g",
+            )
+            Profile = old_apps.get_model("accounts", "UserProfile")
+            profile = Profile.objects.create(
+                user_id=user.pk, targets=["tinggi_protein"], meal_types=["sarapan"],
+                servings=4, allergens=["telur"], version=7,
+            )
+            profile.avoided_ingredients.add(ingredient)
+            executor = MigrationExecutor(connection)
+            executor.migrate(after)
+            apps = executor.loader.project_state(after).apps
+            preference = apps.get_model("accounts", "FoodPreference").objects.get(user_id=user.pk)
+            self.assertEqual(preference.targets, ["tinggi_protein"])
+            self.assertEqual(preference.meal_types, ["sarapan"])
+            self.assertEqual(preference.servings, 4)
+            self.assertEqual(preference.allergens, ["telur"])
+            self.assertTrue(preference.halal_only)
+            self.assertEqual(list(preference.avoided_ingredients.values_list("pk", flat=True)), [ingredient.pk])
+            self.assertEqual(apps.get_model("accounts", "UserProfile").objects.get(user_id=user.pk).version, 7)
+            executor = MigrationExecutor(connection)
+            executor.migrate(before)
+            apps = executor.loader.project_state(before).apps
+            restored = apps.get_model("accounts", "UserProfile").objects.get(user_id=user.pk)
+            self.assertEqual(restored.targets, ["tinggi_protein"])
+            self.assertEqual(restored.servings, 4)
+            self.assertEqual(restored.allergens, ["telur"])
+            self.assertEqual(list(restored.avoided_ingredients.values_list("pk", flat=True)), [ingredient.pk])
+        finally:
+            MigrationExecutor(connection).migrate(latest)

@@ -101,6 +101,14 @@
       .steps { grid-template-columns: 1fr; }
       .hero-actions .btn { width: 100%; }
     }
+    .budget-calculator { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+    .calculator-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .calculator-fields label { display: grid; gap: 8px; font-weight: 700; }
+    .calculator-fields input { width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--green-line); border-radius: 10px; background: var(--canvas); font: inherit; }
+    .calculator-result { display: block; margin: 20px 0; }
+    .faq-item { padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .faq-item summary { cursor: pointer; font-weight: 700; }
+    @media (max-width: 600px) { .calculator-fields { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -218,7 +226,30 @@
         <a class="btn btn-lime" href="{% url 'modul1' %}">Coba Planner gratis</a>
       </div>
     </section>
+    <section class="wrap band" id="kalkulator" aria-labelledby="calculator-title">
+      <h2 id="calculator-title">Cek pembagian budget makanmu</h2>
+      <p>Hitung jatah rata-rata per orang untuk 3 waktu makan sehari. Ini pembagian anggaran sederhana; estimasi harga bahan dan rekomendasi menu tersedia di planner.</p>
+      <form class="budget-calculator" id="budget-calculator">
+        <div class="calculator-fields">
+          <label for="trial-budget">Total budget (Rp)<input id="trial-budget" name="budget" type="number" min="1" max="100000000" step="1" value="150000" required></label>
+          <label for="trial-days">Jumlah hari<input id="trial-days" name="days" type="number" min="1" max="7" step="1" value="3" required></label>
+          <label for="trial-servings">Jumlah orang<input id="trial-servings" name="servings" type="number" min="1" max="10" step="1" value="2" required></label>
+        </div>
+        <button class="btn btn-primary" type="submit">Hitung pembagian</button>
+        <output class="calculator-result" id="budget-result" for="trial-budget trial-days trial-servings" aria-live="polite">Rp25.000 per orang per hari, sekitar Rp8.333 per waktu makan.</output>
+        <a class="btn btn-primary" href="{% url 'modul1' %}">Cari menu sesuai budget →</a>
+        <noscript><p>Aktifkan JavaScript untuk menghitung pembagian di sini, atau buka planner melalui tombol di atas.</p></noscript>
+      </form>
+    </section>
+    <section class="wrap band" id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Sebelum mulai</h2>
+      <details class="faq-item"><summary>Apakah harus punya akun?</summary><p>Tidak untuk mencoba planner. Guest mendapat 3 simulasi berhasil per 24 jam per browser. Daftar untuk menyimpan rencana, stok, dan preferensi.</p></details>
+      <details class="faq-item"><summary>Apakah harga belanja pasti sama?</summary><p>Tidak. Planner memakai snapshot dan referensi harga katalog. Harga di tempat belanjamu bisa berbeda.</p></details>
+      <details class="faq-item"><summary>Bagaimana pilihan halal dan alergi digunakan?</summary><p>Atur keduanya di Profil &amp; Preferensi. Pilihan halal menyaring label katalog, bukan sertifikasi. Filter alergi membantu menyaring resep; tetap periksa komposisi bahan dan kontaminasi silang.</p></details>
+      <p><a class="btn btn-primary" href="{% url 'signup' %}">Daftar dan atur preferensimu →</a></p>
+    </section>
   </main>
   <footer class="site-footer">TAKARKUY · harga dan gizi adalah estimasi</footer>
+  <script src="{% static 'accounts/landing.js' %}" defer></script>
 </body>
 </html>
