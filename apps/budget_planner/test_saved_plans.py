@@ -113,6 +113,16 @@ class SavedPlanTests(TestCase):
         self.assertEqual(PantryItem.objects.count(), 0)
         self.assertContains(response, "Simpan Rencana")
 
+    def test_planner_alias_reads_and_updates_the_same_owned_draft(self):
+        response = self.client.get(reverse("planner"), {"plan": str(self.draft.pk)})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["plan"].pk, self.draft.pk)
+        response = self.client.post(reverse("planner"), self.generation_data(), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.draft.refresh_from_db()
+        self.assertEqual(self.draft.version, 2)
+        self.assertEqual(BudgetPlan.objects.filter(user=self.user, status="draft").count(), 1)
+
     def test_generate_again_rejects_stale_version(self):
         response = self.client.post(
             reverse("modul1"), {**self.inputs, "plan_id": str(self.draft.pk), "version": 0}

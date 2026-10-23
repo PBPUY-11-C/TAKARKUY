@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .forms import SignUpForm
-from .models import AuthRateBucket, UserProfile
+from .models import AuthRateBucket, FoodPreference, UserProfile
 from .rate_limits import AuthLimited, client_ip, reserve_auth_attempt
 
 
@@ -155,6 +155,7 @@ class ProfileTests(TestCase):
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
         data = {
             "action": "preferences",
+            "halal_only": "yes",
             "targets": ["tinggi_protein"],
             "meal_types": ["sarapan"],
             "servings": 3,
@@ -163,7 +164,7 @@ class ProfileTests(TestCase):
         }
         self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
         profile.refresh_from_db()
-        self.assertEqual(profile.allergens, ["telur", "moluska"])
+        self.assertEqual(FoodPreference.objects.get(user=self.user).allergens, ["telur", "moluska"])
         for changes in (
             {"allergens": ["invented"]},
             {"servings": 11},
@@ -190,6 +191,47 @@ class ProfileTests(TestCase):
         self.assertEqual(other_device.get(reverse("modul3")).status_code, 302)
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password("NewPassword!938"))
+
+    def test_preferences_are_owned_and_halal_choice_requires_fresh_version(self):
+        self.client.get(reverse("modul3"))
+        profile = UserProfile.objects.get(user=self.user)
+        other = FoodPreference.objects.create(user=self.other)
+        data = {
+            "action": "preferences", "targets": ["seimbang"],
+            "meal_types": ["makan_siang"], "servings": 4, "halal_only": "no",
+            "version": profile.version, "user_id": self.other.pk,
+        }
+        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
+        self.assertFalse(FoodPreference.objects.get(user=self.user).halal_only)
+        other.refresh_from_db()
+        self.assertTrue(other.halal_only)
+        self.assertEqual(other.servings, 2)
+        self.assertEqual(self.client.post(reverse("modul3"), data).status_code, 409)
+        response = self.client.get(reverse("modul3"))
+        self.assertEqual(response.context["preference_form"]["halal_only"].value(), "no")
+
+    def test_avoided_ingredients_show_names_and_can_be_cleared(self):
+        from apps.catalog.models import Ingredient
+
+        ingredient = Ingredient.objects.create(
+            ingredient_code="TEST-BAYAM", name="Bayam", category="sayur", base_unit="g"
+        )
+        response = self.client.get(reverse("modul3"))
+        self.assertContains(response, '<option value="TEST-BAYAM">Bayam</option>', html=True)
+        self.assertNotContains(response, "Ingredient object")
+        profile = UserProfile.objects.get(user=self.user)
+        data = {
+            "action": "preferences", "targets": ["seimbang"],
+            "meal_types": ["sarapan"], "servings": 2, "halal_only": "yes",
+            "version": profile.version, "avoided_ingredients": [ingredient.pk],
+        }
+        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
+        preference = FoodPreference.objects.get(user=self.user)
+        self.assertEqual(list(preference.avoided_ingredients.all()), [ingredient])
+        profile.refresh_from_db()
+        data.update(version=profile.version, avoided_ingredients=[])
+        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
+        self.assertFalse(preference.avoided_ingredients.exists())
 
     def test_password_old_confirmation_and_strength_are_enforced(self):
         for changes in (

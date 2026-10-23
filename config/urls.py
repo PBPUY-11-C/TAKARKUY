@@ -60,6 +60,7 @@ urlpatterns = [
     ),
     path("logout/", LogoutView.as_view(next_page="landing"), name="logout"),
     path("modul3/", profile_view, name="modul3"),
+    path("planner/", planner_page, name="planner"),
     path("modul1/", planner_page, name="modul1"),
     path("modul1/plans/<uuid:plan_id>/save/", save_account_plan, name="modul1-plan-save"),
     path("modul1/plans/<uuid:plan_id>/delete/", delete_account_plan, name="modul1-plan-delete"),

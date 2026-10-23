@@ -2,13 +2,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include "partials/head.html" %}
   <meta name="description" content="TAKARKUY membantu Anda mengatur budget makan dan menghabiskan stok pantry tanpa sisa.">
   <title>TAKARKUY — Makan enak, hemat, tanpa sisa</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --green: #007452;
@@ -113,40 +109,44 @@
 
     @media (max-width: 850px) { .nav-links { display: none; }.stats { grid-template-columns: repeat(2, 1fr); }.dashboard-shell { margin-inline: 18px; padding: 18px; }.days { grid-template-columns: repeat(4, 1fr); }.day { min-height: 58px; } }
     @media (max-width: 550px) { .site-header { padding: 0 18px; }.brand { font-size: 15px; }.header-actions .login-link, .profile-button { display: none; }.button-primary { padding: 0 12px; }.hero { padding-top: 62px; } h1 { letter-spacing: -1.7px; }.intro { font-size: 14px; }.stats { grid-template-columns: 1fr; gap: 10px; }.stat-card { min-height: 142px; }.browser-bar { padding: 0 9px; }.days { grid-template-columns: repeat(2, 1fr); }.dashboard-shell { padding: 12px; }.schedule-head { align-items: flex-start; gap: 12px; }.schedule h2 { font-size: 14px; } }
+    .info-section { max-width: 1100px; margin: 64px auto; padding: 0 24px; scroll-margin-top: 90px; }
+    .info-section h2 { font: 800 clamp(24px, 4vw, 34px) "Plus Jakarta Sans", sans-serif; letter-spacing: -1px; }
+    .section-intro, .info-section p { color: var(--muted); line-height: 1.8; }
+    .info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+    .info-card, .budget-calculator, .faq-item { padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+    .info-card h3 { font-size: 18px; }
+    .step-number { color: var(--green); font-weight: 800; font-size: 26px; }
+    .calculator-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .calculator-fields label { display: block; font-weight: 700; font-size: 14px; }
+    .calculator-fields input { width: 100%; margin-top: 8px; padding: 12px; border: 1px solid #bacfc6; border-radius: 8px; font: inherit; }
+    .calculator-result { display: block; margin: 22px 0; color: var(--green-dark); font-weight: 700; line-height: 1.8; }
+    .faq-item { margin-bottom: 12px; }
+    .faq-item summary { cursor: pointer; font-weight: 700; }
+    a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
+    .preview-note { text-align: center; color: var(--muted); font-size: 13px; padding: 12px; }
+    .site-footer { padding: 30px 24px; text-align: center; border-top: 1px solid var(--line); color: var(--muted); }
+    @media (max-width: 650px) { .info-grid, .calculator-fields { grid-template-columns: 1fr; } .info-section { margin-block: 44px; } }
+    @media (max-width: 550px) { .header-actions { gap: 10px; } .header-actions .login-link { display: inline; font-size: 12px; } .header-actions .button { padding-inline: 10px; font-size: 12px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .button { transition: none; } }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="#home" aria-label="TAKARKUY beranda">
-      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13c4-7 10-8 14-8-1 7-5 13-12 13-1 0-2-.2-3-.5 3.6-1.1 6.2-3.2 8.3-6.2-2.5 2.1-4.9 3.2-7.3 3.7Z" fill="currentColor"/><path d="M5 18c2-3 4.6-5.4 8-7" stroke="#007452" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-      <span>TAKARKUY</span>
-    </a>
-    <nav class="nav-links" aria-label="Navigasi utama">
-      <a href="#demo">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#faq">FAQ</a>
-    </nav>
-    <div class="header-actions">
-      {% if user.is_authenticated %}
-      <span>Hai, {{ user.first_name|default:user.username }}</span>
-      <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="button button-primary" type="submit">Keluar</button></form>
-      {% else %}
-      <a class="login-link" href="{% url 'login' %}">Masuk</a>
-      <a class="button button-primary" href="{% url 'signup' %}">Mulai Sekarang</a>
-      {% endif %}
-    </div>
-  </header>
+  {% include "partials/app_header.html" with variant="landing" %}
 
   <main id="home">
     <section class="hero" aria-labelledby="hero-title">
       <h1 id="hero-title">Masak Enak Sesuai Budget,<br><span class="accent">Habiskan Stok Kulkas</span> Tanpa Sisa</h1>
+      <p class="intro">Rencanakan menu dari budget dan bahan yang kamu punya. Simpan target makan, alergi, serta pilihan halal dalam satu akun.</p>
       <div class="hero-actions">
-        <a class="button button-primary" href="/modul1/">Coba Gratis Sekarang <span aria-hidden="true">→</span></a>
+        <a class="button button-primary" href="{% url 'modul1' %}">Coba Gratis Sekarang <span aria-hidden="true">→</span></a>
       </div>
-      <div class="proof" aria-label="Ulasan dan manfaat">
-        <span><span class="stars">★★★★★</span><strong>4.9/5</strong></span><span class="dot" aria-hidden="true"></span><span><span class="badge-check">✓</span>Dapur Hemat, Bebas Sampah Makanan</span>
+      <div class="proof" aria-label="Akses percobaan">
+        <span><strong>Coba tanpa akun</strong></span><span class="dot" aria-hidden="true"></span><span>3 simulasi berhasil per 24 jam per browser</span>
       </div>
     </section>
 
     <section class="dashboard-shell" id="demo" aria-label="Preview dashboard TAKARKUY">
+      <p class="preview-note">Contoh ilustrasi tampilan. Angka, menu, dan jadwal berikut bukan data akun atau hasil penghematan terverifikasi.</p>
       <div class="browser-bar"><div class="traffic"><span></span><span></span><span></span></div></div>
       <div class="stats">
         <article class="stat-card"><div class="stat-top"><span>Budget Mingguan</span><span class="stat-icon">▣</span></div><h3>Rp 350.000</h3><p>Terpakai: <span class="green-text">Rp 182.000</span> (52%)</p><div class="progress"><span></span></div><div class="small-row"><span>Sisa Rp 168.000</span><strong>Aman (4 hari lagi)</strong></div></article>
@@ -154,10 +154,51 @@
         <article class="stat-card recommendation"><div class="stat-top"><span>Rekomendasi Hari Ini</span><span class="stat-icon">♨</span></div><h3>Sup Bening Bayam Tahu</h3><p>Memanfaatkan stok bayam &amp; tahu yang<br>mendekati kedaluwarsa.</p><span class="price">Rp 12.000<span class="match">◎ 100% Cocok</span><small>/porsi</small></span></article>
         <article class="stat-card saved"><div class="stat-top"><span>Estimasi Terhemat</span><span class="stat-icon">♧</span></div><h3>Rp 420.000</h3><p>Total penghematan bulan ini dari cegah food waste &amp; belanja terencana.</p><div class="saved-foot">↗ &nbsp;28% lebih hemat dari rata-rata</div></article>
       </div>
-      <section class="schedule" aria-labelledby="schedule-title"><div class="schedule-head"><h2 id="schedule-title">Jadwal Masak Terencana Pekan Ini</h2><a href="#kalender">Kelola Kalender →</a></div><div class="days">
+      <section class="schedule" aria-labelledby="schedule-title"><div class="schedule-head"><h2 id="schedule-title">Contoh Jadwal Masak Pekan Ini</h2><a href="{% url 'modul1' %}">Buat Rencana →</a></div><div class="days">
         <div class="day"><span class="day-name">Senin</span><span class="meal">Tumis Kangkung</span><small>Rp 9k/porsi</small></div><div class="day"><span class="day-name">Selasa</span><span class="meal">Ayam Ungkep Kecap</span><small>Rp 18k/porsi</small></div><div class="day"><span class="day-name">Rabu</span><span class="meal">Sayur Lodeh Labu</span><small>Rp 11k/porsi</small></div><div class="day today"><span class="day-name">Kamis (Hari Ini)</span><span class="meal">Sup Bayam Tahu</span><small>Rp 12k/porsi</small></div><div class="day"><span class="day-name">Jumat</span><span class="meal">Tempe Mendoan &amp; S...</span><small>Rp 8k/porsi</small></div><div class="day"><span class="day-name">Sabtu</span><span class="meal">Nasi Goreng Kulkas</span><small>Rp 7k/porsi</small></div><div class="day"><span class="day-name">Minggu</span><span class="meal">Belanja Stok &amp; Evaluasi</span><small>Rencana pekan depan</small></div>
       </div></section>
     </section>
+    <section class="info-section" id="masalah" aria-labelledby="problem-title">
+      <h2 id="problem-title">Budget terbatas, isi kulkas sering terlupakan?</h2>
+      <p class="section-intro">Belanja dan memasak lebih mudah ketika kamu tahu apa yang tersedia, berapa yang bisa dibelanjakan, dan menu apa yang sesuai.</p>
+      <div class="info-grid">
+        <article class="info-card"><h3>Budget makan sulit diatur</h3><p>Susun menu dan estimasi belanja sesuai batas anggaran sebelum membeli bahan.</p></article>
+        <article class="info-card"><h3>Bahan menumpuk di dapur</h3><p>Catat stok dan perhatikan bahan yang perlu segera diolah agar tidak terlupakan.</p></article>
+        <article class="info-card"><h3>Bingung memilih menu</h3><p>Gunakan target makan, alergi, bahan yang dihindari, dan pilihan halal untuk menyaring menu.</p></article>
+      </div>
+    </section>
+    <section class="info-section" id="cara-kerja" aria-labelledby="how-title">
+      <h2 id="how-title">Dari rencana ke meja makan</h2>
+      <div class="info-grid">
+        <article class="info-card"><span class="step-number">01</span><h3>Tentukan budget</h3><p>Masukkan anggaran, jumlah hari, orang, dan waktu makan. Kamu bisa mencoba planner tanpa akun.</p></article>
+        <article class="info-card"><span class="step-number">02</span><h3>Sesuaikan kebutuhan</h3><p>Daftar untuk menyimpan preferensi makanan dan stok bahan milikmu.</p></article>
+        <article class="info-card"><span class="step-number">03</span><h3>Pilih menu dan masak</h3><p>Tinjau estimasi belanja, simpan rencana, lalu gunakan panduan resep yang tersedia.</p></article>
+      </div>
+    </section>
+    <section class="info-section" id="kalkulator" aria-labelledby="calculator-title">
+      <h2 id="calculator-title">Cek pembagian budget makanmu</h2>
+      <p>Hitung jatah rata-rata per orang untuk 3 waktu makan sehari. Ini pembagian anggaran sederhana; estimasi harga bahan dan rekomendasi menu tersedia di planner.</p>
+      <form class="budget-calculator" id="budget-calculator">
+        <div class="calculator-fields">
+          <label for="trial-budget">Total budget (Rp)<input id="trial-budget" name="budget" type="number" min="1" max="100000000" step="1" value="150000" required></label>
+          <label for="trial-days">Jumlah hari<input id="trial-days" name="days" type="number" min="1" max="7" step="1" value="3" required></label>
+          <label for="trial-servings">Jumlah orang<input id="trial-servings" name="servings" type="number" min="1" max="10" step="1" value="2" required></label>
+        </div>
+        <button class="button button-primary" type="submit">Hitung pembagian</button>
+        <output class="calculator-result" id="budget-result" for="trial-budget trial-days trial-servings" aria-live="polite">Rp25.000 per orang per hari, sekitar Rp8.333 per waktu makan.</output>
+        <a class="button button-primary" href="{% url 'modul1' %}">Cari menu sesuai budget →</a>
+        <noscript><p>Aktifkan JavaScript untuk menghitung pembagian di sini, atau buka planner melalui tombol di atas.</p></noscript>
+      </form>
+    </section>
+    <section class="info-section" id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Sebelum mulai</h2>
+      <details class="faq-item"><summary>Apakah harus punya akun?</summary><p>Tidak untuk mencoba planner. Guest mendapat 3 simulasi berhasil per 24 jam per browser. Daftar untuk menyimpan rencana, stok, dan preferensi.</p></details>
+      <details class="faq-item"><summary>Apakah harga belanja pasti sama?</summary><p>Tidak. Planner memakai snapshot dan referensi harga katalog. Harga di tempat belanjamu bisa berbeda.</p></details>
+      <details class="faq-item"><summary>Bagaimana pilihan halal dan alergi digunakan?</summary><p>Atur keduanya di Profil &amp; Preferensi. Pilihan halal menyaring label katalog, bukan sertifikasi. Filter alergi membantu menyaring resep; tetap periksa komposisi bahan dan kontaminasi silang.</p></details>
+      <p><a class="button button-primary" href="{% url 'signup' %}">Daftar dan atur preferensimu →</a></p>
+    </section>
   </main>
+  <footer class="site-footer">TAKARKUY · Tata Kelola Anggaran dan Resep, Kuy!</footer>
+  <script src="{% static 'accounts/landing.js' %}" defer></script>
 </body>
 </html>

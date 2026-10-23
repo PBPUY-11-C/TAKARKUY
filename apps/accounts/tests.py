@@ -4,6 +4,26 @@ from django.urls import reverse
 
 
 class AccountFlowTests(TestCase):
+    def test_planner_alias_opens_for_guests_and_authenticated_accounts(self):
+        self.assertEqual(self.client.get(reverse("planner")).status_code, 200)
+        self.client.post(reverse("signup"), self.signup_data())
+        response = self.client.get(reverse("planner"), {"new": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Buat Rencana Makan")
+
+    def test_header_has_guest_links_and_authenticated_profile_avatar(self):
+        landing = self.client.get(reverse("landing"))
+        self.assertContains(landing, f'href="{reverse("login")}"')
+        self.assertContains(landing, f'href="{reverse("signup")}"')
+        self.assertNotContains(landing, 'class="account-avatar"')
+        self.client.post(reverse("signup"), self.signup_data())
+        for page in ("modul3", "modul5"):
+            response = self.client.get(reverse(page))
+            self.assertContains(response, '<span class="account-avatar" aria-hidden="true">D</span>', html=True)
+            self.assertContains(response, 'aria-label="Profil dan preferensi"')
+            self.assertContains(response, f'href="{reverse("planner")}"')
+            self.assertContains(response, 'action="/logout/"', count=1)
+
     def test_login_and_signup_have_explicit_link_back_to_landing(self):
         for page_name in ("login", "signup"):
             with self.subTest(page=page_name):
@@ -143,6 +163,14 @@ class AccountFlowTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    def test_remember_me_can_be_enabled_when_reauthenticating_in_same_session(self):
+        self.client.post(reverse("signup"), self.signup_data())
+        credentials = {"username": "dina", "password": "AmanSekali!827"}
+        self.client.post(reverse("login"), credentials)
+        self.assertTrue(self.client.session.get_expire_at_browser_close())
+        self.client.post(reverse("login"), {**credentials, "remember_me": "1"})
+        self.assertFalse(self.client.session.get_expire_at_browser_close())
 
     def test_modul5_requires_login_and_shows_dashboard_with_module_header(self):
         self.assertRedirects(

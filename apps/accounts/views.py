@@ -12,6 +12,7 @@ from apps.budget_planner.services import adopt_guest_result
 
 from .forms import AccountDetailsForm, PreferenceForm, SignUpForm
 from .models import UserProfile
+from .preferences import preferences_for, profile_for
 
 
 def landing_view(request):
@@ -29,6 +30,8 @@ def signup_view(request):
         try:
             with transaction.atomic():
                 user = form.save()
+                profile_for(user)
+                preferences_for(user)
         except IntegrityError:
             form.add_error(None, "Username atau email sudah terdaftar. Silakan periksa kembali.")
         else:
@@ -44,8 +47,7 @@ class AccountLoginView(LoginView):
     def form_valid(self, form):
         response = super().form_valid(form)
         adopt_guest_result(self.request)
-        if not self.request.POST.get("remember_me"):
-            self.request.session.set_expiry(0)
+        self.request.session.set_expiry(None if self.request.POST.get("remember_me") else 0)
         return response
 
 
@@ -53,6 +55,7 @@ class AccountLoginView(LoginView):
 @require_http_methods(["GET", "POST"])
 def profile_view(request):
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    food = preferences_for(request.user)
     account = AccountDetailsForm(
         user=request.user,
         initial={
@@ -64,11 +67,12 @@ def profile_view(request):
     )
     preferences = PreferenceForm(
         initial={
-            "targets": profile.targets,
-            "meal_types": profile.meal_types,
-            "servings": profile.servings,
-            "allergens": profile.allergens,
-            "avoided_ingredients": profile.avoided_ingredients.all(),
+            "targets": food.targets,
+            "meal_types": food.meal_types,
+            "servings": food.servings,
+            "allergens": food.allergens,
+            "halal_only": "yes" if food.halal_only else "no",
+            "avoided_ingredients": food.avoided_ingredients.all(),
             "version": profile.version,
         }
     )
@@ -122,9 +126,11 @@ def profile_view(request):
                         locked.username, locked.email = data["username"], data["email"]
                         locked.save(update_fields=["first_name", "last_name", "username", "email"])
                     elif action == "preferences":
-                        for field in ("targets", "meal_types", "servings", "allergens"):
-                            setattr(current, field, form.cleaned_data[field])
-                        current.avoided_ingredients.set(form.cleaned_data["avoided_ingredients"])
+                        food = preferences_for(locked)
+                        for field in ("targets", "meal_types", "servings", "allergens", "halal_only"):
+                            setattr(food, field, form.cleaned_data[field])
+                        food.save()
+                        food.avoided_ingredients.set(form.cleaned_data["avoided_ingredients"])
                     else:
                         password = PasswordChangeForm(locked, request.POST)
                         if not password.is_valid():

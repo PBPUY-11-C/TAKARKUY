@@ -36,6 +36,8 @@
       <form method="post" action="{% url 'modul1' %}#hasil" novalidate>
         {% csrf_token %}
         {{ form.allergens }}
+        {% if user.is_authenticated %}<p class="field-note">Preferensi halal: {% if halal_only %}Halal saja{% else %}Tidak membatasi{% endif %}. <a href="{% url 'modul3' %}">Ubah di Profil &amp; Preferensi</a>.</p>{% endif %}
+        {% if halal_warning %}<div class="notice error-notice">Rencana lama tidak sesuai pilihan halal terbaru. Gunakan Cari Menu Lain atau buat rencana baru.</div>{% endif %}
         {% if allergy_active %}<p class="field-note">Alergi profil/rencana tetap diterapkan pada menu baru. Filter bukan jaminan bebas alergen; periksa label dan kontaminasi silang.</p>{% endif %}
         {% if allergy_warning %}<div class="notice error-notice">Rencana lama memiliki bahan yang tidak sesuai alergi terbaru atau belum ditinjau. Snapshot tidak diubah. Gunakan Cari Menu Lain atau buat rencana baru.</div>{% endif %}
         {% if plan %}<input type="hidden" name="plan_id" value="{{ plan.pk }}"><input type="hidden" name="version" value="{{ plan.version }}">{% elif user.is_authenticated %}<input type="hidden" name="new_plan" value="1">{% endif %}

@@ -1,4 +1,4 @@
-:root { --green:#007a58; --dark-green:#006747; --ink:#172235; --muted:#66717c; --line:#e6ecf2; --blue:#edf3ff; --canvas:#f6f8fc; }
+:root { --green:#007452; --dark-green:#005b40; --ink:#172235; --muted:#66717c; --line:#e6ecf2; --blue:#edf3ff; --canvas:#f7f9fe; }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body { margin:0; background:var(--canvas); color:var(--ink); font-family:"DM Sans",sans-serif; }

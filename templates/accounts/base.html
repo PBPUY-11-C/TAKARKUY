@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% include "partials/head.html" %}
   <title>{% block title %}Akun{% endblock %} — TAKARKUY</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root { --ink: #172235; --muted: #56646b; --green: #007452; --line: #d8e2f3; --canvas: #f7f9fe; --field: #eef2ff; }
     *, *::before, *::after { box-sizing: border-box; }
@@ -38,13 +34,17 @@
     .form-errors { margin-bottom: 15px; padding: 11px 13px; border-radius: 8px; background: #fff1f1; }
     .remember { display: flex; align-items: center; gap: 8px; margin: 3px 0 20px; color: #4d5c59; font-size: 12px; font-weight: 500; cursor: pointer; }
     .remember input { width: 16px; height: 16px; accent-color: var(--green); }
-    .submit { width: 100%; min-height: 45px; margin-top: 4px; border: 0; border-radius: 8px; background: #006c4f; box-shadow: 0 5px 10px rgba(0, 93, 66, .14); color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; }
-    .submit:hover { background: #00583d; }
+    .submit { width: 100%; min-height: 45px; margin-top: 4px; border: 0; border-radius: 8px; background: var(--green); box-shadow: 0 5px 10px rgba(0, 93, 66, .14); color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; }
+    .submit:hover { background: #005b40; }
+    .brand-mark svg { width: 19px; }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
     .switch-page { margin: 24px 0 0; color: #485854; font-size: 13px; text-align: center; }
     @media (max-width: 480px) { .auth-card { padding: 28px 20px; } }
   </style>
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
+  {% block header %}{% endblock %}
   {% block content %}{% endblock %}
   <script>
     document.querySelectorAll("[data-password-toggle]").forEach((button) => {

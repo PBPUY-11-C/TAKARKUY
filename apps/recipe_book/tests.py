@@ -10,7 +10,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.accounts.preferences import profile_for
+from apps.accounts.preferences import preferences_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
 from apps.catalog.aggregation import expected_allergens
 from apps.catalog.models import Ingredient, Recipe, RecipeIngredient, RecipeTag
@@ -106,6 +106,22 @@ class CookingTests(TestCase):
         self.assertContains(response, "Bahan utama lengkap")
         batch.refresh_from_db()
         self.assertEqual(batch.quantity, 100)
+        self.assertFalse(CookingHistory.objects.exists())
+
+    def test_personal_halal_choice_filters_list_and_direct_cooking(self):
+        self.batch()
+        RecipeTag.objects.filter(recipe=self.recipe, tag="halal").delete()
+        self.assertFalse(recipe_query(self.user).exists())
+        self.assertEqual(self.post("modul4-preview").status_code, 404)
+        preferences = preferences_for(self.user)
+        preferences.halal_only = False
+        preferences.save()
+        self.assertTrue(recipe_query(self.user).exists())
+        self.assertContains(self.client.get(reverse("modul4")), "Sup bayam")
+        self.assertEqual(self.post("modul4-preview").status_code, 200)
+        preferences.halal_only = True
+        preferences.save()
+        self.assertEqual(self.post("modul4-cook").status_code, 404)
         self.assertFalse(CookingHistory.objects.exists())
 
     def test_preview_cook_and_replay_use_same_ledger(self):
@@ -293,7 +309,7 @@ class CookingTests(TestCase):
     def test_allergen_index_changes_on_ingredient_link_tag_and_delete(self):
         self.recipe.refresh_from_db()
         self.assertTrue(self.recipe.allergen_reviewed)
-        profile = profile_for(self.user)
+        profile = preferences_for(self.user)
         profile.allergens = ["kacang_pohon"]
         profile.save()
         self.ingredient.allergens = ["kacang_pohon"]
@@ -316,7 +332,7 @@ class CookingTests(TestCase):
 
     def test_stale_aggregate_does_not_bypass_execution_screening(self):
         self.batch()
-        profile = profile_for(self.user)
+        profile = preferences_for(self.user)
         profile.allergens = ["telur"]
         profile.save()
         Ingredient.objects.filter(pk=self.ingredient.pk).update(allergens=["telur"])
@@ -448,7 +464,7 @@ class CookingTests(TestCase):
     def test_pantry_and_book_agree_on_complete_recipes(self):
         # Undated stock is where the two modules used to disagree.
         self.batch(estimated_expires_on=None, expiry_source="unknown")
-        servings = profile_for(self.user).servings
+        servings = preferences_for(self.user).servings
         pantry = self.client.get(reverse("modul2-recipes"), {"servings": servings}).json()
         complete = [row["recipe_code"] for row in pantry["recipes"] if row["complete"]]
         book = self.client.get(reverse("modul4"), {"stock": "complete"})
