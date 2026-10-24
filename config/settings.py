@@ -183,13 +183,21 @@ LANGUAGE_CODE = "id"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"pantry_ai_console": {"class": "logging.StreamHandler"}},
+    "handlers": {
+        "pantry_ai_console": {"class": "logging.StreamHandler"},
+        "recipe_book_console": {"class": "logging.StreamHandler"},
+    },
     "loggers": {
         "apps.pantry.ai_usage": {
             "handlers": ["pantry_ai_console"],
             "level": "INFO",
             "propagate": False,
-        }
+        },
+        "apps.recipe_book": {
+            "handlers": ["recipe_book_console"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
 

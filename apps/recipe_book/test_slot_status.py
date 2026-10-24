@@ -112,6 +112,18 @@ class SlotStatusTests(TestCase):
         other = self.client.get(reverse("modul4") + "?max_price=123")
         self.assertIsNone(other.context["max_price"])
 
+    def test_recipe_filter_logs_candidate_count_and_duration(self):
+        self.batch()
+        with self.assertLogs("apps.recipe_book.views", level="INFO") as logs:
+            response = self.client.get(reverse("modul4") + "?stock=complete")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(any(
+            "filter=stock_complete" in row
+            and "candidate_count=" in row
+            and "duration_ms=" in row
+            for row in logs.output
+        ))
+
     def test_recipe_costs_skips_recipes_without_prices(self):
         # Without an imported price snapshot nothing is priced, and the page still works.
         self.assertEqual(recipe_costs(2, {"TEST-SUP"}), {})

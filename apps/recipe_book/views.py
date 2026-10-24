@@ -1,6 +1,8 @@
 import json
+import logging
 from datetime import timedelta
 from functools import wraps
+from time import perf_counter
 from urllib.parse import urlencode
 
 from django.contrib.auth.decorators import login_required
@@ -44,6 +46,8 @@ from .services import set_slot_status as change_slot_status
 
 # Price ceilings offered in the filter, for the profile's servings.
 PRICE_LIMITS = (10000, 15000, 25000, 50000)
+logger = logging.getLogger(__name__)
+FILTER_SLOW_MS = 500
 
 
 def api(view):
@@ -243,7 +247,13 @@ def recipe_review_photo_file(request, review_id):
         return JsonResponse({"error": "Foto belum tersedia untuk publik."}, status=404)
     try:
         response = FileResponse(review.photo.open("rb"), content_type="image/jpeg")
-    except OSError:
+    except Exception as exc:
+        logger.warning(
+            "Recipe review photo unavailable review_id=%s storage_name=%s error=%s",
+            review.pk,
+            review.photo.name,
+            type(exc).__name__,
+        )
         return JsonResponse({"error": "Berkas foto tidak ditemukan."}, status=404)
     response["X-Content-Type-Options"] = "nosniff"
     response["Cache-Control"] = "private, no-store"
@@ -315,15 +325,35 @@ def book_page(request):
     except ValueError:
         max_price = None
     if max_price in PRICE_LIMITS:
+        started = perf_counter()
         codes = set(query.values_list("pk", flat=True))
         costs = recipe_costs(profile.servings, codes)
         query = query.filter(pk__in=[code for code, cost in costs.items() if cost <= max_price])
+        duration_ms = (perf_counter() - started) * 1000
+        logger.log(
+            logging.WARNING if duration_ms >= FILTER_SLOW_MS else logging.INFO,
+            "recipe_filter_completed filter=price candidate_count=%d matched_count=%d duration_ms=%.1f",
+            len(codes),
+            sum(cost <= max_price for cost in costs.values()),
+            duration_ms,
+        )
     else:
         max_price = None
     stock_filter = request.GET.get("stock", "")
     stock_rows = {}
     if stock_filter in {"complete", "soon", "best"}:
+        candidate_count = query.count()
+        started = perf_counter()
         rows = stock_matches(request.user, profile.servings, query=query)
+        duration_ms = (perf_counter() - started) * 1000
+        logger.log(
+            logging.WARNING if duration_ms >= FILTER_SLOW_MS else logging.INFO,
+            "recipe_filter_completed filter=stock_%s candidate_count=%d matched_count=%d duration_ms=%.1f",
+            stock_filter,
+            candidate_count,
+            len(rows),
+            duration_ms,
+        )
         if stock_filter == "best":
             stock_rows = {row["recipe_code"]: row for row in rows}
             ranked_codes = list(stock_rows)

@@ -1,12 +1,13 @@
 import json
-from io import BytesIO
+from io import BytesIO, StringIO
 from tempfile import TemporaryDirectory
 from datetime import timedelta
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.management import call_command
+from django.core.files.base import ContentFile
+from django.core.management import call_command, CommandError
 from django.db import IntegrityError, transaction
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import reverse
@@ -229,6 +230,7 @@ class ReviewTests(TestCase):
             self.assertTrue(review.photo_is_hidden)
             self.assertEqual(review.version, 2)
             self.assertTrue(review.photo.storage.exists(review.photo.name))
+            self.assertEqual(Client().get(photo_url).status_code, 302)
             owner_response = self.client.get(photo_url)
             self.assertEqual(owner_response.status_code, 200)
             owner_response.close()
@@ -259,7 +261,108 @@ class ReviewTests(TestCase):
             self.assertEqual(review.version, 4)
 
             review.photo.storage.delete(review.photo.name)
-            self.assertEqual(self.client.get(photo_url).status_code, 404)
+            with self.assertLogs("apps.recipe_book.views", level="WARNING") as logs:
+                self.assertEqual(self.client.get(photo_url).status_code, 404)
+            self.assertIn("review_id=", logs.output[0])
+
+    def test_photo_upload_rejects_invalid_format_and_file_over_limit(self):
+        self.cooked()
+        self.post_review()
+        review = RecipeReview.objects.get(user=self.user, recipe=self.recipe)
+        url = reverse("modul4-review-photo-upload")
+
+        invalid = self.client.post(url, {
+            "recipe_code": self.recipe.pk,
+            "version": review.version,
+            "photo_permission": "on",
+            "photo": SimpleUploadedFile("fake.jpg", b"not an image", content_type="image/jpeg"),
+        })
+        self.assertEqual(invalid.status_code, 400)
+        self.assertIn("valid", invalid.json()["error"].lower())
+
+        too_large = self.client.post(url, {
+            "recipe_code": self.recipe.pk,
+            "version": review.version,
+            "photo_permission": "on",
+            "photo": SimpleUploadedFile(
+                "large.jpg", b"x" * (6 * 1024 * 1024 + 1), content_type="image/jpeg"
+            ),
+        })
+        self.assertEqual(too_large.status_code, 400)
+        self.assertIn("6 MB", too_large.json()["error"])
+
+        request_too_large = self.client.post(url, {
+            "recipe_code": self.recipe.pk,
+            "version": review.version,
+            "photo_permission": "on",
+            "photo": SimpleUploadedFile(
+                "request-too-large.jpg", b"x" * (7 * 1024 * 1024), content_type="image/jpeg"
+            ),
+        })
+        self.assertEqual(request_too_large.status_code, 413)
+        review.refresh_from_db()
+        self.assertFalse(review.photo)
+
+    def test_photo_upload_endpoint_requires_login_history_review_and_valid_method(self):
+        upload_url = reverse("modul4-review-photo-upload")
+        anonymous = Client()
+        self.assertEqual(anonymous.post(upload_url).status_code, 302)
+        self.assertEqual(self.client.get(upload_url).status_code, 405)
+
+        self.cooked()
+        response = self.client.post(upload_url, {
+            "recipe_code": self.recipe.pk,
+            "version": 1,
+            "photo_permission": "on",
+            "photo": jpeg_upload(),
+        })
+        self.assertEqual(response.status_code, 404)
+
+        self.post_review()
+        self.client.force_login(self.other)
+        response = self.client.post(upload_url, {
+            "recipe_code": self.recipe.pk,
+            "version": 1,
+            "photo_permission": "on",
+            "photo": jpeg_upload(),
+        })
+        self.assertEqual(response.status_code, 404)
+
+    def test_upload_storage_failure_does_not_attach_or_leave_review_photo(self):
+        self.cooked()
+        self.post_review()
+        review = RecipeReview.objects.get(user=self.user, recipe=self.recipe)
+        with patch("apps.recipe_book.photo_storage.default_storage") as storage:
+            storage.save.side_effect = OSError("storage unavailable")
+            with self.assertRaises(OSError):
+                attach_review_photo(
+                    self.user, self.recipe.pk, review.version, jpeg_upload(),
+                    permission_granted=True,
+                )
+        review.refresh_from_db()
+        self.assertFalse(review.photo)
+        self.assertFalse(RecipePhotoCleanup.objects.exists())
+
+    def test_photo_audit_reports_missing_references_and_unqueued_orphans(self):
+        from django.core.files.storage import default_storage
+
+        with TemporaryDirectory() as media_root, override_settings(MEDIA_ROOT=media_root):
+            RecipeReview.objects.create(
+                user=self.user,
+                recipe=self.recipe,
+                rating=5,
+                photo="recipe-reviews/TEST-SUP/missing.jpg",
+            )
+            default_storage.save(
+                "recipe-reviews/TEST-SUP/orphan.jpg", ContentFile(b"orphan")
+            )
+            output = StringIO()
+            call_command("audit_recipe_review_photos", stdout=output)
+            self.assertIn("Referenced=1", output.getvalue())
+            self.assertIn("missing=1", output.getvalue())
+            self.assertIn("orphaned=1", output.getvalue())
+            with self.assertRaises(CommandError):
+                call_command("audit_recipe_review_photos", fail_on_issues=True)
 
     def test_rating_comment_and_nested_json_validation(self):
         for value in (0, 6, True, "5", 2.5, None, {}):
