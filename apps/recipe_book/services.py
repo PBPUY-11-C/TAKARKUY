@@ -120,7 +120,7 @@ def stock_matches(user, servings, *, query=None):
         .prefetch_related("recipeingredient_set__ingredient")
     ):
         try:
-            needs, _, _ = recipe_requirements(recipe, servings)
+            needs, ingredients, _ = recipe_requirements(recipe, servings)
             allocation = plan_consumption(
                 user, needs, allow_unknown_expiry=True, preview_batches=inventory
             )
@@ -132,6 +132,29 @@ def stock_matches(user, servings, *, query=None):
         coverage = sum((grams - missing.get(code, 0)) / grams for code, grams in needs.items())
         if coverage <= 0:
             continue
+        ingredient_names = {
+            item["ingredient_code"]: item["name"]
+            for item in ingredients
+            if item["tracked"]
+        }
+        available = [
+            {
+                "ingredient_code": code,
+                "name": ingredient_names.get(code, code),
+                "grams": format((grams - missing.get(code, Decimal(0))).normalize(), "f"),
+                "required_grams": format(grams.normalize(), "f"),
+            }
+            for code, grams in needs.items()
+            if grams - missing.get(code, Decimal(0)) > 0
+        ]
+        missing_ingredients = [
+            {
+                "ingredient_code": code,
+                "name": ingredient_names.get(code, code),
+                "grams": format(grams.normalize(), "f"),
+            }
+            for code, grams in missing.items()
+        ]
         used = [row["batch"] for row in allocation["allocations"]]
         undated = [
             b for b in used if b.estimated_expires_on is None or b.expiry_source == "unknown"
@@ -143,6 +166,8 @@ def stock_matches(user, servings, *, query=None):
                 "complete": not missing,
                 "soon": any(b.estimated_expires_on <= soon for b in used if b not in undated),
                 "coverage": float(coverage / len(needs)),
+                "available": available,
+                "missing_ingredients": missing_ingredients,
                 "missing": [
                     {"ingredient_code": code, "grams": format(grams.normalize(), "f")}
                     for code, grams in missing.items()

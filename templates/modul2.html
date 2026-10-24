@@ -111,6 +111,10 @@
     .saved-table small { display: block; color: var(--muted); font-size: 10px; line-height: 1.45; }
     #stock-recipes-title { font: 800 20px "Plus Jakarta Sans", sans-serif; }
     #stock-recipe-servings { width: 64px; padding: 9px; border: 1px solid #cbd9e4; border-radius: 8px; margin: 0 8px 12px; }
+    .stock-recipe-match { padding: 12px 0; border-top: 1px solid #e7edf1; font-size: 13px; }
+    .stock-recipe-ingredients { margin-top: 7px; font-size: 11px; }
+    .stock-recipe-ingredients ul { display: flex; flex-wrap: wrap; gap: 5px 16px; margin: 4px 0 0; padding-left: 18px; }
+    .stock-recipe-ingredients.missing { color: #a13e36; }
     .saved-table .button { min-height: 37px; padding-inline: 10px; white-space: nowrap; }
     .pantry-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
     .saved-table .button.danger { margin-top: 0; border-color: #efcece; color: #9a3131; }
@@ -237,7 +241,7 @@
     </section>
     <section class="panel pantry-list" aria-labelledby="stock-recipes-title">
       <h2 id="stock-recipes-title">Ide Menu dari Stok</h2>
-      <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, diketahui beratnya, dan memiliki tanggal yang belum lewat. Kecocokan stok bukan jaminan keamanan bahan. Tidak mengurangi stok.</p>
+      <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, memiliki konversi berat, dan belum kedaluwarsa. Stok dengan tanggal kedaluwarsa yang belum diketahui tetap dihitung dan ditandai. Kecocokan stok bukan jaminan keamanan bahan dan tidak mengurangi stok.</p>
       <label for="stock-recipe-servings">Porsi <input id="stock-recipe-servings" type="number" min="1" max="10" inputmode="numeric" value="1"></label>
       <button class="button secondary" type="button" id="stock-recipes-button">Cari Menu dari Stok</button>
       <div id="stock-recipes-output" role="status" aria-live="polite"></div>

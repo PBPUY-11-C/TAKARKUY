@@ -557,13 +557,43 @@ document.getElementById("stock-recipes-button").addEventListener("click", async 
     const response = await fetch(`/modul2/recipes/?servings=${encodeURIComponent(servings)}`, {credentials: "same-origin"});
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Tidak dapat membaca kecocokan stok.");
-    if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Hubungkan bahan ke katalog dan lengkapi berat/tanggal stok jika diketahui.";
+    if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Pastikan bahan terhubung ke katalog dan konversi berat tersedia. Stok tanpa tanggal kedaluwarsa tetap dapat dihitung dan akan ditandai.";
     else output.replaceChildren(...data.recipes.map((recipe) => {
-      const line = document.createElement("p");
+      const line = document.createElement("div");
+      line.className = "stock-recipe-match";
       const link = document.createElement("a");
       link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`;
       link.textContent = `${recipe.name} · ${recipe.complete ? "Bahan cukup" : "Sebagian bahan tersedia"}${recipe.unknown_expiry ? " · tanggal stok belum diketahui" : ""}`;
       line.append(link);
+      const appendIngredientGroup = (title, rows, className) => {
+        if (!rows?.length) return;
+        const group = document.createElement("section");
+        group.className = `stock-recipe-ingredients ${className}`;
+        const heading = document.createElement("strong");
+        heading.textContent = title;
+        const list = document.createElement("ul");
+        for (const item of rows) {
+          const entry = document.createElement("li");
+          const grams = Number(item.grams);
+          const amount = Number.isFinite(grams)
+            ? grams.toLocaleString("id-ID", {maximumFractionDigits: 1})
+            : item.grams;
+          if (item.required_grams !== undefined) {
+            const required = Number(item.required_grams);
+            const requiredAmount = Number.isFinite(required)
+              ? required.toLocaleString("id-ID", {maximumFractionDigits: 1})
+              : item.required_grams;
+            entry.textContent = `${item.name}: ${amount} g dari ${requiredAmount} g`;
+          } else {
+            entry.textContent = `${item.name}: kurang ${amount} g`;
+          }
+          list.append(entry);
+        }
+        group.append(heading, list);
+        line.append(group);
+      };
+      appendIngredientGroup("Terpenuhi dari stok untuk porsi ini:", recipe.available, "available");
+      appendIngredientGroup("Masih kurang untuk porsi ini:", recipe.missing_ingredients, "missing");
       return line;
     }));
   } catch (error) { output.textContent = error.message; }
