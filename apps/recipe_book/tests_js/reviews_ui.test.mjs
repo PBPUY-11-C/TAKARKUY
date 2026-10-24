@@ -14,7 +14,9 @@ class Element{
 function setup(){
   const rows=new Map(),get=k=>{if(!rows.has(k))rows.set(k,new Element());return rows.get(k);};
   get('#review-form').dataset={code:'TEST',url:'/modul4/review/',version:'2'};
-  get('#review-form').elements={rating:{value:'5'},comment:{value:'<script>user text</script>'}};
+  const elements={rating:{value:'5'},comment:{value:'<script>user text</script>'}};
+  elements.namedItem=name=>elements[name]??null;
+  get('#review-form').elements=elements;
   let requests=[],ok=false,reloads=0;
   runInNewContext(script,{document:{querySelector:get},window:{confirm:()=>true},location:{reload:()=>reloads++},
     fetch:async(url,o)=>{requests.push(JSON.parse(o.body));return{ok,json:async()=>ok?{version:3}:{error:'<img onerror=alert(1)>'}};}});
