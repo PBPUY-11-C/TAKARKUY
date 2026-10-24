@@ -14,3 +14,21 @@ button,input,select{font:inherit}button,a,input,select{touch-action:manipulation
 .recipe-photo-placeholder { display:flex; min-height:180px; margin:18px 0; flex-direction:column; align-items:center; justify-content:center; gap:8px; border:1px dashed #bfd5cc; border-radius:12px; background:linear-gradient(135deg,#e9f4ef,#edf2fc); }
 @media(max-width:520px) { .recipe-card-photo { width:calc(100% + 26px); height:125px; margin:-13px -13px 5px; } }
 @media(max-width:520px) { .recipe-card-photo-placeholder { width:calc(100% + 26px); height:125px; margin:-13px -13px 5px; } }
+
+.cooking-mode { margin-top:14px; padding:18px; border:1px solid var(--line); border-radius:14px; background:#f8faff; }
+.cooking-mode[hidden], #full-cooking-steps[hidden] { display:none; }
+.cooking-current-step { min-height:70px; padding:16px; border-radius:10px; background:#fff; font-size:16px; line-height:1.7; }
+.cooking-mode-controls, .timer-controls { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.cooking-mode-controls { justify-content:space-between; }
+.cooking-mode-controls button { min-width:130px; }
+.cooking-checklist { margin-top:18px; }
+.cooking-checklist summary { color:var(--green); font-weight:700; cursor:pointer; }
+.cooking-checklist ul { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:0; list-style:none; }
+.cooking-checklist li label { display:flex; align-items:start; gap:8px; padding:10px; border-radius:8px; background:#fff; font-size:12px; line-height:1.5; }
+.cooking-checklist input { flex:0 0 auto; margin:2px 0 0; }
+.step-timer { margin-top:18px; padding-top:14px; border-top:1px solid var(--line); }
+.step-timer h4 { margin:0 0 10px; }
+.step-timer > label { display:block; margin-bottom:8px; font-size:12px; }
+.timer-controls input { width:100px; }
+#step-timer-display { margin:10px 0 0; font-size:24px; font-variant-numeric:tabular-nums; font-weight:700; }
+@media(max-width:520px) { .cooking-mode-controls button { flex:1; min-width:0; } .cooking-checklist ul { grid-template-columns:1fr; } }
