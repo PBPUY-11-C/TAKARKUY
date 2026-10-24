@@ -1,6 +1,6 @@
 # Modul 4 — Recipe Book & Cooking Tracker
 
-Dokumen ini mencatat implementasi Modul 4 saat ini. Halaman Recipe Book tersedia di `/modul4/`; fitur memasak dan ulasan memerlukan pengguna login. Aksi **Sudah Masak** memakai Pantry Modul 2 untuk menghitung dan mengurangi stok.
+Dokumen ini mencatat implementasi Modul 4 saat ini. Semua halaman dan aksi Recipe Book memerlukan pengguna login. Aksi **Sudah Masak** memakai Pantry Modul 2 untuk memeriksa dan mengurangi stok. Pantry tidak mempunyai sakelar aktivasi terpisah; Pantry yang kosong tetap dapat dibuka dan resep tetap dapat dilihat, tetapi masak hanya bisa dikonfirmasi jika pratinjau menemukan stok cukup atau jumlah batch manual yang valid.
 
 ## Rute aktif
 
@@ -53,7 +53,11 @@ Tes terkait berada di berkas berikut:
 - `apps/recipe_book/test_reviews.py`: `test_review_pagination_keeps_slot`, `test_public_stats_hide_moderated_reviews_and_never_publish_email`.
 - `apps/accounts/tests.py`: `test_modul4_keeps_header_and_shows_recipe_book`.
 
-Nama `test_guidance_hidden_by_default_but_direct_link_explains` yang tertulis di catatan lama sudah tidak berlaku. Perilaku sekarang adalah resep tanpa panduan tetap ditampilkan secara default; filter opsional membatasi daftar ke resep yang memiliki panduan terverifikasi.
+Nama `test_guidance_hidden_by_default_but_direct_link_explains` yang tertulis di catatan lama sudah tidak berlaku. Resep tanpa panduan tetap muncul secara default, ikut dihitung pada pemberitahuan jumlah resep tanpa panduan, dan diberi label status di kartu resep. Pada detailnya, bagian langkah memasak diganti pesan bahwa panduan belum tersedia atau masih ditahan untuk peninjauan sumber. Filter **Hanya resep dengan panduan** (`?guidance=1`) membatasi daftar ke resep dengan panduan terverifikasi. Resep tersebut masih dapat dilihat dan dipakai untuk estimasi stok/gizi, tetapi halaman tidak menyediakan langkah memasaknya.
+
+## Header dan head bersama
+
+`templates/partials/head.html` dan `templates/partials/app_header.html` dipakai bersama oleh halaman Modul 2 dan Modul 4. Perubahan pada judul/font bersama atau tautan beranda perlu mempertahankan kedua halaman tersebut.
 
 ## Checklist integrasi Planner
 

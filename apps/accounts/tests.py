@@ -179,6 +179,8 @@ class AccountFlowTests(TestCase):
     def test_modul4_keeps_header_and_shows_recipe_book(self):
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("modul4"))
+        self.assertTemplateUsed(response, "partials/head.html")
+        self.assertTemplateUsed(response, "partials/app_header.html")
         self.assertContains(response, "TAKARKUY")
         self.assertContains(response, "Kembali ke beranda")
         self.assertContains(response, "Resep favorit")

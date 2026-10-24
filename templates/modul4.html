@@ -2,12 +2,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recipe Book &amp; Cooking Tracker — TAKARKUY</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
+  {% include 'partials/head.html' with page_title="Recipe Book & Cooking Tracker" %}
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; background: #f7f9fe; color: #172235; font-family: "DM Sans", Arial, sans-serif; }
@@ -33,10 +28,7 @@
   <script type="module" src="{% static 'recipe_book/reviews.js' %}"></script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}" aria-label="TAKARKUY beranda"><span class="brand-mark" aria-hidden="true">✳</span> TAKARKUY</a>
-    <a class="back-link" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}">← Kembali ke beranda</a>
-  </header>
+  {% include 'partials/app_header.html' %}
   <main class="book-shell">
     <div class="page-heading"><div><p class="eyebrow">DAPUR SAYA</p><h1>Recipe Book &amp; Cooking Tracker</h1></div><a class="quiet-link" href="{% url 'modul2' %}">Kelola pantry →</a></div>
     <div id="page-message" class="notice" role="status" hidden></div>

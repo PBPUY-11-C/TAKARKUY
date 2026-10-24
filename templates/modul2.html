@@ -2,13 +2,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Pindai struk dan catat stok dapur TAKARKUY.">
-  <title>Smart Pantry — TAKARKUY</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  {% include 'partials/head.html' with page_title="Smart Pantry" page_description="Pindai struk dan catat stok dapur TAKARKUY." %}
   <style>
     :root {
       --ink: #172235;
@@ -149,10 +143,7 @@
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}"><span class="brand-mark" aria-hidden="true">✳</span> TAKARKUY</a>
-    <a class="back-link" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}">← Kembali ke beranda</a>
-  </header>
+  {% include 'partials/app_header.html' %}
 
   <main class="page">
     <div class="page-intro">
