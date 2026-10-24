@@ -17,7 +17,7 @@ from apps.catalog.models import Ingredient, IngredientAlias, Recipe, RecipeIngre
 from apps.pantry.models import PantryItem, PantryMovement, PantryOperation
 from apps.pantry.services import StockError, plan_consumption
 
-from .models import CookingHistory, RecipeFavorite
+from .models import CookingHistory, RecipeFavorite, RecipeNote
 from .services import cook, preview_cooking, recipe_query, stock_matches
 
 
@@ -129,6 +129,34 @@ class CookingTests(TestCase):
         self.assertContains(response, "Sup bayam")
         response = self.client.get(reverse("modul4"), {"q": "kangkung"})
         self.assertEqual(response.context["recipes"].paginator.count, 0)
+
+    def test_recipe_notes_are_private_editable_and_deletable(self):
+        payload = {"recipe_code": self.recipe.pk, "content": "Kurangi cabai; masak 3 menit lebih lama."}
+        response = self.post("modul4-note", payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["saved"])
+        self.assertEqual(RecipeNote.objects.get(user=self.user).content, payload["content"])
+
+        own_page = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
+        self.assertContains(own_page, payload["content"])
+        self.client.force_login(self.other)
+        other_page = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
+        self.assertNotContains(other_page, payload["content"])
+
+        self.client.force_login(self.user)
+        response = self.post("modul4-note", {**payload, "content": "Tambahkan jeruk nipis."})
+        self.assertTrue(response.json()["saved"])
+        self.assertEqual(RecipeNote.objects.get(user=self.user).content, "Tambahkan jeruk nipis.")
+        response = self.post("modul4-note", {**payload, "content": "   "})
+        self.assertFalse(response.json()["saved"])
+        self.assertFalse(RecipeNote.objects.exists())
+
+    def test_recipe_note_rejects_invalid_content(self):
+        for content in (None, 12, "x" * 2001):
+            self.assertEqual(
+                self.post("modul4-note", {"recipe_code": self.recipe.pk, "content": content}).status_code,
+                400,
+            )
 
     def test_preview_cook_and_replay_use_same_ledger(self):
         early = self.batch(
@@ -403,9 +431,21 @@ class CookingTests(TestCase):
             ).status_code,
             403,
         )
+        self.assertEqual(
+            csrf_client.post(
+                reverse("modul4-note"),
+                json.dumps({"recipe_code": self.recipe.pk, "content": "Catatan"}),
+                content_type="application/json",
+            ).status_code,
+            403,
+        )
         self.client.logout()
         self.assertEqual(self.client.get(reverse("modul4")).status_code, 302)
         self.assertEqual(self.post("modul4-cook").status_code, 403)
+        self.assertEqual(
+            self.post("modul4-note", {"recipe_code": self.recipe.pk, "content": "Catatan"}).status_code,
+            403,
+        )
 
     def test_manual_overuse_and_invalid_conversion_rejected(self):
         batch = self.batch(quantity=200)

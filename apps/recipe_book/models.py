@@ -19,6 +19,19 @@ class RecipeFavorite(models.Model):
         ]
 
 
+class RecipeNote(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE)
+    content = models.TextField(max_length=2000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "recipe"], name="recipe_note_unique")
+        ]
+
+
 class CookingHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     recipe = models.ForeignKey("catalog.Recipe", null=True, on_delete=models.SET_NULL)

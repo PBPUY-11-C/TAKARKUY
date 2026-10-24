@@ -20,7 +20,7 @@ from apps.catalog.models import Ingredient, IngredientAlias, Recipe
 from apps.catalog.recipe_images import recipe_image_for, recipe_images_for
 from apps.pantry.services import StockError, plan_consumption
 
-from .models import CookingHistory, RecipeDataReport, RecipeFavorite, RecipeReview
+from .models import CookingHistory, RecipeDataReport, RecipeFavorite, RecipeNote, RecipeReview
 from .reviews import (
     ReviewLimited,
     attach_review_photo,
@@ -97,6 +97,29 @@ def set_favorite(request, data):
     else:
         RecipeFavorite.objects.filter(user=request.user, recipe=recipe).delete()
     return JsonResponse({"favorite": data["favorite"]})
+
+
+@api
+@transaction.atomic
+def save_recipe_note(request, data):
+    from django.contrib.auth import get_user_model
+
+    code = data.get("recipe_code")
+    content = data.get("content")
+    if not isinstance(code, str) or not 1 <= len(code) <= 100:
+        raise ValueError("Kode resep tidak valid.")
+    if not isinstance(content, str) or len(content) > 2000:
+        raise ValueError("Catatan maksimal 2000 karakter.")
+    get_user_model().objects.select_for_update().get(pk=request.user.pk)
+    recipe = get_recipe(request.user, code)
+    content = content.strip()
+    if content:
+        note, _ = RecipeNote.objects.update_or_create(
+            user=request.user, recipe=recipe, defaults={"content": content}
+        )
+        return JsonResponse({"saved": True, "updated_at": note.updated_at.isoformat()})
+    RecipeNote.objects.filter(user=request.user, recipe=recipe).delete()
+    return JsonResponse({"saved": False})
 
 
 @api
@@ -390,6 +413,9 @@ def book_page(request):
                 row["missing"] = str(stock["missing"].get(row["ingredient_code"], 0))
         except StockError as exc:
             selection_error = str(exc)
+    personal_note = (
+        RecipeNote.objects.filter(user=request.user, recipe=selected).first() if selected else None
+    )
     favorites = list(
         RecipeFavorite.objects.filter(user=request.user)
         .select_related("recipe")
@@ -424,6 +450,7 @@ def book_page(request):
             "recipes": page,
             "selected": selected,
             "detail": detail,
+            "personal_note": personal_note,
             "slot": slot,
             "selection_error": selection_error,
             "favorites": favorites,

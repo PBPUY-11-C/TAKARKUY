@@ -50,6 +50,7 @@ from apps.recipe_book.views import (
     recipe_review_photo_file,
     report_recipe_data,
     record_cooking,
+    save_recipe_note,
     set_favorite,
     set_slot_status,
 )
@@ -87,6 +88,7 @@ urlpatterns = [
     path("modul2/recipes/", pantry_recipe_matches, name="modul2-recipes"),
     path("modul4/", book_page, name="modul4"),
     path("modul4/favorite/", set_favorite, name="modul4-favorite"),
+    path("modul4/note/", save_recipe_note, name="modul4-note"),
     path("modul4/preview/", cooking_preview, name="modul4-preview"),
     path("modul4/cook/", record_cooking, name="modul4-cook"),
     path("modul4/report-data/", report_recipe_data, name="modul4-report-data"),

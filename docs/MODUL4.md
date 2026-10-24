@@ -8,6 +8,7 @@ Dokumen ini mencatat implementasi Modul 4 saat ini. Semua halaman dan aksi Recip
 | --- | --- |
 | `GET /modul4/` | Daftar/detail resep, filter, favorit, riwayat, dan ulasan. Mendukung `?recipe=<kode>`, `?slot=<id>` untuk resep dari rencana tersimpan, dan `?stock=best` untuk saran resep berdasarkan kecocokan Pantry. |
 | `POST /modul4/favorite/` | Simpan atau hapus favorit. |
+| `POST /modul4/note/` | Simpan atau hapus catatan pribadi pengguna pada resep; catatan hanya dimuat untuk pemiliknya. |
 | `POST /modul4/preview/` | Pratinjau pengurangan stok; tidak mengubah stok. |
 | `POST /modul4/cook/` | Konfirmasi masak, mengurangi stok dan mencatat riwayat secara transaksional. |
 | `POST /modul4/report-data/` | Kirim laporan data resep yang keliru; laporan dapat ditinjau dan diperbarui statusnya melalui Django Admin. Maksimal 5 laporan per pengguna per jam. |
@@ -56,6 +57,8 @@ Filter stok **Paling cocok dengan stok** memberi urutan resep berdasarkan propor
 
 Pencarian resep mencocokkan nama resep, nama bahan baku, dan alias bahan yang sudah berstatus `reviewed` atau `manual_curated` di `data/mapping/ingredient_aliases.csv`. Alias yang belum ditinjau tidak dipakai agar hasil pencarian tidak mengikuti pemetaan kandidat yang belum dipercaya.
 
+Setiap pengguna dapat menyimpan satu catatan pribadi hingga 2000 karakter per resep, misalnya perubahan bahan atau hasil percobaan. Catatan hanya ditampilkan dan dapat diubah oleh pemilik akun, tidak ikut ulasan publik atau foto komunitas, dan dihapus saat akun atau resep dihapus. Mengirim catatan kosong menghapus catatan tersebut.
+
 Pada resep yang tidak berasal dari slot Planner, pengguna dapat mengubah porsi dari 1 sampai 10. Takaran bahan dan estimasi gizi ikut diskalakan. Biaya ditampilkan sebagai perkiraan proporsional, bukan perhitungan ulang harga paket belanja. Untuk memastikan ketersediaan bahan pada porsi pilihan, jalankan **Periksa pemakaian stok** sebelum konfirmasi. Porsi dari slot Planner tetap dikunci mengikuti rencana.
 
 Jika resep mempunyai panduan, tombol **Mulai mode memasak** menampilkan langkah satu per satu, checklist bahan, dan timer manual opsional. Mode ini tidak mengubah stok. Pengurangan stok tetap hanya terjadi melalui pratinjau dan konfirmasi **Sudah Masak**.
@@ -64,7 +67,7 @@ Jika resep mempunyai panduan, tombol **Mulai mode memasak** menampilkan langkah 
 
 Tes terkait berada di berkas berikut:
 
-- `apps/recipe_book/tests.py`: `test_page_filters_and_does_not_reduce_stock`, `test_recipe_search_matches_reviewed_ingredient_aliases_only`, `test_favorites_are_idempotent_personal_and_inactive_visible`, `test_guidance_visible_by_default_with_optional_guidance_filter`, `test_allergen_index_changes_on_ingredient_link_tag_and_delete`, `test_api_guards_bad_inputs_csrf_and_guest`, `test_stock_filters_are_read_only_and_portion_aware`, `test_best_stock_filter_ranks_recipes_and_explains_missing_ingredients`, `test_best_stock_filter_explains_when_pantry_has_no_matching_stock`, `test_pantry_and_book_agree_on_complete_recipes`.
+- `apps/recipe_book/tests.py`: `test_page_filters_and_does_not_reduce_stock`, `test_recipe_search_matches_reviewed_ingredient_aliases_only`, `test_recipe_notes_are_private_editable_and_deletable`, `test_recipe_note_rejects_invalid_content`, `test_favorites_are_idempotent_personal_and_inactive_visible`, `test_guidance_visible_by_default_with_optional_guidance_filter`, `test_allergen_index_changes_on_ingredient_link_tag_and_delete`, `test_api_guards_bad_inputs_csrf_and_guest`, `test_stock_filters_are_read_only_and_portion_aware`, `test_best_stock_filter_ranks_recipes_and_explains_missing_ingredients`, `test_best_stock_filter_explains_when_pantry_has_no_matching_stock`, `test_pantry_and_book_agree_on_complete_recipes`.
 - `apps/recipe_book/test_slot_status.py`: `test_slot_with_rice_needs_rice_stock_when_cooking`, `test_page_offers_skip_only_for_planned_slots`, `test_price_filter_hides_recipes_above_limit`, `test_recipe_costs_skips_recipes_without_prices`, `test_recipe_costs_quotes_one_recipe_from_multi_meal_catalog`, `test_soon_filter_uses_jakarta_date`.
 - `apps/recipe_book/test_reviews.py`: `test_review_pagination_keeps_slot`, `test_public_stats_hide_moderated_reviews_and_never_publish_email`.
 - `apps/accounts/tests.py`: `test_modul4_keeps_header_and_shows_recipe_book`.
