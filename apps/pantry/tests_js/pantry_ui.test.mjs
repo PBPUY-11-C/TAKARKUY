@@ -73,8 +73,8 @@ test("actual low-confidence scan sends one photo, never a text-AI request afterw
     // readWithGemini uses FormData; this mock never transmits or stores images.
     app.context.FormData = class { append() {} };
     await app.get("receipt-file").trigger("change");
-    assert.equal(app.requests.filter(request => request.url === "/modul2/ocr-fallback/").length, 1);
-    const suggestions = app.requests.filter(request => request.url === "/modul2/suggestions/");
+    assert.equal(app.requests.filter(request => request.url === "/pantry/ocr-fallback/").length, 1);
+    const suggestions = app.requests.filter(request => request.url === "/pantry/suggestions/");
     if (outcome === "success") assert.equal(suggestions.length, 0);
     else {
       assert.equal(suggestions.length, 1);

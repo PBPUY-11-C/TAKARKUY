@@ -196,3 +196,39 @@ class AuthorizationTests(TestCase):
             },
         )
         self.assertRedirects(response, reverse("modul1"))
+
+    def test_same_account_can_read_update_delete_from_another_browser(self):
+        device = Client()
+        device.force_login(self.owner)
+        page = device.get(reverse("modul2"))
+        self.assertContains(page, self.item.name)
+        response = device.patch(
+            reverse("modul2-item-details", args=[self.item.pk]),
+            data=json.dumps(
+                {
+                    "location": "freezer",
+                    "expiry_mode": "auto",
+                    "version": self.item.version,
+                    "operation_key": str(uuid4()),
+                }
+            ),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.location, "freezer")
+        self.assertEqual(
+            device.delete(
+                reverse("modul2-item-delete", args=[self.item.pk]),
+                data=json.dumps({"version": self.item.version, "operation_key": str(uuid4())}),
+                content_type="application/json",
+            ).status_code,
+            200,
+        )
+
+    def test_switching_accounts_in_same_browser_does_not_share_stock(self):
+        self.client.force_login(self.owner)
+        self.assertContains(self.client.get(reverse("modul2")), self.item.name)
+        self.client.post(reverse("logout"))
+        self.client.force_login(self.other)
+        self.assertNotContains(self.client.get(reverse("modul2")), self.item.name)

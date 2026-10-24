@@ -219,6 +219,81 @@ class PantryStorageTests(TestCase):
         item.refresh_from_db()
         self.assertEqual(item.location, "suhu_ruang")
 
+    @patch("apps.pantry.shelf_life_ai.gemini_ready", return_value=True)
+    @patch(
+        "apps.pantry.shelf_life_ai.generate_json",
+        return_value={"items": [{"i": 0, "suhu_ruang": 1, "chiller": 6, "freezer": 60}]},
+    )
+    def test_new_free_text_item_gets_ai_expiry_and_move_uses_ai_fridge_days(self, call, ready):
+        self.assertEqual(self.add(name="Sosis Kanzler XYZ").status_code, 201)
+        item = PantryItem.objects.get()
+        self.assertIsNone(item.ingredient_id)
+        self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=1))
+        self.assertEqual(item.expiry_source, "estimate")
+        self.update(item, location="chiller", expiry_mode="auto")
+        item.refresh_from_db()
+        self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=6))
+        self.assertContains(self.client.get(reverse("modul2")), "Perkiraan AI")
+        call.assert_called_once()
+
+    def test_unknown_ingredient_is_saved_without_invented_expiry(self):
+        self.add(name="Bahan Yang Tidak Ada XYZ")
+        item = PantryItem.objects.get()
+        self.assertEqual(item.location, "suhu_ruang")
+        self.assertIsNone(item.ingredient_id)
+        self.assertIsNone(item.estimated_expires_on)
+        page = self.client.get(reverse("modul2"))
+        self.assertContains(page, "Acuan masa simpan untuk lokasi ini belum tersedia")
+
+    def test_legacy_item_uses_added_date_without_writing_on_get(self):
+        session_id = self.client.session["pantry_session_id"]
+        item = PantryItem.objects.create(
+            user=self.user,
+            session_id=session_id,
+            name="Bahan Uji",
+            category="lainnya",
+            quantity=1,
+            unit="g",
+            location="",
+            source="manual",
+        )
+        start = self.today - timedelta(days=4)
+        PantryItem.objects.filter(pk=item.pk).update(added_at=timezone.now() - timedelta(days=4))
+        page = self.client.get(reverse("modul2"))
+        self.assertContains(page, "pantry-storage-data")
+        preview = page.context["pantry_storage"][str(item.pk)]
+        self.assertEqual(preview["location"], "suhu_ruang")
+        self.assertEqual(
+            preview["options"]["chiller"]["estimated_expires_on"],
+            (start + timedelta(days=5)).isoformat(),
+        )
+        item.refresh_from_db()
+        self.assertEqual(item.location, "")
+        self.assertIsNone(item.ingredient_id)
+        self.update(item, location="chiller", expiry_mode="auto")
+        item.refresh_from_db()
+        self.assertEqual(item.starting_on, start)
+        self.assertEqual(item.ingredient_id, self.ingredient.pk)
+        self.assertEqual(item.estimated_expires_on, start + timedelta(days=5))
+
+    def test_storage_options_use_only_three_locations(self):
+        options = storage_options(self.ingredient.pk)
+        self.assertEqual(options["freezer"]["min_days"], 20)
+        self.assertEqual(options["suhu_ruang"]["min_days"], 2)
+        self.assertEqual(set(options), {"chiller", "freezer", "suhu_ruang"})
+        self.assertEqual(
+            PantryItem.LOCATION_CHOICES,
+            [
+                ("chiller", "Kulkas"),
+                ("freezer", "Freezer"),
+                ("suhu_ruang", "Suhu Ruang"),
+            ],
+        )
+        self.add()
+        page = self.client.get(reverse("modul2"))
+        self.assertContains(page, '<option value="chiller">Kulkas</option>')
+        self.assertNotContains(page, "Lemari Kering")
+        self.assertNotContains(page, "Kulkas Bawah")
 
 class PantryStorageCatalogTests(TestCase):
     fixtures = ["catalog_seed.json"]
