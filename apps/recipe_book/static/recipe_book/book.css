@@ -44,3 +44,6 @@ button,input,select{font:inherit}button,a,input,select{touch-action:manipulation
 .report-recipe form { margin-top:10px; }
 .report-recipe textarea { width:100%; resize:vertical; border:1px solid var(--line); border-radius:8px; background:#f4f6ff; padding:11px; color:var(--ink); font:inherit; }
 .report-recipe #recipe-data-report-status { min-height:1.5em; }
+.stock-match { margin:0; padding:8px 10px; border-radius:9px; background:#fff7e5; color:#624b16; font-size:11px; line-height:1.5; }
+.stock-match strong,.stock-match small { display:block; }
+.stock-match small { margin-top:3px; color:#725d2e; }

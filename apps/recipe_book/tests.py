@@ -458,6 +458,45 @@ class CookingTests(TestCase):
         self.assertContains(self.client.get(reverse("modul4"), {"stock": "complete"}), "Sup bayam")
         self.assertFalse(PantryMovement.objects.exists())
 
+    def test_best_stock_filter_ranks_recipes_and_explains_missing_ingredients(self):
+        self.batch(quantity=40)
+        better_match = Recipe.objects.create(
+            recipe_code="TEST-SUP-ALT",
+            name="Sup Bayam Lebih Cocok",
+            base_servings=2,
+            meal_type="makan_malam",
+            is_plannable=True,
+            instructions="Masak bayam.",
+            instruction_status="authored_reviewed",
+            instruction_review_note="Panduan tim diuji.",
+            instruction_reviewed_on=timezone.localdate(),
+            source_url="https://example.org",
+        )
+        RecipeTag.objects.create(recipe_tag_code="TEST-ALT-HALAL", recipe=better_match, tag="halal")
+        RecipeIngredient.objects.create(
+            recipe_ingredient_code="TEST-ALT-LINK",
+            recipe=better_match,
+            ingredient=self.ingredient,
+            quantity=50,
+            unit="g",
+            quantity_status="verified",
+        )
+
+        response = self.client.get(reverse("modul4"), {"stock": "best"})
+        content = response.content.decode()
+        self.assertEqual(response.status_code, 200)
+        cards = content[content.index('class="recipe-cards"'):]
+        self.assertLess(cards.index("Sup Bayam Lebih Cocok"), cards.index("Sup bayam"))
+        self.assertContains(response, "Stok cocok 80%")
+        self.assertContains(response, "Stok cocok 40%")
+        self.assertContains(response, "Kurang: Bayam")
+        self.assertFalse(PantryMovement.objects.exists())
+
+    def test_best_stock_filter_explains_when_pantry_has_no_matching_stock(self):
+        response = self.client.get(reverse("modul4"), {"stock": "best"})
+        self.assertContains(response, "Belum ada kecocokan resep dengan bahan di Pantry")
+        self.assertEqual(response.context["recipes"].paginator.count, 0)
+
     def test_stock_matches_counts_unknown_expiry_and_flags_it(self):
         self.batch(estimated_expires_on=None, expiry_source="unknown")
         [row] = stock_matches(self.user, 2)

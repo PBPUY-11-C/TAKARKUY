@@ -6,7 +6,7 @@ Dokumen ini mencatat implementasi Modul 4 saat ini. Semua halaman dan aksi Recip
 
 | Metode dan rute | Fungsi |
 | --- | --- |
-| `GET /modul4/` | Daftar/detail resep, filter, favorit, riwayat, dan ulasan. Mendukung `?recipe=<kode>` serta `?slot=<id>` untuk resep dari rencana tersimpan. |
+| `GET /modul4/` | Daftar/detail resep, filter, favorit, riwayat, dan ulasan. Mendukung `?recipe=<kode>`, `?slot=<id>` untuk resep dari rencana tersimpan, dan `?stock=best` untuk saran resep berdasarkan kecocokan Pantry. |
 | `POST /modul4/favorite/` | Simpan atau hapus favorit. |
 | `POST /modul4/preview/` | Pratinjau pengurangan stok; tidak mengubah stok. |
 | `POST /modul4/cook/` | Konfirmasi masak, mengurangi stok dan mencatat riwayat secara transaksional. |
@@ -52,13 +52,15 @@ Pastikan direktori `media/` dapat ditulis oleh akun yang menjalankan `runserver`
 
 Kartu dan detail resep menampilkan status panduan, takaran bahan, dan foto. Status takaran dihitung dari bahan yang tertaut serta keberhasilan konversi jumlah bahan ke gram; takaran estimasi diberi penanda tersendiri. Status foto hanya ditampilkan sebagai ditinjau jika tersedia dari pemetaan kurasi atau foto komunitas yang sudah lolos moderasi. Pengguna dapat melaporkan masalah pada bahan/takaran, panduan, foto, atau informasi gizi. Laporan tidak langsung mengubah katalog; tim meninjau dan memperbarui status melalui Django Admin.
 
+Filter stok **Paling cocok dengan stok** memberi urutan resep berdasarkan proporsi kebutuhan bahan utama yang tersedia di Pantry, lalu menunjukkan bahan yang masih kurang. Perhitungan ini hanya saran dan tidak mengunci atau mengurangi stok. Jumlah stok baru berubah setelah pratinjau dan konfirmasi **Sudah Masak**.
+
 Jika resep mempunyai panduan, tombol **Mulai mode memasak** menampilkan langkah satu per satu, checklist bahan, dan timer manual opsional. Mode ini tidak mengubah stok. Pengurangan stok tetap hanya terjadi melalui pratinjau dan konfirmasi **Sudah Masak**.
 
 ## Tes Modul 4
 
 Tes terkait berada di berkas berikut:
 
-- `apps/recipe_book/tests.py`: `test_page_filters_and_does_not_reduce_stock`, `test_favorites_are_idempotent_personal_and_inactive_visible`, `test_guidance_visible_by_default_with_optional_guidance_filter`, `test_allergen_index_changes_on_ingredient_link_tag_and_delete`, `test_api_guards_bad_inputs_csrf_and_guest`, `test_stock_filters_are_read_only_and_portion_aware`, `test_pantry_and_book_agree_on_complete_recipes`.
+- `apps/recipe_book/tests.py`: `test_page_filters_and_does_not_reduce_stock`, `test_favorites_are_idempotent_personal_and_inactive_visible`, `test_guidance_visible_by_default_with_optional_guidance_filter`, `test_allergen_index_changes_on_ingredient_link_tag_and_delete`, `test_api_guards_bad_inputs_csrf_and_guest`, `test_stock_filters_are_read_only_and_portion_aware`, `test_best_stock_filter_ranks_recipes_and_explains_missing_ingredients`, `test_best_stock_filter_explains_when_pantry_has_no_matching_stock`, `test_pantry_and_book_agree_on_complete_recipes`.
 - `apps/recipe_book/test_slot_status.py`: `test_slot_with_rice_needs_rice_stock_when_cooking`, `test_page_offers_skip_only_for_planned_slots`, `test_price_filter_hides_recipes_above_limit`, `test_recipe_costs_skips_recipes_without_prices`, `test_recipe_costs_quotes_one_recipe_from_multi_meal_catalog`, `test_soon_filter_uses_jakarta_date`.
 - `apps/recipe_book/test_reviews.py`: `test_review_pagination_keeps_slot`, `test_public_stats_hide_moderated_reviews_and_never_publish_email`.
 - `apps/accounts/tests.py`: `test_modul4_keeps_header_and_shows_recipe_book`.

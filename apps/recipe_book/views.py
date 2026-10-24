@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Value, When
 from django.http import FileResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
@@ -16,7 +16,7 @@ from django.utils.cache import patch_cache_control
 from apps.accounts.preferences import effective_allergens, profile_for
 from apps.budget_planner.models import PlannedMeal
 from apps.budget_planner.services import PreviewRateLimit, reserve_preview
-from apps.catalog.models import Recipe
+from apps.catalog.models import Ingredient, Recipe
 from apps.catalog.recipe_images import recipe_image_for, recipe_images_for
 from apps.pantry.services import StockError, plan_consumption
 
@@ -279,20 +279,51 @@ def book_page(request):
     else:
         max_price = None
     stock_filter = request.GET.get("stock", "")
-    if stock_filter in {"complete", "soon"}:
+    stock_rows = {}
+    if stock_filter in {"complete", "soon", "best"}:
         rows = stock_matches(request.user, profile.servings, query=query)
-        query = query.filter(pk__in=[row["recipe_code"] for row in rows if row[stock_filter]])
+        if stock_filter == "best":
+            stock_rows = {row["recipe_code"]: row for row in rows}
+            ranked_codes = list(stock_rows)
+            query = query.filter(pk__in=ranked_codes).order_by(
+                Case(
+                    *[When(pk=code, then=Value(rank)) for rank, code in enumerate(ranked_codes)],
+                    default=Value(len(ranked_codes)),
+                    output_field=IntegerField(),
+                )
+            )
+        else:
+            query = query.filter(pk__in=[row["recipe_code"] for row in rows if row[stock_filter]])
+    ordered_query = query if stock_filter == "best" else query.order_by("name")
     page = Paginator(
-        query.order_by("name").prefetch_related("recipeingredient_set__ingredient"), 12
+        ordered_query.prefetch_related("recipeingredient_set__ingredient"), 12
     ).get_page(request.GET.get("page"))
     photos = recipe_images_for([recipe.pk for recipe in page.object_list])
     page_codes = [recipe.pk for recipe in page.object_list]
+    missing_codes = {
+        item["ingredient_code"]
+        for code in page_codes
+        for item in stock_rows.get(code, {}).get("missing", [])
+    }
+    missing_names = {
+        code: ingredient.name for code, ingredient in Ingredient.objects.in_bulk(missing_codes).items()
+    }
     guidance_codes = set(
         with_guidance(Recipe.objects.filter(pk__in=page_codes)).values_list("pk", flat=True)
     )
     for recipe in page.object_list:
         recipe.photo = photos.get(recipe.pk)
         recipe.quality = _recipe_quality(recipe, recipe.pk in guidance_codes)
+        match = stock_rows.get(recipe.pk)
+        if match:
+            recipe.stock_match = {
+                **match,
+                "coverage_percent": round(match["coverage"] * 100),
+                "missing_names": [
+                    missing_names.get(item["ingredient_code"], item["ingredient_code"])
+                    for item in match["missing"]
+                ],
+            }
     selection_error = None
     selected = None
     slot = None
