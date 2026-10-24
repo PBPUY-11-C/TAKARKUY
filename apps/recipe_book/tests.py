@@ -13,7 +13,7 @@ from django.utils import timezone
 from apps.accounts.preferences import profile_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
 from apps.catalog.aggregation import expected_allergens
-from apps.catalog.models import Ingredient, Recipe, RecipeIngredient, RecipeTag
+from apps.catalog.models import Ingredient, IngredientAlias, Recipe, RecipeIngredient, RecipeTag
 from apps.pantry.models import PantryItem, PantryMovement, PantryOperation
 from apps.pantry.services import StockError, plan_consumption
 
@@ -107,6 +107,28 @@ class CookingTests(TestCase):
         batch.refresh_from_db()
         self.assertEqual(batch.quantity, 100)
         self.assertFalse(CookingHistory.objects.exists())
+
+    def test_recipe_search_matches_reviewed_ingredient_aliases_only(self):
+        IngredientAlias.objects.create(
+            alias_code="TEST-BAYAM-ALIAS",
+            source="uji kurasi",
+            raw_name="Sayur Bayem",
+            ingredient=self.ingredient,
+            mapping_status="reviewed",
+        )
+        IngredientAlias.objects.create(
+            alias_code="TEST-BAYAM-CANDIDATE",
+            source="uji belum ditinjau",
+            raw_name="Kangkung",
+            ingredient=self.ingredient,
+            mapping_status="candidate",
+        )
+
+        response = self.client.get(reverse("modul4"), {"q": "bayem"})
+        self.assertEqual(response.context["recipes"].paginator.count, 1)
+        self.assertContains(response, "Sup bayam")
+        response = self.client.get(reverse("modul4"), {"q": "kangkung"})
+        self.assertEqual(response.context["recipes"].paginator.count, 0)
 
     def test_preview_cook_and_replay_use_same_ledger(self):
         early = self.batch(

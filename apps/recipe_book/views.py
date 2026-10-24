@@ -16,7 +16,7 @@ from django.utils.cache import patch_cache_control
 from apps.accounts.preferences import effective_allergens, profile_for
 from apps.budget_planner.models import PlannedMeal
 from apps.budget_planner.services import PreviewRateLimit, reserve_preview
-from apps.catalog.models import Ingredient, Recipe
+from apps.catalog.models import Ingredient, IngredientAlias, Recipe
 from apps.catalog.recipe_images import recipe_image_for, recipe_images_for
 from apps.pantry.services import StockError, plan_consumption
 
@@ -257,8 +257,14 @@ def book_page(request):
     query = recipe_query(request.user)
     term = request.GET.get("q", "").strip()[:100]
     if term:
+        alias_ingredients = IngredientAlias.objects.filter(
+            raw_name__icontains=term,
+            mapping_status__in=["reviewed", "manual_curated"],
+        ).values("ingredient_id")
         query = query.filter(
-            Q(name__icontains=term) | Q(recipeingredient__ingredient__name__icontains=term)
+            Q(name__icontains=term)
+            | Q(recipeingredient__ingredient__name__icontains=term)
+            | Q(recipeingredient__ingredient_id__in=alias_ingredients)
         ).distinct()
     meal = request.GET.get("meal", "")
     if meal in {"sarapan", "makan_siang", "makan_malam"}:
