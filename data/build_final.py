@@ -1970,6 +1970,28 @@ def build_all():
             if "allergens" in data:
                 data["allergens"] = json.loads(data["allergens"])
             fixture.append(dict(model=MODEL[rel], pk=row[pk], fields=data))
+    # Keep approved, team-authored Mendeley guidance separate from source recipe
+    # text, then merge it only into the Django fixture. The processed CSV remains
+    # a faithful snapshot of recipe-source data and does not republish raw steps.
+    authored_path = ROOT / "authored_instructions.json"
+    authored_records = json.loads(authored_path.read_text(encoding="utf-8"))
+    authored_by_pk = {
+        record["pk"]: record["fields"]
+        for record in authored_records
+        if record.get("model") == "catalog.recipe"
+    }
+    for record in fixture:
+        if record["model"] != "catalog.recipe":
+            continue
+        fields = record["fields"]
+        if record["pk"] in authored_by_pk:
+            fields.update(authored_by_pk[record["pk"]])
+        elif fields.get("instructions") and not record["pk"].startswith("RCP-MDL-"):
+            fields["instruction_status"] = "source_ok"
+            fields["instruction_review_note"] = (
+                "Panduan yang sebelumnya diterbitkan menurut kebijakan katalog; "
+                "bukan review hak pakai baru."
+            )
     FIX.mkdir(exist_ok=True)
     fixture_text = json.dumps(fixture, ensure_ascii=False, indent=2)
     (FIX / "catalog_seed.json").write_text(fixture_text, encoding="utf-8")
