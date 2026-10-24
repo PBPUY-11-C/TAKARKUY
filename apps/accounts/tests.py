@@ -173,11 +173,11 @@ class AccountFlowTests(TestCase):
         self.assertFalse(self.client.session.get_expire_at_browser_close())
 
     def test_other_module_pages_remain_protected_placeholders(self):
-        for name in ("modul2", "modul4", "modul5"):
+        for name in ("modul4", "modul5"):
             url = reverse(name)
             self.assertRedirects(self.client.get(url), f"{reverse('login')}?next={url}")
         self.client.post(reverse("signup"), self.signup_data())
-        for name in ("modul2", "modul4", "modul5"):
+        for name in ("modul4", "modul5"):
             response = self.client.get(reverse(name))
             self.assertTemplateUsed(response, "kosong.html")
             self.assertContains(response, 'aria-label="Profil dan preferensi"')
