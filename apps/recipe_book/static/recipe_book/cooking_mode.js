@@ -1,7 +1,10 @@
+import {clearCookingProgress, restoreCookingProgress, saveCookingProgress} from './cooking_progress.mjs';
+
 const startButton = document.querySelector('#start-cooking-mode');
 const mode = document.querySelector('#cooking-mode');
 
 if (startButton && mode) {
+  const recipeDetail = document.querySelector('#recipe-detail');
   const stepList = document.querySelector('#full-cooking-steps');
   const steps = [...stepList.querySelectorAll('li')].map((step) => step.textContent.trim());
   const stepCount = document.querySelector('#cooking-step-count');
@@ -10,12 +13,17 @@ if (startButton && mode) {
   const previousButton = document.querySelector('#previous-cooking-step');
   const nextButton = document.querySelector('#next-cooking-step');
   const exitButton = document.querySelector('#exit-cooking-mode');
+  const restartButton = document.querySelector('#reset-cooking-progress');
   const checklist = document.querySelector('#cooking-ingredients');
   const minutesInput = document.querySelector('#step-timer-minutes');
   const timerButton = document.querySelector('#start-step-timer');
   const resetTimerButton = document.querySelector('#reset-step-timer');
   const timerDisplay = document.querySelector('#step-timer-display');
   const timerStatus = document.querySelector('#step-timer-status');
+  let storage = null;
+  try { storage = window.sessionStorage; } catch { /* Cooking mode remains usable without session storage. */ }
+  const progressKey = `takarkuy:cooking-progress:${recipeDetail.dataset.code}:${recipeDetail.dataset.servings}`;
+  const checkboxes = [];
   let activeStep = 0;
   let remainingSeconds = 5 * 60;
   let timerDeadline = null;
@@ -51,6 +59,10 @@ if (startButton && mode) {
     if (focus) currentStep.focus();
   }
 
+  function saveProgress() {
+    saveCookingProgress(storage, progressKey, activeStep, checkboxes.map((checkbox) => checkbox.checked));
+  }
+
   for (const [index, ingredient] of [...document.querySelectorAll('.ingredient-grid > li')].entries()) {
     const itemName = ingredient.querySelector('div')?.firstChild?.textContent.trim() || 'Bahan';
     const quantity = ingredient.querySelector('span')?.textContent.trim();
@@ -58,6 +70,7 @@ if (startButton && mode) {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = `cooking-ingredient-${index}`;
+    checkboxes.push(checkbox);
     const name = document.createElement('span');
     name.textContent = quantity ? `${itemName} · ${quantity}` : itemName;
     label.htmlFor = checkbox.id;
@@ -65,12 +78,16 @@ if (startButton && mode) {
     const row = document.createElement('li');
     row.append(label);
     checklist.append(row);
+    checkbox.addEventListener('change', saveProgress);
   }
 
   startButton.addEventListener('click', () => {
     stopTimer(true);
-    activeStep = 0;
+    const progress = restoreCookingProgress(storage, progressKey, steps.length, checkboxes.length);
+    activeStep = progress?.step ?? 0;
+    checkboxes.forEach((checkbox, index) => { checkbox.checked = progress?.checked[index] ?? false; });
     renderStep();
+    modeStatus.textContent = progress ? 'Langkah dan checklist dipulihkan. Mulai ulang timer untuk langkah ini.' : '';
     stepList.hidden = true;
     mode.hidden = false;
     currentStep.focus();
@@ -80,7 +97,18 @@ if (startButton && mode) {
     stopTimer();
     mode.hidden = true;
     stepList.hidden = false;
+    saveProgress();
     startButton.focus();
+  });
+
+  restartButton.addEventListener('click', () => {
+    stopTimer(true);
+    clearCookingProgress(storage, progressKey);
+    activeStep = 0;
+    checkboxes.forEach((checkbox) => { checkbox.checked = false; });
+    timerStatus.textContent = '';
+    renderStep({focus: true});
+    modeStatus.textContent = 'Progres mode memasak diatur ulang.';
   });
 
   previousButton.addEventListener('click', () => {
@@ -89,6 +117,7 @@ if (startButton && mode) {
     timerStatus.textContent = 'Timer diatur ulang untuk langkah baru.';
     activeStep -= 1;
     renderStep({focus: true});
+    saveProgress();
   });
 
   nextButton.addEventListener('click', () => {
@@ -97,9 +126,11 @@ if (startButton && mode) {
       timerStatus.textContent = 'Timer diatur ulang untuk langkah baru.';
       activeStep += 1;
       renderStep({focus: true});
+      saveProgress();
       return;
     }
     stopTimer();
+    clearCookingProgress(storage, progressKey);
     modeStatus.textContent = 'Panduan selesai. Jika sudah memasak, pilih “Sudah Masak” untuk mencatat pemakaian stok.';
     nextButton.disabled = true;
     currentStep.focus();

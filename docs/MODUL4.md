@@ -62,7 +62,7 @@ Setiap pengguna dapat menyimpan satu catatan pribadi hingga 2000 karakter per re
 
 Pada resep yang tidak berasal dari slot Planner, pengguna dapat mengubah porsi dari 1 sampai 10. Takaran bahan dan estimasi gizi ikut diskalakan. Biaya langsung berubah sebagai perkiraan proporsional, lalu dihitung ulang dari katalog harga untuk porsi terpilih. Estimasi tetap bukan belanja aktual. Untuk memastikan ketersediaan bahan pada porsi pilihan, jalankan **Periksa pemakaian stok** sebelum konfirmasi. Porsi dari slot Planner tetap dikunci mengikuti rencana.
 
-Jika resep mempunyai panduan, tombol **Mulai mode memasak** menampilkan langkah satu per satu, checklist bahan, dan timer manual opsional. Mode ini tidak mengubah stok. Pengurangan stok tetap hanya terjadi melalui pratinjau dan konfirmasi **Sudah Masak**.
+Jika resep mempunyai panduan, tombol **Mulai mode memasak** menampilkan langkah satu per satu, checklist bahan, dan timer manual opsional. Langkah aktif dan checklist disimpan di `sessionStorage` untuk tab tersebut, dengan kunci berbeda per resep dan jumlah porsi; jika halaman dimuat ulang, pengguna dapat melanjutkan progres. Timer tidak dipulihkan dan harus dimulai lagi. Tombol **Mulai ulang** menghapus progres resep dan porsi yang sedang dibuka. Jika penyimpanan browser dinonaktifkan atau datanya rusak/tidak cocok dengan resep, mode tetap berfungsi dan mulai dari langkah pertama. Mode ini tidak mengubah stok. Pengurangan stok tetap hanya terjadi melalui pratinjau dan konfirmasi **Sudah Masak**.
 
 ## Tes Modul 4
 
