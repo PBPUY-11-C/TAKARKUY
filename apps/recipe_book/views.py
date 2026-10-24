@@ -260,31 +260,6 @@ def recipe_review_photo_file(request, review_id):
     return response
 
 
-def _recipe_quality(recipe, guidance_available):
-    links = list(recipe.recipeingredient_set.all())
-    if not links:
-        ingredients = "Bahan belum tercatat"
-    else:
-        try:
-            if not recipe.base_servings:
-                raise StockError("Porsi dasar belum tersedia.")
-            recipe_requirements(recipe, 1)
-            ingredients = (
-                "Takaran lengkap · sebagian estimasi"
-                if any(link.quantity_status == "estimated" for link in links)
-                else "Takaran bahan lengkap"
-            )
-        except StockError:
-            ingredients = "Takaran bahan perlu dilengkapi"
-    return {
-        "guidance": "Panduan ditinjau" if guidance_available else "Panduan belum tersedia",
-        "ingredients": ingredients,
-        # Curated mapping entries and approved community photos are reviewed
-        # before being selected for display by recipe_images_for().
-        "photo": "Foto ditinjau" if getattr(recipe, "photo", None) else "Foto belum tersedia",
-    }
-
-
 @login_required
 def book_page(request):
     profile = profile_for(request.user)
@@ -380,12 +355,8 @@ def book_page(request):
     missing_names = {
         code: ingredient.name for code, ingredient in Ingredient.objects.in_bulk(missing_codes).items()
     }
-    guidance_codes = set(
-        with_guidance(Recipe.objects.filter(pk__in=page_codes)).values_list("pk", flat=True)
-    )
     for recipe in page.object_list:
         recipe.photo = photos.get(recipe.pk)
-        recipe.quality = _recipe_quality(recipe, recipe.pk in guidance_codes)
         match = stock_rows.get(recipe.pk)
         if match:
             recipe.stock_match = {
@@ -420,9 +391,6 @@ def book_page(request):
         try:
             selected = get_recipe(request.user, code, inputs=slot.plan.inputs if slot else None)
             selected.photo = recipe_images_for([selected.pk]).get(selected.pk)
-            selected.quality = _recipe_quality(
-                selected, with_guidance(Recipe.objects.filter(pk=selected.pk)).exists()
-            )
             servings = slot.servings if slot else profile.servings
             if not slot and "servings" in request.GET:
                 try:
@@ -457,7 +425,6 @@ def book_page(request):
                 "steps": [
                     line.strip() for line in selected.instructions.splitlines() if line.strip()
                 ],
-                "quality": selected.quality,
             }
             for row in ingredients:
                 row["missing"] = str(stock["missing"].get(row["ingredient_code"], 0))

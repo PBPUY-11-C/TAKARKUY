@@ -58,7 +58,7 @@ Pastikan direktori `media/` dapat ditulis oleh akun yang menjalankan `runserver`
 
 ## Kelengkapan data resep dan laporan koreksi
 
-Kartu dan detail resep menampilkan status panduan, takaran bahan, dan foto. Status takaran dihitung dari bahan yang tertaut serta keberhasilan konversi jumlah bahan ke gram; takaran estimasi diberi penanda tersendiri. Status foto hanya ditampilkan sebagai ditinjau jika tersedia dari pemetaan kurasi atau foto komunitas yang sudah lolos moderasi. Pengguna dapat melaporkan masalah pada bahan/takaran, panduan, foto, atau informasi gizi. Laporan tidak langsung mengubah katalog; tim meninjau dan memperbarui status melalui Django Admin.
+Ringkasan mutu katalog, meliputi status tinjauan panduan, kelengkapan takaran, dan status foto, hanya tersedia di Django Admin untuk pengelola. Pengguna tetap melihat informasi yang berguna saat memasak: takaran estimasi ditandai pada bahan terkait, resep tanpa panduan diberi pemberitahuan dan tidak menampilkan langkah memasak, serta foto yang tersedia tetap mencantumkan kredit dan lisensinya. Pengguna dapat melaporkan masalah pada bahan/takaran, panduan, foto, atau informasi gizi. Laporan tidak langsung mengubah katalog; tim meninjau dan memperbarui data melalui Django Admin.
 
 Filter stok **Paling cocok dengan stok** memberi urutan resep berdasarkan proporsi kebutuhan bahan utama yang tersedia di Pantry, lalu menunjukkan jumlah yang terpenuhi dari stok, kekurangan gram, dan porsi maksimum yang dapat dibuat (hingga 10 porsi). Tautan resep membawa pengguna ke porsi yang muat dengan stok. Perhitungan ini hanya saran dan tidak mengunci atau mengurangi stok.
 
