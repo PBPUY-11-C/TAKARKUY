@@ -383,7 +383,7 @@ class CookingTests(TestCase):
         filtered = self.client.get(reverse("modul4"), {"guidance": "1"})
         self.assertNotContains(filtered, "Sup bayam")
         response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
-        self.assertContains(response, "Panduan belum tersedia")
+        self.assertContains(response, "Panduan memasak belum tersedia")
         self.assertNotContains(response, "Rebus air")
 
     def test_allergen_index_changes_on_ingredient_link_tag_and_delete(self):
