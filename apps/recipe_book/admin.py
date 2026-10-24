@@ -3,7 +3,20 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.urls import reverse
 
-from .models import RecipeReview
+from .models import RecipeDataReport, RecipeReview
+
+
+@admin.register(RecipeDataReport)
+class RecipeDataReportAdmin(admin.ModelAdmin):
+    list_display = ("recipe", "category", "status", "reporter", "created_at")
+    list_filter = ("status", "category", "created_at")
+    search_fields = ("recipe__name", "recipe__recipe_code", "details", "reporter__username")
+    readonly_fields = ("recipe", "reporter", "category", "details", "created_at")
+    fields = ("recipe", "reporter", "category", "details", "status", "created_at")
+    ordering = ("status", "-created_at")
+
+    def has_add_permission(self, request):
+        return False
 
 
 @admin.register(RecipeReview)

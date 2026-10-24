@@ -10,6 +10,7 @@ Dokumen ini mencatat implementasi Modul 4 saat ini. Semua halaman dan aksi Recip
 | `POST /modul4/favorite/` | Simpan atau hapus favorit. |
 | `POST /modul4/preview/` | Pratinjau pengurangan stok; tidak mengubah stok. |
 | `POST /modul4/cook/` | Konfirmasi masak, mengurangi stok dan mencatat riwayat secara transaksional. |
+| `POST /modul4/report-data/` | Kirim laporan data resep yang keliru; laporan dapat ditinjau dan diperbarui statusnya melalui Django Admin. Maksimal 5 laporan per pengguna per jam. |
 | `POST /modul4/review/` | Buat/perbarui ulasan setelah pengguna pernah memasak resep. |
 | `POST /modul4/review/photo/` | Unggah foto untuk ulasan. Memerlukan login, riwayat masak, ulasan tersimpan, dan persetujuan hak penggunaan foto. |
 | `GET /modul4/reviews/<id>/photo/` | Tampilkan foto yang boleh dilihat pemiliknya, moderator, atau publik setelah foto disetujui. |
@@ -43,6 +44,12 @@ Pastikan direktori `media/` dapat ditulis oleh akun yang menjalankan `runserver`
 - Hanya gambar yang benar-benar dapat dibaca sebagai JPEG, PNG, atau WebP yang diterima; nilai `Content-Type` dari browser tidak menjadi bukti format. Berkas kosong, rusak, format lain, gambar di atas 40 juta piksel, atau hasil kompresi di atas 6 MB ditolak.
 - Foto yang diterima diputar sesuai orientasi EXIF, diperkecil maksimal 1600 × 1600 piksel, dibersihkan dari metadata gambar sumber, dan disimpan ulang sebagai JPEG.
 - Jika rekaman ulasan tidak memiliki berkas foto atau berkasnya hilang/tidak dapat dibuka di storage, endpoint foto mengembalikan `404` dengan pesan `Foto tidak tersedia.` atau `Berkas foto tidak ditemukan.`. Pulihkan berkas dari backup atau hapus/ganti foto ulasan; metadata database saja tidak dapat memulihkan gambar.
+
+## Kelengkapan data resep dan laporan koreksi
+
+Kartu dan detail resep menampilkan status panduan, takaran bahan, dan foto. Status takaran dihitung dari bahan yang tertaut serta keberhasilan konversi jumlah bahan ke gram; takaran estimasi diberi penanda tersendiri. Status foto hanya ditampilkan sebagai ditinjau jika tersedia dari pemetaan kurasi atau foto komunitas yang sudah lolos moderasi. Pengguna dapat melaporkan masalah pada bahan/takaran, panduan, foto, atau informasi gizi. Laporan tidak langsung mengubah katalog; tim meninjau dan memperbarui status melalui Django Admin.
+
+Jika resep mempunyai panduan, tombol **Mulai mode memasak** menampilkan langkah satu per satu, checklist bahan, dan timer manual opsional. Mode ini tidak mengubah stok. Pengurangan stok tetap hanya terjadi melalui pratinjau dan konfirmasi **Sudah Masak**.
 
 ## Tes Modul 4
 

@@ -88,3 +88,31 @@ class ReviewQuota(models.Model):
         constraints = [
             models.CheckConstraint(condition=models.Q(attempts__lte=10), name="review_quota_max_10")
         ]
+
+
+class RecipeDataReport(models.Model):
+    CATEGORY_CHOICES = [
+        ("ingredients", "Bahan atau takaran"),
+        ("instructions", "Panduan memasak"),
+        ("photo", "Foto resep"),
+        ("nutrition", "Informasi gizi"),
+        ("other", "Lainnya"),
+    ]
+    STATUS_CHOICES = [
+        ("open", "Belum ditinjau"),
+        ("reviewing", "Sedang ditinjau"),
+        ("resolved", "Selesai diperbaiki"),
+        ("dismissed", "Tidak ditindaklanjuti"),
+    ]
+
+    recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE, related_name="data_reports")
+    reporter = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    details = models.CharField(max_length=1000)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open", db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["status", "-created_at"]

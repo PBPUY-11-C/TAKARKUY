@@ -20,7 +20,7 @@ from apps.catalog.models import Recipe
 from apps.catalog.recipe_images import recipe_image_for, recipe_images_for
 from apps.pantry.services import StockError, plan_consumption
 
-from .models import CookingHistory, RecipeFavorite, RecipeReview
+from .models import CookingHistory, RecipeDataReport, RecipeFavorite, RecipeReview
 from .reviews import ReviewLimited, attach_review_photo, review_context, write_review
 from .services import (
     cook,
@@ -110,6 +110,34 @@ def set_slot_status(request, data):
 
 
 @api
+@transaction.atomic
+def report_recipe_data(request, data):
+    from django.contrib.auth import get_user_model
+
+    get_user_model().objects.select_for_update().get(pk=request.user.pk)
+    code = data.get("recipe_code")
+    category = data.get("category")
+    details = data.get("details", "")
+    allowed_categories = {choice[0] for choice in RecipeDataReport.CATEGORY_CHOICES}
+    if not isinstance(code, str) or not 1 <= len(code) <= 100:
+        raise ValueError("Resep yang dilaporkan tidak valid.")
+    if category not in allowed_categories:
+        raise ValueError("Pilih bagian resep yang perlu diperiksa.")
+    if not isinstance(details, str) or len(details.strip()) < 5 or len(details) > 1000:
+        raise ValueError("Jelaskan masalah dalam 5 sampai 1000 karakter.")
+    recipe = get_recipe(request.user, code)
+    recent_reports = RecipeDataReport.objects.filter(
+        reporter=request.user, created_at__gte=timezone.now() - timedelta(hours=1)
+    ).count()
+    if recent_reports >= 5:
+        raise StockError("Batas 5 laporan per jam tercapai. Coba lagi nanti.", 429)
+    report = RecipeDataReport.objects.create(
+        recipe=recipe, reporter=request.user, category=category, details=details.strip()
+    )
+    return JsonResponse({"submitted": True, "report_id": report.pk}, status=201)
+
+
+@api
 def recipe_review(request, data):
     return JsonResponse(write_review(request.user, data))
 
@@ -173,6 +201,31 @@ def recipe_review_photo_file(request, review_id):
     return response
 
 
+def _recipe_quality(recipe, guidance_available):
+    links = list(recipe.recipeingredient_set.all())
+    if not links:
+        ingredients = "Bahan belum tercatat"
+    else:
+        try:
+            if not recipe.base_servings:
+                raise StockError("Porsi dasar belum tersedia.")
+            recipe_requirements(recipe, 1)
+            ingredients = (
+                "Takaran lengkap · sebagian estimasi"
+                if any(link.quantity_status == "estimated" for link in links)
+                else "Takaran bahan lengkap"
+            )
+        except StockError:
+            ingredients = "Takaran bahan perlu dilengkapi"
+    return {
+        "guidance": "Panduan ditinjau" if guidance_available else "Panduan belum tersedia",
+        "ingredients": ingredients,
+        # Curated mapping entries and approved community photos are reviewed
+        # before being selected for display by recipe_images_for().
+        "photo": "Foto ditinjau" if getattr(recipe, "photo", None) else "Foto belum tersedia",
+    }
+
+
 @login_required
 def book_page(request):
     profile = profile_for(request.user)
@@ -216,10 +269,17 @@ def book_page(request):
     if stock_filter in {"complete", "soon"}:
         rows = stock_matches(request.user, profile.servings, query=query)
         query = query.filter(pk__in=[row["recipe_code"] for row in rows if row[stock_filter]])
-    page = Paginator(query.order_by("name"), 12).get_page(request.GET.get("page"))
+    page = Paginator(
+        query.order_by("name").prefetch_related("recipeingredient_set__ingredient"), 12
+    ).get_page(request.GET.get("page"))
     photos = recipe_images_for([recipe.pk for recipe in page.object_list])
+    page_codes = [recipe.pk for recipe in page.object_list]
+    guidance_codes = set(
+        with_guidance(Recipe.objects.filter(pk__in=page_codes)).values_list("pk", flat=True)
+    )
     for recipe in page.object_list:
         recipe.photo = photos.get(recipe.pk)
+        recipe.quality = _recipe_quality(recipe, recipe.pk in guidance_codes)
     selection_error = None
     selected = None
     slot = None
@@ -244,6 +304,9 @@ def book_page(request):
         try:
             selected = get_recipe(request.user, code, inputs=slot.plan.inputs if slot else None)
             selected.photo = recipe_images_for([selected.pk]).get(selected.pk)
+            selected.quality = _recipe_quality(
+                selected, with_guidance(Recipe.objects.filter(pk=selected.pk)).exists()
+            )
             servings = slot.servings if slot else profile.servings
             needs, ingredients, nutrition = recipe_requirements(
                 selected, servings, with_rice=slot_has_rice(slot)
@@ -271,6 +334,7 @@ def book_page(request):
                 "steps": [
                     line.strip() for line in selected.instructions.splitlines() if line.strip()
                 ],
+                "quality": selected.quality,
             }
             for row in ingredients:
                 row["missing"] = str(stock["missing"].get(row["ingredient_code"], 0))

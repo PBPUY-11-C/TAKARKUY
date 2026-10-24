@@ -32,3 +32,15 @@ button,input,select{font:inherit}button,a,input,select{touch-action:manipulation
 .timer-controls input { width:100px; }
 #step-timer-display { margin:10px 0 0; font-size:24px; font-variant-numeric:tabular-nums; font-weight:700; }
 @media(max-width:520px) { .cooking-mode-controls button { flex:1; min-width:0; } .cooking-checklist ul { grid-template-columns:1fr; } }
+
+.quality-summary { margin:16px 0; padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:#f8faff; }
+.quality-summary h3 { margin:0 0 10px; }
+.quality-summary ul, .recipe-quality-list { display:flex; flex-wrap:wrap; gap:7px; padding:0; margin:0; list-style:none; }
+.quality-summary li, .recipe-quality-list li { border-radius:20px; padding:5px 9px; background:#e6f5ee; color:#176447; font-size:10px; line-height:1.4; }
+.recipe-quality-list { display:grid; gap:5px; margin:2px 0; }
+.recipe-quality-list li { width:fit-content; max-width:100%; white-space:normal; }
+.report-recipe { margin-top:20px; padding-top:14px; border-top:1px solid var(--line); }
+.report-recipe summary { color:var(--green); font-size:12px; font-weight:700; cursor:pointer; }
+.report-recipe form { margin-top:10px; }
+.report-recipe textarea { width:100%; resize:vertical; border:1px solid var(--line); border-radius:8px; background:#f4f6ff; padding:11px; color:var(--ink); font:inherit; }
+.report-recipe #recipe-data-report-status { min-height:1.5em; }
