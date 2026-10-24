@@ -44,6 +44,7 @@ from apps.pantry.views import (
 from apps.recipe_book.views import (
     book_page,
     cooking_preview,
+    estimate_recipe_cost,
     recipe_review,
     recipe_review_photo,
     recipe_review_photo_delete,
@@ -89,6 +90,7 @@ urlpatterns = [
     path("modul4/", book_page, name="modul4"),
     path("modul4/favorite/", set_favorite, name="modul4-favorite"),
     path("modul4/note/", save_recipe_note, name="modul4-note"),
+    path("modul4/estimate/", estimate_recipe_cost, name="modul4-estimate"),
     path("modul4/preview/", cooking_preview, name="modul4-preview"),
     path("modul4/cook/", record_cooking, name="modul4-cook"),
     path("modul4/report-data/", report_recipe_data, name="modul4-report-data"),

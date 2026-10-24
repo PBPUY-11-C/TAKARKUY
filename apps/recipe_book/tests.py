@@ -1,6 +1,7 @@
 import json
 from datetime import timedelta
 from decimal import Decimal
+from unittest.mock import patch
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
@@ -155,6 +156,22 @@ class CookingTests(TestCase):
         for content in (None, 12, "x" * 2001):
             self.assertEqual(
                 self.post("modul4-note", {"recipe_code": self.recipe.pk, "content": content}).status_code,
+                400,
+            )
+
+    @patch("apps.recipe_book.views.estimated_recipe_cost", return_value=12345)
+    def test_serving_price_estimate_uses_selected_portion_count(self, estimate):
+        response = self.post(
+            "modul4-estimate", {"recipe_code": self.recipe.pk, "servings": 4}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"servings": 4, "cost": 12345})
+        estimate.assert_called_once_with(self.recipe, 4)
+        for servings in (True, 0, 11, "4"):
+            self.assertEqual(
+                self.post(
+                    "modul4-estimate", {"recipe_code": self.recipe.pk, "servings": servings}
+                ).status_code,
                 400,
             )
 

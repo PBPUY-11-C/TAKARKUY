@@ -18,6 +18,7 @@ if (detail && input) {
     baseAmount: Number.parseFloat(element.textContent),
   }));
   const originalCost = summary.dataset.baseCost === '' ? null : Number(summary.dataset.baseCost);
+  let quoteSequence = 0;
 
   input.addEventListener('input', () => {
     const servings = Number(input.value);
@@ -48,5 +49,34 @@ if (detail && input) {
     if (badge) badge.textContent = 'Periksa stok untuk porsi ini';
     status.hidden = false;
     status.textContent = 'Takaran dan gizi diperbarui. Periksa pemakaian stok sebelum mengonfirmasi masak.';
+  });
+
+  input.addEventListener('change', async () => {
+    const servings = Number(input.value);
+    if (!Number.isInteger(servings) || servings < 1 || servings > 10) return;
+    const sequence = ++quoteSequence;
+    status.hidden = false;
+    status.textContent = 'Menghitung ulang estimasi harga dari katalog...';
+    try {
+      const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      const response = await fetch(detail.dataset.estimateUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+        body: JSON.stringify({recipe_code: detail.dataset.code, servings}),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Estimasi harga gagal dihitung.');
+      if (sequence !== quoteSequence || Number(input.value) !== servings) return;
+      if (data.cost === null) {
+        summary.textContent = `${servings} porsi - Estimasi harga belum tersedia di katalog`;
+      } else {
+        const amount = new Intl.NumberFormat('id-ID', {maximumFractionDigits: 0}).format(Number(data.cost));
+        summary.textContent = `${servings} porsi - Estimasi belanja Rp ${amount} (harga referensi katalog, bukan belanja aktual)`;
+      }
+      status.textContent = 'Estimasi harga sudah dihitung ulang. Periksa pemakaian stok sebelum mengonfirmasi masak.';
+    } catch (error) {
+      if (sequence === quoteSequence) status.textContent = `${error.message} Estimasi proporsional tetap ditampilkan.`;
+    }
   });
 }

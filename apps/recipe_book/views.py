@@ -123,6 +123,19 @@ def save_recipe_note(request, data):
 
 
 @api
+def estimate_recipe_cost(request, data):
+    code = data.get("recipe_code")
+    servings = data.get("servings")
+    if not isinstance(code, str) or not 1 <= len(code) <= 100:
+        raise ValueError("Kode resep tidak valid.")
+    if type(servings) is not int or not 1 <= servings <= 10:
+        raise ValueError("Porsi harus bilangan bulat antara 1 dan 10.")
+    reserve_preview(request.user)
+    recipe = get_recipe(request.user, code)
+    return JsonResponse({"servings": servings, "cost": estimated_recipe_cost(recipe, servings)})
+
+
+@api
 def cooking_preview(request, data):
     reserve_preview(request.user)
     return JsonResponse(preview_cooking(request.user, data))
