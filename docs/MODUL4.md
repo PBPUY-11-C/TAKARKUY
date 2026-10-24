@@ -22,6 +22,28 @@ Dokumen ini mencatat implementasi Modul 4 saat ini. Halaman Recipe Book tersedia
 - Foto yang sudah disetujui dapat mewakili resep yang belum memiliki foto kurasi. Foto kurasi di `data/mapping/recipe_image_mapping.csv` selalu diprioritaskan.
 - Foto komunitas ditampilkan dengan nama publik pengunggah dan atribusi bahwa foto digunakan dengan izin TAKARKUY; ini bukan lisensi terbuka untuk penggunaan ulang di luar aplikasi.
 
+## Penyimpanan dan validasi foto
+
+### Pengembangan lokal
+
+Konfigurasi saat ini memakai `MEDIA_ROOT = BASE_DIR / "media"` dan penyimpanan berkas Django bawaan (`FileSystemStorage` melalui `default_storage`). Proses Django perlu izin tulis ke direktori `media/`; penyimpanan membuat subdirektori `recipe-reviews/<kode-resep>/` saat foto disimpan. Foto disajikan lewat endpoint terautentikasi/moderasi di atas, bukan dengan mengandalkan URL direktori media publik.
+
+Pastikan direktori `media/` dapat ditulis oleh akun yang menjalankan `runserver`. Berkas media lokal adalah data runtime: jangan masukkan foto unggahan ke Git. Untuk menguji unggah, lihat foto yang menunggu moderasi sebagai pemilik, setujui melalui Django Admin, lalu pastikan endpoint foto mengembalikan JPEG.
+
+### Deployment
+
+- Pasang volume persisten yang dapat dibaca dan ditulis proses Django pada `MEDIA_ROOT`, atau konfigurasi `STORAGES["default"]` ke backend penyimpanan persisten yang kompatibel dengan `default_storage`.
+- Jika aplikasi berjalan pada beberapa instance, semua instance harus mengakses penyimpanan yang sama. Jangan mengandalkan filesystem container sementara: berkas akan hilang saat instance diganti dan foto di database tidak dapat dibuka.
+- Simpan kredensial backend di environment/secret manager, bukan di repo. Sertakan foto komunitas dalam kebijakan backup dan uji operasi simpan, buka, serta hapus berkas setelah deployment.
+- Aplikasi tidak memerlukan `MEDIA_URL` publik untuk foto ulasan. Endpoint aplikasi mengirim foto sebagai `image/jpeg` dengan `X-Content-Type-Options: nosniff` dan `Cache-Control: private, no-store`.
+
+### Batas dan kegagalan unggah
+
+- Request multipart dibatasi sekitar 7 MB untuk memberi ruang overhead form; berkas foto sendiri maksimal 6 MB.
+- Hanya gambar yang benar-benar dapat dibaca sebagai JPEG, PNG, atau WebP yang diterima; nilai `Content-Type` dari browser tidak menjadi bukti format. Berkas kosong, rusak, format lain, gambar di atas 40 juta piksel, atau hasil kompresi di atas 6 MB ditolak.
+- Foto yang diterima diputar sesuai orientasi EXIF, diperkecil maksimal 1600 × 1600 piksel, dibersihkan dari metadata gambar sumber, dan disimpan ulang sebagai JPEG.
+- Jika rekaman ulasan tidak memiliki berkas foto atau berkasnya hilang/tidak dapat dibuka di storage, endpoint foto mengembalikan `404` dengan pesan `Foto tidak tersedia.` atau `Berkas foto tidak ditemukan.`. Pulihkan berkas dari backup atau hapus/ganti foto ulasan; metadata database saja tidak dapat memulihkan gambar.
+
 ## Tes Modul 4
 
 Tes terkait berada di berkas berikut:
