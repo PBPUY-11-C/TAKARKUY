@@ -70,6 +70,46 @@ class ReviewTests(TestCase):
         self.assertEqual(self.post_review(action="delete", user_id=self.user.pk).status_code, 404)
         self.assertTrue(RecipeReview.objects.filter(user=self.user).exists())
 
+    def test_photo_delete_revokes_consent_but_preserves_written_review(self):
+        self.cooked()
+        self.post_review()
+        review = RecipeReview.objects.get(user=self.user, recipe=self.recipe)
+        review.photo = "reviews/test/photo.jpg"
+        review.photo_permission_granted = True
+        review.photo_consent_at = timezone.now()
+        review.photo_is_hidden = False
+        review.version = 2
+        review.save()
+
+        url = reverse("modul4-review-photo-delete")
+        stale = self.client.post(
+            url,
+            json.dumps({"recipe_code": self.recipe.pk, "version": 0}),
+            content_type="application/json",
+        )
+        self.assertEqual(stale.status_code, 400)
+        stale = self.client.post(
+            url,
+            json.dumps({"recipe_code": self.recipe.pk, "version": 1}),
+            content_type="application/json",
+        )
+        self.assertEqual(stale.status_code, 409)
+
+        response = self.client.post(
+            url,
+            json.dumps({"recipe_code": self.recipe.pk, "version": review.version}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        review.refresh_from_db()
+        self.assertFalse(review.photo)
+        self.assertFalse(review.photo_permission_granted)
+        self.assertIsNone(review.photo_consent_at)
+        self.assertTrue(review.photo_is_hidden)
+        self.assertEqual(review.comment, "Enak!")
+        self.assertEqual(review.rating, 5)
+        self.assertEqual(review.version, 3)
+
     def test_rating_comment_and_nested_json_validation(self):
         for value in (0, 6, True, "5", 2.5, None, {}):
             self.assertEqual(self.post_review(rating=value).status_code, 400)

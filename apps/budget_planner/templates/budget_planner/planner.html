@@ -107,6 +107,7 @@
     {% if pending_preview %}{{ pending_preview|json_script:'pending-plan-preview' }}{% endif %}
     <script src="{% static 'budget_planner/plans.js' %}" defer></script>
   {% endif %}
+  <script src="{% static 'recipe_book/image_fallback.js' %}" defer></script>
   <script>
     document.querySelectorAll(".js-rupiah-input").forEach((input) => {
       const format = () => {
