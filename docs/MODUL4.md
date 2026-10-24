@@ -33,4 +33,12 @@ Tes terkait berada di berkas berikut:
 
 Nama `test_guidance_hidden_by_default_but_direct_link_explains` yang tertulis di catatan lama sudah tidak berlaku. Perilaku sekarang adalah resep tanpa panduan tetap ditampilkan secara default; filter opsional membatasi daftar ke resep yang memiliki panduan terverifikasi.
 
+## Checklist integrasi Planner
+
+- [ ] Tombol dari jadwal membuka resep dan slot yang benar. Detail memakai jumlah porsi slot; opsi nasi mengikuti snapshot slot dan porsi tidak bisa diubah dari halaman resep.
+- [ ] Perubahan status lewati dan aksi masak mengirim versi rencana terbaru. Versi usang ditolak; penolakan tidak mengurangi stok atau membuat riwayat masak.
+- [ ] Pratinjau pemakaian stok tidak mengubah Pantry. Stok baru berkurang setelah konfirmasi masak, dan riwayat tercatat satu kali walau permintaan yang sama dikirim ulang.
+
+Tes otomatis terkait mencakup `test_skip_rejects_stale_version_cooked_slot_and_other_user`, `test_slot_cook_rejects_stale_plan_version_without_consuming_stock`, `test_slot_cook_rejects_portion_different_from_planner_slot`, `test_slot_with_rice_needs_rice_stock_when_cooking`, `test_preview_cook_and_replay_use_same_ledger`, dan `test_slot_cook_updates_plan_version_and_blocks_new_key_double_cook`.
+
 Jalankan tes backend dengan `python manage.py test apps.recipe_book` atau seluruh suite dengan `python manage.py test`. Tes antarmuka JavaScript berada di `apps/recipe_book/tests_js/` dan memerlukan Node.js.

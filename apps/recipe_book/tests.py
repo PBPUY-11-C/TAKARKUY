@@ -206,6 +206,32 @@ class CookingTests(TestCase):
         self.assertEqual(self.post("modul4-cook").status_code, 409)
         self.assertEqual(CookingHistory.objects.count(), 1)
 
+    def test_slot_cook_rejects_stale_plan_version_without_consuming_stock(self):
+        batch = self.batch(quantity=300)
+        slot = self.slot()
+        self.payload.update(planned_meal=slot.pk, version=slot.plan.version + 1)
+
+        response = self.post("modul4-cook")
+
+        self.assertEqual(response.status_code, 409)
+        batch.refresh_from_db()
+        self.assertEqual(batch.quantity, 300)
+        self.assertFalse(PantryMovement.objects.exists())
+        self.assertFalse(CookingHistory.objects.exists())
+
+    def test_slot_cook_rejects_portion_different_from_planner_slot(self):
+        batch = self.batch(quantity=300)
+        slot = self.slot()
+        self.payload.update(planned_meal=slot.pk, version=slot.plan.version, servings=1)
+
+        response = self.post("modul4-cook")
+
+        self.assertEqual(response.status_code, 400)
+        batch.refresh_from_db()
+        self.assertEqual(batch.quantity, 300)
+        self.assertFalse(PantryMovement.objects.exists())
+        self.assertFalse(CookingHistory.objects.exists())
+
     def test_missing_version_and_draft_cooking_rejected(self):
         self.batch()
         slot = self.slot()

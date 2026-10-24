@@ -86,6 +86,12 @@ class SlotStatusTests(TestCase):
         self.assertEqual(nutrition["calories"], "590.0")
         response = self.client.get(reverse("modul4") + f"?slot={slot.pk}")
         self.assertContains(response, "dengan nasi dari rencana")
+        self.assertEqual(response.context["detail"]["servings"], slot.servings)
+        self.assertTrue(response.context["with_rice"])
+        self.assertContains(
+            response,
+            'name="servings" type="number" min="1" max="10" value="2" required readonly',
+        )
 
     def test_page_offers_skip_only_for_planned_slots(self):
         slot = self.slot()
