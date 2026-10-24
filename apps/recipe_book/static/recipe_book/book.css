@@ -58,3 +58,4 @@ button,input,select{font:inherit}button,a,input,select{touch-action:manipulation
 .note-actions { display:flex; flex-wrap:wrap; gap:8px; }
 .note-actions button { padding:9px 13px; font-size:12px; }
 .note-actions .secondary { margin:0; }
+.external-ingredient { background:#eef8f2; border-radius:8px; padding:9px; }

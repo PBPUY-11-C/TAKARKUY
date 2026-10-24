@@ -40,8 +40,19 @@ if (detail) {
   let operationKey = null;
   let sequence = 0;
   let sending = false;
-  function invalidate() {
+  const externalIngredients = new Map();
+  function invalidate(event) {
     sequence += 1; approved = null; operationKey = null; confirm.disabled = true;
+    if (event?.target?.matches?.('[data-external-ingredient]')) {
+      const {ingredientCode, grams} = event.target.dataset;
+      if (event.target.checked) externalIngredients.set(ingredientCode, grams);
+      else externalIngredients.delete(ingredientCode);
+    } else if (event) {
+      externalIngredients.clear();
+      document.querySelectorAll('#cooking-preview [data-external-ingredient]').forEach((input) => {
+        input.checked = false;
+      });
+    }
   }
   form.addEventListener('input', invalidate);
   document.querySelector('#open-cooking').addEventListener('click', () => dialog.showModal());
@@ -54,18 +65,48 @@ if (detail) {
     const check = form.querySelector('[type=submit]');
     check.disabled = true; errorText.textContent = '';
     try {
-      const payload = cookingPayload(detail.dataset, form.elements, manualValues(manualBox));
+      const externalValues = [...externalIngredients].map(([ingredient_code, grams]) => ({
+        ingredient_code, grams,
+      }));
+      const payload = cookingPayload(
+        detail.dataset, form.elements, manualValues(manualBox), externalValues,
+      );
       const data = await post(detail.dataset.previewUrl, payload);
       if (current !== sequence) return;
       output.replaceChildren();
+      externalIngredients.clear();
+      for (const item of data.external_ingredients || []) {
+        externalIngredients.set(item.ingredient_code, item.grams);
+        const label = document.createElement('label'); label.className = 'check-field external-ingredient';
+        const checkbox = document.createElement('input'); checkbox.type = 'checkbox';
+        checkbox.checked = true;
+        checkbox.dataset.externalIngredient = 'true';
+        checkbox.dataset.ingredientCode = item.ingredient_code;
+        checkbox.dataset.grams = item.grams;
+        const text = document.createElement('span');
+        text.textContent = `${item.name}: ${Number(item.grams).toFixed(1)} g tersedia di luar Pantry (stok Pantry tidak dikurangi untuk bagian ini).`;
+        label.append(checkbox, text); output.append(label);
+      }
       const heading = document.createElement('p');
-      heading.textContent = data.complete ? 'Stok cukup. Pemakaian yang akan dicatat:' : 'Stok belum cukup:';
+      heading.textContent = data.complete
+        ? (data.external_ingredients?.length
+          ? 'Semua bahan tercukupi. Pemakaian stok Pantry yang akan dicatat:'
+          : 'Stok cukup. Pemakaian yang akan dicatat:')
+        : 'Stok belum cukup:';
       output.append(heading);
       const names = new Map(data.ingredients.map(row => [row.ingredient_code, row.name]));
       for (const row of data.missing) {
         const line = document.createElement('p'); line.className = 'missing';
         line.textContent = `${names.get(row.ingredient_code)}: kurang ${Number(row.grams).toFixed(1)} g`;
         output.append(line);
+        const label = document.createElement('label'); label.className = 'check-field external-ingredient';
+        const checkbox = document.createElement('input'); checkbox.type = 'checkbox';
+        checkbox.dataset.externalIngredient = 'true';
+        checkbox.dataset.ingredientCode = row.ingredient_code;
+        checkbox.dataset.grams = row.grams;
+        const text = document.createElement('span');
+        text.textContent = `Saya punya kekurangan ${Number(row.grams).toFixed(1)} g ini di luar Pantry. Stok Pantry yang tersedia tetap akan dipakai. Centang lalu periksa ulang.`;
+        label.append(checkbox, text); output.append(label);
       }
       for (const row of data.batches) {
         const line = document.createElement('p');

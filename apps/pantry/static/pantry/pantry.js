@@ -562,9 +562,30 @@ document.getElementById("stock-recipes-button").addEventListener("click", async 
       const line = document.createElement("div");
       line.className = "stock-recipe-match";
       const link = document.createElement("a");
-      link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`;
+      const requestedServings = Number(data.servings || document.getElementById("stock-recipe-servings").value);
+      const maxServings = Number(recipe.max_servings);
+      const hasServingEstimate = Number.isInteger(maxServings);
+      const targetServings = hasServingEstimate && maxServings > 0
+        ? Math.min(requestedServings, maxServings)
+        : requestedServings;
+      link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`
+        + (hasServingEstimate ? `&servings=${targetServings}` : "");
       link.textContent = `${recipe.name} · ${recipe.complete ? "Bahan cukup" : "Sebagian bahan tersedia"}${recipe.unknown_expiry ? " · tanggal stok belum diketahui" : ""}`;
       line.append(link);
+      if (hasServingEstimate) {
+        const portion = document.createElement("p");
+        portion.className = recipe.max_servings > 0 && recipe.max_servings < requestedServings
+          ? "stock-recipe-portion stock-recipe-portion-limited"
+          : "stock-recipe-portion";
+        if (recipe.max_servings < 1) {
+          portion.textContent = "Stok belum cukup untuk 1 porsi.";
+        } else if (recipe.max_servings < requestedServings) {
+          portion.textContent = `Stok cukup untuk paling banyak ${recipe.max_servings} porsi. Tautan membuka resep dengan porsi tersebut.`;
+        } else {
+          portion.textContent = `Stok cukup untuk ${requestedServings} porsi${recipe.max_servings > requestedServings ? `; dapat dibuat hingga ${recipe.max_servings} porsi` : ""}.`;
+        }
+        line.append(portion);
+      }
       const appendIngredientGroup = (title, rows, className) => {
         if (!rows?.length) return;
         const group = document.createElement("section");

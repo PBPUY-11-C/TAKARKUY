@@ -1,7 +1,7 @@
 """Recipe Book queries and transactional cooking. No stock reservations."""
 
 from datetime import date, timedelta
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_FLOOR
 from zoneinfo import ZoneInfo
 
 from django.db import transaction
@@ -111,6 +111,11 @@ def stock_matches(user, servings, *, query=None):
     )
     if not inventory:
         return []
+    available_grams = {}
+    for batch in inventory:
+        available_grams[batch.ingredient_id] = available_grams.get(
+            batch.ingredient_id, Decimal(0)
+        ) + Decimal(batch.quantity) * Decimal(batch.grams_per_unit)
     query = with_guidance(recipe_query(user)) if query is None else query
     soon = timezone.localdate(timezone=JAKARTA) + timedelta(days=2)
     rows = []
@@ -155,6 +160,17 @@ def stock_matches(user, servings, *, query=None):
             }
             for code, grams in missing.items()
         ]
+        max_servings = 10
+        for code, grams in needs.items():
+            per_serving = grams / Decimal(servings)
+            possible = int(
+                (available_grams.get(code, Decimal(0)) / per_serving).to_integral_value(
+                    rounding=ROUND_FLOOR
+                )
+            )
+            max_servings = min(max_servings, possible)
+        if not missing:
+            max_servings = max(max_servings, servings)
         used = [row["batch"] for row in allocation["allocations"]]
         undated = [
             b for b in used if b.estimated_expires_on is None or b.expiry_source == "unknown"
@@ -164,6 +180,7 @@ def stock_matches(user, servings, *, query=None):
                 "recipe_code": recipe.pk,
                 "name": recipe.name,
                 "complete": not missing,
+                "max_servings": max(0, max_servings),
                 "soon": any(b.estimated_expires_on <= soon for b in used if b not in undated),
                 "coverage": float(coverage / len(needs)),
                 "available": available,
@@ -301,6 +318,51 @@ def slot_has_rice(slot):
     return bool(slot and isinstance(slot.snapshot, dict) and slot.snapshot.get("with_rice"))
 
 
+def _apply_external_ingredients(payload, needs, ingredients, allocation):
+    """Accept only ingredient amounts that are currently missing from Pantry."""
+    raw = payload.get("external_ingredients", [])
+    if not isinstance(raw, list) or len(raw) > 100:
+        raise StockError("Daftar bahan di luar Pantry tidak valid.", 400)
+    names = {
+        item["ingredient_code"]: item["name"]
+        for item in ingredients
+        if item["tracked"]
+    }
+    external = []
+    seen = set()
+    for row in raw:
+        if not isinstance(row, dict):
+            raise StockError("Daftar bahan di luar Pantry tidak valid.", 400)
+        code, value = row.get("ingredient_code"), row.get("grams")
+        if not isinstance(code, str) or code not in needs or code in seen:
+            raise StockError("Bahan di luar Pantry tidak cocok dengan resep.", 400)
+        try:
+            grams = Decimal(str(value))
+        except (InvalidOperation, TypeError, ValueError) as exc:
+            raise StockError("Jumlah bahan di luar Pantry tidak valid.", 400) from exc
+        if not grams.is_finite() or grams <= 0:
+            raise StockError("Jumlah bahan di luar Pantry tidak valid.", 400)
+        missing = allocation["missing"].get(code, Decimal(0))
+        if grams > missing:
+            raise StockError(
+                "Kekurangan stok sudah berubah. Periksa ulang pemakaian stok.", 409
+            )
+        remainder = missing - grams
+        if remainder:
+            allocation["missing"][code] = remainder
+        else:
+            allocation["missing"].pop(code, None)
+        seen.add(code)
+        external.append(
+            {
+                "ingredient_code": code,
+                "name": names.get(code, code),
+                "grams": format(grams.normalize(), "f"),
+            }
+        )
+    return external
+
+
 def advance_plan_version(user, plan):
     """Bump a saved plan after a slot status change, and its clean draft mirror.
 
@@ -358,11 +420,13 @@ def preview_cooking(user, payload):
         manual=payload.get("manual", []),
         allow_unknown_expiry=payload.get("allow_unknown_expiry", False),
     )
+    external = _apply_external_ingredients(payload, needs, ingredients, allocation)
     return {
         "name": recipe.name,
         "ingredients": ingredients,
         "nutrition": nutrition,
         "complete": not allocation["missing"],
+        "external_ingredients": external,
         "missing": [
             {"ingredient_code": code, "grams": str(grams)}
             for code, grams in allocation["missing"].items()
@@ -403,12 +467,21 @@ def cook(user, payload):
     if replay:
         return event.response
     recipe, slot, needs, ingredients, nutrition = cooking_inputs(user, payload, lock=True)
+    allocation = plan_consumption(
+        user,
+        needs,
+        manual=payload.get("manual", []),
+        allow_unknown_expiry=payload.get("allow_unknown_expiry", False),
+        lock=True,
+    )
+    external = _apply_external_ingredients(payload, needs, ingredients, allocation)
     response = execute_consumption(
         user,
         needs,
         event,
         manual=payload.get("manual", []),
         allow_unknown_expiry=payload.get("allow_unknown_expiry", False),
+        planned=allocation,
     )
     history = CookingHistory.objects.create(
         user=user,
@@ -424,12 +497,18 @@ def cook(user, payload):
             "source_url": recipe.source_url,
             "allergens": effective_allergens(user, slot.plan.inputs if slot else {}),
             "allow_unknown_expiry": payload.get("allow_unknown_expiry", False),
+            "external_ingredients": external,
         },
     )
     if slot:
         slot.status = "cooked"
         slot.save(update_fields=["status"])
         advance_plan_version(user, slot.plan)
-    event.response = {**response, "history_id": history.pk, "name": recipe.name}
+    event.response = {
+        **response,
+        "history_id": history.pk,
+        "name": recipe.name,
+        "external_ingredients": external,
+    }
     event.save(update_fields=["response"])
     return event.response

@@ -60,7 +60,9 @@ Pastikan direktori `media/` dapat ditulis oleh akun yang menjalankan `runserver`
 
 Kartu dan detail resep menampilkan status panduan, takaran bahan, dan foto. Status takaran dihitung dari bahan yang tertaut serta keberhasilan konversi jumlah bahan ke gram; takaran estimasi diberi penanda tersendiri. Status foto hanya ditampilkan sebagai ditinjau jika tersedia dari pemetaan kurasi atau foto komunitas yang sudah lolos moderasi. Pengguna dapat melaporkan masalah pada bahan/takaran, panduan, foto, atau informasi gizi. Laporan tidak langsung mengubah katalog; tim meninjau dan memperbarui status melalui Django Admin.
 
-Filter stok **Paling cocok dengan stok** memberi urutan resep berdasarkan proporsi kebutuhan bahan utama yang tersedia di Pantry, lalu menunjukkan jumlah yang terpenuhi dari stok dan kekurangan gram untuk porsi pilihan. Perhitungan ini hanya saran dan tidak mengunci atau mengurangi stok. Jumlah stok baru berubah setelah pratinjau dan konfirmasi **Sudah Masak**.
+Filter stok **Paling cocok dengan stok** memberi urutan resep berdasarkan proporsi kebutuhan bahan utama yang tersedia di Pantry, lalu menunjukkan jumlah yang terpenuhi dari stok, kekurangan gram, dan porsi maksimum yang dapat dibuat (hingga 10 porsi). Tautan resep membawa pengguna ke porsi yang muat dengan stok. Perhitungan ini hanya saran dan tidak mengunci atau mengurangi stok.
+
+Saat pratinjau memasak menunjukkan kekurangan, pengguna boleh menandai jumlah kekurangan tertentu sebagai tersedia di luar Pantry. Pratinjau harus dijalankan ulang; jumlah tersebut dicatat di snapshot riwayat masak, sedangkan stok Pantry yang memang dialokasikan tetap dikurangi. Deklarasi hanya diterima sampai jumlah yang masih kurang saat pratinjau/konfirmasi, sehingga perubahan stok mengharuskan pratinjau baru.
 
 Pencarian resep mencocokkan nama resep, nama bahan baku, dan alias bahan yang sudah berstatus `reviewed` atau `manual_curated` di `data/mapping/ingredient_aliases.csv`. Alias yang belum ditinjau tidak dipakai agar hasil pencarian tidak mengikuti pemetaan kandidat yang belum dipercaya.
 

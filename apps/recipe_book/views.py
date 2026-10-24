@@ -424,6 +424,13 @@ def book_page(request):
                 selected, with_guidance(Recipe.objects.filter(pk=selected.pk)).exists()
             )
             servings = slot.servings if slot else profile.servings
+            if not slot and "servings" in request.GET:
+                try:
+                    requested_servings = int(request.GET["servings"])
+                    if 1 <= requested_servings <= 10:
+                        servings = requested_servings
+                except (ValueError, TypeError):
+                    pass
             needs, ingredients, nutrition = recipe_requirements(
                 selected, servings, with_rice=slot_has_rice(slot)
             )
