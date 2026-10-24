@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.budget_planner.models import BudgetPlan
-from apps.catalog.models import Ingredient
+from apps.catalog.models import Ingredient, IngredientPrice, Recipe, RecipeIngredient, RecipeTag
 
 from . import tests as cooking
 from .services import cooking_inputs, recipe_costs
@@ -109,6 +109,44 @@ class SlotStatusTests(TestCase):
     def test_recipe_costs_skips_recipes_without_prices(self):
         # Without an imported price snapshot nothing is priced, and the page still works.
         self.assertEqual(recipe_costs(2, {"TEST-SUP"}), {})
+
+    def test_recipe_costs_quotes_one_recipe_from_multi_meal_catalog(self):
+        IngredientPrice.objects.create(
+            price_code="PRICE-TEST-BAYAM",
+            ingredient=self.ingredient,
+            price_rupiah=10000,
+            quantity=1,
+            unit="kg",
+            region="Kabupaten Garut",
+            recorded_at=date(2026, 10, 24),
+            source="Harga tes",
+            source_url="https://example.org/price",
+            source_commodity_name="Bayam",
+            price_status="published",
+        )
+        breakfast = Recipe.objects.create(
+            recipe_code="TEST-SARAPAN",
+            name="Bayam pagi",
+            base_servings=2,
+            meal_type="sarapan",
+            is_plannable=True,
+        )
+        RecipeIngredient.objects.create(
+            recipe_ingredient_code="TEST-LINK-SARAPAN",
+            recipe=breakfast,
+            ingredient=self.ingredient,
+            quantity=100,
+            unit="g",
+            quantity_status="verified",
+        )
+        RecipeTag.objects.create(
+            recipe_tag_code="TEST-HALAL-SARAPAN", recipe=breakfast, tag="halal"
+        )
+
+        # Both breakfast and dinner have candidates. Quoting the dinner recipe
+        # against this full catalog used to raise ValueError because the quote
+        # schedule contained only the dinner slot.
+        self.assertEqual(recipe_costs(2, {self.recipe.pk}), {self.recipe.pk: 1000})
 
     def test_soon_filter_uses_jakarta_date(self):
         # 18:00 UTC on 8 Oct is already 01:00 on 9 Oct in Jakarta.
