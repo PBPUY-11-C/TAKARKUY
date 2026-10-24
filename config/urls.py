@@ -35,6 +35,7 @@ from apps.budget_planner.plan_views import (
 from apps.budget_planner.views import planner_page
 from apps.dashboard.views import market_lookup
 from apps.pantry.views import (
+    pantry_page,
     delete_pantry_item,
     fallback_receipt_ocr,
     pantry_movements,
@@ -80,14 +81,14 @@ urlpatterns = [
     path(
         "planner/previews/<uuid:preview_id>/apply/", apply_plan_preview, name="modul1-preview-apply"
     ),
-    path("modul2/", kosong, name="modul2"),
-    path("modul2/items/", save_pantry_items, name="modul2-items"),
-    path("modul2/suggestions/", suggest_receipt_items, name="modul2-suggestions"),
-    path("modul2/ocr-fallback/", fallback_receipt_ocr, name="modul2-ocr-fallback"),
-    path("modul2/items/<int:item_id>/", update_pantry_details, name="modul2-item-details"),
-    path("modul2/items/<int:item_id>/delete/", delete_pantry_item, name="modul2-item-delete"),
-    path("modul2/items/<int:item_id>/movements/", pantry_movements, name="modul2-item-movements"),
-    path("modul2/recipes/", pantry_recipe_matches, name="modul2-recipes"),
+    path("pantry/", pantry_page, name="modul2"),
+    path("pantry/items/", save_pantry_items, name="modul2-items"),
+    path("pantry/suggestions/", suggest_receipt_items, name="modul2-suggestions"),
+    path("pantry/ocr-fallback/", fallback_receipt_ocr, name="modul2-ocr-fallback"),
+    path("pantry/items/<int:item_id>/", update_pantry_details, name="modul2-item-details"),
+    path("pantry/items/<int:item_id>/delete/", delete_pantry_item, name="modul2-item-delete"),
+    path("pantry/items/<int:item_id>/movements/", pantry_movements, name="modul2-item-movements"),
+    path("pantry/recipes/", pantry_recipe_matches, name="modul2-recipes"),
     path("modul4/", kosong, name="modul4"),
     path("modul4/favorite/", set_favorite, name="modul4-favorite"),
     path("modul4/preview/", cooking_preview, name="modul4-preview"),

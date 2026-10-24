@@ -26,7 +26,7 @@ class ReceiptUploadMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path == "/modul2/ocr-fallback/" and request.method == "POST":
+        if request.path == "/pantry/ocr-fallback/" and request.method == "POST":
             try:
                 length = int(request.META.get("CONTENT_LENGTH") or 0)
             except ValueError:
