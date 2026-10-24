@@ -71,7 +71,11 @@ def write_review(user, data):
     reserve_review(user)
     with transaction.atomic():
         get_user_model().objects.select_for_update().get(pk=user.pk)
-        review = RecipeReview.objects.filter(user=user, recipe_id=code).first()
+        review = (
+            RecipeReview.objects.select_for_update()
+            .filter(user=user, recipe_id=code)
+            .first()
+        )
         if review and version != review.version:
             raise StockError("Ulasan sudah berubah. Muat ulang halaman.")
         if not review and version is not None:

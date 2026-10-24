@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import transaction
+from django.db.models import F
 from django.utils import timezone
 from django.utils.html import format_html
 from django.urls import reverse
@@ -49,19 +51,34 @@ class RecipeReviewAdmin(admin.ModelAdmin):
 
     @admin.action(description="Setujui foto dengan izin yang tercatat")
     def approve_consented_photos(self, request, queryset):
-        queryset.filter(
+        eligible = queryset.filter(
             photo__gt="", photo_permission_granted=True,
             photo_consent_at__isnull=False, is_hidden=False
-        ).update(
-            photo_is_hidden=False,
-            photo_moderated_at=timezone.now(),
-            photo_moderated_by=request.user,
         )
+        self._update_moderation(eligible, {
+            "photo_is_hidden": False,
+            "photo_moderated_at": timezone.now(),
+            "photo_moderated_by": request.user,
+        })
 
     @admin.action(description="Sembunyikan foto terpilih")
     def hide_selected_photos(self, request, queryset):
-        queryset.filter(photo__gt="").update(
-            photo_is_hidden=True,
-            photo_moderated_at=timezone.now(),
-            photo_moderated_by=request.user,
-        )
+        self._update_moderation(queryset.filter(photo__gt=""), {
+            "photo_is_hidden": True,
+            "photo_moderated_at": timezone.now(),
+            "photo_moderated_by": request.user,
+        })
+
+    @staticmethod
+    def _update_moderation(queryset, changes):
+        with transaction.atomic():
+            review_ids = list(
+                queryset.select_for_update().values_list("pk", flat=True)
+            )
+            if not review_ids:
+                return
+            queryset.model.objects.filter(pk__in=review_ids).update(
+                **changes,
+                version=F("version") + 1,
+                updated_at=timezone.now(),
+            )

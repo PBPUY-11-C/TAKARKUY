@@ -1,17 +1,20 @@
 import json
 from io import BytesIO
+from tempfile import TemporaryDirectory
 from datetime import timedelta
 
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.db import IntegrityError, transaction
-from django.test import Client, TestCase, override_settings
+from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
 from unittest.mock import patch
 
+from .admin import RecipeReviewAdmin
 from . import tests as cooking_tests
 from .models import CookingHistory, RecipePhotoCleanup, RecipeReview, ReviewQuota
 from .reviews import attach_review_photo, public_username, review_context
@@ -64,6 +67,12 @@ class ReviewTests(TestCase):
             response.content.decode(),
             rf'href="\?[^"]*slot={slot.pk}[^"]*review_page=2#recipe-reviews"',
         )
+
+    def test_empty_results_still_render_shared_csrf_token(self):
+        response = self.client.get(reverse("modul4"), {"q": "no-such-recipe"})
+
+        self.assertNotContains(response, 'id="recipe-detail"')
+        self.assertContains(response, 'id="csrf-bootstrap"')
 
     def test_must_have_own_cooking_history_on_every_save(self):
         self.assertEqual(self.post_review().status_code, 403)
@@ -192,6 +201,65 @@ class ReviewTests(TestCase):
 
         self.assertFalse(RecipePhotoCleanup.objects.exists())
         self.assertNotIn("recipe-reviews/account-photo.jpg", storage.files)
+
+    def test_photo_upload_moderation_versions_access_and_missing_storage_file(self):
+        self.cooked()
+        self.post_review()
+        review = RecipeReview.objects.get(user=self.user, recipe=self.recipe)
+        upload_url = reverse("modul4-review-photo-upload")
+        photo_url = reverse("modul4-review-photo", args=[review.pk])
+
+        with TemporaryDirectory() as media_root, override_settings(MEDIA_ROOT=media_root):
+            denied = self.client.post(upload_url, {
+                "recipe_code": self.recipe.pk,
+                "version": review.version,
+                "photo": jpeg_upload(),
+            })
+            self.assertEqual(denied.status_code, 400)
+
+            uploaded = self.client.post(upload_url, {
+                "recipe_code": self.recipe.pk,
+                "version": review.version,
+                "photo_permission": "on",
+                "photo": jpeg_upload(),
+            })
+            self.assertEqual(uploaded.status_code, 200)
+            review.refresh_from_db()
+            self.assertTrue(review.photo_permission_granted)
+            self.assertTrue(review.photo_is_hidden)
+            self.assertEqual(review.version, 2)
+            self.assertTrue(review.photo.storage.exists(review.photo.name))
+            owner_response = self.client.get(photo_url)
+            self.assertEqual(owner_response.status_code, 200)
+            owner_response.close()
+
+            self.client.force_login(self.other)
+            self.assertEqual(self.client.get(photo_url).status_code, 404)
+
+            staff = get_user_model().objects.create_user("moderator", is_staff=True)
+            request = RequestFactory().post("/admin/")
+            request.user = staff
+            model_admin = RecipeReviewAdmin(RecipeReview, admin.site)
+            selected = RecipeReview.objects.filter(pk=review.pk)
+            model_admin.approve_consented_photos(request, selected)
+            review.refresh_from_db()
+            self.assertFalse(review.photo_is_hidden)
+            self.assertEqual(review.version, 3)
+            public_response = self.client.get(photo_url)
+            self.assertEqual(public_response.status_code, 200)
+            public_response.close()
+
+            self.client.force_login(self.user)
+            self.assertEqual(self.post_review(version=2).status_code, 409)
+            model_admin.hide_selected_photos(
+                request, RecipeReview.objects.filter(pk=review.pk)
+            )
+            review.refresh_from_db()
+            self.assertTrue(review.photo_is_hidden)
+            self.assertEqual(review.version, 4)
+
+            review.photo.storage.delete(review.photo.name)
+            self.assertEqual(self.client.get(photo_url).status_code, 404)
 
     def test_rating_comment_and_nested_json_validation(self):
         for value in (0, 6, True, "5", 2.5, None, {}):

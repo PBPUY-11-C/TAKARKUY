@@ -37,6 +37,7 @@
   <main class="book-shell">
     <div class="page-heading"><div><p class="eyebrow">DAPUR SAYA</p><h1>Recipe Book &amp; Cooking Tracker</h1></div><a class="quiet-link" href="{% url 'modul2' %}">Kelola pantry →</a></div>
     <div id="page-message" class="notice" role="status" hidden></div>
+    <form id="csrf-bootstrap" hidden>{% csrf_token %}</form>
     <div class="book-layout">
       <div>
         <form class="panel search-panel" method="get" action="{% url 'modul4' %}">

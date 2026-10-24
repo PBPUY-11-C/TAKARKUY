@@ -18,25 +18,43 @@ class Element {
   getAttribute() { return 'false'; }
   set innerHTML(value) { throw new Error(`Unsafe HTML: ${value}`); }
 }
-function setup() {
+function setup({emptyPage = false, missingCsrf = false} = {}) {
   const elements = new Map();
   const get = selector => { if (!elements.has(selector)) elements.set(selector, new Element()); return elements.get(selector); };
-  get('#recipe-detail').dataset = {code: 'TEST', servings: '2', previewUrl: '/modul4/preview/', cookUrl: '/modul4/cook/'};
+  if (!emptyPage) {
+    get('#recipe-detail').dataset = {code: 'TEST', servings: '2', previewUrl: '/modul4/preview/', cookUrl: '/modul4/cook/'};
+  }
+  const favoriteRemove = new Element();
+  favoriteRemove.dataset = {removeFavorite: 'RECIPE', url: '/modul4/favorite/'};
   get('#cooking-form').elements = {servings: {value: '2'}, include_staples: {checked: false}, allow_unknown_expiry: {checked: false}};
   let next = {complete: true, ingredients: [], missing: [], batches: [], manual_batches: []};
   const requests = [];
   let key = 0;
   let reloads = 0;
+  const querySelector = selector => {
+    if (missingCsrf && selector.includes('csrfmiddlewaretoken')) return null;
+    if (emptyPage && selector === '#recipe-detail') return null;
+    return get(selector);
+  };
   runInNewContext(script, {cookingPayload, manualValues,
-    document: {querySelector: get, querySelectorAll: () => [], createElement: () => new Element()},
+    document: {
+      querySelector,
+      querySelectorAll: selector => selector === '[data-remove-favorite]' ? [favoriteRemove] : [],
+      createElement: () => new Element(),
+    },
     crypto: {randomUUID: () => `key-${++key}`}, location: {reload: () => reloads++},
     fetch: async (url, options) => {
       requests.push({url, payload: JSON.parse(options.body)});
       if (next instanceof Error) throw next;
       return {ok: true, json: async () => next};
     }});
-  return {get, requests, setNext: value => { next = value; }, reloads: () => reloads};
+  return {get, requests, favoriteRemove, setNext: value => { next = value; }, reloads: () => reloads};
 }
+test('empty recipe results initialize favorite controls if a CSRF field is absent', () => {
+  const ui = setup({emptyPage: true, missingCsrf: true});
+
+  assert.equal(typeof ui.favoriteRemove.listeners.click, 'function');
+});
 test('confirm only follows a complete preview; edits invalidate it', async () => {
   const ui = setup();
   ui.setNext({complete: false, ingredients: [{ingredient_code: 'B', name: 'Bayam'}], missing: [{ingredient_code: 'B', grams: '10'}], batches: [], manual_batches: []});

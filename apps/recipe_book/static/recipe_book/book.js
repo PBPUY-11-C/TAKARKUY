@@ -1,7 +1,9 @@
 import { cookingPayload, manualValues } from './cooking.mjs';
 
 const detail = document.querySelector('#recipe-detail');
-const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const csrf = document.querySelector('#csrf-bootstrap [name=csrfmiddlewaretoken]')?.value
+  || document.querySelector('[name=csrfmiddlewaretoken]')?.value
+  || '';
 const message = document.querySelector('#page-message');
 async function post(url, payload) {
   const response = await fetch(url, {method: 'POST', credentials: 'same-origin',
