@@ -5,7 +5,18 @@ from zoneinfo import ZoneInfo
 from django import forms
 from django.utils import timezone
 
+from apps.recipe_book.staples import STAPLE_GROUPS
+
 from .models import PantryItem
+
+
+class StaplePreferenceForm(forms.Form):
+    tracked_staples = forms.MultipleChoiceField(
+        choices=[(key, label) for key, label, _codes in STAPLE_GROUPS],
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    version = forms.IntegerField(min_value=1)
 
 
 class StrictTextField(forms.CharField):

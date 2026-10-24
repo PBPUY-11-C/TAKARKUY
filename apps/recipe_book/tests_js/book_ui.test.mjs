@@ -26,7 +26,7 @@ function setup({emptyPage = false, missingCsrf = false} = {}) {
   }
   const favoriteRemove = new Element();
   favoriteRemove.dataset = {removeFavorite: 'RECIPE', url: '/modul4/favorite/'};
-  get('#cooking-form').elements = {servings: {value: '2'}, include_staples: {checked: false}, allow_unknown_expiry: {checked: false}};
+  get('#cooking-form').elements = {servings: {value: '2'}, allow_unknown_expiry: {checked: false}};
   let next = {complete: true, ingredients: [], missing: [], batches: [], manual_batches: []};
   const requests = [];
   let key = 0;

@@ -101,6 +101,10 @@
     .pantry-list { margin-top: 20px; }
     .pantry-list h2 { margin: 0 0 14px; font: 800 20px "Plus Jakarta Sans", sans-serif; }
     .pantry-list .sample-note { margin: 0 0 12px; line-height: 1.5; }
+    .staple-choice-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin: 16px 0; }
+    .staple-choice-list label { display: flex; align-items: flex-start; gap: 9px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #f8faff; font-size: 13px; }
+    .staple-choice-list input { margin: 2px 0 0; accent-color: var(--green); }
+    .feedback-list { margin: 12px 0 0; padding: 10px 14px 10px 30px; border-radius: 10px; background: #eaf5ef; color: var(--green-dark); font-size: 13px; }
     .saved-table { min-width: 980px; table-layout: fixed; }
     .saved-table th, .saved-table td { text-align: left; vertical-align: top; }
     .saved-table th:last-child, .saved-table td:last-child { text-align: left; }
@@ -155,6 +159,7 @@
     <div class="page-intro">
       <p class="eyebrow">SIMULASI MODUL 2</p>
       <h1>Kelola Stok Dapur</h1>
+      {% if messages %}<ul class="feedback-list" role="status">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
     </div>
 
     <div class="panel-grid">
@@ -241,9 +246,19 @@
       {% else %}<p class="saved-empty">Belum ada bahan tersimpan. Pindai struk atau masukkan bahan secara manual.</p>{% endif %}
       {% if used_up_items %}<details class="used-up"><summary>Stok habis (30 hari terakhir) · {{ used_up_items|length }}</summary><ul>{% for item in used_up_items %}<li><strong>{{ item.name }}</strong> · habis {{ item.updated_at|date:"d M Y" }}<ul>{% for move in item.movements.all %}<li>{{ move.created_at|date:"d M Y, H:i" }} · {{ move.get_kind_display }}: {{ move.quantity_before|floatformat:"-2" }} → {{ move.quantity_after|floatformat:"-2" }}</li>{% endfor %}</ul></li>{% endfor %}</ul></details>{% endif %}
     </section>
+    <section class="panel pantry-list" aria-labelledby="staple-preferences-title">
+      <h2 id="staple-preferences-title">Bumbu dapur yang dilacak</h2>
+      <p class="sample-note">Bumbu tetap dicantumkan dengan takarannya di resep. Secara default, garam, merica, air, gula, dan penyedap tidak menghalangi ide menu atau konfirmasi masak. Pilih bumbu yang ingin Anda kelola stoknya; jika dipilih, stok harus tersedia di Pantry dan akan dikurangi saat memasak. Minyak goreng dilacak secara default agar aplikasi tidak menganggap semua dapur selalu memilikinya.</p>
+      <form method="post" action="{% url 'modul2-staples' %}" class="staple-preferences-form">
+        {% csrf_token %}
+        <input type="hidden" name="version" value="{{ staple_preferences_form.version.value }}">
+        <div class="staple-choice-list">{% for value, label in staple_preferences_form.fields.tracked_staples.choices %}<label><input type="checkbox" name="tracked_staples" value="{{ value }}"{% if value in staple_preferences_form.tracked_staples.value %} checked{% endif %}><span>{{ label }}</span></label>{% endfor %}</div>
+        <button class="button primary" type="submit">Simpan pilihan bumbu</button>
+      </form>
+    </section>
     <section class="panel pantry-list" aria-labelledby="stock-recipes-title">
       <h2 id="stock-recipes-title">Ide Menu dari Stok</h2>
-      <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, memiliki konversi berat, dan belum kedaluwarsa. Stok dengan tanggal kedaluwarsa yang belum diketahui tetap dihitung dan ditandai. Kecocokan stok bukan jaminan keamanan bahan dan tidak mengurangi stok.</p>
+      <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, memiliki konversi berat, dan belum kedaluwarsa. Stok dengan tanggal kedaluwarsa yang belum diketahui tetap dihitung dan ditandai. Bumbu yang Anda atur untuk tidak dilacak tidak menjadi syarat stok; minyak goreng dilacak secara default. Kecocokan stok bukan jaminan keamanan bahan dan tidak mengurangi stok.</p>
       <label for="stock-recipe-servings">Porsi <input id="stock-recipe-servings" type="number" min="1" max="10" inputmode="numeric" value="1"></label>
       <button class="button secondary" type="button" id="stock-recipes-button">Cari Menu dari Stok</button>
       <div id="stock-recipes-output" role="status" aria-live="polite"></div>

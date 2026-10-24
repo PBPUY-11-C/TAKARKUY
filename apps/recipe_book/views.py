@@ -43,6 +43,7 @@ from .services import (
     with_guidance,
 )
 from .services import set_slot_status as change_slot_status
+from .staples import tracked_staple_codes
 
 # Price ceilings offered in the filter, for the profile's servings.
 PRICE_LIMITS = (10000, 15000, 25000, 50000)
@@ -400,7 +401,10 @@ def book_page(request):
                 except (ValueError, TypeError):
                     pass
             needs, ingredients, nutrition = recipe_requirements(
-                selected, servings, with_rice=slot_has_rice(slot)
+                selected,
+                servings,
+                tracked_staples=tracked_staple_codes(request.user),
+                with_rice=slot_has_rice(slot),
             )
             # Same stock rule as stock_matches: undated stock counts, but is flagged.
             stock = plan_consumption(request.user, needs, allow_unknown_expiry=True)

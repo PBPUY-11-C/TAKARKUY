@@ -23,13 +23,9 @@ from apps.pantry.services import (
 )
 
 from .models import CookingHistory
+from .staples import ALL_STAPLE_CODES, tracked_staple_codes
 
 JAKARTA = ZoneInfo("Asia/Jakarta")
-
-# Curated by ingredient ID, not name matching. Never omitted from allergy screening.
-# Oil is deliberately NOT a staple: larger amounts are meaningful recipe stock.
-STAPLES = frozenset({"ING-GARAM", "ING-MERICA", "ING-AIR"})
-
 
 def estimated_recipe_cost(recipe, servings):
     """Use the planner's basket quote, including whole-fruit rounding."""
@@ -111,6 +107,7 @@ def stock_matches(user, servings, *, query=None):
     )
     if not inventory:
         return []
+    configured_staples = tracked_staple_codes(user)
     available_grams = {}
     for batch in inventory:
         available_grams[batch.ingredient_id] = available_grams.get(
@@ -125,7 +122,9 @@ def stock_matches(user, servings, *, query=None):
         .prefetch_related("recipeingredient_set__ingredient")
     ):
         try:
-            needs, ingredients, _ = recipe_requirements(recipe, servings)
+            needs, ingredients, _ = recipe_requirements(
+                recipe, servings, tracked_staples=configured_staples
+            )
             allocation = plan_consumption(
                 user, needs, allow_unknown_expiry=True, preview_batches=inventory
             )
@@ -211,8 +210,8 @@ def get_recipe(user, code, *, inputs=None):
     return recipe
 
 
-def recipe_requirements(recipe, servings, *, include_staples=False, with_rice=False):
-    """Stock needs per ingredient. with_rice adds the planner's rice for a lauk slot."""
+def recipe_requirements(recipe, servings, *, tracked_staples=(), with_rice=False):
+    """Stock needs per ingredient; selected staple groups are managed like other stock."""
     if type(servings) is not int or not 1 <= servings <= 10:
         raise StockError("Porsi harus bilangan bulat 1–10.", 400)
     if not recipe.base_servings:
@@ -243,13 +242,17 @@ def recipe_requirements(recipe, servings, *, include_staples=False, with_rice=Fa
                 raise ValueError
         except (ValueError, TypeError, InvalidOperation) as exc:
             raise StockError("Takaran resep belum dapat dikonversi ke gram.", 400) from exc
-        tracked = not link.is_optional and (include_staples or link.ingredient_id not in STAPLES)
+        is_common_staple = link.ingredient_id in ALL_STAPLE_CODES
+        tracked = not link.is_optional and (
+            not is_common_staple or link.ingredient_id in tracked_staples
+        )
         ingredients.append(
             {
                 "ingredient_code": link.ingredient_id,
                 "name": link.ingredient.name,
                 "grams": str(grams),
                 "tracked": tracked,
+                "common_staple": is_common_staple,
                 "optional": link.is_optional,
                 "estimated": link.quantity_status == "estimated",
             }
@@ -301,14 +304,14 @@ def cooking_inputs(user, payload, *, lock=False):
     code = payload.get("recipe_code")
     if not isinstance(code, str) or not code or len(code) > 100:
         raise StockError("Kode resep tidak valid.", 400)
-    for field in ("include_staples", "allow_unknown_expiry"):
+    for field in ("allow_unknown_expiry",):
         if type(payload.get(field, False)) is not bool:
             raise StockError("Pilihan konfirmasi tidak valid.", 400)
     recipe = get_recipe(user, code, inputs=plan.inputs if plan else None)
     needs, ingredients, nutrition = recipe_requirements(
         recipe,
         payload.get("servings"),
-        include_staples=payload.get("include_staples", False),
+        tracked_staples=tracked_staple_codes(user),
         with_rice=slot_has_rice(slot),
     )
     return recipe, slot, needs, ingredients, nutrition
