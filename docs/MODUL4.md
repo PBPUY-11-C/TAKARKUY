@@ -62,7 +62,13 @@ Ringkasan mutu katalog, meliputi status tinjauan panduan, kelengkapan takaran, d
 
 Filter stok **Paling cocok dengan stok** memberi urutan resep berdasarkan proporsi kebutuhan bahan utama yang tersedia di Pantry, lalu menunjukkan jumlah yang terpenuhi dari stok, kekurangan gram, dan porsi maksimum yang dapat dibuat (hingga 10 porsi). Tautan resep membawa pengguna ke porsi yang muat dengan stok. Perhitungan ini hanya saran dan tidak mengunci atau mengurangi stok.
 
-Bahan bumbu beserta takarannya tetap ditampilkan pada resep. Secara default, garam, merica, air, gula, serta penyedap/kaldu bubuk tidak wajib dicatat di Pantry dan tidak menghalangi ide menu atau proses memasak. Dari Modul 2, pengguna dapat memilih kelompok bumbu yang ingin dilacak; bumbu terpilih menjadi kebutuhan stok dan akan dikurangi setelah konfirmasi masak. Minyak goreng tetap dilacak secara default, sehingga tidak dianggap selalu tersedia; pengguna bisa mengubah pilihan ini.
+### Bumbu dapur dan stok
+
+Bahan bumbu beserta takaran resepnya tetap ditampilkan dan dipakai untuk estimasi gizi. Secara default, garam, merica, air, gula, serta penyedap/kaldu bubuk tidak menjadi syarat stok dan tidak menghalangi ide menu atau proses memasak. Bahan tersebut ditandai sebagai bumbu yang tidak dilacak; ini berarti aplikasi tidak memeriksa atau mengurangi stoknya, bukan menyatakan bahwa stoknya pasti ada.
+
+Pengguna mengatur pilihan di bagian **Bumbu dapur yang dilacak** pada Modul 2. Pilihan berlaku untuk akun tersebut di ide menu Modul 2 dan pada pratinjau maupun konfirmasi masak Modul 4. Jika kelompok bumbu dilacak, jumlah resepnya menjadi kebutuhan Pantry; kekurangannya harus dipenuhi dari stok, batch manual, atau deklarasi bahan dari luar Pantry. Batch Pantry yang dipakai akan dikurangi saat masak dikonfirmasi.
+
+Minyak goreng dilacak secara default karena tidak dapat diasumsikan tersedia di setiap dapur. Pengguna dapat menonaktifkan pelacakannya dari pilihan yang sama. Pilihan saat ini mencakup garam, merica, air, gula pasir/gula merah, penyedap/kaldu bubuk, dan minyak goreng. Pengaturan ini hanya mengubah aturan stok: nama dan takaran bahan tetap terlihat, dan pemeriksaan alergi tetap berlaku.
 
 Saat pratinjau memasak menunjukkan kekurangan, pengguna boleh menandai jumlah kekurangan tertentu sebagai tersedia di luar Pantry. Pratinjau harus dijalankan ulang; jumlah tersebut dicatat di snapshot riwayat masak, sedangkan stok Pantry yang memang dialokasikan tetap dikurangi. Deklarasi hanya diterima sampai jumlah yang masih kurang saat pratinjau/konfirmasi, sehingga perubahan stok mengharuskan pratinjau baru.
 
