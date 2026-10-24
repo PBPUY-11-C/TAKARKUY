@@ -47,3 +47,7 @@ button,input,select{font:inherit}button,a,input,select{touch-action:manipulation
 .stock-match { margin:0; padding:8px 10px; border-radius:9px; background:#fff7e5; color:#624b16; font-size:11px; line-height:1.5; }
 .stock-match strong,.stock-match small { display:block; }
 .stock-match small { margin-top:3px; color:#725d2e; }
+.serving-control { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:18px 0; padding:12px; border-radius:10px; background:#f3f6ff; }
+.serving-control label { font-size:12px; font-weight:700; }
+.serving-control input { width:90px; }
+.serving-control .helper { flex-basis:100%; margin:0; }

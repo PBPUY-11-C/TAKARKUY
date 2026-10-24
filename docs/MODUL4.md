@@ -54,6 +54,8 @@ Kartu dan detail resep menampilkan status panduan, takaran bahan, dan foto. Stat
 
 Filter stok **Paling cocok dengan stok** memberi urutan resep berdasarkan proporsi kebutuhan bahan utama yang tersedia di Pantry, lalu menunjukkan bahan yang masih kurang. Perhitungan ini hanya saran dan tidak mengunci atau mengurangi stok. Jumlah stok baru berubah setelah pratinjau dan konfirmasi **Sudah Masak**.
 
+Pada resep yang tidak berasal dari slot Planner, pengguna dapat mengubah porsi dari 1 sampai 10. Takaran bahan dan estimasi gizi ikut diskalakan. Biaya ditampilkan sebagai perkiraan proporsional, bukan perhitungan ulang harga paket belanja. Untuk memastikan ketersediaan bahan pada porsi pilihan, jalankan **Periksa pemakaian stok** sebelum konfirmasi. Porsi dari slot Planner tetap dikunci mengikuti rencana.
+
 Jika resep mempunyai panduan, tombol **Mulai mode memasak** menampilkan langkah satu per satu, checklist bahan, dan timer manual opsional. Mode ini tidak mengubah stok. Pengurangan stok tetap hanya terjadi melalui pratinjau dan konfirmasi **Sudah Masak**.
 
 ## Tes Modul 4
