@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils import timezone
 from django.utils.html import format_html
 from django.urls import reverse
 
@@ -7,10 +8,18 @@ from .models import RecipeReview
 
 @admin.register(RecipeReview)
 class RecipeReviewAdmin(admin.ModelAdmin):
-    list_display = ("recipe", "user", "rating", "is_hidden", "photo_moderation", "updated_at")
+    list_display = (
+        "recipe", "user", "rating", "is_hidden", "photo_is_hidden", "photo_consent",
+        "photo_moderation", "photo_moderated_at", "photo_moderated_by", "updated_at",
+    )
     list_filter = ("is_hidden", "photo_is_hidden", "rating")
     search_fields = ("recipe__name", "user__username", "comment")
-    readonly_fields = ("user", "recipe", "rating", "comment", "photo", "version", "created_at", "updated_at")
+    readonly_fields = (
+        "user", "recipe", "rating", "comment", "photo", "photo_permission_granted",
+        "photo_consent_at", "photo_is_hidden", "photo_moderated_at", "photo_moderated_by",
+        "version", "created_at", "updated_at",
+    )
+    actions = ("approve_consented_photos", "hide_selected_photos")
 
     @admin.display(description="Foto")
     def photo_moderation(self, obj):
@@ -20,3 +29,26 @@ class RecipeReviewAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    @admin.display(description="Izin foto")
+    def photo_consent(self, obj):
+        return "Tercatat" if obj.photo_permission_granted and obj.photo_consent_at else "Tidak ada"
+
+    @admin.action(description="Setujui foto dengan izin yang tercatat")
+    def approve_consented_photos(self, request, queryset):
+        queryset.filter(
+            photo__gt="", photo_permission_granted=True,
+            photo_consent_at__isnull=False, is_hidden=False
+        ).update(
+            photo_is_hidden=False,
+            photo_moderated_at=timezone.now(),
+            photo_moderated_by=request.user,
+        )
+
+    @admin.action(description="Sembunyikan foto terpilih")
+    def hide_selected_photos(self, request, queryset):
+        queryset.filter(photo__gt="").update(
+            photo_is_hidden=True,
+            photo_moderated_at=timezone.now(),
+            photo_moderated_by=request.user,
+        )

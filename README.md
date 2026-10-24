@@ -106,8 +106,9 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 
 - **Recipe book:** cari resep dengan filter waktu makan, stok di Pantry, harga, dan favorit. Detail berisi bahan, gizi, estimasi harga, dan cara memasak.
 - **Sudah Masak:** pratinjau pemakaian stok lalu konfirmasi; stok dikurangi lewat Modul 2 dan riwayat masak tercatat bersamaan.
-- **Pengalaman memasak:** setelah mencatat **Sudah Masak**, pengguna dapat memberi rating, menulis ulasan atau tips, dan mengunggah foto hasil masak. Foto JPG, PNG, atau WebP maksimal 6 MB menunggu moderasi sebelum ditampilkan kepada pengguna lain.
+- **Pengalaman memasak:** setelah mencatat **Sudah Masak**, pengguna dapat memberi rating, menulis ulasan atau tips, dan mengunggah foto hasil masak. Pengunggah harus menyatakan bahwa foto miliknya atau sudah mendapat izin, serta memberi izin tampilan yang dapat dicabut. Foto JPG, PNG, atau WebP maksimal 6 MB menunggu moderasi; setelah disetujui, foto juga dapat menjadi foto utama cadangan untuk resep tanpa foto kurasi.
 - **Integrasi rencana:** menu dari jadwal Modul 1 bisa dibuka, dimasak, atau dilewati.
+- **Endpoint Modul 4:** `GET /modul4/` menampilkan recipe book; endpoint `POST /modul4/favorite/`, `/modul4/preview/`, `/modul4/cook/`, `/modul4/review/`, `/modul4/review/photo/`, dan `/modul4/slot-status/` menangani aksi pengguna. Foto ulasan dilayani melalui `GET /modul4/reviews/<id>/photo/` setelah izin dan moderasi terpenuhi.
 - **Data yang dipegang:** `RecipeFavorite`, `CookingHistory`, dan `RecipeReview`.
 - **Halaman:** 1 halaman berisi daftar resep, detail resep, favorit, dan riwayat masak.
 

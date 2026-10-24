@@ -2,6 +2,7 @@ const form = document.querySelector('#review-form');
 if (form) {
   const output = document.querySelector('#review-error');
   const photoInput = form.elements.namedItem('photo');
+  const photoPermission = form.elements.namedItem('photo_permission');
   const photoPreview = document.querySelector('#review-photo-preview');
   let previewUrl = null;
 
@@ -27,6 +28,9 @@ if (form) {
       if (action === 'save') {
         payload.rating = Number(form.elements.rating.value);
         payload.comment = form.elements.comment.value;
+        if (photoInput.files.length && !photoPermission.checked) {
+          throw new Error('Setujui izin penggunaan foto sebelum mengunggah.');
+        }
       }
       const savedReview = await readResponse(await fetch(form.dataset.url, {
         method: 'POST', credentials: 'same-origin',
@@ -42,6 +46,7 @@ if (form) {
           body.append('recipe_code', form.dataset.code);
           body.append('version', form.dataset.version);
           body.append('photo', photo);
+          body.append('photo_permission', photoPermission.checked ? 'on' : '');
           try {
             await readResponse(await fetch(form.dataset.photoUrl, {
               method: 'POST', credentials: 'same-origin',

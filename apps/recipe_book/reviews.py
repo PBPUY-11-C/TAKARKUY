@@ -133,11 +133,13 @@ def normalize_review_photo(upload):
     return result
 
 
-def attach_review_photo(user, code, version, upload):
+def attach_review_photo(user, code, version, upload, *, permission_granted=False):
     if not isinstance(code, str) or not 1 <= len(code) <= 100:
         raise ValueError("Kode resep tidak valid.")
     if not isinstance(version, int) or version < 1:
         raise ValueError("Versi ulasan tidak valid. Simpan ulasan lalu coba lagi.")
+    if permission_granted is not True:
+        raise ValueError("Konfirmasi hak penggunaan foto sebelum mengunggah.")
     normalized = normalize_review_photo(upload)
     reserve_review(user)
     saved_name = ""
@@ -160,7 +162,15 @@ def attach_review_photo(user, code, version, upload):
             saved_name = default_storage.save(path, ContentFile(normalized))
             review.photo.name = saved_name
             review.photo_is_hidden = True
-            review.save(update_fields=["photo", "photo_is_hidden", "updated_at"])
+            review.photo_permission_granted = True
+            review.photo_consent_at = timezone.now()
+            review.photo_moderated_at = None
+            review.photo_moderated_by = None
+            review.save(update_fields=[
+                "photo", "photo_is_hidden", "photo_permission_granted",
+                "photo_consent_at", "photo_moderated_at", "photo_moderated_by",
+                "updated_at",
+            ])
             if old_name:
                 transaction.on_commit(lambda: default_storage.delete(old_name))
     except Exception:
@@ -184,7 +194,7 @@ def review_context(user, recipe, page=1):
 
         own.photo_url = reverse("modul4-review-photo", args=[own.pk])
     for entry in reviews:
-        if entry.photo and not entry.photo_is_hidden:
+        if entry.photo and not entry.photo_is_hidden and entry.photo_permission_granted:
             from django.urls import reverse
 
             entry.photo_url = reverse("modul4-review-photo", args=[entry.pk])

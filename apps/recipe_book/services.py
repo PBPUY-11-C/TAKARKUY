@@ -55,11 +55,15 @@ def recipe_costs(servings, codes):
         return {}  # no price snapshot imported yet: nothing can be priced
     costs = {}
     for meal, items in catalog[5].items():
+        # quote_schedule requires each schedule row to contain every meal in
+        # its catalog. A recipe price is a single-meal quote, so give it a
+        # catalog whose available candidates contain only that meal.
+        meal_catalog = catalog[:5] + ({meal: items},) + catalog[6:]
         for item in items:
             code = item["recipe"].pk
             if code in codes:
                 quote = quote_schedule(
-                    [{meal: code}], servings=servings, targets=[], catalog=catalog
+                    [{meal: code}], servings=servings, targets=[], catalog=meal_catalog
                 )
                 costs[code] = quote["total"]
     return costs

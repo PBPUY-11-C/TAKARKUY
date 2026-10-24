@@ -20,6 +20,21 @@
   font-weight: 700;
 }
 
+.photo-permission {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 9px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.photo-permission input {
+  margin-top: 2px;
+}
+
 #review-form textarea {
   box-sizing: border-box;
   width: 100%;

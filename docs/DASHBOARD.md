@@ -150,3 +150,9 @@ dipakai mengunci korban, dan CIDR proxy PWS perlu diverifikasi agar bucket IP
 tidak menghitung seluruh situs sebagai satu IP. Tidak dibuat endpoint diagnostik
 publik. Statistik penghematan/limbah dicegah, harga aktual, user-created recipes
 dan integrasi stok ke belanja planner tetap belum tersedia.
+
+### Foto komunitas pada ulasan resep
+
+Pengguna yang mencatat pernah memasak resep dapat mengunggah satu foto JPG, PNG, atau WebP. Sebelum unggah, pengguna menyatakan bahwa foto miliknya atau izin pemilik sudah diperoleh, serta memberi TAKARKUY izin non-eksklusif yang dapat dicabut untuk menampilkan foto di ulasan, halaman resep, dan jadwal. Unggahan baru selalu disembunyikan sampai moderator meninjau.
+
+Di Django Admin > Ulasan resep, moderator dapat melihat pratinjau dan memakai aksi **Setujui foto dengan izin yang tercatat** atau **Sembunyikan foto terpilih**. Persetujuan hanya berlaku untuk foto dengan persetujuan penggunaan tercatat dan ulasan yang tidak disembunyikan. Nama akun publik menjadi kredit; akun lama yang memakai email sebagai nama ditampilkan sebagai alias privat. Foto komunitas yang disetujui menjadi foto utama cadangan untuk resep tanpa foto kurasi. Foto yang izin penggunaan lamanya belum tercatat tetap tersembunyi sampai pemilik mengunggah ulang dan menyetujui izin baru.

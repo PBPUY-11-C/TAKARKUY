@@ -52,6 +52,16 @@ class RecipeReview(models.Model):
     comment = models.CharField(max_length=500, blank=True)
     photo = models.FileField(upload_to=recipe_review_photo_path, blank=True)
     photo_is_hidden = models.BooleanField(default=True, db_index=True)
+    photo_permission_granted = models.BooleanField(default=False)
+    photo_consent_at = models.DateTimeField(null=True, blank=True)
+    photo_moderated_at = models.DateTimeField(null=True, blank=True)
+    photo_moderated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="moderated_recipe_photos",
+    )
     is_hidden = models.BooleanField(default=False, db_index=True)
     version = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)

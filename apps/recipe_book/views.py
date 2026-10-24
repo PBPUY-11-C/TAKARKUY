@@ -17,7 +17,7 @@ from apps.accounts.preferences import effective_allergens, profile_for
 from apps.budget_planner.models import PlannedMeal
 from apps.budget_planner.services import PreviewRateLimit, reserve_preview
 from apps.catalog.models import Recipe
-from apps.catalog.recipe_images import recipe_image_for
+from apps.catalog.recipe_images import recipe_image_for, recipe_images_for
 from apps.pantry.services import StockError, plan_consumption
 
 from .models import CookingHistory, RecipeFavorite, RecipeReview
@@ -133,6 +133,7 @@ def recipe_review_photo(request):
             request.POST.get("recipe_code", ""),
             version,
             upload,
+            permission_granted=request.POST.get("photo_permission") == "on",
         )
     except StockError as exc:
         return JsonResponse({"error": str(exc)}, status=exc.status)
@@ -152,7 +153,16 @@ def recipe_review_photo_file(request, review_id):
     review = get_object_or_404(RecipeReview, pk=review_id)
     if not review.photo:
         return JsonResponse({"error": "Foto tidak tersedia."}, status=404)
-    if (review.is_hidden or review.photo_is_hidden) and review.user_id != request.user.pk and not request.user.is_staff:
+    if (
+        (
+            not review.photo_permission_granted
+            or review.photo_consent_at is None
+            or review.is_hidden
+            or review.photo_is_hidden
+        )
+        and review.user_id != request.user.pk
+        and not request.user.is_staff
+    ):
         return JsonResponse({"error": "Foto belum tersedia untuk publik."}, status=404)
     try:
         response = FileResponse(review.photo.open("rb"), content_type="image/jpeg")
@@ -207,8 +217,9 @@ def book_page(request):
         rows = stock_matches(request.user, profile.servings, query=query)
         query = query.filter(pk__in=[row["recipe_code"] for row in rows if row[stock_filter]])
     page = Paginator(query.order_by("name"), 12).get_page(request.GET.get("page"))
+    photos = recipe_images_for([recipe.pk for recipe in page.object_list])
     for recipe in page.object_list:
-        recipe.photo = recipe_image_for(recipe.pk)
+        recipe.photo = photos.get(recipe.pk)
     selection_error = None
     selected = None
     slot = None
@@ -232,7 +243,7 @@ def book_page(request):
     if code and not selection_error:
         try:
             selected = get_recipe(request.user, code, inputs=slot.plan.inputs if slot else None)
-            selected.photo = recipe_image_for(selected.pk)
+            selected.photo = recipe_images_for([selected.pk]).get(selected.pk)
             servings = slot.servings if slot else profile.servings
             needs, ingredients, nutrition = recipe_requirements(
                 selected, servings, with_rice=slot_has_rice(slot)
