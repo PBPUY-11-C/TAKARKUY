@@ -24,6 +24,7 @@ if (startButton && mode) {
   try { storage = window.sessionStorage; } catch { /* Cooking mode remains usable without session storage. */ }
   const progressKey = `takarkuy:cooking-progress:${recipeDetail.dataset.code}:${recipeDetail.dataset.servings}`;
   const checkboxes = [];
+  const ingredientFingerprint = [];
   let activeStep = 0;
   let remainingSeconds = 5 * 60;
   let timerDeadline = null;
@@ -60,12 +61,19 @@ if (startButton && mode) {
   }
 
   function saveProgress() {
-    saveCookingProgress(storage, progressKey, activeStep, checkboxes.map((checkbox) => checkbox.checked));
+    saveCookingProgress(
+      storage,
+      progressKey,
+      activeStep,
+      checkboxes.map((checkbox) => checkbox.checked),
+      JSON.stringify({steps, ingredients: ingredientFingerprint}),
+    );
   }
 
   for (const [index, ingredient] of [...document.querySelectorAll('.ingredient-grid > li')].entries()) {
     const itemName = ingredient.querySelector('div')?.firstChild?.textContent.trim() || 'Bahan';
     const quantity = ingredient.querySelector('span')?.textContent.trim();
+    ingredientFingerprint.push([itemName, quantity || '']);
     const label = document.createElement('label');
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -83,7 +91,13 @@ if (startButton && mode) {
 
   startButton.addEventListener('click', () => {
     stopTimer(true);
-    const progress = restoreCookingProgress(storage, progressKey, steps.length, checkboxes.length);
+    const progress = restoreCookingProgress(
+      storage,
+      progressKey,
+      steps.length,
+      checkboxes.length,
+      JSON.stringify({steps, ingredients: ingredientFingerprint}),
+    );
     activeStep = progress?.step ?? 0;
     checkboxes.forEach((checkbox, index) => { checkbox.checked = progress?.checked[index] ?? false; });
     renderStep();

@@ -1,16 +1,42 @@
 import json
+from io import BytesIO
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.db import IntegrityError, transaction
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from PIL import Image
+from unittest.mock import patch
 
 from . import tests as cooking_tests
-from .models import CookingHistory, RecipeReview, ReviewQuota
-from .reviews import public_username, review_context
+from .models import CookingHistory, RecipePhotoCleanup, RecipeReview, ReviewQuota
+from .reviews import attach_review_photo, public_username, review_context
 from .services import cook
+
+
+class MemoryPhotoStorage:
+    def __init__(self):
+        self.files = {}
+        self.fail_deleting = set()
+
+    def save(self, name, content):
+        self.files[name] = content.read()
+        return name
+
+    def delete(self, name):
+        if name in self.fail_deleting:
+            raise OSError("temporary storage outage")
+        self.files.pop(name, None)
+
+
+def jpeg_upload():
+    output = BytesIO()
+    Image.new("RGB", (2, 2), "red").save(output, format="JPEG")
+    return SimpleUploadedFile("review.jpg", output.getvalue(), content_type="image/jpeg")
 
 
 class ReviewTests(TestCase):
@@ -109,6 +135,63 @@ class ReviewTests(TestCase):
         self.assertEqual(review.comment, "Enak!")
         self.assertEqual(review.rating, 5)
         self.assertEqual(review.version, 3)
+
+    def test_old_photo_cleanup_failure_keeps_replacement_and_can_be_retried(self):
+        self.cooked()
+        self.post_review()
+        review = RecipeReview.objects.get(user=self.user, recipe=self.recipe)
+        review.photo = "recipe-reviews/old.jpg"
+        review.save(update_fields=["photo"])
+        storage = MemoryPhotoStorage()
+        storage.files[review.photo.name] = b"old photo"
+        storage.fail_deleting.add(review.photo.name)
+
+        with patch("apps.recipe_book.photo_storage.default_storage", storage):
+            with self.captureOnCommitCallbacks(execute=True):
+                result = attach_review_photo(
+                    self.user,
+                    self.recipe.pk,
+                    review.version,
+                    jpeg_upload(),
+                    permission_granted=True,
+                )
+
+            review.refresh_from_db()
+            self.assertEqual(result["version"], review.version)
+            self.assertIn(review.photo.name, storage.files)
+            cleanup = RecipePhotoCleanup.objects.get(storage_name="recipe-reviews/old.jpg")
+            self.assertEqual(cleanup.attempts, 1)
+
+            storage.fail_deleting.clear()
+            call_command("cleanup_recipe_review_photos")
+
+        self.assertFalse(RecipePhotoCleanup.objects.exists())
+        self.assertNotIn("recipe-reviews/old.jpg", storage.files)
+
+    def test_photo_cleanup_covers_account_cascade_and_retries_storage_failure(self):
+        review = RecipeReview.objects.create(
+            user=self.user,
+            recipe=self.recipe,
+            rating=5,
+            photo="recipe-reviews/account-photo.jpg",
+        )
+        storage = MemoryPhotoStorage()
+        storage.files[review.photo.name] = b"photo"
+        storage.fail_deleting.add(review.photo.name)
+
+        with patch("apps.recipe_book.photo_storage.default_storage", storage):
+            with self.captureOnCommitCallbacks(execute=True):
+                self.user.delete()
+
+            self.assertFalse(RecipeReview.objects.filter(pk=review.pk).exists())
+            cleanup = RecipePhotoCleanup.objects.get(storage_name="recipe-reviews/account-photo.jpg")
+            self.assertEqual(cleanup.attempts, 1)
+
+            storage.fail_deleting.clear()
+            call_command("cleanup_recipe_review_photos")
+
+        self.assertFalse(RecipePhotoCleanup.objects.exists())
+        self.assertNotIn("recipe-reviews/account-photo.jpg", storage.files)
 
     def test_rating_comment_and_nested_json_validation(self):
         for value in (0, 6, True, "5", 2.5, None, {}):

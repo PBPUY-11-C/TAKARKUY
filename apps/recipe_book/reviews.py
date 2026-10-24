@@ -5,7 +5,6 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
 from django.db import transaction
 from django.db.models import Avg, Count
 from django.utils import timezone
@@ -17,6 +16,7 @@ from apps.catalog.models import Recipe
 from apps.pantry.services import StockError
 
 from .models import CookingHistory, RecipeReview, ReviewQuota
+from . import photo_storage
 
 MAX_REVIEW_PHOTO_BYTES = 6 * 1024 * 1024
 MAX_REVIEW_PHOTO_PIXELS = 40_000_000
@@ -79,10 +79,7 @@ def write_review(user, data):
         if action == "delete":
             if review is None:
                 raise StockError("Ulasan tidak ditemukan.", 404)
-            photo_name = review.photo.name if review.photo else ""
             review.delete()
-            if photo_name:
-                transaction.on_commit(lambda: default_storage.delete(photo_name))
             return {"deleted": True}
         recipe = Recipe.objects.filter(pk=code, is_active=True).first()
         if recipe is None:
@@ -159,7 +156,7 @@ def attach_review_photo(user, code, version, upload, *, permission_granted=False
                 raise StockError("Catat masak resep ini sebelum membagikan foto.", 403)
             old_name = review.photo.name if review.photo else ""
             path = review.photo.field.generate_filename(review, "photo.jpg")
-            saved_name = default_storage.save(path, ContentFile(normalized))
+            saved_name = photo_storage.default_storage.save(path, ContentFile(normalized))
             review.photo.name = saved_name
             review.photo_is_hidden = True
             review.photo_permission_granted = True
@@ -173,10 +170,10 @@ def attach_review_photo(user, code, version, upload, *, permission_granted=False
                 "version", "updated_at",
             ])
             if old_name:
-                transaction.on_commit(lambda: default_storage.delete(old_name))
+                photo_storage.enqueue_recipe_photo_cleanup(old_name)
     except Exception:
         if saved_name:
-            default_storage.delete(saved_name)
+            photo_storage.discard_uncommitted_recipe_photo(saved_name)
         raise
     return {"photo_pending_review": True, "version": review.version}
 
@@ -212,7 +209,7 @@ def delete_review_photo(user, code, version):
             "photo", "photo_permission_granted", "photo_consent_at", "photo_is_hidden",
             "photo_moderated_at", "photo_moderated_by", "version", "updated_at",
         ])
-        transaction.on_commit(lambda: default_storage.delete(old_name))
+        photo_storage.enqueue_recipe_photo_cleanup(old_name)
     return {"photo_deleted": True, "version": review.version}
 
 

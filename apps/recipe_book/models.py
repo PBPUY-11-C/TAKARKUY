@@ -90,6 +90,16 @@ class RecipeReview(models.Model):
         ]
 
 
+class RecipePhotoCleanup(models.Model):
+    storage_name = models.CharField(max_length=255, unique=True)
+    attempts = models.PositiveIntegerField(default=0)
+    last_error = models.CharField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "pk"]
+
+
 class ReviewQuota(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True

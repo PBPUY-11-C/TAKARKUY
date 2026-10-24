@@ -1,8 +1,9 @@
-export function restoreCookingProgress(storage, key, stepCount, ingredientCount) {
+export function restoreCookingProgress(storage, key, stepCount, ingredientCount, recipeFingerprint) {
   try {
     const raw = storage.getItem(key);
     if (!raw) return null;
     const progress = JSON.parse(raw);
+    if (progress.recipeFingerprint !== recipeFingerprint) return null;
     if (!Number.isInteger(progress.step) || progress.step < 0 || progress.step >= stepCount) return null;
     if (!Array.isArray(progress.checked) || progress.checked.length !== ingredientCount) return null;
     if (!progress.checked.every(value => typeof value === 'boolean')) return null;
@@ -12,9 +13,9 @@ export function restoreCookingProgress(storage, key, stepCount, ingredientCount)
   }
 }
 
-export function saveCookingProgress(storage, key, step, checked) {
+export function saveCookingProgress(storage, key, step, checked, recipeFingerprint) {
   try {
-    storage.setItem(key, JSON.stringify({step, checked}));
+    storage.setItem(key, JSON.stringify({step, checked, recipeFingerprint}));
     return true;
   } catch {
     return false;
