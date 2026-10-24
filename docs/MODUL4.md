@@ -13,13 +13,15 @@ Dokumen ini mencatat implementasi Modul 4 saat ini. Semua halaman dan aksi Recip
 | `POST /modul4/report-data/` | Kirim laporan data resep yang keliru; laporan dapat ditinjau dan diperbarui statusnya melalui Django Admin. Maksimal 5 laporan per pengguna per jam. |
 | `POST /modul4/review/` | Buat/perbarui ulasan setelah pengguna pernah memasak resep. |
 | `POST /modul4/review/photo/` | Unggah foto untuk ulasan. Memerlukan login, riwayat masak, ulasan tersimpan, dan persetujuan hak penggunaan foto. |
-| `GET /modul4/reviews/<id>/photo/` | Tampilkan foto yang boleh dilihat pemiliknya, moderator, atau publik setelah foto disetujui. |
+| `POST /modul4/review/photo/delete/` | Hapus foto milik pengguna dan cabut izinnya tanpa menghapus ulasan tertulis; versi ulasan diperiksa. |
+| `GET /modul4/reviews/<id>/photo/` | Tampilkan foto kepada pemilik/moderator, atau kepada pengguna yang login setelah foto disetujui. |
 | `POST /modul4/slot-status/` | Tandai slot rencana dilewati atau batalkan status lewati; versi rencana diperiksa agar perubahan usang ditolak. |
 
 ## Foto ulasan komunitas
 
 - Pengunggah harus menyatakan bahwa foto miliknya atau ia memiliki izin untuk menggunakannya, serta menyetujui penayangan di TAKARKUY. Foto tanpa persetujuan tidak dapat diunggah.
-- Foto yang baru diunggah berstatus menunggu moderasi dan tidak ditampilkan kepada publik. Moderator dapat menyetujui atau menyembunyikannya. Pengguna dapat mencabut persetujuan dengan menghapus foto/ulasannya.
+- Foto yang baru diunggah berstatus menunggu moderasi dan tidak ditampilkan kepada pengguna lain. Moderator dapat menyetujui atau menyembunyikannya; halaman ulasan menampilkan status tersebut kepada pemilik.
+- Pemilik dapat menghapus foto dan mencabut izin kapan saja tanpa menghapus rating atau komentar. Penghapusan menaikkan versi ulasan agar tab lama tidak dapat mengubah foto yang lebih baru; berkas dihapus setelah transaksi berhasil. Menghapus seluruh ulasan tetap menghapus foto juga.
 - Foto yang sudah disetujui dapat mewakili resep yang belum memiliki foto kurasi. Foto kurasi di `data/mapping/recipe_image_mapping.csv` selalu diprioritaskan.
 - Foto komunitas ditampilkan dengan nama publik pengunggah dan atribusi bahwa foto digunakan dengan izin TAKARKUY; ini bukan lisensi terbuka untuk penggunaan ulang di luar aplikasi.
 
@@ -37,6 +39,7 @@ Pastikan direktori `media/` dapat ditulis oleh akun yang menjalankan `runserver`
 - Jika aplikasi berjalan pada beberapa instance, semua instance harus mengakses penyimpanan yang sama. Jangan mengandalkan filesystem container sementara: berkas akan hilang saat instance diganti dan foto di database tidak dapat dibuka.
 - Simpan kredensial backend di environment/secret manager, bukan di repo. Sertakan foto komunitas dalam kebijakan backup dan uji operasi simpan, buka, serta hapus berkas setelah deployment.
 - Aplikasi tidak memerlukan `MEDIA_URL` publik untuk foto ulasan. Endpoint aplikasi mengirim foto sebagai `image/jpeg` dengan `X-Content-Type-Options: nosniff` dan `Cache-Control: private, no-store`.
+- Endpoint foto memerlukan login, termasuk untuk foto yang telah disetujui; “tampil untuk pengguna lain” berarti pengguna yang sudah masuk ke TAKARKUY.
 
 ### Batas dan kegagalan unggah
 

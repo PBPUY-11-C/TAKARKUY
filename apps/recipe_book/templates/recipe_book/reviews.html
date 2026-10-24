@@ -20,11 +20,11 @@
       {% if reviews.has_next %}<a href="?{{ review_params }}&amp;review_page={{ reviews.next_page_number }}#recipe-reviews">→</a>{% endif %}
     </nav>
   {% endif %}
-  {% if own_review.is_hidden %}<p class="helper">Ulasan Anda sedang disembunyikan oleh moderator.</p>{% endif %}
-  {% if own_review.photo and own_review.photo_is_hidden %}<p class="helper">Foto Anda tersimpan dan menunggu persetujuan moderator sebelum dibagikan.</p>{% endif %}
-  {% if own_review.photo_url %}<figure class="review-photo own-review-photo"><img src="{{ own_review.photo_url }}" alt="Foto masakan yang Anda unggah" loading="lazy"><figcaption>Foto unggahan Anda</figcaption></figure>{% endif %}
+  {% if own_review.is_hidden %}<p class="helper">Ulasan Anda sedang disembunyikan moderator; ulasan dan fotonya tidak ditampilkan kepada pengguna lain.</p>{% endif %}
+  {% if own_review.photo %}<p class="helper photo-moderation-status">{% if own_review.is_hidden %}Foto tidak ditampilkan karena ulasan disembunyikan moderator.{% elif own_review.photo_is_hidden and own_review.photo_moderated_at %}Foto disembunyikan moderator; hanya Anda yang dapat melihatnya.{% elif own_review.photo_is_hidden %}Foto tersimpan dan menunggu peninjauan moderator.{% else %}Foto disetujui dan tampil untuk pengguna yang masuk.{% endif %}</p>{% endif %}
+  {% if own_review.photo_url %}<figure class="review-photo own-review-photo"><img src="{{ own_review.photo_url }}" alt="Foto masakan yang Anda unggah" loading="lazy"><figcaption>Foto unggahan Anda · izin penayangan dapat dicabut</figcaption><button id="delete-review-photo" type="button" class="text-button">Hapus foto dan cabut izin</button></figure>{% endif %}
   {% if can_review %}
-    <form id="review-form" data-url="{% url 'modul4-review' %}" data-photo-url="{% url 'modul4-review-photo-upload' %}" data-code="{{ selected.pk }}" data-version="{{ own_review.version|default:'' }}">
+    <form id="review-form" data-url="{% url 'modul4-review' %}" data-photo-url="{% url 'modul4-review-photo-upload' %}" data-photo-delete-url="{% url 'modul4-review-photo-delete' %}" data-code="{{ selected.pk }}" data-version="{{ own_review.version|default:'' }}">
       {% csrf_token %}
       <label class="field">Rating
         <select name="rating" required>

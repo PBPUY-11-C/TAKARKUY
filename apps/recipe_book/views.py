@@ -21,7 +21,13 @@ from apps.catalog.recipe_images import recipe_image_for, recipe_images_for
 from apps.pantry.services import StockError, plan_consumption
 
 from .models import CookingHistory, RecipeDataReport, RecipeFavorite, RecipeReview
-from .reviews import ReviewLimited, attach_review_photo, review_context, write_review
+from .reviews import (
+    ReviewLimited,
+    attach_review_photo,
+    delete_review_photo,
+    review_context,
+    write_review,
+)
 from .services import (
     cook,
     estimated_recipe_cost,
@@ -140,6 +146,13 @@ def report_recipe_data(request, data):
 @api
 def recipe_review(request, data):
     return JsonResponse(write_review(request.user, data))
+
+
+@api
+def recipe_review_photo_delete(request, data):
+    return JsonResponse(
+        delete_review_photo(request.user, data.get("recipe_code"), data.get("version"))
+    )
 
 
 @login_required

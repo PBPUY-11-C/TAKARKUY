@@ -166,10 +166,11 @@ def attach_review_photo(user, code, version, upload, *, permission_granted=False
             review.photo_consent_at = timezone.now()
             review.photo_moderated_at = None
             review.photo_moderated_by = None
+            review.version += 1
             review.save(update_fields=[
                 "photo", "photo_is_hidden", "photo_permission_granted",
                 "photo_consent_at", "photo_moderated_at", "photo_moderated_by",
-                "updated_at",
+                "version", "updated_at",
             ])
             if old_name:
                 transaction.on_commit(lambda: default_storage.delete(old_name))
@@ -177,7 +178,42 @@ def attach_review_photo(user, code, version, upload, *, permission_granted=False
         if saved_name:
             default_storage.delete(saved_name)
         raise
-    return {"photo_pending_review": True, "version": version}
+    return {"photo_pending_review": True, "version": review.version}
+
+
+def delete_review_photo(user, code, version):
+    if not isinstance(code, str) or not 1 <= len(code) <= 100:
+        raise ValueError("Kode resep tidak valid.")
+    if type(version) is not int or version < 1:
+        raise ValueError("Versi ulasan tidak valid. Muat ulang halaman.")
+    old_name = ""
+    with transaction.atomic():
+        get_user_model().objects.select_for_update().get(pk=user.pk)
+        review = (
+            RecipeReview.objects.select_for_update()
+            .filter(user=user, recipe_id=code)
+            .first()
+        )
+        if review is None:
+            raise StockError("Ulasan tidak ditemukan.", 404)
+        if review.version != version:
+            raise StockError("Ulasan sudah berubah. Muat ulang halaman.")
+        if not review.photo:
+            return {"photo_deleted": False, "version": review.version}
+        old_name = review.photo.name
+        review.photo = ""
+        review.photo_permission_granted = False
+        review.photo_consent_at = None
+        review.photo_is_hidden = True
+        review.photo_moderated_at = None
+        review.photo_moderated_by = None
+        review.version += 1
+        review.save(update_fields=[
+            "photo", "photo_permission_granted", "photo_consent_at", "photo_is_hidden",
+            "photo_moderated_at", "photo_moderated_by", "version", "updated_at",
+        ])
+        transaction.on_commit(lambda: default_storage.delete(old_name))
+    return {"photo_deleted": True, "version": review.version}
 
 
 def review_context(user, recipe, page=1):

@@ -48,10 +48,11 @@ if (form) {
           body.append('photo', photo);
           body.append('photo_permission', photoPermission.checked ? 'on' : '');
           try {
-            await readResponse(await fetch(form.dataset.photoUrl, {
+            const photoResult = await readResponse(await fetch(form.dataset.photoUrl, {
               method: 'POST', credentials: 'same-origin',
               headers: {'X-CSRFToken': csrf}, body,
             }));
+            form.dataset.version = String(photoResult.version);
           } catch (error) {
             output.textContent = `Ulasan tersimpan, tetapi foto belum terunggah: ${error.message}`;
             buttons.forEach(button => button.disabled = false);
@@ -86,6 +87,25 @@ if (form) {
   form.addEventListener('submit', event => { event.preventDefault(); submit('save'); });
   document.querySelector('#delete-review')?.addEventListener('click', () => {
     if (window.confirm('Hapus ulasan dan foto yang Anda bagikan?')) submit('delete');
+  });
+  document.querySelector('#delete-review-photo')?.addEventListener('click', async (event) => {
+    if (!window.confirm('Hapus foto dan cabut izin penayangannya? Ulasan tertulis tetap disimpan.')) return;
+    const button = event.currentTarget;
+    button.disabled = true;
+    output.textContent = '';
+    try {
+      const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+      const result = await readResponse(await fetch(form.dataset.photoDeleteUrl, {
+        method: 'POST', credentials: 'same-origin',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf},
+        body: JSON.stringify({recipe_code: form.dataset.code, version: Number(form.dataset.version)}),
+      }));
+      form.dataset.version = String(result.version);
+      location.reload();
+    } catch (error) {
+      output.textContent = error.message;
+      button.disabled = false;
+    }
   });
   window.addEventListener('pagehide', () => { if (previewUrl) URL.revokeObjectURL(previewUrl); });
 }
