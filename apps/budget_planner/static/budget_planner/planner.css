@@ -89,3 +89,8 @@ button:disabled { cursor:not-allowed; opacity:.55; }
 .pantry-done { margin-right:8px; color:var(--green); font-weight:700; flex:none; }
 .pantry-actions { margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
 .pantry-actions .field-note { flex:1 1 220px; margin:0; }
+
+.meal-photo { width:72px; height:60px; flex:0 0 72px; border-radius:7px; object-fit:cover; background:#eef3ff; }
+.meal-photo-placeholder { display:grid; width:72px; height:60px; flex:0 0 72px; place-items:center; border-radius:7px; background:linear-gradient(135deg,#e9f4ef,#edf2fc); color:#27866a; font-size:23px; }
+.meal-content small a { color:var(--green); }
+@media(max-width:600px) { .meal-photo,.meal-photo-placeholder { width:56px; height:52px; flex-basis:56px; } }

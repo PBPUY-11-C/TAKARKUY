@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
-from django.http import JsonResponse
-from django.shortcuts import render
+from django.http import FileResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.utils.cache import patch_cache_control
 
@@ -16,10 +17,11 @@ from apps.accounts.preferences import effective_allergens, profile_for
 from apps.budget_planner.models import PlannedMeal
 from apps.budget_planner.services import PreviewRateLimit, reserve_preview
 from apps.catalog.models import Recipe
+from apps.catalog.recipe_images import recipe_image_for
 from apps.pantry.services import StockError, plan_consumption
 
-from .models import CookingHistory, RecipeFavorite
-from .reviews import review_context, write_review
+from .models import CookingHistory, RecipeFavorite, RecipeReview
+from .reviews import ReviewLimited, attach_review_photo, review_context, write_review
 from .services import (
     cook,
     estimated_recipe_cost,
@@ -113,6 +115,55 @@ def recipe_review(request, data):
 
 
 @login_required
+@require_POST
+def recipe_review_photo(request):
+    try:
+        request_size = int(request.META.get("CONTENT_LENGTH") or 0)
+    except ValueError:
+        return JsonResponse({"error": "Ukuran unggahan tidak valid."}, status=400)
+    if request_size > 7 * 1024 * 1024:
+        return JsonResponse({"error": "Ukuran foto maksimal 6 MB."}, status=413)
+    upload = request.FILES.get("photo")
+    if upload is None:
+        return JsonResponse({"error": "Pilih foto sebelum mengunggah."}, status=400)
+    try:
+        version = int(request.POST.get("version", ""))
+        result = attach_review_photo(
+            request.user,
+            request.POST.get("recipe_code", ""),
+            version,
+            upload,
+        )
+    except StockError as exc:
+        return JsonResponse({"error": str(exc)}, status=exc.status)
+    except ReviewLimited as exc:
+        response = JsonResponse({"error": str(exc)}, status=429)
+        response["Retry-After"] = str(exc.retry_after)
+        return response
+    except (ValueError, TypeError) as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    response = JsonResponse(result)
+    patch_cache_control(response, private=True, no_store=True)
+    return response
+
+
+@login_required
+def recipe_review_photo_file(request, review_id):
+    review = get_object_or_404(RecipeReview, pk=review_id)
+    if not review.photo:
+        return JsonResponse({"error": "Foto tidak tersedia."}, status=404)
+    if (review.is_hidden or review.photo_is_hidden) and review.user_id != request.user.pk and not request.user.is_staff:
+        return JsonResponse({"error": "Foto belum tersedia untuk publik."}, status=404)
+    try:
+        response = FileResponse(review.photo.open("rb"), content_type="image/jpeg")
+    except OSError:
+        return JsonResponse({"error": "Berkas foto tidak ditemukan."}, status=404)
+    response["X-Content-Type-Options"] = "nosniff"
+    response["Cache-Control"] = "private, no-store"
+    return response
+
+
+@login_required
 def book_page(request):
     profile = profile_for(request.user)
     groups = effective_allergens(request.user)
@@ -128,7 +179,6 @@ def book_page(request):
         else 0
     )
     query = recipe_query(request.user)
-    held_count = query.count() - with_guidance(query).count()
     term = request.GET.get("q", "").strip()[:100]
     if term:
         query = query.filter(
@@ -139,7 +189,8 @@ def book_page(request):
         query = query.filter(meal_type=meal)
     if request.GET.get("favorites") == "1":
         query = query.filter(recipefavorite__user=request.user)
-    if request.GET.get("held") != "1":
+    held_count = query.count() - with_guidance(query).count()
+    if request.GET.get("guidance") == "1":
         query = with_guidance(query)
     try:
         max_price = int(request.GET.get("max_price", ""))
@@ -156,6 +207,8 @@ def book_page(request):
         rows = stock_matches(request.user, profile.servings, query=query)
         query = query.filter(pk__in=[row["recipe_code"] for row in rows if row[stock_filter]])
     page = Paginator(query.order_by("name"), 12).get_page(request.GET.get("page"))
+    for recipe in page.object_list:
+        recipe.photo = recipe_image_for(recipe.pk)
     selection_error = None
     selected = None
     slot = None
@@ -179,6 +232,7 @@ def book_page(request):
     if code and not selection_error:
         try:
             selected = get_recipe(request.user, code, inputs=slot.plan.inputs if slot else None)
+            selected.photo = recipe_image_for(selected.pk)
             servings = slot.servings if slot else profile.servings
             needs, ingredients, nutrition = recipe_requirements(
                 selected, servings, with_rice=slot_has_rice(slot)
@@ -233,6 +287,7 @@ def book_page(request):
     params.pop("page", None)
     params.pop("slot", None)
     params.pop("recipe", None)
+    params.pop("held", None)
     history_params = request.GET.copy()
     history_params.pop("history_page", None)
     review_params = request.GET.copy()
@@ -254,6 +309,7 @@ def book_page(request):
             "unknown_count": unknown_count,
             "allergen_count": allergen_count,
             "held_count": held_count,
+            "guidance_only": request.GET.get("guidance") == "1",
             "q": term,
             "meal": meal,
             "max_price": max_price,

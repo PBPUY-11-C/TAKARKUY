@@ -1,18 +1,25 @@
 """Public reviews only after cooking; account-wide quota and optimistic locking."""
 
+from io import BytesIO
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.db.models import Avg, Count
 from django.utils import timezone
 from django.utils.crypto import salted_hmac
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 from apps.budget_planner.services import PreviewRateLimit
 from apps.catalog.models import Recipe
 from apps.pantry.services import StockError
 
 from .models import CookingHistory, RecipeReview, ReviewQuota
+
+MAX_REVIEW_PHOTO_BYTES = 6 * 1024 * 1024
+MAX_REVIEW_PHOTO_PIXELS = 40_000_000
 
 
 class ReviewLimited(PreviewRateLimit):
@@ -72,7 +79,10 @@ def write_review(user, data):
         if action == "delete":
             if review is None:
                 raise StockError("Ulasan tidak ditemukan.", 404)
+            photo_name = review.photo.name if review.photo else ""
             review.delete()
+            if photo_name:
+                transaction.on_commit(lambda: default_storage.delete(photo_name))
             return {"deleted": True}
         recipe = Recipe.objects.filter(pk=code, is_active=True).first()
         if recipe is None:
@@ -90,6 +100,76 @@ def write_review(user, data):
         return {"id": review.pk, "version": review.version}
 
 
+def normalize_review_photo(upload):
+    if upload is None or upload.size < 1 or upload.size > MAX_REVIEW_PHOTO_BYTES:
+        raise ValueError("Pilih foto JPG, PNG, atau WebP maksimal 6 MB.")
+    raw = upload.read(MAX_REVIEW_PHOTO_BYTES + 1)
+    upload.close()
+    if len(raw) > MAX_REVIEW_PHOTO_BYTES:
+        raise ValueError("Ukuran foto maksimal 6 MB.")
+    try:
+        with Image.open(BytesIO(raw)) as source:
+            if source.format not in {"JPEG", "PNG", "WEBP"}:
+                raise ValueError("Format foto harus JPG, PNG, atau WebP.")
+            if source.width < 1 or source.height < 1 or source.width * source.height > MAX_REVIEW_PHOTO_PIXELS:
+                raise ValueError("Resolusi foto terlalu besar.")
+            source.verify()
+        with Image.open(BytesIO(raw)) as source:
+            oriented = ImageOps.exif_transpose(source)
+            if "A" in oriented.getbands() or "transparency" in oriented.info:
+                rgba = oriented.convert("RGBA")
+                image = Image.new("RGB", rgba.size, "white")
+                image.paste(rgba, mask=rgba.getchannel("A"))
+            else:
+                image = oriented.convert("RGB")
+            image.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
+            clean = BytesIO()
+            image.save(clean, format="JPEG", quality=84, optimize=True, progressive=True)
+            result = clean.getvalue()
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        raise ValueError("Berkas bukan foto yang valid.") from exc
+    if len(result) > MAX_REVIEW_PHOTO_BYTES:
+        raise ValueError("Hasil kompresi foto masih terlalu besar.")
+    return result
+
+
+def attach_review_photo(user, code, version, upload):
+    if not isinstance(code, str) or not 1 <= len(code) <= 100:
+        raise ValueError("Kode resep tidak valid.")
+    if not isinstance(version, int) or version < 1:
+        raise ValueError("Versi ulasan tidak valid. Simpan ulasan lalu coba lagi.")
+    normalized = normalize_review_photo(upload)
+    reserve_review(user)
+    saved_name = ""
+    try:
+        with transaction.atomic():
+            get_user_model().objects.select_for_update().get(pk=user.pk)
+            review = (
+                RecipeReview.objects.select_for_update()
+                .filter(user=user, recipe_id=code, recipe__is_active=True)
+                .first()
+            )
+            if review is None:
+                raise StockError("Simpan ulasan untuk resep ini terlebih dahulu.", 404)
+            if review.version != version:
+                raise StockError("Ulasan sudah berubah. Muat ulang halaman.")
+            if not CookingHistory.objects.filter(user=user, recipe_id=code).exists():
+                raise StockError("Catat masak resep ini sebelum membagikan foto.", 403)
+            old_name = review.photo.name if review.photo else ""
+            path = review.photo.field.generate_filename(review, "photo.jpg")
+            saved_name = default_storage.save(path, ContentFile(normalized))
+            review.photo.name = saved_name
+            review.photo_is_hidden = True
+            review.save(update_fields=["photo", "photo_is_hidden", "updated_at"])
+            if old_name:
+                transaction.on_commit(lambda: default_storage.delete(old_name))
+    except Exception:
+        if saved_name:
+            default_storage.delete(saved_name)
+        raise
+    return {"photo_pending_review": True, "version": version}
+
+
 def review_context(user, recipe, page=1):
     from django.core.paginator import Paginator
 
@@ -99,5 +179,14 @@ def review_context(user, recipe, page=1):
     for entry in reviews:
         entry.public_name = public_username(entry.user)
     own = RecipeReview.objects.filter(recipe=recipe, user=user).first()
+    if own and own.photo:
+        from django.urls import reverse
+
+        own.photo_url = reverse("modul4-review-photo", args=[own.pk])
+    for entry in reviews:
+        if entry.photo and not entry.photo_is_hidden:
+            from django.urls import reverse
+
+            entry.photo_url = reverse("modul4-review-photo", args=[entry.pk])
     can_review = CookingHistory.objects.filter(user=user, recipe=recipe).exists()
     return {"review_stats": stats, "reviews": reviews, "own_review": own, "can_review": can_review}

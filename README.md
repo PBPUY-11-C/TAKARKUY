@@ -106,16 +106,17 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 
 - **Recipe book:** cari resep dengan filter waktu makan, stok di Pantry, harga, dan favorit. Detail berisi bahan, gizi, estimasi harga, dan cara memasak.
 - **Sudah Masak:** pratinjau pemakaian stok lalu konfirmasi; stok dikurangi lewat Modul 2 dan riwayat masak tercatat bersamaan.
+- **Pengalaman memasak:** setelah mencatat **Sudah Masak**, pengguna dapat memberi rating, menulis ulasan atau tips, dan mengunggah foto hasil masak. Foto JPG, PNG, atau WebP maksimal 6 MB menunggu moderasi sebelum ditampilkan kepada pengguna lain.
 - **Integrasi rencana:** menu dari jadwal Modul 1 bisa dibuka, dimasak, atau dilewati.
-- **Data yang dipegang:** `RecipeFavorite`, `CookingHistory`.
+- **Data yang dipegang:** `RecipeFavorite`, `CookingHistory`, dan `RecipeReview`.
 - **Halaman:** 1 halaman berisi daftar resep, detail resep, favorit, dan riwayat masak.
 
 **CRUD Recipe Book & Cooking Tracker:**
 
-- **Create:** menyimpan favorit dan mencatat riwayat lewat **Sudah Masak**. Resep ditambahkan administrator.
-- **Read:** mencari dan melihat resep, favorit, dan riwayat masak.
-- **Update:** administrator mengubah resep; pengguna menandai menu rencana sebagai dilewati atau membatalkannya.
-- **Delete:** menghapus favorit. Administrator menghapus resep tanpa menghapus riwayat masak.
+- **Create:** menyimpan favorit, mencatat riwayat lewat **Sudah Masak**, dan mengirim ulasan/foto setelah memasak. Resep ditambahkan administrator.
+- **Read:** mencari dan melihat resep, favorit, riwayat masak, serta ulasan dan foto yang telah disetujui.
+- **Update:** administrator mengubah resep dan memoderasi foto ulasan; pengguna menandai menu rencana sebagai dilewati atau membatalkannya, serta mengubah ulasan sendiri.
+- **Delete:** menghapus favorit dan ulasan sendiri (termasuk foto). Administrator menghapus resep tanpa menghapus riwayat masak.
 
 ### Modul 5 — Dashboard, Ulasan & Market Locator
 

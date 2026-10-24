@@ -14,6 +14,7 @@ from django.utils.cache import patch_cache_control
 
 from apps.accounts.preferences import effective_allergens, planner_defaults
 from apps.catalog.allergens import unsafe_schedule
+from apps.catalog.recipe_images import recipe_image_for
 
 from .forms import PlanMetadataForm, PlannerForm
 from .models import BudgetPlan, PlanPreview
@@ -259,6 +260,9 @@ def account_page(request, builder):
             error = str(exc)
             status = 400
     display_schedule = deepcopy(result["schedule"]) if result else []
+    for day in display_schedule:
+        for meal in day["meals"]:
+            meal["photo"] = recipe_image_for(meal["recipe_code"])
     if result and plan:
         slots = {(item.day, item.meal_type): item for item in plan.meals.all()}
         cooked = {(item.day, item.meal_type) for item in cooked_slots(plan)}

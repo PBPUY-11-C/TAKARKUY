@@ -1,5 +1,11 @@
+from uuid import uuid4
+
 from django.conf import settings
 from django.db import models
+
+
+def recipe_review_photo_path(instance, filename):
+    return f"recipe-reviews/{instance.recipe_id}/{uuid4().hex}.jpg"
 
 
 class RecipeFavorite(models.Model):
@@ -44,6 +50,8 @@ class RecipeReview(models.Model):
     recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE, related_name="reviews")
     rating = models.PositiveSmallIntegerField()
     comment = models.CharField(max_length=500, blank=True)
+    photo = models.FileField(upload_to=recipe_review_photo_path, blank=True)
+    photo_is_hidden = models.BooleanField(default=True, db_index=True)
     is_hidden = models.BooleanField(default=False, db_index=True)
     version = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)

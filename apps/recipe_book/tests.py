@@ -280,12 +280,15 @@ class CookingTests(TestCase):
         self.client.force_login(self.user)
         self.assertEqual(self.post("modul4-favorite", {**data, "favorite": False}).status_code, 200)
 
-    def test_guidance_hidden_by_default_but_direct_link_explains(self):
+    def test_guidance_visible_by_default_with_optional_guidance_filter(self):
         self.recipe.instruction_status = "withheld"
         self.recipe.save()
         response = self.client.get(reverse("modul4"))
-        self.assertNotContains(response, "Rebus air")
-        self.assertContains(response, "1 resep tanpa panduan")
+        self.assertContains(response, "Sup bayam")
+        self.assertNotContains(response, "Rebus air.")
+        self.assertContains(response, "1 resep belum memiliki panduan memasak")
+        filtered = self.client.get(reverse("modul4"), {"guidance": "1"})
+        self.assertNotContains(filtered, "Sup bayam")
         response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
         self.assertContains(response, "Panduan belum tersedia")
         self.assertNotContains(response, "Rebus air")
