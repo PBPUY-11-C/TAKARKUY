@@ -51,7 +51,7 @@ DEBUG = not PRODUCTION
 SESSION_COOKIE_SECURE = PRODUCTION
 CSRF_COOKIE_SECURE = PRODUCTION
 LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "modul1"
+LOGIN_REDIRECT_URL = "modul5"
 AUTHENTICATION_BACKENDS = ["apps.accounts.backends.UsernameOrEmailBackend"]
 # Empty by default. Set only to the actual, verified PWS reverse-proxy CIDRs.
 AUTH_TRUSTED_PROXY_CIDRS = [

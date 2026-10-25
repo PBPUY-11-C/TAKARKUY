@@ -1,0 +1,58 @@
+{% extends "accounts/base.html" %}
+{% block title %}Profil & Preferensi{% endblock %}
+{% block content %}
+<style>
+  .profile-card { width: min(100%, 900px); }
+  .profile-card h1 { max-width: none; text-align: left; margin: 0 0 28px; }
+  .profile-card h2 { font-size: 19px; margin: 0 0 22px; }
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .profile-section { padding: 24px; border: 1px solid #d8e2f3; border-radius: 14px; }
+  .profile-section + .profile-section { margin-top: 24px; }
+  .profile-section form > div { margin-bottom: 18px; }
+  .profile-section label { display: block; margin-bottom: 6px; }
+  .profile-section input:not([type="checkbox"]):not([type="hidden"]), .profile-section select { width: 100%; padding: 11px 12px; border: 1px solid #bacfc6; border-radius: 8px; background: #f7f9fe; font: inherit; }
+  .profile-section input[type="checkbox"] { accent-color: #007452; margin-right: 8px; }
+  .profile-section select { min-height: 140px; font-size: 13px; }
+  .profile-section fieldset { padding: 0; border: 0; }
+  .profile-section legend { font-size: 13px; font-weight: 800; margin-bottom: 12px; }
+  .profile-section input:focus-visible, .profile-section select:focus-visible { outline: 2px solid #007452; outline-offset: 3px; }
+  .helptext, .profile-note { color: #56646b; font-size: 12px; line-height: 1.6; }
+  .errorlist { padding: 0; color: #aa3737; font-size: 12px; list-style: none; }
+  .success-message { padding: 14px; margin-bottom: 24px; border-radius: 8px; background: #e5f5ee; color: #005b40; }
+  @media (max-width: 720px) { .profile-grid { grid-template-columns: 1fr; } .profile-section { padding: 20px; } }
+</style>
+<main class="auth-card profile-card">
+  <a class="back-home" href="{% url 'modul5' %}">← Kembali ke beranda</a>
+  <h1>Profil & Preferensi</h1>
+  {% for message in messages %}<p class="success-message" role="status">{{ message }}</p>{% endfor %}
+  {% if error %}<p class="form-errors" role="alert">{{ error }}</p>{% endif %}
+  <div class="profile-grid">
+    <div>
+      <section class="profile-section">
+        <h2>Informasi akun</h2>
+        <form method="post">{% csrf_token %}<input type="hidden" name="action" value="account">
+          {{ account_form.as_div }}
+          <button class="submit" type="submit">Simpan informasi akun</button>
+        </form>
+      </section>
+      <section class="profile-section">
+        <h2>Ganti kata sandi</h2>
+        <form method="post">{% csrf_token %}<input type="hidden" name="action" value="password">
+          {{ password_form.as_div }}
+          <button class="submit" type="submit">Ganti kata sandi</button>
+        </form>
+      </section>
+    </div>
+    <section class="profile-section">
+      <h2>Preferensi makanan</h2>
+      <p class="profile-note">Preferensi menjadi nilai awal rencana baru. Bahan yang ingin dihindari dapat diubah per rencana. Alergi tetap diterapkan pada menu baru dan penggantian menu.</p>
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="preferences">
+        {{ preference_form.as_div }}
+        <p class="profile-note">Filter ini bukan jaminan bebas alergen. Daftar ini baru mencakup 9 kelompok, bukan seluruh jenis alergi. Periksa label komposisi dan risiko kontaminasi silang. Resep dengan bahan yang belum ditinjau atau bumbu minor yang tidak tercatat dikecualikan saat alergi dipilih.</p>
+        <p class="profile-note">Semua resep planner tetap mengikuti kebijakan halal saat ini; label katalog bukan sertifikasi halal.</p>
+        <button class="submit" type="submit">Simpan preferensi</button>
+      </form>
+    </section>
+  </div>
+</main>
+{% endblock %}

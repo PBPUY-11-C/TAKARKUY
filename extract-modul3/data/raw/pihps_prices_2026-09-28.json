@@ -1,0 +1,380 @@
+[
+  {
+    "commodity": "Bawang Merah Ukuran Sedang",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Bawang Merah Ukuran Sedang",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 37350.0,
+        "harga": -100.0,
+        "fluc": -0.27,
+        "isMin": 1,
+        "isMax": 0,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Bawang Putih Ukuran Sedang",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Bawang Putih Ukuran Sedang",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 39050.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Beras Kualitas Bawah I",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Beras Kualitas Bawah I",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 14900.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Beras Kualitas Bawah II",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Beras Kualitas Bawah II",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 14700.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Beras Kualitas Medium I",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Beras Kualitas Medium I",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 16600.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Beras Kualitas Medium II",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Beras Kualitas Medium II",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 16400.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Beras Kualitas Super I",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Beras Kualitas Super I",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 17900.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Beras Kualitas Super II",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Beras Kualitas Super II",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 17300.0,
+        "harga": -50.0,
+        "fluc": -0.29,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Cabai Merah Besar",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Cabai Merah Besar",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 58650.0,
+        "harga": 1000.0,
+        "fluc": 1.73,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Cabai Merah Keriting ",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Cabai Merah Keriting ",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 71400.0,
+        "harga": 1350.0,
+        "fluc": 1.93,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Cabai Rawit Hijau",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Cabai Rawit Hijau",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 68900.0,
+        "harga": 700.0,
+        "fluc": 1.03,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Cabai Rawit Merah",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Cabai Rawit Merah",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 99650.0,
+        "harga": 4650.0,
+        "fluc": 4.89,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Daging Ayam Ras Segar",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Daging Ayam Ras Segar",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 42150.0,
+        "harga": -50.0,
+        "fluc": -0.12,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Daging Sapi Kualitas 1",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Daging Sapi Kualitas 1",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 152600.0,
+        "harga": 100.0,
+        "fluc": 0.07,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Daging Sapi Kualitas 2",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Daging Sapi Kualitas 2",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 143300.0,
+        "harga": 250.0,
+        "fluc": 0.17,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Gula Pasir Kualitas Premium",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Gula Pasir Kualitas Premium",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 20350.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Gula Pasir Lokal",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Gula Pasir Lokal",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 19150.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Minyak Goreng Curah",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Minyak Goreng Curah",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 20400.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Minyak Goreng Kemasan Bermerk 1",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Minyak Goreng Kemasan Bermerk 1",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 24350.0,
+        "harga": 0.0,
+        "fluc": 0.0,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 1
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Minyak Goreng Kemasan Bermerk 2",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Minyak Goreng Kemasan Bermerk 2",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 23550.0,
+        "harga": 50.0,
+        "fluc": 0.21,
+        "isMin": 0,
+        "isMax": 1,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  },
+  {
+    "commodity": "Telur Ayam Ras Segar",
+    "response": [
+      {
+        "date": "2026-09-28T00:00:00",
+        "name": "Telur Ayam Ras Segar",
+        "denomination": "kg",
+        "price_type_id": 1,
+        "nominal": 29950.0,
+        "harga": -50.0,
+        "fluc": -0.17,
+        "isMin": 0,
+        "isMax": 0,
+        "isTetap": 0
+      }
+    ],
+    "source_url": "https://www.bi.go.id/hargapangan/Website/Home/Index/widget"
+  }
+]

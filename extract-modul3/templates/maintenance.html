@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sedang dalam Pengembangan — TAKARKUY</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; min-height: 100svh; margin: 0; padding: 24px; display: grid; place-items: center; background: #f7f9fe; color: #172235; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { width: min(100%, 540px); padding: 44px 32px; border: 1px solid #e5ebf4; border-radius: 24px; background: #fff; box-shadow: 0 16px 40px rgb(34 52 82 / 6%); text-align: center; }
+    .brand { margin: 0 0 32px; color: #007452; font-weight: 800; letter-spacing: .04em; }
+    .mark { display: grid; place-items: center; width: 72px; height: 72px; margin: 0 auto 24px; border-radius: 20px; background: #e5f5ee; color: #007452; }
+    h1 { margin: 0 0 16px; font-size: clamp(26px, 6vw, 34px); line-height: 1.2; letter-spacing: -.035em; }
+    .description { margin: 0 auto 28px; max-width: 390px; color: #56646b; line-height: 1.7; }
+    a { display: inline-block; padding: 13px 24px; border-radius: 10px; background: #007452; color: #fff; font-weight: 700; text-decoration: none; }
+    a:hover { background: #00583d; }
+    a:focus-visible { outline: 3px solid #64c7a0; outline-offset: 4px; }
+    .note { margin: 24px 0 0; color: #68757c; font-size: 13px; line-height: 1.6; }
+    @media (max-width: 480px) { main { padding: 32px 22px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="brand">TAKARKUY</p>
+    <div class="mark" aria-hidden="true">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/>
+      </svg>
+    </div>
+    <h1>Sedang dalam pengembangan</h1>
+    <p class="description">Kami sedang menyiapkan pembaruan TAKARKUY. Untuk sementara, seluruh fitur belum dapat diakses. Silakan kembali lagi nanti.</p>
+    <a href="{% url 'landing' %}">Coba lagi</a>
+    <p class="note">Terima kasih sudah menunggu, Penakar.</p>
+  </main>
+</body>
+</html>
