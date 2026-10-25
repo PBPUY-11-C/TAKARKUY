@@ -173,17 +173,26 @@ class AccountFlowTests(TestCase):
         self.assertFalse(self.client.session.get_expire_at_browser_close())
 
     def test_other_module_pages_remain_protected_placeholders(self):
-        for name in ("modul4", "modul5"):
+        for name in ("modul5",):
             url = reverse(name)
             self.assertRedirects(self.client.get(url), f"{reverse('login')}?next={url}")
         self.client.post(reverse("signup"), self.signup_data())
-        for name in ("modul4", "modul5"):
+        for name in ("modul5",):
             response = self.client.get(reverse(name))
             self.assertTemplateUsed(response, "kosong.html")
             self.assertContains(response, 'aria-label="Profil dan preferensi"')
 
     def test_shared_header_links_to_landing_and_profile(self):
         self.client.post(reverse("signup"), self.signup_data())
+        response = self.client.get(reverse("modul4"))
+        self.assertTemplateUsed(response, "partials/head.html")
+        self.assertTemplateUsed(response, "partials/app_header.html")
+        self.assertContains(response, "TAKARKUY")
+        self.assertContains(response, "Meal Planner")
+        self.assertContains(response, f'href="{reverse("landing")}"')
+        self.assertContains(response, "Resep favorit")
+        self.assertContains(response, "Riwayat masak")
+
         for name in ("modul1", "modul3"):
             response = self.client.get(reverse(name))
             self.assertContains(response, f'href="{reverse("landing")}"')

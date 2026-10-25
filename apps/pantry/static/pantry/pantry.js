@@ -557,13 +557,64 @@ document.getElementById("stock-recipes-button").addEventListener("click", async 
     const response = await fetch(`/pantry/recipes/?servings=${encodeURIComponent(servings)}`, {credentials: "same-origin"});
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Tidak dapat membaca kecocokan stok.");
-    if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Hubungkan bahan ke katalog dan lengkapi berat/tanggal stok jika diketahui.";
+    if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Pastikan bahan terhubung ke katalog dan konversi berat tersedia. Stok tanpa tanggal kedaluwarsa tetap dapat dihitung dan akan ditandai.";
     else output.replaceChildren(...data.recipes.map((recipe) => {
-      const line = document.createElement("p");
+      const line = document.createElement("div");
+      line.className = "stock-recipe-match";
       const link = document.createElement("a");
-      link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`;
+      const requestedServings = Number(data.servings || document.getElementById("stock-recipe-servings").value);
+      const maxServings = Number(recipe.max_servings);
+      const hasServingEstimate = Number.isInteger(maxServings);
+      const targetServings = hasServingEstimate && maxServings > 0
+        ? Math.min(requestedServings, maxServings)
+        : requestedServings;
+      link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`
+        + (hasServingEstimate ? `&servings=${targetServings}` : "");
       link.textContent = `${recipe.name} · ${recipe.complete ? "Bahan cukup" : "Sebagian bahan tersedia"}${recipe.unknown_expiry ? " · tanggal stok belum diketahui" : ""}`;
       line.append(link);
+      if (hasServingEstimate) {
+        const portion = document.createElement("p");
+        portion.className = recipe.max_servings > 0 && recipe.max_servings < requestedServings
+          ? "stock-recipe-portion stock-recipe-portion-limited"
+          : "stock-recipe-portion";
+        if (recipe.max_servings < 1) {
+          portion.textContent = "Stok belum cukup untuk 1 porsi.";
+        } else if (recipe.max_servings < requestedServings) {
+          portion.textContent = `Stok cukup untuk paling banyak ${recipe.max_servings} porsi. Tautan membuka resep dengan porsi tersebut.`;
+        } else {
+          portion.textContent = `Stok cukup untuk ${requestedServings} porsi${recipe.max_servings > requestedServings ? `; dapat dibuat hingga ${recipe.max_servings} porsi` : ""}.`;
+        }
+        line.append(portion);
+      }
+      const appendIngredientGroup = (title, rows, className) => {
+        if (!rows?.length) return;
+        const group = document.createElement("section");
+        group.className = `stock-recipe-ingredients ${className}`;
+        const heading = document.createElement("strong");
+        heading.textContent = title;
+        const list = document.createElement("ul");
+        for (const item of rows) {
+          const entry = document.createElement("li");
+          const grams = Number(item.grams);
+          const amount = Number.isFinite(grams)
+            ? grams.toLocaleString("id-ID", {maximumFractionDigits: 1})
+            : item.grams;
+          if (item.required_grams !== undefined) {
+            const required = Number(item.required_grams);
+            const requiredAmount = Number.isFinite(required)
+              ? required.toLocaleString("id-ID", {maximumFractionDigits: 1})
+              : item.required_grams;
+            entry.textContent = `${item.name}: ${amount} g dari ${requiredAmount} g`;
+          } else {
+            entry.textContent = `${item.name}: kurang ${amount} g`;
+          }
+          list.append(entry);
+        }
+        group.append(heading, list);
+        line.append(group);
+      };
+      appendIngredientGroup("Terpenuhi dari stok untuk porsi ini:", recipe.available, "available");
+      appendIngredientGroup("Masih kurang untuk porsi ini:", recipe.missing_ingredients, "missing");
       return line;
     }));
   } catch (error) { output.textContent = error.message; }

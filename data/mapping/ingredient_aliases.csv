@@ -349,6 +349,7 @@ ALS-0702C8F9CF86,Nama katalog TAKARKUY,Daun Salam Segar (Estimasi),ING-DAUN-SALA
 ALS-29699705D2BA,Nama katalog TAKARKUY,Minyak Wijen,ING-MINYAK-WIJEN,reviewed
 ALS-B24876CF053A,Nama katalog TAKARKUY,Tepung Panir / Roti Kering,ING-TEPUNG-PANIR,reviewed
 ALS-60C6B539492C,Nama katalog TAKARKUY,Tepung Tapioka,ING-TEPUNG-TAPIOKA,reviewed
+ALS-C14A88129CD8,Nama katalog TAKARKUY,Pasta Kering (Proksi USDA),ING-PASTA-KERING,reviewed
 ALS-3669DCE43756,Nama katalog TAKARKUY,Ebi (Udang Kering),ING-EBI,reviewed
 ALS-480BFC6C7B9B,Nama katalog TAKARKUY,Terasi,ING-TERASI,reviewed
 ALS-EA6D1B05E20D,Nama katalog TAKARKUY,Cengkeh,ING-CENGKEH,reviewed
@@ -375,3 +376,7 @@ ALS-52F79A9627EA,Kaggle - aturan kurasi TAKARKUY,telur ayam ras,ING-TELUR-AYAM-B
 ALS-6C9F2A4520F7,Kaggle - aturan kurasi TAKARKUY,beras putih,ING-BERAS,manual_curated
 ALS-9820726486FB,Kaggle - aturan kurasi TAKARKUY,tauge,ING-TAUGE,manual_curated
 ALS-37D4761865ED,Kaggle - aturan kurasi TAKARKUY,toge,ING-TAUGE,manual_curated
+ALS-516219197931,TheMealDB - aturan kurasi TAKARKUY,pasta kering,ING-PASTA-KERING,manual_curated
+ALS-01F2C1EEE807,TheMealDB - aturan kurasi TAKARKUY,spaghetti,ING-PASTA-KERING,manual_curated
+ALS-1CB90BD32A18,TheMealDB - aturan kurasi TAKARKUY,spaghetti kering,ING-PASTA-KERING,manual_curated
+ALS-BFC15BF62506,TheMealDB - aturan kurasi TAKARKUY,penne,ING-PASTA-KERING,manual_curated
