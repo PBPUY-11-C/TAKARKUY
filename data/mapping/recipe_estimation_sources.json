@@ -55,7 +55,8 @@
     {"code":"ING-DAUN-SALAM","name":"Daun Salam Segar (Estimasi)","category":"bumbu","tkpi_id":"NR017","macros":[301,14.2,49,10.9],"source_water_fraction":0.131,"assumed_water_fraction":0.70,"note":"ESTIMASI PROKSI salam bubuk TKPI NR017 dikoreksi bahan kering: (1−0,70)/(1−0,131). Kadar air daun segar 70% adalah asumsi TAKARKUY, bukan hasil penelitian atau nilai TKPI segar. Diasumsikan seluruh gram ikut termakan; perpindahan gizi infus/daun dibuang belum dimodelkan."},
     {"code":"ING-MINYAK-WIJEN","name":"Minyak Wijen","category":"lemak","fdc_id":171016},
     {"code":"ING-TEPUNG-PANIR","name":"Tepung Panir / Roti Kering","category":"karbohidrat","fdc_id":174928},
-    {"code":"ING-TEPUNG-TAPIOKA","name":"Tepung Tapioka","category":"karbohidrat","tkpi_id":"BP070","macros":[363,1.1,88.2,0.5]}
+    {"code":"ING-TEPUNG-TAPIOKA","name":"Tepung Tapioka","category":"karbohidrat","tkpi_id":"BP070","macros":[363,1.1,88.2,0.5]},
+    {"code":"ING-PASTA-KERING","name":"Pasta Kering (Proksi USDA)","category":"karbohidrat","fdc_id":169736,"note":"USDA SR Legacy: pasta kering diperkaya; proksi generik, bukan data label merek lokal."}
   ],
   "retail_prices": [
     {"code":"ING-ROTI","product":"Roti Tawar 430 g","price":12000,"grams":430,"source":"e-Order BPPBJ Jakarta - listing penjual","url":"https://eorder-bppbj.jakarta.go.id/eorder/product/roti-tawar-8028"},
@@ -101,6 +102,7 @@
     {"code":"ING-THYME","product":"Beorganik Thyme Dried SLIM 30 g","price":16000,"grams":30,"source":"Beorganik Official Store","url":"https://beorganik.co.id/product/beorganik-thyme-dried-thyme-kering/","note":"Harga varian SLIM 30 g dari variasi produk; bukan varian BIG 105 g."},
     {"code":"ING-MINYAK-WIJEN","product":"Minyak Wijen 150 ml","price":18000,"grams":136.25,"source":"Bekawan Store","url":"https://bekawan.store/product/minyak-wijen-150ml/","note":"Massa diasumsikan dari profil minyak 218 g per 240 ml."},
     {"code":"ING-TEPUNG-PANIR","product":"Tepung Roti Le Chef Putih 250 g","price":5688,"grams":250,"source":"Titan Baking","url":"https://titanbaking.com/product/detail/tepung-roti-le-chef-putih-250-gr","note":"Listing saat dibuka berbeda dari cuplikan pencarian; memakai harga halaman produk."},
-    {"code":"ING-TEPUNG-TAPIOKA","product":"Tepung Tapioka Bola Deli 500 g","price":5174,"grams":500,"source":"Titan Baking","url":"https://titanbaking.com/product/detail/tepung-tapioka-bola-deli-500-gr","note":"Menggunakan berat pada nama/deskripsi 500 g; metadata halaman keliru menulis 500 kg."}
+    {"code":"ING-TEPUNG-TAPIOKA","product":"Tepung Tapioka Bola Deli 500 g","price":5174,"grams":500,"source":"Titan Baking","url":"https://titanbaking.com/product/detail/tepung-tapioka-bola-deli-500-gr","note":"Menggunakan berat pada nama/deskripsi 500 g; metadata halaman keliru menulis 500 kg."},
+    {"code":"ING-PASTA-KERING","product":"La Fonte Spaghetti 11 450 g (listing Hypermart September 2026)","price":13900,"grams":450,"recorded_at":"2026-10-25","source":"Hemat.id; listing retail Indonesia","url":"https://www.hemat.id/harga/la-fonte.spaghetti.00066028-11-450-gr/","note":"Listing diperbarui 9 Sep 2026; promo Hypermart Rp13.900 berlaku 28 Agu sampai 10 Sep 2026 dan sudah berakhir. Harga historis non-Garut, bukan harga aktif atau lokal yang dijamin."}
   ]
 }

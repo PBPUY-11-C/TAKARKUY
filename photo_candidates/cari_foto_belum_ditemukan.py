@@ -425,6 +425,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Cari foto kandidat dari Openverse untuk resep tanpa foto.")
     parser.add_argument("--limit", type=int, default=0, help="Batas jumlah resep per sesi; 0 memproses semua.")
     parser.add_argument("--delay", type=float, default=0.75, help="Jeda antarresep dalam detik.")
+    parser.add_argument(
+        "--source",
+        choices=("all", "themealdb"),
+        default="all",
+        help="Batasi pencarian ke resep yang sumber katalognya TheMealDB.",
+    )
     parser.add_argument("--retry-unfound", action="store_true", help="Cari ulang resep yang sebelumnya tidak mendapat kandidat.")
     args = parser.parse_args()
 
@@ -435,6 +441,8 @@ def main() -> None:
         recipes = []
         for item in csv.DictReader(source):
             if item.get("is_active") != "true" or item.get("is_plannable") != "true":
+                continue
+            if args.source == "themealdb" and not item.get("source", "").startswith("TheMealDB API"):
                 continue
             name = item["name"]
             # Match build_final.py: the manually curated TheMealDB display name
