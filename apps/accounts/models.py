@@ -17,18 +17,23 @@ def default_tracked_staples():
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    version = models.PositiveIntegerField(default=1)
+
+
+class FoodPreference(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     targets = models.JSONField(default=default_targets)
     meal_types = models.JSONField(default=default_meals)
     servings = models.PositiveSmallIntegerField(default=2)
     allergens = models.JSONField(default=list)
     tracked_staples = models.JSONField(default=default_tracked_staples)
     avoided_ingredients = models.ManyToManyField("catalog.Ingredient", blank=True)
-    version = models.PositiveIntegerField(default=1)
+    halal_only = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
             models.CheckConstraint(
-                condition=models.Q(servings__gte=1, servings__lte=10), name="profile_servings_valid"
+                condition=models.Q(servings__gte=1, servings__lte=10), name="preference_servings_valid"
             )
         ]
 

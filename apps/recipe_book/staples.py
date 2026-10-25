@@ -49,9 +49,9 @@ DEFAULT_TRACKED_STAPLE_GROUPS = ["cooking_oil"]
 
 
 def tracked_staple_codes(user):
-    from apps.accounts.preferences import profile_for
+    from apps.accounts.preferences import preferences_for
 
-    selected = profile_for(user).tracked_staples
+    selected = preferences_for(user).tracked_staples
     groups = selected if isinstance(selected, list) else []
     return frozenset().union(
         *(STAPLE_GROUP_CODES[key] for key in groups if key in STAPLE_GROUP_CODES)

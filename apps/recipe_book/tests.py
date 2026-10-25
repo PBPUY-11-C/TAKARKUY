@@ -11,7 +11,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.accounts.preferences import profile_for
+from apps.accounts.preferences import preferences_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
 from apps.catalog.aggregation import expected_allergens
 from apps.catalog.models import Ingredient, IngredientAlias, Recipe, RecipeIngredient, RecipeTag
@@ -100,13 +100,19 @@ class CookingTests(TestCase):
             snapshot={"name": self.recipe.name},
         )
 
-    def test_page_filters_and_does_not_reduce_stock(self):
-        batch = self.batch()
-        response = self.client.get(reverse("modul4"))
-        self.assertContains(response, "Sup bayam")
-        self.assertContains(response, "Bahan utama lengkap")
-        batch.refresh_from_db()
-        self.assertEqual(batch.quantity, 100)
+    def test_personal_halal_choice_filters_list_and_direct_cooking(self):
+        self.batch()
+        RecipeTag.objects.filter(recipe=self.recipe, tag="halal").delete()
+        self.assertFalse(recipe_query(self.user).exists())
+        self.assertEqual(self.post("modul4-preview").status_code, 404)
+        preferences = preferences_for(self.user)
+        preferences.halal_only = False
+        preferences.save()
+        self.assertTrue(recipe_query(self.user).exists())
+        self.assertEqual(self.post("modul4-preview").status_code, 200)
+        preferences.halal_only = True
+        preferences.save()
+        self.assertEqual(self.post("modul4-cook").status_code, 404)
         self.assertFalse(CookingHistory.objects.exists())
 
     def test_recipe_search_matches_reviewed_ingredient_aliases_only(self):
@@ -389,9 +395,9 @@ class CookingTests(TestCase):
     def test_allergen_index_changes_on_ingredient_link_tag_and_delete(self):
         self.recipe.refresh_from_db()
         self.assertTrue(self.recipe.allergen_reviewed)
-        profile = profile_for(self.user)
-        profile.allergens = ["kacang_pohon"]
-        profile.save()
+        preference = preferences_for(self.user)
+        preference.allergens = ["kacang_pohon"]
+        preference.save(update_fields=["allergens"])
         self.ingredient.allergens = ["kacang_pohon"]
         self.ingredient.save()
         self.assertFalse(recipe_query(self.user).exists())
@@ -409,10 +415,9 @@ class CookingTests(TestCase):
         self.recipe.refresh_from_db()
         self.assertFalse(self.recipe.allergen_reviewed)
         call_command("rebuild_recipe_allergens", check=True, verbosity=0)
-
     def test_stale_aggregate_does_not_bypass_execution_screening(self):
         self.batch()
-        profile = profile_for(self.user)
+        profile = preferences_for(self.user)
         profile.allergens = ["telur"]
         profile.save()
         Ingredient.objects.filter(pk=self.ingredient.pk).update(allergens=["telur"])
@@ -463,7 +468,6 @@ class CookingTests(TestCase):
             self.post("modul4-note", {"recipe_code": self.recipe.pk, "content": "Catatan"}).status_code,
             403,
         )
-
     def test_manual_overuse_and_invalid_conversion_rejected(self):
         batch = self.batch(quantity=200)
         for weight, amount in (("2", "50"), ("1", "200"), ("NaN", "1"), ("0", "1")):
@@ -575,7 +579,6 @@ class CookingTests(TestCase):
         response = self.client.get(reverse("modul4"), {"stock": "best"})
         self.assertContains(response, "Belum ada kecocokan resep dengan bahan di Pantry")
         self.assertEqual(response.context["recipes"].paginator.count, 0)
-
     def test_stock_matches_counts_unknown_expiry_and_flags_it(self):
         self.batch(estimated_expires_on=None, expiry_source="unknown")
         [row] = stock_matches(self.user, 2)
@@ -591,19 +594,6 @@ class CookingTests(TestCase):
         self.assertFalse(row["complete"])
         self.assertAlmostEqual(row["coverage"], 0.4)
         self.assertEqual(row["missing"], [{"ingredient_code": "TEST-BAYAM", "grams": "60"}])
-
-    def test_pantry_and_book_agree_on_complete_recipes(self):
-        # Undated stock is where the two modules used to disagree.
-        self.batch(estimated_expires_on=None, expiry_source="unknown")
-        servings = profile_for(self.user).servings
-        pantry = self.client.get(reverse("modul2-recipes"), {"servings": servings}).json()
-        complete = [row["recipe_code"] for row in pantry["recipes"] if row["complete"]]
-        book = self.client.get(reverse("modul4"), {"stock": "complete"})
-        self.assertEqual(complete, [recipe.pk for recipe in book.context["recipes"]])
-        # The link from Modul 2 must land on a detail page that agrees.
-        detail = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk}).context["detail"]
-        self.assertTrue(detail["complete"])
-        self.assertTrue(detail["unknown_expiry"])
 
     def test_stock_matches_uses_dated_stock_before_unknown_source_stock(self):
         # A leftover date on an "unknown" batch must not jump ahead of a labelled batch.

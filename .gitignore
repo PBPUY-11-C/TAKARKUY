@@ -15,3 +15,5 @@ staticfiles/
 .vscode/
 .DS_Store
 .ruff_cache/
+.verification/
+/docs/MODUL3_CONTEXT.json

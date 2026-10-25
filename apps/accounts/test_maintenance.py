@@ -31,7 +31,7 @@ class MaintenanceTests(TestCase):
             "/",
             "/login/",
             "/signup/",
-            "/modul1/",
+            "/planner/",
             "/modul2/",
             "/modul3/",
             "/modul4/",

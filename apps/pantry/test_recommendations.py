@@ -156,29 +156,6 @@ class PantryRecommendationTests(TestCase):
         self.assertEqual(result["method"], "koreksi_anda")
         llm.assert_not_called()
 
-    @patch("apps.pantry.recommendations._gemini_choices", return_value={})
-    def test_other_account_does_not_get_private_correction(self, llm):
-        self.client.get(reverse("modul2"))
-        session_id = self.client.session["pantry_session_id"]
-        PantryNameCorrection.objects.create(
-            user=self.user,
-            session_id=session_id,
-            raw_name="BXYM",
-            normalized_name="bxym",
-            ingredient=self.bayam,
-            confirmed_by_user=True,
-        )
-        from django.test import Client
-
-        other = Client()
-        authenticate(other, "other")
-        response = other.post(
-            reverse("modul2-suggestions"),
-            data=json.dumps({"names": ["BXYM"]}),
-            content_type="application/json",
-        )
-        self.assertNotEqual(response.json()["suggestions"][0]["method"], "koreksi_anda")
-
     @patch("apps.pantry.recommendations._gemini_choices")
     def test_ten_mature_consistent_corrections_become_shared_suggestion(self, llm):
         for index in range(10):
@@ -267,3 +244,27 @@ class PantryRecommendationTests(TestCase):
 
     def test_suggestions_reject_oversized_batch(self):
         self.assertEqual(self.post_suggestions(["Bayam"] * 31).status_code, 400)
+
+
+    @patch("apps.pantry.recommendations._gemini_choices", return_value={})
+    def test_other_account_does_not_get_private_correction(self, llm):
+        self.client.get(reverse("modul2"))
+        session_id = self.client.session["pantry_session_id"]
+        PantryNameCorrection.objects.create(
+            user=self.user,
+            session_id=session_id,
+            raw_name="BXYM",
+            normalized_name="bxym",
+            ingredient=self.bayam,
+            confirmed_by_user=True,
+        )
+        from django.test import Client
+
+        other = Client()
+        authenticate(other, "other")
+        response = other.post(
+            reverse("modul2-suggestions"),
+            data=json.dumps({"names": ["BXYM"]}),
+            content_type="application/json",
+        )
+        self.assertNotEqual(response.json()["suggestions"][0]["method"], "koreksi_anda")

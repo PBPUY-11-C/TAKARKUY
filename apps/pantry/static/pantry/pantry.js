@@ -131,7 +131,7 @@ function addDraftRow(item = {}) {
 async function suggestRows(rows, version, allowLLM = true) {
   const draft = draftElements();
   try {
-    const response = await fetch("/modul2/suggestions/", {
+    const response = await fetch("/pantry/suggestions/", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
       credentials: "same-origin",
@@ -176,7 +176,7 @@ function showDraftItems(rows, {photoAttempted = false, photoSucceeded = false} =
 async function readWithGemini(file) {
   const form = new FormData();
   form.append("image", file);
-  const response = await fetch("/modul2/ocr-fallback/", {
+  const response = await fetch("/pantry/ocr-fallback/", {
     method: "POST",
     headers: { "X-CSRFToken": csrfToken },
     credentials: "same-origin",
@@ -355,7 +355,7 @@ document.getElementById("add-draft-row").addEventListener("click", () => {
 const actionKey = createActionKeyStore();
 
 async function saveItems(items, source) {
-  const response = await fetch("/modul2/items/", {
+  const response = await fetch("/pantry/items/", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
     credentials: "same-origin",
@@ -489,7 +489,7 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
     // an explicit "Belum terhubung" choice still sends "" and unlinks.
     if (renamed && !changes.ingredient_code) delete changes.ingredient_code;
     try {
-      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/`, {
+      const response = await fetch(`/pantry/items/${row.dataset.pantryItem}/`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
         credentials: "same-origin",
@@ -515,7 +515,7 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   row.querySelector(".pantry-history").addEventListener("click", async () => {
     const output = row.querySelector("[data-history-output]");
     try {
-      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/movements/`, {credentials: "same-origin"});
+      const response = await fetch(`/pantry/items/${row.dataset.pantryItem}/movements/`, {credentials: "same-origin"});
       const data = await response.json();
       if (!response.ok) throw new Error("Riwayat tidak tersedia.");
       output.replaceChildren(...data.movements.map((entry) => {
@@ -531,7 +531,7 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
     deleteButton.disabled = true;
     feedback(rowFeedback, "Menghapus…");
     try {
-      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/delete/`, {
+      const response = await fetch(`/pantry/items/${row.dataset.pantryItem}/delete/`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
         credentials: "same-origin",
@@ -554,7 +554,7 @@ document.getElementById("stock-recipes-button").addEventListener("click", async 
   button.disabled = true;
   try {
     const servings = document.getElementById("stock-recipe-servings").value;
-    const response = await fetch(`/modul2/recipes/?servings=${encodeURIComponent(servings)}`, {credentials: "same-origin"});
+    const response = await fetch(`/pantry/recipes/?servings=${encodeURIComponent(servings)}`, {credentials: "same-origin"});
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Tidak dapat membaca kecocokan stok.");
     if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Pastikan bahan terhubung ke katalog dan konversi berat tersedia. Stok tanpa tanggal kedaluwarsa tetap dapat dihitung dan akan ditandai.";

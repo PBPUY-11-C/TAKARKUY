@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from apps.accounts.choices import ALLERGEN_KEYS
-from apps.accounts.preferences import effective_allergens, profile_for
+from apps.accounts.preferences import effective_allergens, preferences_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
 from apps.budget_planner.planner import RICE_CODE, RICE_GRAMS_PER_SERVING, purchase_grams
 from apps.catalog.allergens import recipe_allowed
@@ -32,7 +32,7 @@ def estimated_recipe_cost(recipe, servings):
     from apps.budget_planner.planner import _load_candidates, quote_schedule
 
     try:
-        catalog = _load_candidates([recipe.meal_type], servings, [])
+        catalog = _load_candidates([recipe.meal_type], servings, [], halal_only=False)
         quote = quote_schedule(
             [{recipe.meal_type: recipe.pk}], servings=servings, targets=[], catalog=catalog
         )
@@ -46,7 +46,7 @@ def recipe_costs(servings, codes):
     from apps.budget_planner.planner import MEALS, _load_candidates, quote_schedule
 
     try:
-        catalog = _load_candidates(MEALS, servings, [])
+        catalog = _load_candidates(MEALS, servings, [], halal_only=False)
     except ValueError:
         return {}  # no price snapshot imported yet: nothing can be priced
     costs = {}
@@ -67,14 +67,16 @@ def recipe_costs(servings, codes):
 
 def recipe_query(user, *, allergens=None):
     query = Recipe.objects.filter(
-        is_active=True, is_plannable=True, recipetag__tag="halal"
+        is_active=True, is_plannable=True
     ).distinct()
+    if preferences_for(user).halal_only:
+        query = query.filter(recipetag__tag="halal")
     groups = effective_allergens(user) if allergens is None else allergens
     if not set(groups) <= ALLERGEN_KEYS:
         raise ValueError("Kelompok alergi tidak valid.")
     if groups:
         query = query.filter(allergen_reviewed=True).exclude(allergen_groups__group__in=groups)
-    avoided = profile_for(user).avoided_ingredients.values_list("pk", flat=True)
+    avoided = preferences_for(user).avoided_ingredients.values_list("pk", flat=True)
     return query.exclude(recipeingredient__ingredient_id__in=avoided)
 
 

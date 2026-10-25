@@ -15,7 +15,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 
-from apps.accounts.preferences import effective_allergens
+from apps.accounts.preferences import effective_preferences, non_halal_schedule
 from apps.catalog.allergens import unsafe_schedule
 from apps.catalog.content_policy import protect_recipe_instructions
 from apps.catalog.models import Ingredient, Recipe
@@ -191,6 +191,7 @@ def stored_inputs(form):
         "targets": values["targets"],
         "exclude_ingredients": ", ".join(values["exclude_ingredients"]),
         "allergens": values.get("allergens", []),
+        "halal_only": values.get("halal_only", True),
         "rice": values.get("rice") or "no",
     }
 
@@ -359,8 +360,10 @@ def write_draft(
     get_user_model().objects.select_for_update().get(pk=user.pk)
     inputs = {
         **inputs,
-        "allergens": effective_allergens(user, inputs, previous.inputs if previous else {}),
+        **effective_preferences(user, inputs, previous.inputs if previous else {}),
     }
+    if inputs["halal_only"] and non_halal_schedule(schedule_codes(result)):
+        raise PlanConflict("Menu tidak sesuai preferensi halal terbaru. Buat rencana atau pratinjau baru.")
     if unsafe_schedule(schedule_codes(result), inputs["allergens"]):
         raise PlanConflict(
             "Menu tidak sesuai alergi terbaru atau mengandung bahan belum ditinjau. Buat rencana baru."
@@ -434,7 +437,7 @@ def make_preview(plan, version, payload):
     if not isinstance(action, str):
         raise ValueError("Aksi pratinjau tidak valid.")
     old = thaw(plan.snapshot)
-    inputs = {**plan.inputs, "allergens": effective_allergens(plan.user, plan.inputs)}
+    inputs = {**plan.inputs, **effective_preferences(plan.user, plan.inputs)}
     form = clean_inputs(inputs)
     if action == "replace":
         day, meal_type, recipe = payload.get("day"), payload.get("meal"), payload.get("recipe")
@@ -466,9 +469,7 @@ def make_preview(plan, version, payload):
         assert_editable(plan)
         if action == "parameters":
             form = clean_inputs(payload.get("inputs", {}))
-            form.cleaned_data["allergens"] = effective_allergens(
-                plan.user, plan.inputs, form.cleaned_data
-            )
+            form.cleaned_data.update(effective_preferences(plan.user, plan.inputs, form.cleaned_data))
             inputs = stored_inputs(form)
         prior = {
             meal: [slots.get(meal) for slots in schedule_codes(old)]
@@ -542,7 +543,9 @@ def apply_preview(user, preview_id, *, new_budget=None):
     result = thaw(preview.snapshot)
     assert_cooked_preserved(plan, preview.inputs, result)
     inputs = preview.inputs.copy()
-    inputs["allergens"] = effective_allergens(user, plan.inputs, inputs)
+    inputs.update(effective_preferences(user, plan.inputs, inputs))
+    if inputs["halal_only"] and non_halal_schedule(schedule_codes(result)):
+        raise PlanConflict("Menu tidak sesuai preferensi halal terbaru. Buat rencana atau pratinjau baru.")
     if unsafe_schedule(schedule_codes(result), inputs["allergens"]):
         raise PlanConflict(
             "Pratinjau tidak sesuai alergi terbaru atau ada bahan belum ditinjau. Buat pratinjau baru; rencana lama tidak diubah."
@@ -597,7 +600,7 @@ def _requote_with_stock(user, plan, starts_on, saved=None):
     # No stock in the plan and none in the pantry: the bill cannot have changed.
     if not result.get("stock_used") and not stock_for_planning(user):
         return
-    form = clean_inputs({**plan.inputs, "allergens": effective_allergens(user, plan.inputs)})
+    form = clean_inputs({**plan.inputs, **effective_preferences(user, plan.inputs)})
     context = {**stock_context(user, saved), "starts_on": starts_on}
     try:
         quote = build_plan(**form.cleaned_data, fixed_schedule=schedule_codes(result), **context)
@@ -657,6 +660,10 @@ def save_plan(user, plan_id, version, title, *, replace_original=False):
         plan.version += 1
         plan.save()
         return plan
+    if effective_preferences(user)["halal_only"] and non_halal_schedule(
+        schedule_codes(thaw(plan.snapshot))
+    ):
+        raise PlanConflict("Menu tidak sesuai preferensi halal terbaru. Cari susunan baru sebelum menyimpan.")
     saved = None
     if replace_original:
         if not plan.source_plan_id:
@@ -714,7 +721,7 @@ def adopt_guest_result(request):
         return
     try:
         form = clean_inputs(saved["inputs"])
-        form.cleaned_data["allergens"] = effective_allergens(request.user, form.cleaned_data)
+        form.cleaned_data.update(effective_preferences(request.user, form.cleaned_data))
         result = json.loads(saved["result"], object_hook=decode_value)
         if not isinstance(result, dict) or not isinstance(result.get("schedule"), list):
             return
@@ -732,6 +739,8 @@ def adopt_guest_result(request):
         except ValueError:
             return
     if unsafe_schedule(schedule_codes(result), form.cleaned_data["allergens"]):
+        return
+    if form.cleaned_data["halal_only"] and non_halal_schedule(schedule_codes(result)):
         return
     if result.get("within_budget"):
         recipe_codes = {code for slots in schedule_codes(result) for code in slots.values()}

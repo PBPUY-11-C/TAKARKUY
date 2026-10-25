@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.utils.cache import patch_cache_control
 
-from apps.accounts.preferences import effective_allergens, profile_for
+from apps.accounts.preferences import effective_allergens, preferences_for
 from apps.budget_planner.models import PlannedMeal
 from apps.budget_planner.services import PreviewRateLimit, reserve_preview
 from apps.catalog.models import Ingredient, IngredientAlias, Recipe
@@ -263,11 +263,13 @@ def recipe_review_photo_file(request, review_id):
 
 @login_required
 def book_page(request):
-    profile = profile_for(request.user)
+    profile = preferences_for(request.user)
     groups = effective_allergens(request.user)
     baseline = Recipe.objects.filter(
-        is_active=True, is_plannable=True, recipetag__tag="halal"
+        is_active=True, is_plannable=True
     ).distinct()
+    if profile.halal_only:
+        baseline = baseline.filter(recipetag__tag="halal")
     unknown_count = baseline.filter(allergen_reviewed=False).count() if groups else 0
     allergen_count = (
         baseline.filter(allergen_reviewed=True, allergen_groups__group__in=groups)

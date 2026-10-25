@@ -1,5 +1,4 @@
-from datetime import date, datetime
-from datetime import timezone as dt_timezone
+from datetime import date, datetime, timezone as dt_timezone
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -124,9 +123,6 @@ class SlotStatusTests(TestCase):
             for row in logs.output
         ))
 
-    def test_recipe_costs_skips_recipes_without_prices(self):
-        # Without an imported price snapshot nothing is priced, and the page still works.
-        self.assertEqual(recipe_costs(2, {"TEST-SUP"}), {})
 
     def test_recipe_costs_quotes_one_recipe_from_multi_meal_catalog(self):
         IngredientPrice.objects.create(
@@ -173,3 +169,7 @@ class SlotStatusTests(TestCase):
         with patch("django.utils.timezone.now", return_value=now):
             response = self.client.get(reverse("modul4") + "?stock=soon")
         self.assertEqual(response.context["recipes"].paginator.count, 1)
+
+    def test_recipe_costs_skips_recipes_without_prices(self):
+        # Without an imported price snapshot nothing is priced, and the page still works.
+        self.assertEqual(recipe_costs(2, {"TEST-SUP"}), {})

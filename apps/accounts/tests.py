@@ -4,6 +4,26 @@ from django.urls import reverse
 
 
 class AccountFlowTests(TestCase):
+    def test_planner_alias_opens_for_guests_and_authenticated_accounts(self):
+        self.assertEqual(self.client.get(reverse("planner")).status_code, 200)
+        self.client.post(reverse("signup"), self.signup_data())
+        response = self.client.get(reverse("planner"), {"new": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Buat Rencana Makan")
+
+    def test_header_has_guest_links_and_authenticated_profile_avatar(self):
+        landing = self.client.get(reverse("landing"))
+        self.assertContains(landing, f'href="{reverse("login")}"')
+        self.assertContains(landing, f'href="{reverse("signup")}"')
+        self.assertNotContains(landing, 'class="avatar"')
+        self.client.post(reverse("signup"), self.signup_data())
+        for page in ("modul3", "modul5"):
+            response = self.client.get(reverse(page))
+            self.assertContains(response, '<span class="avatar" aria-hidden="true">D</span>', html=True)
+            self.assertContains(response, 'aria-label="Profil dan preferensi"')
+            self.assertContains(response, f'href="{reverse("planner")}"')
+            self.assertContains(response, 'action="/logout/"', count=1)
+
     def test_login_and_signup_have_explicit_link_back_to_landing(self):
         for page_name in ("login", "signup"):
             with self.subTest(page=page_name):
@@ -46,13 +66,13 @@ class AccountFlowTests(TestCase):
 
     def test_signup_creates_user_with_hashed_password_and_logs_in(self):
         response = self.client.post(reverse("signup"), self.signup_data())
-        self.assertRedirects(response, reverse("modul5"))
+        self.assertRedirects(response, reverse("modul1"))
         user = get_user_model().objects.get()
         self.assertEqual(user.email, "dina@example.com")
         self.assertEqual(user.first_name, "Dina")
         self.assertEqual(user.last_name, "Putri")
         self.assertTrue(user.check_password("AmanSekali!827"))
-        self.assertRedirects(self.client.get(reverse("landing")), reverse("modul5"))
+        self.assertRedirects(self.client.get(reverse("landing")), reverse("modul1"))
 
     def test_signup_rejects_duplicate_email_and_mismatched_password(self):
         self.client.post(reverse("signup"), self.signup_data())
@@ -90,7 +110,7 @@ class AccountFlowTests(TestCase):
                 password2="Demodemo1.",
             ),
         )
-        self.assertRedirects(response, reverse("modul5"))
+        self.assertRedirects(response, reverse("modul1"))
         self.assertTrue(get_user_model().objects.get().check_password("Demodemo1."))
 
     def test_login_accepts_email_case_insensitively_and_logout_requires_post(self):
@@ -103,8 +123,8 @@ class AccountFlowTests(TestCase):
                 "password": "AmanSekali!827",
             },
         )
-        self.assertRedirects(login, reverse("modul5"))
-        self.assertRedirects(self.client.get(reverse("landing")), reverse("modul5"))
+        self.assertRedirects(login, reverse("modul1"))
+        self.assertRedirects(self.client.get(reverse("landing")), reverse("modul1"))
         self.assertEqual(self.client.get(reverse("logout")).status_code, 405)
         self.assertRedirects(self.client.post(reverse("logout")), reverse("landing"))
         self.assertFalse(self.client.get(reverse("landing")).wsgi_request.user.is_authenticated)
@@ -144,47 +164,40 @@ class AccountFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
-    def test_modul5_requires_login_and_shows_dashboard_with_module_header(self):
-        self.assertRedirects(
-            self.client.get(reverse("modul5")),
-            f"{reverse('login')}?next={reverse('modul5')}",
-        )
+    def test_remember_me_can_be_enabled_when_reauthenticating_in_same_session(self):
         self.client.post(reverse("signup"), self.signup_data())
-        response = self.client.get(reverse("modul5"))
-        self.assertContains(response, "Hai, Dina!")
-        for name, label in (
-            ("modul1", "Budget Meal Planner"),
-            ("modul2", "Smart Pantry"),
-            ("modul4", "Recipe Book"),
-        ):
-            self.assertContains(response, f'href="{reverse(name)}"')
-            self.assertContains(response, label)
-        self.assertContains(response, 'action="/logout/"')
-        self.assertContains(response, "Menu hari ini")
-        self.assertContains(response, "Terakhir dimasak")
-        self.assertNotContains(response, "Masak Enak Sesuai Budget")
+        credentials = {"username": "dina", "password": "AmanSekali!827"}
+        self.client.post(reverse("login"), credentials)
+        self.assertTrue(self.client.session.get_expire_at_browser_close())
+        self.client.post(reverse("login"), {**credentials, "remember_me": "1"})
+        self.assertFalse(self.client.session.get_expire_at_browser_close())
 
-    def test_module_home_links_follow_login_state(self):
-        for page_name in ("modul1",):
-            with self.subTest(page=page_name, authenticated=False):
-                response = self.client.get(reverse(page_name))
-                self.assertContains(response, f'href="{reverse("landing")}"', count=2)
-
+    def test_other_module_pages_remain_protected_placeholders(self):
+        for name in ("modul5",):
+            url = reverse(name)
+            self.assertRedirects(self.client.get(url), f"{reverse('login')}?next={url}")
         self.client.post(reverse("signup"), self.signup_data())
-        for page_name in ("modul1", "modul2", "modul4"):
-            with self.subTest(page=page_name, authenticated=True):
-                response = self.client.get(reverse(page_name))
-                self.assertContains(response, f'href="{reverse("modul5")}"', count=2)
+        for name in ("modul5",):
+            response = self.client.get(reverse(name))
+            self.assertTemplateUsed(response, "kosong.html")
+            self.assertContains(response, 'aria-label="Profil dan preferensi"')
 
-    def test_modul4_keeps_header_and_shows_recipe_book(self):
+    def test_shared_header_links_to_landing_and_profile(self):
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("modul4"))
         self.assertTemplateUsed(response, "partials/head.html")
         self.assertTemplateUsed(response, "partials/app_header.html")
         self.assertContains(response, "TAKARKUY")
-        self.assertContains(response, "Kembali ke beranda")
+        self.assertContains(response, "Meal Planner")
+        self.assertContains(response, f'href="{reverse("landing")}"')
         self.assertContains(response, "Resep favorit")
         self.assertContains(response, "Riwayat masak")
+
+        for name in ("modul1", "modul3"):
+            response = self.client.get(reverse(name))
+            self.assertContains(response, f'href="{reverse("landing")}"')
+            self.assertContains(response, f'href="{reverse("modul3")}"')
+            self.assertContains(response, 'action="/logout/"', count=1)
 
     def test_signup_and_login_post_require_csrf(self):
         client = Client(enforce_csrf_checks=True)

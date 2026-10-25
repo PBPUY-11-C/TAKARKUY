@@ -89,8 +89,8 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 
 - **Landing page:** hero, cara kerja, fitur, dan FAQ untuk guest.
 - **Autentikasi:** daftar, masuk (username atau email), dan keluar.
-- **Profil & Preferensi:** nama, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
-- **Data yang dipegang:** `User`, `UserProfile`.
+- **Profil & Preferensi:** nama, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, pilihan halal per pengguna, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
+- **Data yang dipegang:** `User`, `UserProfile`, `FoodPreference`.
 - **Halaman:** Landing, Daftar, Masuk, serta Profil & Preferensi.
 
 **CRUD User Account & Food Preference:**
@@ -184,3 +184,9 @@ Total aplikasi **8 halaman**. Market locator berupa popup di Dashboard, bukan ha
 
 - **PWS:** [https://alfredo-nathaniel-takarkuy.pws.cs.ui.ac.id](https://alfredo-nathaniel-takarkuy.pws.cs.ui.ac.id)
 - **Figma:** [Desain TAKARKUY](https://www.figma.com/design/GbnAebmRymsFjgLebkKmUJ/PBPUY?node-id=0-1&t=6YqR0aO6YTlJA2SH-1)
+
+## Status Integrasi
+
+Modul 1 (`/planner/`) dan Modul 3 (landing, daftar, masuk, profil dan preferensi) aktif. Halaman Modul 2, 4, dan 5 masih berupa placeholder mengikuti `main`; endpoint integrasi planner tetap tersedia. Setelah daftar/masuk, pengguna diarahkan ke planner sementara Dashboard belum aktif.
+
+Jalankan `python manage.py migrate --noinput` untuk menerapkan pemisahan `FoodPreference` tanpa menghapus data preferensi lama, lalu `python manage.py collectstatic --noinput` saat deployment.

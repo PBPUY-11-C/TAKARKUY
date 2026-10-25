@@ -6,6 +6,12 @@ from apps.accounts.choices import ALLERGEN_CHOICES
 
 
 class PlannerForm(forms.Form):
+    halal_only = forms.BooleanField(required=False, initial=True, widget=forms.HiddenInput)
+
+    def clean_halal_only(self):
+        # Historical plans and guest forms have no field: retain their halal default.
+        return self.cleaned_data["halal_only"] if "halal_only" in self.data else True
+
     allergens = forms.MultipleChoiceField(
         choices=ALLERGEN_CHOICES, required=False, widget=forms.MultipleHiddenInput
     )

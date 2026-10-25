@@ -3,27 +3,18 @@
 <html lang="id">
 <head>
   {% include 'partials/head.html' with page_title="Smart Pantry" page_description="Pindai struk dan catat stok dapur TAKARKUY." %}
+
   <style>
-    :root {
-      --ink: #172235;
-      --muted: #56646b;
-      --green: #007653;
-      --green-dark: #005d42;
-      --blue: #eef3ff;
-      --line: #dce6f0;
-      --canvas: #f7f9fe;
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: "DM Sans", Arial, sans-serif; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif; }
     a { color: inherit; text-decoration: none; }
     button, input, select { font: inherit; }
     button:disabled { cursor: not-allowed; }
     .site-header {
       min-height: 74px; padding: 15px clamp(20px, 4vw, 56px); display: flex;
       align-items: center; justify-content: space-between; gap: 20px;
-      background: #fff; border-bottom: 1px solid #e7edf4;
+      background: #fff;
     }
-    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--green-dark); font: 800 17px "Plus Jakarta Sans", sans-serif; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--green-dark); font: 800 17px var(--font); }
     .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--green); color: #fff; font-size: 22px; }
     .back-link { color: var(--green); font-size: 13px; font-weight: 700; }
     .back-link:hover { text-decoration: underline; }
@@ -31,7 +22,7 @@
     .page-intro { margin-bottom: 18px; }
     .eyebrow { margin: 0 0 5px; color: var(--green); font-size: 10px; font-weight: 800; letter-spacing: .12em; }
     h1, h2, p { margin-top: 0; }
-    h1 { margin-bottom: 0; font: 800 26px/1.2 "Plus Jakarta Sans", sans-serif; letter-spacing: -.8px; }
+    h1 { margin-bottom: 0; font: 800 26px/1.2 var(--font); letter-spacing: -.8px; }
     .panel-grid { display: grid; grid-template-columns: minmax(0, 1.38fr) minmax(0, 1fr); gap: 18px; align-items: start; }
     .panel { min-width: 0; padding: 22px; border: 1px solid #e9eef5; border-radius: 16px; background: #fff; box-shadow: 0 4px 18px rgba(25, 48, 70, .04); }
     .panel-top { min-height: 85px; display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
@@ -39,10 +30,10 @@
     .icon { width: 48px; height: 48px; flex: 0 0 48px; display: grid; place-items: center; border-radius: 13px; background: #eaf3f8; color: #006b8f; }
     .icon.green { background: #e7f4ef; color: var(--green); }
     .icon svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .panel h2 { margin: 0 0 5px; font: 800 clamp(18px, 1.7vw, 24px)/1.24 "Plus Jakarta Sans", sans-serif; letter-spacing: -.025em; }
+    .panel h2 { margin: 0 0 5px; font: 800 clamp(18px, 1.7vw, 24px)/1.24 var(--font); letter-spacing: -.025em; }
     .panel-subtitle { margin: 0; color: #4b5c58; font-size: 13px; line-height: 1.5; }
     .preview-badge { flex: 0 0 auto; margin-top: 5px; padding: 7px 11px; border-radius: 8px; background: #e8f5ef; color: var(--green-dark); font-size: 12px; font-weight: 700; }
-    .receipt-summary { display: flex; align-items: center; gap: 14px; margin: 23px 0 19px; padding: 15px; border-radius: 15px; background: var(--blue); }
+    .receipt-summary { display: flex; align-items: center; gap: 14px; margin: 23px 0 19px; padding: 15px; border-radius: 15px; background: var(--soft); }
     .receipt-icon { width: 58px; height: 58px; flex: 0 0 58px; display: grid; place-items: center; border-radius: 12px; background: #dce9ff; color: var(--green); font-size: 28px; }
     .receipt-copy { min-width: 0; flex: 1; }
     .receipt-copy strong { display: block; overflow-wrap: anywhere; font-size: 14px; }
@@ -54,7 +45,7 @@
     .button.secondary { border-color: #d6e5ff; background: #dce9ff; }
     .table-wrap { overflow-x: auto; border: 1px solid #e2e9f4; border-radius: 14px; }
     table { width: 100%; border-collapse: collapse; table-layout: fixed; text-align: left; }
-    thead { background: var(--blue); }
+    thead { background: var(--soft); }
     th, td { padding: 13px 15px; border-bottom: 1px solid var(--line); font-size: 13px; }
     th { color: #4b5b5b; font-weight: 700; }
     td { background: #fff; }
@@ -84,9 +75,9 @@
     .receipt-preview { display: block; max-width: 100%; max-height: 260px; margin: 14px auto; border: 1px solid var(--line); border-radius: 9px; object-fit: contain; }
     .panel-footer { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
     .total-label { color: #53615f; font-size: 12px; font-weight: 700; }
-    .total-value { display: block; margin-top: 2px; font: 800 23px "Plus Jakarta Sans", sans-serif; }
+    .total-value { display: block; margin-top: 2px; font: 800 23px var(--font); }
     .footer-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-    .manual-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 12px; margin-top: 20px; padding: 20px; border: 1px solid #d8e6ff; border-radius: 16px; background: var(--blue); }
+    .manual-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 12px; margin-top: 20px; padding: 20px; border: 1px solid #d8e6ff; border-radius: 16px; background: var(--soft); }
     .manual-panel .panel-top { min-height: 0; }
     .manual-panel .panel-footer { justify-content: flex-end; margin-top: 20px; }
     #manual-feedback:empty { display: none; }
@@ -99,7 +90,7 @@
     #ingredient-quantity { appearance: textfield; -moz-appearance: textfield; }
     #ingredient-quantity::-webkit-inner-spin-button, #ingredient-quantity::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
     .pantry-list { margin-top: 20px; }
-    .pantry-list h2 { margin: 0 0 14px; font: 800 20px "Plus Jakarta Sans", sans-serif; }
+    .pantry-list h2 { margin: 0 0 14px; font: 800 20px var(--font); }
     .pantry-list .sample-note { margin: 0 0 12px; line-height: 1.5; }
     .staple-choice-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin: 16px 0; }
     .staple-choice-list label { display: flex; align-items: flex-start; gap: 9px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #f8faff; font-size: 13px; }
@@ -113,7 +104,7 @@
     .saved-table details { color: var(--muted); font-size: 11px; }
     .saved-table details label { display: block; margin-top: 8px; }
     .saved-table small { display: block; color: var(--muted); font-size: 10px; line-height: 1.45; }
-    #stock-recipes-title { font: 800 20px "Plus Jakarta Sans", sans-serif; }
+    #stock-recipes-title { font: 800 20px var(--font) }
     #stock-recipe-servings { width: 64px; padding: 9px; border: 1px solid #cbd9e4; border-radius: 8px; margin: 0 8px 12px; }
     .stock-recipe-match { padding: 12px 0; border-top: 1px solid #e7edf1; font-size: 13px; }
     .stock-recipe-portion { margin: 5px 0; color: #246b4c; font-size: 11px; }
@@ -152,8 +143,10 @@
     }
   </style>
 </head>
+
 <body>
   {% include 'partials/app_header.html' %}
+
 
   <main class="page">
     <div class="page-intro">

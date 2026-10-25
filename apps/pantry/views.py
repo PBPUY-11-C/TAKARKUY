@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.accounts.access import api_login_required
-from apps.accounts.preferences import profile_for
+from apps.accounts.preferences import preferences_for, profile_for
 from apps.catalog.models import Ingredient
 
 from .ai_usage import collect_usage
@@ -76,6 +76,7 @@ def _session_id(request):
 @login_required
 def pantry_page(request):
     profile = profile_for(request.user)
+    preferences = preferences_for(request.user)
     session_id = _session_id(request)
     items = list(
         PantryItem.objects.filter(user=request.user, archived_at__isnull=True, quantity__gt=0)
@@ -145,7 +146,7 @@ def pantry_page(request):
             "gemini_receipt_fallback": gemini_ready(),
             "staple_preferences_form": StaplePreferenceForm(
                 initial={
-                    "tracked_staples": profile.tracked_staples,
+                    "tracked_staples": preferences.tracked_staples,
                     "version": profile.version,
                 }
             ),
@@ -171,9 +172,11 @@ def save_staple_preferences(request):
                     "Preferensi berubah di tab lain. Muat ulang halaman sebelum menyimpan lagi.",
                 )
                 return redirect("modul2")
-            profile.tracked_staples = form.cleaned_data["tracked_staples"]
+            preferences = preferences_for(request.user)
+            preferences.tracked_staples = form.cleaned_data["tracked_staples"]
+            preferences.save(update_fields=["tracked_staples"])
             profile.version += 1
-            profile.save(update_fields=["tracked_staples", "version"])
+            profile.save(update_fields=["version"])
     except (TypeError, ValueError):
         messages.error(request, "Pilihan bumbu dapur tidak dapat disimpan.")
         return redirect("modul2")
