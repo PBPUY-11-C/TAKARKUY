@@ -1,0 +1,47 @@
+#recipe-reviews {
+  margin-top: 20px;
+  scroll-margin-top: 24px;
+}
+
+#recipe-reviews p {
+  overflow-wrap: anywhere;
+}
+
+#review-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+#review-form .field {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#review-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f4f6ff;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 400;
+  resize: vertical;
+}
+
+#review-form textarea:focus-visible {
+  outline: 3px solid #63d7ad;
+  outline-offset: 3px;
+}
+
+#review-form button {
+  justify-self: start;
+}
+
+#review-error:empty {
+  display: none;
+}

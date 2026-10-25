@@ -1,0 +1,37 @@
+{
+  "reviewed_on": "2026-10-06",
+  "places": [
+    {
+      "id": "garut-guntur", "name": "Pasar Guntur Ciawitali", "kind": "market",
+      "region": "Garut", "address": "Tarogong Kidul, Kabupaten Garut",
+      "lat": -7.2005494608321765, "lon": 107.90340178908164,
+      "source_url": "https://bapokting.disperindag.garutkab.go.id/Gis_pasar",
+      "coordinate_source_url": "https://www.google.com/maps?q=-7.2005494608321765,107.90340178908164",
+      "note": "Koordinat dari tautan Rute pada daftar resmi Disperindag Garut."
+    },
+    {
+      "id": "garut-kadungora", "name": "Pasar Kadungora", "kind": "market",
+      "region": "Garut", "address": "Kadungora, Kabupaten Garut",
+      "lat": -7.0860298504128325, "lon": 107.89511737049622,
+      "source_url": "https://bapokting.disperindag.garutkab.go.id/Gis_pasar",
+      "coordinate_source_url": "https://www.google.com/maps?q=-7.0860298504128325,107.89511737049622",
+      "note": "Koordinat dari tautan Rute pada daftar resmi Disperindag Garut."
+    },
+    {
+      "id": "garut-cikajang", "name": "Pasar Cikajang", "kind": "market",
+      "region": "Garut", "address": "Cikajang, Kabupaten Garut",
+      "lat": -7.36129642216404, "lon": 107.81154155225568,
+      "source_url": "https://bapokting.disperindag.garutkab.go.id/Gis_pasar",
+      "coordinate_source_url": "https://www.google.com/maps?q=-7.36129642216404,107.81154155225568",
+      "note": "Koordinat dari tautan Rute pada daftar resmi Disperindag Garut."
+    },
+    {
+      "id": "depok-rumah-harum", "name": "Bank Sampah Induk Rumah Harum", "kind": "waste_bank",
+      "region": "Depok", "address": "Jl. Merdeka No. 1, RT 05/RW 01, Abadijaya, Sukmajaya, Depok",
+      "lat": null, "lon": null,
+      "source_url": "https://info3r.kemenlh.go.id/daerah/index/search/a2124d1a0a2c1b1dec9c2aa5d5899b6c/?offset=271",
+      "coordinate_source_url": "",
+      "note": "Alamat dari direktori KLH; titik koordinat belum diverifikasi. Konfirmasi jenis sampah yang diterima."
+    }
+  ]
+}

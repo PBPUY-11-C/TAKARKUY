@@ -1,0 +1,28 @@
+{
+  "note": "Proksi ukuran buah utuh, bukan minimum pembelian atau ukuran pasti di toko Garut. Harga diambil terpisah dari snapshot Bapokting Garut per kg.",
+  "source": "USDA Food Buying Guide, Section 3: Fruits, yield table",
+  "source_url": "https://foodbuyingguide.fns.usda.gov/files/Reports/USDA_FBG_Section3_Fruits_YieldTable.pdf",
+  "rules": [
+    {
+      "ingredient_code": "ING-PISANG",
+      "purchase_unit": "buah",
+      "gross_grams_per_unit": 126,
+      "edible_fraction": 0.64,
+      "source_detail": "Bananas, fresh, 150 count: 3.60 buah/lb; 1 lb dibeli menghasilkan 0.64 lb irisan siap makan. Ukuran buah lokal dapat berbeda."
+    },
+    {
+      "ingredient_code": "ING-JERUK",
+      "purchase_unit": "buah",
+      "gross_grams_per_unit": 133,
+      "edible_fraction": 0.73,
+      "source_detail": "Oranges, fresh, 138 count: 3.40 buah/lb; rendemen 0.73 dari kelompok jeruk kupas USDA. Varietas lokal dapat berbeda."
+    },
+    {
+      "ingredient_code": "ING-MELON",
+      "purchase_unit": "buah",
+      "gross_grams_per_unit": 850,
+      "edible_fraction": 0.47,
+      "source_detail": "Cantaloupe kecil 18 count: sekitar 30 oz/buah, rendemen 0.47. Proksi melon lokal; varietas dan ukuran jual dapat berbeda."
+    }
+  ]
+}

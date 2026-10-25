@@ -33,7 +33,7 @@ from apps.budget_planner.plan_views import (
     save_account_plan,
 )
 from apps.budget_planner.views import planner_page
-from apps.dashboard.views import market_lookup
+from apps.dashboard.views import dashboard_page, market_lookup
 from apps.pantry.views import (
     pantry_page,
     delete_pantry_item,
@@ -119,7 +119,7 @@ urlpatterns = [
     path("modul4/review/photo/delete/", recipe_review_photo_delete, name="modul4-review-photo-delete"),
     path("modul4/reviews/<int:review_id>/photo/", recipe_review_photo_file, name="modul4-review-photo"),
     path("modul4/slot-status/", set_slot_status, name="modul4-slot-status"),
-    path("modul5/", kosong, name="modul5"),
+    path("modul5/", dashboard_page, name="modul5"),
     path("modul5/places/", market_lookup, name="modul5-places"),
     path("admin/", admin.site.urls),
 ]

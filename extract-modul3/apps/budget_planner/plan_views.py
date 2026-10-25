@@ -1,0 +1,442 @@
+import json
+import secrets
+from copy import deepcopy
+from decimal import ROUND_CEILING, Decimal
+from functools import wraps
+from uuid import UUID
+
+from django.contrib.auth import get_user_model
+from django.db import transaction
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.cache import patch_cache_control
+
+from apps.accounts.preferences import effective_allergens, planner_defaults
+from apps.catalog.allergens import unsafe_schedule
+
+from .forms import PlanMetadataForm, PlannerForm
+from .models import BudgetPlan, PlanPreview
+from .planner import budget_preference_notes, build_plan, replacement_options
+from .services import (
+    PlanConflict,
+    PreviewRateLimit,
+    account_recent_recipe_codes,
+    apply_preview,
+    check_draft_state,
+    check_version,
+    clean_inputs,
+    cooked_slots,
+    make_preview,
+    pantry_priority,
+    purchases_to_pantry,
+    save_plan,
+    schedule_codes,
+    stock_context,
+    stored_inputs,
+    write_draft,
+)
+from .snapshots import net_total, thaw
+
+NOT_FOUND_MESSAGE = "Rencana tidak ditemukan atau sudah diganti. Muat ulang halaman."
+
+
+def owned_plan(request, plan_id):
+    return get_object_or_404(BudgetPlan, pk=plan_id, user=request.user)
+
+
+def required_version(data, field="version"):
+    value = data.get(field)
+    if not isinstance(value, str) or not value.isascii() or not value.isdecimal():
+        raise ValueError("Versi rencana wajib dikirim. Muat ulang halaman sebelum melanjutkan.")
+    return int(value)
+
+
+def preview_data(preview):
+    previous, result = thaw(preview.plan.snapshot), thaw(preview.snapshot)
+    budget = int(preview.inputs["budget"])
+    return {
+        "id": str(preview.pk),
+        "apply_url": reverse("modul1-preview-apply", args=[preview.pk]),
+        # Money still to spend after pantry stock, the figure the budget limits.
+        "before": int(net_total(previous)),
+        "after": int(net_total(result)),
+        "delta": int(net_total(result) - net_total(previous)),
+        "budget": budget,
+        "over_budget": max(0, int(net_total(result)) - budget),
+        "days": preview.inputs["days"],
+        "servings": preview.inputs["servings"],
+        "schedule": result["schedule"],
+        "shopping_groups": result["shopping_groups"],
+        "nutrition": result["nutrition"],
+        "nutrition_targets_set": bool(result.get("protein_floor") or result.get("calorie_cap")),
+        "preference_notes": result.get("preference_notes", []),
+    }
+
+
+def pantry_annotations(user, plan, result, display_schedule):
+    """Live pantry facts for display only; never written into the plan snapshot."""
+    from apps.catalog.models import RecipeIngredient
+    from apps.pantry.services import stock_for_planning
+
+    # Same stock rule as the planner: undated stock counts, but is flagged.
+    live = stock_for_planning(user)
+    stock, undated = {}, set()
+    for code, grams, expires in live:
+        stock[code] = stock.get(code, Decimal(0)) + grams
+        if expires is None:
+            undated.add(code)
+    if plan is not None and live:
+        # Allocate today's stock with the planner's rules (per day, FEFO, nothing used
+        # after it expires), so a ✓ never covers a meal the stock will not last until.
+        try:
+            quote = build_plan(
+                **clean_inputs(
+                    {**plan.inputs, "allergens": effective_allergens(user, plan.inputs)}
+                ).cleaned_data,
+                fixed_schedule=schedule_codes(result),
+                **{**stock_context(user, plan), "stock": live},
+            )
+            stock = {
+                row["ingredient_code"]: Decimal(row["from_stock"])
+                for group in quote["shopping_groups"]
+                for row in group["items"]
+            }
+        except ValueError:
+            pass  # catalog changed since the plan was made: fall back to plain totals
+    added = {
+        item.ingredient_id: item.added_to_pantry_at
+        for item in (plan.shopping_items.all() if plan else ())
+    }
+    groups, saving = deepcopy(result["shopping_groups"]), 0
+    for group in groups:
+        for item in group["items"]:
+            need = Decimal(str(item["quantity"]))
+            have = min(stock.get(item["ingredient_code"], Decimal(0)), need)
+            item["in_pantry"] = int(have)
+            item["unknown_expiry"] = have > 0 and item["ingredient_code"] in undated
+            item["to_buy"] = max(0, int((need - have).to_integral_value(rounding=ROUND_CEILING)))
+            item["added_to_pantry"] = bool(added.get(item["ingredient_code"]))
+            if have > 0 and need > 0:
+                saving += int(Decimal(item["cost"]) * have / need)
+    priority = pantry_priority(user)
+    codes = {meal["recipe_code"] for day in display_schedule for meal in day["meals"]}
+    uses = {}
+    for link in RecipeIngredient.objects.filter(
+        recipe_id__in=codes, ingredient_id__in=priority
+    ).select_related("ingredient"):
+        uses.setdefault(link.recipe_id, []).append(link.ingredient.name)
+    for day in display_schedule:
+        for meal in day["meals"]:
+            meal["expiring_stock"] = sorted(uses.get(meal["recipe_code"], []))
+    return groups, saving // 100 * 100
+
+
+def account_page(request, builder):
+    plan = None
+    requested = request.POST.get("plan_id") if request.method == "POST" else request.GET.get("plan")
+    if requested:
+        try:
+            plan = owned_plan(request, UUID(requested))
+        except (ValueError, TypeError):
+            raise Http404("Rencana tidak ditemukan.") from None
+    elif request.GET.get("new") != "1" and not (
+        request.method == "POST" and request.POST.get("new_plan") == "1"
+    ):
+        plan = BudgetPlan.objects.filter(user=request.user, status="draft").first()
+    # Plans saved before the rice option existed were made without rice.
+    plan_inputs = {"rice": "no", **plan.inputs} if plan else None
+    initial = (
+        plan_inputs
+        if plan
+        else {
+            "budget": 150000,
+            "days": 3,
+            "servings": 2,
+            "meal_types": ["sarapan", "makan_siang", "makan_malam"],
+            "targets": ["seimbang"],
+            **planner_defaults(request.user),
+        }
+    )
+    form = PlannerForm(
+        request.POST if request.method == "POST" else plan_inputs,
+        initial=initial,
+    )
+    result = thaw(plan.snapshot) if plan else None
+    if result:
+        result.setdefault("net_total", result["total"])  # plans saved before net costs
+    if result:
+        # Explain preferences for older immutable snapshots too, without
+        # rewriting their menu, shopping list, or stored prices.
+        result["preference_notes"] = budget_preference_notes(
+            result["schedule"], result["total"], int(plan.inputs["budget"])
+        )
+    if plan and request.method == "GET":
+        form.is_valid()
+    error, pending = None, None
+    status, retry_after = 200, None
+    if request.method == "POST" and form.is_valid():
+        form.cleaned_data["allergens"] = effective_allergens(
+            request.user, plan.inputs if plan else {}, form.cleaned_data
+        )
+        try:
+            expected = required_version(request.POST) if plan else None
+            draft_id, draft_version, replace_draft = None, None, False
+            if plan is None:
+                raw_id = request.POST.get("replace_draft_id")
+                if raw_id:
+                    try:
+                        draft_id = UUID(raw_id)
+                    except ValueError:
+                        raise PlanConflict(
+                            "Draft sudah berubah. Muat ulang halaman sebelum melanjutkan."
+                        ) from None
+                    draft_version = required_version(request.POST, "replace_draft_version")
+                existing = BudgetPlan.objects.filter(user=request.user, status="draft").first()
+                check_draft_state(existing, draft_id, draft_version)
+                replace_draft = request.POST.get("replace_draft") == "1"
+                if existing and not replace_draft:
+                    raise PlanConflict(
+                        "Setujui penggantian draft atau simpan draft terlebih dahulu."
+                    )
+            if plan:
+                check_version(plan, expected)
+            if plan and plan.status == "saved":
+                pending = preview_data(
+                    make_preview(
+                        plan,
+                        expected,
+                        {
+                            "action": "parameters",
+                            "inputs": stored_inputs(form),
+                        },
+                    )
+                )
+                form = clean_inputs(plan.inputs)
+            else:
+                prior = schedule_codes(result) if result else []
+                recent = account_recent_recipe_codes(request.user)
+                candidate = builder(
+                    **form.cleaned_data,
+                    recent_recipe_codes=recent,
+                    prior_slot_recipes={
+                        meal: [slots.get(meal) for slots in prior]
+                        for meal in form.cleaned_data["meal_types"]
+                    },
+                    seed=secrets.randbits(32),
+                    **stock_context(request.user, plan),
+                )
+                result = candidate
+                if candidate["within_budget"]:
+                    plan = write_draft(
+                        request.user,
+                        stored_inputs(form),
+                        candidate,
+                        previous=plan,
+                        expected_version=expected,
+                        source=plan.source_plan if plan and plan.status == "draft" else None,
+                        replace_draft=replace_draft,
+                        expected_draft_id=draft_id,
+                        expected_draft_version=draft_version,
+                    )
+                    # Post/Redirect/Get: refreshing a generated draft must not regenerate it.
+                    response = redirect(reverse("modul1") + f"?plan={plan.pk}#hasil")
+                    patch_cache_control(response, private=True, no_store=True)
+                    return response
+        except PreviewRateLimit as exc:
+            error, status = str(exc), 429
+            retry_after = exc.retry_after
+        except PlanConflict as exc:
+            error, status = str(exc), 409
+        except ValueError as exc:
+            error = str(exc)
+            status = 400
+    display_schedule = deepcopy(result["schedule"]) if result else []
+    if result and plan:
+        slots = {(item.day, item.meal_type): item for item in plan.meals.all()}
+        cooked = {(item.day, item.meal_type) for item in cooked_slots(plan)}
+        for day in display_schedule:
+            for meal in day["meals"]:
+                item = slots.get((day["number"], meal["type"]))
+                if item:
+                    meal["planned_meal_id"] = item.pk if plan.status == "saved" else None
+                    meal["cooked"] = (item.day, item.meal_type) in cooked
+                    meal["skipped"] = item.status == "skipped"
+    shopping_groups, pantry_saving = (
+        pantry_annotations(request.user, plan, result, display_schedule)
+        if result and result.get("within_budget")
+        else (None, 0)
+    )
+    response = render(
+        request,
+        "budget_planner/planner.html",
+        {
+            "form": form,
+            "result": result,
+            "display_schedule": display_schedule,
+            "shopping_groups": shopping_groups,
+            "pantry_saving": pantry_saving,
+            "error": error,
+            "plan": plan,
+            "trial": None,
+            "pending_preview": pending,
+            "saved_plans": [
+                setattr(saved, "net_total", net_total(thaw(saved.snapshot))) or saved
+                for saved in BudgetPlan.objects.filter(user=request.user, status="saved")
+            ],
+            "active_draft": BudgetPlan.objects.filter(user=request.user, status="draft").first(),
+            "allergy_warning": bool(
+                result
+                and unsafe_schedule(
+                    schedule_codes(result),
+                    effective_allergens(request.user, plan.inputs if plan else {}),
+                )
+            ),
+            "allergy_active": effective_allergens(request.user, plan.inputs if plan else {}),
+        },
+        status=status,
+    )
+    patch_cache_control(response, private=True, no_store=True)
+    if retry_after is not None:
+        response["Retry-After"] = str(retry_after)
+    return response
+
+
+def plan_api(view):
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse(
+                {
+                    "error": "Masuk untuk mengelola rencana makan.",
+                    "login_url": reverse("login") + "?next=" + reverse("modul1"),
+                },
+                status=401,
+            )
+        if request.method != "POST":
+            response = JsonResponse({"error": "Gunakan POST."}, status=405)
+            response["Allow"] = "POST"
+            return response
+        if request.content_type != "application/json":
+            return JsonResponse({"error": "Kirim sebagai JSON."}, status=415)
+        if len(request.body) > 8000:
+            return JsonResponse({"error": "Data terlalu besar."}, status=413)
+        try:
+            payload = json.loads(request.body)
+            if not isinstance(payload, dict):
+                raise ValueError("Format data tidak valid.")
+            response = view(request, payload, *args, **kwargs)
+        except PreviewRateLimit as exc:
+            response = JsonResponse({"error": str(exc), "retry_after": exc.retry_after}, status=429)
+            response["Retry-After"] = str(exc.retry_after)
+        except PlanConflict as exc:
+            response = JsonResponse({"error": str(exc)}, status=409)
+        except (Http404, BudgetPlan.DoesNotExist, PlanPreview.DoesNotExist):
+            # JSON, not the HTML 404 page, so the page can show what happened.
+            response = JsonResponse({"error": NOT_FOUND_MESSAGE}, status=404)
+        except (ValueError, UnicodeDecodeError) as exc:
+            response = JsonResponse(
+                {
+                    "error": str(exc)
+                    if not isinstance(exc, json.JSONDecodeError)
+                    else "JSON tidak valid."
+                },
+                status=400,
+            )
+        patch_cache_control(response, private=True, no_store=True)
+        return response
+
+    return wrapped
+
+
+@plan_api
+def preview_plan(request, payload, plan_id):
+    plan = owned_plan(request, plan_id)
+    preview = make_preview(plan, payload.get("version"), payload)
+    return JsonResponse(preview_data(preview))
+
+
+@plan_api
+def apply_plan_preview(request, payload, preview_id):
+    get_object_or_404(PlanPreview, pk=preview_id, plan__user=request.user)
+    draft = apply_preview(request.user, preview_id, new_budget=payload.get("new_budget"))
+    return JsonResponse({"url": reverse("modul1") + f"?plan={draft.pk}#hasil"})
+
+
+@plan_api
+def save_account_plan(request, payload, plan_id):
+    owned_plan(request, plan_id)
+    if not isinstance(payload.get("title"), str):
+        raise ValueError("Judul harus berupa teks.")
+    form = PlanMetadataForm(payload)
+    if not form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Isi judul maksimal 100 karakter.",
+                "fields": form.errors.get_json_data(),
+            },
+            status=400,
+        )
+    replace = payload.get("replace_original", False)
+    if not isinstance(replace, bool):
+        raise ValueError("Pilihan penyimpanan tidak valid.")
+    plan = save_plan(
+        request.user, plan_id, payload.get("version"), **form.cleaned_data, replace_original=replace
+    )
+    return JsonResponse({"url": reverse("modul1") + f"?plan={plan.pk}#hasil", "id": str(plan.pk)})
+
+
+@plan_api
+def add_plan_purchases(request, payload, plan_id):
+    owned_plan(request, plan_id)
+    response = purchases_to_pantry(
+        request.user, plan_id, payload.get("version"), payload.get("items")
+    )
+    return JsonResponse({**response, "pantry_url": reverse("modul2")}, status=201)
+
+
+@plan_api
+def delete_account_plan(request, payload, plan_id):
+    with transaction.atomic():
+        get_user_model().objects.select_for_update().get(pk=request.user.pk)
+        plan = get_object_or_404(
+            BudgetPlan.objects.select_for_update(), pk=plan_id, user=request.user
+        )
+        check_version(plan, payload.get("version"))
+        plan.delete()
+    return JsonResponse({"url": reverse("modul1") + "#rencana-saya"})
+
+
+def recipe_alternatives(request, plan_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Masuk terlebih dahulu."}, status=401)
+    if request.method != "GET":
+        return JsonResponse({"error": "Gunakan GET."}, status=405)
+    try:
+        plan = owned_plan(request, plan_id)
+        day = int(request.GET.get("day", "0"))
+        meal = request.GET.get("meal", "")
+        snapshot = thaw(plan.snapshot)
+        slots = schedule_codes(snapshot)
+        if not 1 <= day <= len(slots) or meal not in slots[day - 1]:
+            raise ValueError("Slot menu tidak valid.")
+        if any(item.day == day and item.meal_type == meal for item in cooked_slots(plan)):
+            raise ValueError("Menu sudah dimasak.")
+        # The same basket quote as preview, including pooled fruit purchases.
+        recipes = replacement_options(
+            **clean_inputs(
+                {**plan.inputs, "allergens": effective_allergens(request.user, plan.inputs)}
+            ).cleaned_data,
+            schedule=slots,
+            day=day,
+            meal=meal,
+            current_total=net_total(snapshot),
+            **stock_context(request.user, plan),
+        )
+        response = JsonResponse({"recipes": recipes, "version": plan.version})
+    except Http404:
+        response = JsonResponse({"error": NOT_FOUND_MESSAGE}, status=404)
+    except ValueError as exc:
+        response = JsonResponse({"error": str(exc)}, status=400)
+    patch_cache_control(response, private=True, no_store=True)
+    return response

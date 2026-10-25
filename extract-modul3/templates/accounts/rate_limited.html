@@ -1,0 +1,10 @@
+{% extends "accounts/base.html" %}
+{% block title %}Tunggu sebentar{% endblock %}
+{% block content %}
+<main class="auth-card">
+  <a class="back-home" href="{% url 'landing' %}">← Kembali ke beranda</a>
+  <h1>Tunggu sebentar</h1>
+  <p>{{ error }}</p>
+  <p>Percobaan dibatasi sementara untuk melindungi akun Anda. Silakan kembali setelah beberapa menit.</p>
+</main>
+{% endblock %}

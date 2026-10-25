@@ -1,0 +1,301 @@
+recipe_code,region,price_date,cost_total_rupiah,cost_per_serving_rupiah,calories_per_serving,protein_per_serving_g,carbs_per_serving_g,fat_per_serving_g,calculation_status
+RCP-MVP-001,Kabupaten Garut,2026-09-28,7984.22,3992.11,436.68,15.65,73.06,10.79,estimasi_bahan_mentah
+RCP-MVP-002,Kabupaten Garut,2026-09-28,14217.18,7108.59,517.88,33.96,74.21,10.74,estimasi_bahan_mentah
+RCP-MVP-003,Kabupaten Garut,2026-09-28,7689.87,3844.94,541.6,28.79,73.03,18,estimasi_bahan_mentah
+RCP-MVP-004,Kabupaten Garut,2026-09-28,8523.41,4261.71,441.39,19.2,68.12,13.55,estimasi_bahan_mentah
+RCP-MVP-005,Kabupaten Garut,2026-09-28,25828.7,12914.35,446.81,30.87,68.21,7.45,estimasi_bahan_mentah
+RCP-MVP-006,Kabupaten Garut,2026-09-28,18406.42,9203.21,522.62,37.23,66.55,13.13,estimasi_bahan_mentah
+RCP-MVP-007,Kabupaten Garut,2026-09-28,15967.95,7983.98,536.47,36.31,68.12,14.94,estimasi_bahan_mentah
+RCP-MVP-008,Kabupaten Garut,2026-09-28,37278.31,18639.16,467.32,32.68,68.65,8.08,estimasi_bahan_mentah
+RCP-MVP-009,Kabupaten Garut,2026-09-28,5387.78,2693.89,344.34,26.77,19.48,19.78,estimasi_bahan_mentah
+RCP-MVP-010,Kabupaten Garut,2026-09-28,4080.98,2040.49,199.85,13.95,13.08,13.98,estimasi_bahan_mentah
+RCP-MVP-011,Kabupaten Garut,2026-09-28,16715.86,8357.93,272.03,26.49,37.48,4.27,estimasi_bahan_mentah
+RCP-MVP-012,Kabupaten Garut,2026-09-28,23793.28,11896.64,209.71,25.35,27.21,3.48,estimasi_bahan_mentah
+RCP-MVP-013,Kabupaten Garut,2026-09-28,10352.01,5176.01,214.43,12.98,14.1,13.18,estimasi_bahan_mentah
+RCP-MVP-014,Kabupaten Garut,2026-09-28,7697.87,3848.93,209.78,11.34,13.56,13.17,estimasi_bahan_mentah
+RCP-MVP-015,Kabupaten Garut,2026-09-28,13278.98,6639.49,470.44,27.47,67.84,12.53,estimasi_bahan_mentah
+RCP-MVP-016,Kabupaten Garut,2026-09-28,7060.18,3530.09,284.73,14.09,44.77,8.17,estimasi_bahan_mentah
+RCP-MVP-017,Kabupaten Garut,2026-09-28,10478.68,5239.34,393.72,24.94,40.5,17.88,estimasi_bahan_mentah
+RCP-MVP-018,Kabupaten Garut,2026-09-28,7369.48,3684.74,200.7,11.01,13.35,12.82,estimasi_bahan_mentah
+RCP-MVP-019,Kabupaten Garut,2026-09-28,13972.17,6986.08,255.65,24.92,19.37,11.46,estimasi_bahan_mentah
+RCP-MVP-020,Kabupaten Garut,2026-09-28,7302.25,3651.12,375.38,31.63,14.73,23.96,estimasi_bahan_mentah
+RCP-MVP-021,Kabupaten Garut,2026-09-28,2635.2,1317.6,169.74,3.36,46.5,0.06,estimasi_bahan_mentah
+RCP-MVP-022,Kabupaten Garut,2026-09-28,7681.02,3840.51,165.2,4.28,43.94,0.76,estimasi_bahan_mentah
+RCP-MVP-023,Kabupaten Garut,2026-09-28,6241.02,3120.51,135.41,2.18,37.98,0.07,estimasi_bahan_mentah
+RCP-MVP-024,Kabupaten Garut,2026-09-28,10759.8,5379.9,96.93,2.43,26.12,0.75,estimasi_bahan_mentah
+RCP-MVP-025,Kabupaten Garut,2026-09-28,6792.64,3396.32,119.59,2.64,32.53,0.42,estimasi_bahan_mentah
+RCP-MVP-026,Kabupaten Garut,2026-09-28,5614.06,2807.03,348.3,12.8,61.05,6.99,estimasi_bahan_mentah
+RCP-MVP-027,Kabupaten Garut,2026-09-28,6735.37,3367.69,366.33,12.84,65.36,8.01,estimasi_bahan_mentah
+RCP-MVP-028,Kabupaten Garut,2026-09-28,8046,4023,208.5,9.02,27.82,7.88,estimasi_bahan_mentah
+RCP-MVP-029,Kabupaten Garut,2026-09-28,7679.78,3839.89,214.54,11.56,24.78,10.83,estimasi_bahan_mentah
+RCP-MVP-030,Kabupaten Garut,2026-09-28,6115.46,3057.73,456.64,23.73,64.66,13.7,estimasi_bahan_mentah
+RCP-MVP-031,Kabupaten Garut,2026-09-28,3998.24,1999.12,302.43,15.62,41.99,11.66,estimasi_bahan_mentah
+RCP-MVP-032,Kabupaten Garut,2026-09-28,4862.54,2431.27,342.92,9.06,59.68,10,estimasi_bahan_mentah
+RCP-MVP-033,Kabupaten Garut,2026-09-28,6521.97,3260.99,365.31,12.84,63.96,8.13,estimasi_bahan_mentah
+RCP-MVP-034,Kabupaten Garut,2026-09-28,12201.1,6100.55,476.95,28.33,75.18,9.81,estimasi_bahan_mentah
+RCP-MVP-035,Kabupaten Garut,2026-09-28,7319.8,3659.9,493.44,26.57,71.48,15.03,estimasi_bahan_mentah
+RCP-MVP-036,Kabupaten Garut,2026-09-28,7943.07,3971.53,410.07,14.53,71.57,9.8,estimasi_bahan_mentah
+RCP-MVP-037,Kabupaten Garut,2026-09-28,5096.42,2548.21,403.38,16.54,66.76,9.67,estimasi_bahan_mentah
+RCP-MVP-038,Kabupaten Garut,2026-09-28,26136.41,13068.2,421.94,24.26,73.55,5.37,estimasi_bahan_mentah
+RCP-MVP-039,Kabupaten Garut,2026-09-28,12271.12,6135.56,443.18,28.49,64.6,9.06,estimasi_bahan_mentah
+RCP-MVP-040,Kabupaten Garut,2026-09-28,11840.82,5920.41,445.35,26.36,71.06,8.6,estimasi_bahan_mentah
+RCP-MVP-041,Kabupaten Garut,2026-09-28,7060.73,3530.36,153.57,9.55,25.07,4.36,estimasi_bahan_mentah
+RCP-MVP-042,Kabupaten Garut,2026-09-28,11396.76,5698.38,442.66,26.35,68.8,8.74,estimasi_bahan_mentah
+RCP-MVP-043,Kabupaten Garut,2026-09-28,4876.43,2438.22,495.91,26.99,72.34,15.25,estimasi_bahan_mentah
+RCP-MVP-044,Kabupaten Garut,2026-09-28,7311.76,3655.88,412.47,15.84,70.38,10.05,estimasi_bahan_mentah
+RCP-MVP-045,Kabupaten Garut,2026-09-28,13575.22,6787.61,438.47,27.55,67.23,8.95,estimasi_bahan_mentah
+RCP-MVP-046,Kabupaten Garut,2026-09-28,6754.27,3377.14,468.65,22.19,72.46,12.94,estimasi_bahan_mentah
+RCP-MVP-047,Kabupaten Garut,2026-09-28,3983.9,1991.95,246.2,14.35,47.37,0.69,estimasi_bahan_mentah
+RCP-MVP-048,Kabupaten Garut,2026-09-28,4433.9,2216.95,260.07,10.19,43.7,6.79,estimasi_bahan_mentah
+RCP-MVP-049,Kabupaten Garut,2026-09-28,6673.02,3336.51,371.76,15.02,63.61,9.71,estimasi_bahan_mentah
+RCP-MVP-050,Kabupaten Garut,2026-09-28,7557.39,3778.69,195.52,9.28,22.91,8.65,estimasi_bahan_mentah
+RCP-MVP-051,Kabupaten Garut,2026-09-28,6813.76,3406.88,285.28,16.36,53.58,2.03,estimasi_bahan_mentah
+RCP-MVP-052,Kabupaten Garut,2026-09-28,4070.24,2035.12,252.92,12.97,52.61,0.59,estimasi_bahan_mentah
+RCP-MVP-053,Kabupaten Garut,2026-09-28,3660.26,1830.13,282.12,15.33,39.24,10.58,estimasi_bahan_mentah
+RCP-MVP-054,Kabupaten Garut,2026-09-28,6096.11,3048.06,345.24,12.3,59.17,8.09,estimasi_bahan_mentah
+RCP-MVP-055,Kabupaten Garut,2026-09-28,5293.86,2646.93,321.67,9.17,57.22,8.85,estimasi_bahan_mentah
+RCP-MVP-056,Kabupaten Garut,2026-09-28,4247.43,2123.71,188.39,7.82,29.09,6.38,estimasi_bahan_mentah
+RCP-MVP-057,Kabupaten Garut,2026-09-28,6670.56,3335.28,182.21,13.53,8.55,11.8,estimasi_bahan_mentah
+RCP-MVP-058,Kabupaten Garut,2026-09-28,3945.01,1972.5,254.01,11.45,54.02,1.16,estimasi_bahan_mentah
+RCP-MVP-059,Kabupaten Garut,2026-09-28,12501.09,6250.55,443.53,27.37,69.06,8.68,estimasi_bahan_mentah
+RCP-MVP-060,Kabupaten Garut,2026-09-28,18965.67,9482.84,393.73,22.5,69.27,5.37,estimasi_bahan_mentah
+RCP-MVP-061,Kabupaten Garut,2026-09-28,6921.44,3460.72,410.61,16.57,68.96,9.81,estimasi_bahan_mentah
+RCP-MVP-062,Kabupaten Garut,2026-09-28,12284,6142,451.07,29.33,65.34,9.75,estimasi_bahan_mentah
+RCP-MVP-063,Kabupaten Garut,2026-09-28,27056.4,13528.2,393.84,25.33,67.8,4.41,estimasi_bahan_mentah
+RCP-MVP-064,Kabupaten Garut,2026-09-28,13729.34,6864.67,423.96,27.95,64.34,8.04,estimasi_bahan_mentah
+RCP-MVP-065,Kabupaten Garut,2026-09-28,6580.48,3290.24,490.43,25.65,74.37,14.01,estimasi_bahan_mentah
+RCP-MVP-066,Kabupaten Garut,2026-09-28,6166.18,3083.09,379.48,14.97,67.36,8.48,estimasi_bahan_mentah
+RCP-MVP-067,Kabupaten Garut,2026-09-28,11249.68,5624.84,410.32,25.83,74.71,3.41,estimasi_bahan_mentah
+RCP-MVP-068,Kabupaten Garut,2026-09-28,6940.25,3470.12,486.03,26.16,67.52,14.61,estimasi_bahan_mentah
+RCP-MVP-069,Kabupaten Garut,2026-09-28,16690.52,8345.26,390.22,22.85,68.68,5.76,estimasi_bahan_mentah
+RCP-MVP-070,Kabupaten Garut,2026-09-28,13468.4,6734.2,426.24,23.04,64.59,10.1,estimasi_bahan_mentah
+RCP-MVP-071,Kabupaten Garut,2026-09-28,11600.58,5800.29,431.74,25.27,70.87,7.52,estimasi_bahan_mentah
+RCP-MVP-072,Kabupaten Garut,2026-09-28,8748.43,4374.21,416.09,15.15,74.1,8.78,estimasi_bahan_mentah
+RCP-MVP-073,Kabupaten Garut,2026-09-28,12634.33,6317.17,440.35,27.7,66.36,9.29,estimasi_bahan_mentah
+RCP-MVP-074,Kabupaten Garut,2026-09-28,12165.8,6082.9,197.42,20.95,25.09,3.48,estimasi_bahan_mentah
+RCP-MVP-075,Kabupaten Garut,2026-09-28,4662.53,2331.27,422.19,21.04,64.98,11.71,estimasi_bahan_mentah
+RCP-MVP-076,Kabupaten Garut,2026-09-28,19487.51,9743.76,144.64,17.54,11.88,4.42,estimasi_bahan_mentah
+RCP-MVP-077,Kabupaten Garut,2026-09-28,27278.28,13639.14,394.12,25.23,68.26,4.49,estimasi_bahan_mentah
+RCP-MVP-078,Kabupaten Garut,2026-09-28,12261.61,6130.8,183.83,22.85,7.28,8.22,estimasi_bahan_mentah
+RCP-MVP-079,Kabupaten Garut,2026-09-28,5694.6,2847.3,95.67,8.35,11.33,4.46,estimasi_bahan_mentah
+RCP-MVP-080,Kabupaten Garut,2026-09-28,9756.92,4878.46,459.61,25.61,78.4,7.94,estimasi_bahan_mentah
+RCP-MVP-081,Kabupaten Garut,2026-09-28,7530.78,3765.39,393.12,15.17,65.12,9.67,estimasi_bahan_mentah
+RCP-MVP-082,Kabupaten Garut,2026-09-28,16269.1,8134.55,364.03,21.55,62.95,4.44,estimasi_bahan_mentah
+RCP-MVP-083,Kabupaten Garut,2026-09-28,5412.56,2706.28,258.55,18.35,25.51,12.4,estimasi_bahan_mentah
+RCP-MVP-084,Kabupaten Garut,2026-09-28,13632.91,6816.45,408.33,21.27,64,9.79,estimasi_bahan_mentah
+RCP-MVP-085,Kabupaten Garut,2026-09-28,11747.98,5873.99,229.12,20.9,21.57,7.47,estimasi_bahan_mentah
+RCP-MVP-086,Kabupaten Garut,2026-09-28,6261.46,3130.73,470.4,24.35,71.99,13.48,estimasi_bahan_mentah
+RCP-MVP-087,Kabupaten Garut,2026-09-28,17899.34,8949.67,137.93,16.53,21.08,0.23,estimasi_bahan_mentah
+RCP-KAGGLE-4473027,Garut + referensi non-Garut,2026-10-01,78930.55,19732.64,273.78,37.88,22.1,4.51,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471956,Garut + referensi non-Garut,2026-10-01,44220.7,6317.24,240.93,30.79,8.96,9.29,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4473057,Garut + referensi non-Garut,2026-10-01,14363.28,7181.64,300.18,27.49,14.45,14.91,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472222,Garut + referensi non-Garut,2026-10-01,19003.69,6334.56,270.52,28.99,12.16,11.81,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472482,Garut + referensi non-Garut,2026-10-01,24620.27,8206.76,864.81,27.01,172.1,7.66,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472309,Garut + referensi non-Garut,2026-10-01,31856.63,15928.32,409.8,30.08,45.78,13.23,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472084,Garut + referensi non-Garut,2026-10-01,20792.92,6930.97,428.27,28.25,49.1,14.04,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4469586,Garut + referensi non-Garut,2026-10-01,36926.97,9231.74,273.61,27.89,15.98,11.01,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4472147,Garut + referensi non-Garut,2026-10-01,27814.36,6953.59,220.74,28.21,10.28,7.46,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4466395,Garut + referensi non-Garut,2026-10-01,20706.65,10353.33,174.55,12.73,30.7,2.23,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471637,Garut + referensi non-Garut,2026-10-01,76358.38,6941.67,237.07,31.32,11.86,7.4,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471738,Garut + referensi non-Garut,2026-10-01,30619.58,6123.92,240.75,31.68,6.55,9.79,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471562,Garut + referensi non-Garut,2026-10-01,24284.84,6071.21,301.81,30.95,31.07,6.25,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4469261,Garut + referensi non-Garut,2026-10-01,41490.98,5927.28,199.21,30.3,7.31,5.47,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4471433,Garut + referensi non-Garut,2026-10-01,34724.86,8681.21,250.59,29,14.21,8.79,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4448850,Garut + referensi non-Garut,2026-10-01,49645.96,6205.75,436.36,34.84,55.13,9.37,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-4470089,Garut + referensi non-Garut,2026-10-01,54569.79,13642.45,323.79,33.84,31.44,7.3,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-KAGGLE-3934445,Garut + referensi non-Garut,2026-10-01,63815.07,5801.37,202.98,29.98,7.54,5.94,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-TMDB-53076,Garut + referensi non-Garut,2026-10-01,4091.41,2045.7,139.05,8.18,15.87,4.68,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-TMDB-53281,Garut + referensi non-Garut,2026-10-01,73227.5,18306.87,148.58,26.86,11.37,0.39,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-TMDB-53092,Garut + referensi non-Garut,2026-10-01,37400.96,18700.48,271.3,3.33,10.16,27.51,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-TMDB-53288,Garut + referensi non-Garut,2026-10-01,36347.91,18173.96,109.19,2.33,12.18,7.09,estimasi_takaran_porsi_dan_bahan_mentah
+RCP-MDL-0000,Garut + referensi non-Garut,2026-10-05,38137.35,12712.45,282.91,29.07,19.48,11.00,estimasi_takaran_sumber_mendeley
+RCP-MDL-0009,Garut + referensi non-Garut,2026-10-05,22558.40,11279.20,398.20,32.59,40.20,16.79,estimasi_takaran_sumber_mendeley
+RCP-MDL-0021,Garut + referensi non-Garut,2026-10-05,29901.05,5980.21,148.21,15.59,14.95,3.21,estimasi_takaran_sumber_mendeley
+RCP-MDL-0023,Garut + referensi non-Garut,2026-10-05,17078.15,2846.36,184.69,3.68,26.86,8.06,estimasi_takaran_sumber_mendeley
+RCP-MDL-0024,Garut + referensi non-Garut,2026-10-05,44918.36,11229.59,238.48,10.93,33.89,7.88,estimasi_takaran_sumber_mendeley
+RCP-MDL-0028,Garut + referensi non-Garut,2026-10-05,16775.55,4193.89,212.96,12.58,11.86,13.77,estimasi_takaran_sumber_mendeley
+RCP-MDL-0039,Garut + referensi non-Garut,2026-10-05,79428.07,39714.04,1208.61,55.40,41.25,96.49,estimasi_takaran_sumber_mendeley
+RCP-MDL-0046,Garut + referensi non-Garut,2026-10-05,54110.02,7730.00,202.12,21.10,17.93,5.25,estimasi_takaran_sumber_mendeley
+RCP-MDL-0053,Garut + referensi non-Garut,2026-10-05,81864.28,20466.07,205.85,29.80,13.75,4.00,estimasi_takaran_sumber_mendeley
+RCP-MDL-0056,Garut + referensi non-Garut,2026-10-05,73202.88,12200.48,302.75,38.36,27.98,4.33,estimasi_takaran_sumber_mendeley
+RCP-MDL-0071,Garut + referensi non-Garut,2026-10-05,29044.09,7261.02,144.93,16.65,14.38,2.85,estimasi_takaran_sumber_mendeley
+RCP-MDL-0078,Garut + referensi non-Garut,2026-10-05,45924.98,15308.33,142.14,8.70,42.61,0.62,estimasi_takaran_sumber_mendeley
+RCP-MDL-0082,Garut + referensi non-Garut,2026-10-05,29141.01,9713.67,369.83,19.06,19.86,26.82,estimasi_takaran_sumber_mendeley
+RCP-MDL-0088,Garut + referensi non-Garut,2026-10-05,25269.54,6317.38,248.45,14.21,9.36,17.27,estimasi_takaran_sumber_mendeley
+RCP-MDL-0090,Garut + referensi non-Garut,2026-10-05,25096.30,4182.72,228.26,17.70,13.94,12.51,estimasi_takaran_sumber_mendeley
+RCP-MDL-0096,Garut + referensi non-Garut,2026-10-05,68945.74,34472.87,1019.27,36.27,89.10,64.91,estimasi_takaran_sumber_mendeley
+RCP-MDL-0097,Garut + referensi non-Garut,2026-10-05,58324.71,29162.36,694.26,68.00,69.12,17.63,estimasi_takaran_sumber_mendeley
+RCP-MDL-0106,Garut + referensi non-Garut,2026-10-05,95813.55,19162.71,226.32,27.29,30.04,0.52,estimasi_takaran_sumber_mendeley
+RCP-MDL-0114,Garut + referensi non-Garut,2026-10-05,54723.43,7817.63,178.11,19.18,14.39,5.26,estimasi_takaran_sumber_mendeley
+RCP-MDL-0145,Garut + referensi non-Garut,2026-10-05,28695.08,4099.30,174.45,3.90,25.75,7.22,estimasi_takaran_sumber_mendeley
+RCP-MDL-0146,Garut + referensi non-Garut,2026-10-05,20241.91,5060.48,127.35,14.22,13.83,1.83,estimasi_takaran_sumber_mendeley
+RCP-MDL-0162,Garut + referensi non-Garut,2026-10-05,21379.12,5344.78,126.73,12.73,14.86,2.32,estimasi_takaran_sumber_mendeley
+RCP-MDL-0163,Garut + referensi non-Garut,2026-10-05,30969.14,7742.29,165.72,8.80,15.47,8.73,estimasi_takaran_sumber_mendeley
+RCP-MDL-0165,Garut + referensi non-Garut,2026-10-05,16546.83,3309.37,150.92,9.92,12.49,8.52,estimasi_takaran_sumber_mendeley
+RCP-MDL-0169,Garut + referensi non-Garut,2026-10-05,81652.12,20413.03,352.56,34.48,38.99,7.13,estimasi_takaran_sumber_mendeley
+RCP-MDL-0174,Garut + referensi non-Garut,2026-10-05,23155.05,5788.76,216.50,21.27,11.53,11.02,estimasi_takaran_sumber_mendeley
+RCP-MDL-0181,Garut + referensi non-Garut,2026-10-05,10690.35,5345.17,333.68,3.12,82.95,0.31,estimasi_takaran_sumber_mendeley
+RCP-MDL-0184,Garut + referensi non-Garut,2026-10-05,24683.54,8227.85,388.69,7.60,61.99,15.47,estimasi_takaran_sumber_mendeley
+RCP-MDL-0194,Garut + referensi non-Garut,2026-10-05,37533.35,9383.34,336.43,30.24,52.91,1.22,estimasi_takaran_sumber_mendeley
+RCP-MDL-0203,Garut + referensi non-Garut,2026-10-05,26372.08,6593.02,279.28,19.99,17.12,15.16,estimasi_takaran_sumber_mendeley
+RCP-MDL-0208,Garut + referensi non-Garut,2026-10-05,49124.99,9825.00,222.33,25.90,8.02,10.52,estimasi_takaran_sumber_mendeley
+RCP-MDL-0214,Garut + referensi non-Garut,2026-10-05,34353.43,17176.72,419.08,27.39,35.20,19.44,estimasi_takaran_sumber_mendeley
+RCP-MDL-0224,Garut + referensi non-Garut,2026-10-05,51192.50,8532.08,142.35,10.23,12.22,6.15,estimasi_takaran_sumber_mendeley
+RCP-MDL-0227,Garut + referensi non-Garut,2026-10-05,20295.98,3382.66,120.74,7.96,6.40,7.11,estimasi_takaran_sumber_mendeley
+RCP-MDL-0234,Garut + referensi non-Garut,2026-10-05,24092.99,12046.50,555.82,29.08,45.92,29.25,estimasi_takaran_sumber_mendeley
+RCP-MDL-0255,Garut + referensi non-Garut,2026-10-05,51347.20,12836.80,283.19,29.25,15.75,11.46,estimasi_takaran_sumber_mendeley
+RCP-MDL-0272,Garut + referensi non-Garut,2026-10-05,41692.37,20846.18,549.35,45.19,23.38,32.07,estimasi_takaran_sumber_mendeley
+RCP-MDL-0276,Garut + referensi non-Garut,2026-10-05,70780.32,5898.36,153.27,13.09,8.80,7.80,estimasi_takaran_sumber_mendeley
+RCP-MDL-0278,Garut + referensi non-Garut,2026-10-05,73039.02,12173.17,289.35,23.98,9.99,18.39,estimasi_takaran_sumber_mendeley
+RCP-MDL-0279,Garut + referensi non-Garut,2026-10-05,21868.28,7289.43,239.26,14.44,19.12,12.99,estimasi_takaran_sumber_mendeley
+RCP-MDL-0289,Garut + referensi non-Garut,2026-10-05,147490.54,36872.64,294.54,56.71,15.29,0.78,estimasi_takaran_sumber_mendeley
+RCP-MDL-0292,Garut + referensi non-Garut,2026-10-05,52047.17,13011.79,385.03,35.15,18.49,20.31,estimasi_takaran_sumber_mendeley
+RCP-MDL-0298,Garut + referensi non-Garut,2026-10-05,57753.08,14438.27,307.39,35.78,9.11,14.57,estimasi_takaran_sumber_mendeley
+RCP-MDL-0299,Garut + referensi non-Garut,2026-10-05,35060.25,5843.37,188.95,19.67,12.64,6.69,estimasi_takaran_sumber_mendeley
+RCP-MDL-0309,Garut + referensi non-Garut,2026-10-05,82058.85,16411.77,550.18,10.85,20.50,51.54,estimasi_takaran_sumber_mendeley
+RCP-MDL-0320,Garut + referensi non-Garut,2026-10-05,29947.31,7486.83,193.31,14.56,28.73,2.48,estimasi_takaran_sumber_mendeley
+RCP-MDL-0323,Garut + referensi non-Garut,2026-10-05,30297.19,7574.30,209.60,19.19,19.53,6.59,estimasi_takaran_sumber_mendeley
+RCP-MDL-0327,Garut + referensi non-Garut,2026-10-05,38875.02,9718.75,320.37,22.85,47.03,4.90,estimasi_takaran_sumber_mendeley
+RCP-MDL-0337,Garut + referensi non-Garut,2026-10-05,24129.88,4825.98,230.06,11.76,16.85,12.94,estimasi_takaran_sumber_mendeley
+RCP-MDL-0350,Garut + referensi non-Garut,2026-10-05,26683.68,3811.95,123.93,8.34,11.99,5.19,estimasi_takaran_sumber_mendeley
+RCP-MDL-0355,Garut + referensi non-Garut,2026-10-05,12035.49,3008.87,609.45,13.32,115.50,12.95,estimasi_takaran_sumber_mendeley
+RCP-MDL-0365,Garut + referensi non-Garut,2026-10-05,40469.92,10117.48,351.02,23.93,24.38,18.50,estimasi_takaran_sumber_mendeley
+RCP-MDL-0367,Garut + referensi non-Garut,2026-10-05,89955.07,14992.51,225.17,26.42,24.11,2.81,estimasi_takaran_sumber_mendeley
+RCP-MDL-0368,Garut + referensi non-Garut,2026-10-05,53587.85,10717.57,246.97,17.70,19.54,11.13,estimasi_takaran_sumber_mendeley
+RCP-MDL-0371,Garut + referensi non-Garut,2026-10-05,84479.35,8447.94,166.30,20.68,11.84,4.21,estimasi_takaran_sumber_mendeley
+RCP-MDL-0384,Garut + referensi non-Garut,2026-10-05,25778.55,6444.64,215.02,15.55,20.07,9.06,estimasi_takaran_sumber_mendeley
+RCP-MDL-0394,Garut + referensi non-Garut,2026-10-05,163237.85,32647.57,265.28,47.72,17.18,0.75,estimasi_takaran_sumber_mendeley
+RCP-MDL-0404,Garut + referensi non-Garut,2026-10-05,41570.99,10392.75,206.41,17.59,14.15,9.89,estimasi_takaran_sumber_mendeley
+RCP-MDL-0409,Garut + referensi non-Garut,2026-10-05,25344.47,5068.89,129.12,9.50,8.40,7.08,estimasi_takaran_sumber_mendeley
+RCP-MDL-0416,Garut + referensi non-Garut,2026-10-05,47290.05,23645.02,242.41,31.52,22.81,3.45,estimasi_takaran_sumber_mendeley
+RCP-MDL-0422,Garut + referensi non-Garut,2026-10-05,36461.69,9115.42,334.74,15.98,26.88,18.64,estimasi_takaran_sumber_mendeley
+RCP-MDL-0427,Garut + referensi non-Garut,2026-10-05,39893.99,9973.50,260.86,14.32,48.51,2.29,estimasi_takaran_sumber_mendeley
+RCP-MDL-0433,Garut + referensi non-Garut,2026-10-05,33511.84,6702.37,188.64,23.16,15.35,3.99,estimasi_takaran_sumber_mendeley
+RCP-MDL-0436,Garut + referensi non-Garut,2026-10-05,106873.45,21374.69,447.69,28.38,20.67,28.35,estimasi_takaran_sumber_mendeley
+RCP-MDL-0438,Garut + referensi non-Garut,2026-10-05,19595.34,9797.67,539.05,20.62,68.08,22.44,estimasi_takaran_sumber_mendeley
+RCP-MDL-0451,Garut + referensi non-Garut,2026-10-05,22474.96,4494.99,618.91,12.47,130.93,7.17,estimasi_takaran_sumber_mendeley
+RCP-MDL-0454,Garut + referensi non-Garut,2026-10-05,23256.63,2907.08,122.08,7.28,16.31,3.67,estimasi_takaran_sumber_mendeley
+RCP-MDL-0457,Garut + referensi non-Garut,2026-10-05,9377.38,1875.48,164.95,4.06,31.78,3.28,estimasi_takaran_sumber_mendeley
+RCP-MDL-0464,Garut + referensi non-Garut,2026-10-05,44890.99,7481.83,181.47,22.07,12.43,5.41,estimasi_takaran_sumber_mendeley
+RCP-MDL-0470,Garut + referensi non-Garut,2026-10-05,41058.99,5132.37,275.49,19.06,24.23,11.47,estimasi_takaran_sumber_mendeley
+RCP-MDL-0479,Garut + referensi non-Garut,2026-10-05,26051.19,6512.80,197.24,12.26,30.89,3.21,estimasi_takaran_sumber_mendeley
+RCP-MDL-0484,Garut + referensi non-Garut,2026-10-05,23351.06,3891.84,255.69,3.74,28.91,15.10,estimasi_takaran_sumber_mendeley
+RCP-MDL-0489,Garut + referensi non-Garut,2026-10-05,23900.86,5975.21,138.52,13.78,10.34,4.90,estimasi_takaran_sumber_mendeley
+RCP-MDL-0492,Garut + referensi non-Garut,2026-10-05,22400.38,7466.79,233.50,29.23,13.38,7.53,estimasi_takaran_sumber_mendeley
+RCP-MDL-0493,Garut + referensi non-Garut,2026-10-05,19917.04,3983.41,183.91,7.24,7.24,15.43,estimasi_takaran_sumber_mendeley
+RCP-MDL-0499,Garut + referensi non-Garut,2026-10-05,75197.01,7519.70,242.07,33.48,10.93,7.38,estimasi_takaran_sumber_mendeley
+RCP-MDL-0504,Garut + referensi non-Garut,2026-10-05,13735.73,6867.86,145.28,11.33,16.98,5.05,estimasi_takaran_sumber_mendeley
+RCP-MDL-0508,Garut + referensi non-Garut,2026-10-05,15673.01,3918.25,168.61,4.04,25.67,6.45,estimasi_takaran_sumber_mendeley
+RCP-MDL-0517,Garut + referensi non-Garut,2026-10-05,106073.37,17678.89,264.30,21.75,37.60,4.21,estimasi_takaran_sumber_mendeley
+RCP-MDL-0535,Garut + referensi non-Garut,2026-10-05,43501.98,21750.99,261.37,31.08,15.72,8.28,estimasi_takaran_sumber_mendeley
+RCP-MDL-0550,Garut + referensi non-Garut,2026-10-05,204979.35,25622.42,405.65,30.99,20.07,24.31,estimasi_takaran_sumber_mendeley
+RCP-MDL-0567,Garut + referensi non-Garut,2026-10-05,60207.81,12041.56,163.29,21.54,12.11,4.15,estimasi_takaran_sumber_mendeley
+RCP-MDL-0568,Garut + referensi non-Garut,2026-10-05,27270.53,5454.11,158.86,13.77,9.33,7.56,estimasi_takaran_sumber_mendeley
+RCP-MDL-0572,Garut + referensi non-Garut,2026-10-05,35235.54,8808.89,214.47,18.84,22.79,5.95,estimasi_takaran_sumber_mendeley
+RCP-MDL-0575,Garut + referensi non-Garut,2026-10-05,32367.76,10789.25,207.14,24.07,18.64,4.10,estimasi_takaran_sumber_mendeley
+RCP-MDL-0581,Garut + referensi non-Garut,2026-10-05,106121.18,35373.73,349.24,47.39,23.70,7.73,estimasi_takaran_sumber_mendeley
+RCP-MDL-0589,Garut + referensi non-Garut,2026-10-05,27971.94,3995.99,121.25,8.51,10.54,5.66,estimasi_takaran_sumber_mendeley
+RCP-MDL-0610,Garut + referensi non-Garut,2026-10-05,68240.60,8530.08,249.70,23.71,13.11,11.96,estimasi_takaran_sumber_mendeley
+RCP-MDL-0621,Garut + referensi non-Garut,2026-10-05,113882.97,56941.49,890.36,102.51,80.95,18.90,estimasi_takaran_sumber_mendeley
+RCP-MDL-0624,Garut + referensi non-Garut,2026-10-05,48888.76,16296.25,577.24,21.34,23.66,44.85,estimasi_takaran_sumber_mendeley
+RCP-MDL-0626,Garut + referensi non-Garut,2026-10-05,20486.90,6828.97,275.40,16.75,12.75,18.12,estimasi_takaran_sumber_mendeley
+RCP-MDL-0628,Garut + referensi non-Garut,2026-10-05,69005.86,17251.47,200.70,12.07,41.90,7.90,estimasi_takaran_sumber_mendeley
+RCP-MDL-0633,Garut + referensi non-Garut,2026-10-05,58257.99,14564.50,445.22,56.84,23.89,13.93,estimasi_takaran_sumber_mendeley
+RCP-MDL-0638,Garut + referensi non-Garut,2026-10-05,51720.33,25860.17,566.92,50.17,32.68,28.04,estimasi_takaran_sumber_mendeley
+RCP-MDL-0639,Garut + referensi non-Garut,2026-10-05,22239.13,7413.04,589.31,14.98,99.38,16.44,estimasi_takaran_sumber_mendeley
+RCP-MDL-0642,Garut + referensi non-Garut,2026-10-05,17102.34,8551.17,989.37,39.51,188.25,8.73,estimasi_takaran_sumber_mendeley
+RCP-MDL-0649,Garut + referensi non-Garut,2026-10-05,11448.38,2862.09,278.39,7.59,57.82,3.09,estimasi_takaran_sumber_mendeley
+RCP-MDL-0651,Garut + referensi non-Garut,2026-10-05,90141.74,18028.35,191.69,25.23,18.10,2.17,estimasi_takaran_sumber_mendeley
+RCP-MDL-0656,Garut + referensi non-Garut,2026-10-05,16456.99,4114.25,123.09,14.12,8.43,4.23,estimasi_takaran_sumber_mendeley
+RCP-MDL-0668,Garut + referensi non-Garut,2026-10-05,33201.85,8300.46,303.79,16.98,44.17,8.02,estimasi_takaran_sumber_mendeley
+RCP-MDL-0676,Garut + referensi non-Garut,2026-10-05,35769.55,7153.91,146.88,15.19,14.12,3.56,estimasi_takaran_sumber_mendeley
+RCP-MDL-0680,Garut + referensi non-Garut,2026-10-05,33127.47,11042.49,179.21,18.20,22.20,2.11,estimasi_takaran_sumber_mendeley
+RCP-MDL-0693,Garut + referensi non-Garut,2026-10-05,72472.12,24157.37,284.63,33.28,34.95,2.61,estimasi_takaran_sumber_mendeley
+RCP-MDL-0700,Garut + referensi non-Garut,2026-10-05,12714.69,6357.35,276.44,29.93,17.39,10.89,estimasi_takaran_sumber_mendeley
+RCP-MDL-0738,Garut + referensi non-Garut,2026-10-05,73592.03,14718.41,399.35,32.43,21.57,21.22,estimasi_takaran_sumber_mendeley
+RCP-MDL-0744,Garut + referensi non-Garut,2026-10-05,175880.69,17588.07,292.92,24.89,12.09,16.39,estimasi_takaran_sumber_mendeley
+RCP-MDL-0746,Garut + referensi non-Garut,2026-10-05,85264.87,21316.22,531.71,12.95,51.58,39.71,estimasi_takaran_sumber_mendeley
+RCP-MDL-0761,Garut + referensi non-Garut,2026-10-05,46459.61,9291.92,428.85,38.75,19.54,24.79,estimasi_takaran_sumber_mendeley
+RCP-MDL-0772,Garut + referensi non-Garut,2026-10-05,83318.12,27772.71,446.54,10.75,78.49,9.27,estimasi_takaran_sumber_mendeley
+RCP-MDL-0779,Garut + referensi non-Garut,2026-10-05,12643.84,4214.61,158.14,22.00,9.29,4.20,estimasi_takaran_sumber_mendeley
+RCP-MDL-0784,Garut + referensi non-Garut,2026-10-05,42348.79,21174.40,993.29,28.41,150.45,35.33,estimasi_takaran_sumber_mendeley
+RCP-MDL-0790,Garut + referensi non-Garut,2026-10-05,51651.73,12912.93,297.61,36.23,29.54,4.02,estimasi_takaran_sumber_mendeley
+RCP-MDL-0811,Garut + referensi non-Garut,2026-10-05,43722.14,10930.54,183.77,22.96,14.69,4.21,estimasi_takaran_sumber_mendeley
+RCP-MDL-0824,Garut + referensi non-Garut,2026-10-05,38853.00,9713.25,273.83,21.62,24.63,11.02,estimasi_takaran_sumber_mendeley
+RCP-MDL-0837,Garut + referensi non-Garut,2026-10-05,46623.90,9324.78,592.30,48.52,42.82,25.06,estimasi_takaran_sumber_mendeley
+RCP-MDL-0849,Garut + referensi non-Garut,2026-10-05,89864.08,17972.82,273.17,22.29,42.16,2.39,estimasi_takaran_sumber_mendeley
+RCP-MDL-0862,Garut + referensi non-Garut,2026-10-05,34533.58,8633.40,433.84,16.32,61.64,13.86,estimasi_takaran_sumber_mendeley
+RCP-MDL-0873,Garut + referensi non-Garut,2026-10-05,21790.54,10895.27,327.48,11.59,77.14,0.48,estimasi_takaran_sumber_mendeley
+RCP-MDL-0875,Garut + referensi non-Garut,2026-10-05,18907.17,4726.79,641.53,9.54,123.30,12.88,estimasi_takaran_sumber_mendeley
+RCP-MDL-0890,Garut + referensi non-Garut,2026-10-05,15020.23,3004.05,158.03,10.21,8.67,9.68,estimasi_takaran_sumber_mendeley
+RCP-MDL-0896,Garut + referensi non-Garut,2026-10-05,38951.29,19475.64,513.10,50.11,39.45,18.03,estimasi_takaran_sumber_mendeley
+RCP-MDL-0899,Garut + referensi non-Garut,2026-10-05,42594.04,14198.01,630.79,38.03,95.26,13.05,estimasi_takaran_sumber_mendeley
+RCP-MDL-0900,Garut + referensi non-Garut,2026-10-05,36196.29,12065.43,240.99,18.07,37.14,2.75,estimasi_takaran_sumber_mendeley
+RCP-MDL-0938,Garut + referensi non-Garut,2026-10-05,46304.55,23152.28,883.18,33.75,28.68,74.84,estimasi_takaran_sumber_mendeley
+RCP-MDL-0940,Garut + referensi non-Garut,2026-10-05,21180.06,10590.03,512.43,12.68,19.21,44.67,estimasi_takaran_sumber_mendeley
+RCP-MDL-0942,Garut + referensi non-Garut,2026-10-05,22505.82,4501.16,284.20,20.23,22.47,13.50,estimasi_takaran_sumber_mendeley
+RCP-MDL-0948,Garut + referensi non-Garut,2026-10-05,22476.62,11238.31,462.97,38.51,41.14,17.28,estimasi_takaran_sumber_mendeley
+RCP-MDL-0958,Garut + referensi non-Garut,2026-10-05,20489.89,3414.98,180.57,9.30,8.35,12.43,estimasi_takaran_sumber_mendeley
+RCP-MDL-0962,Garut + referensi non-Garut,2026-10-05,14466.69,4822.23,211.01,13.30,22.12,7.76,estimasi_takaran_sumber_mendeley
+RCP-MDL-0967,Garut + referensi non-Garut,2026-10-05,16639.14,8319.57,169.11,17.91,16.84,3.43,estimasi_takaran_sumber_mendeley
+RCP-MDL-0973,Garut + referensi non-Garut,2026-10-05,124429.02,20738.17,743.30,37.37,118.33,12.25,estimasi_takaran_sumber_mendeley
+RCP-MDL-0974,Garut + referensi non-Garut,2026-10-05,32018.95,8004.74,304.55,23.31,20.19,15.76,estimasi_takaran_sumber_mendeley
+RCP-MDL-0986,Garut + referensi non-Garut,2026-10-05,52371.27,8728.54,280.25,38.25,17.83,6.83,estimasi_takaran_sumber_mendeley
+RCP-MDL-0991,Garut + referensi non-Garut,2026-10-05,32112.56,6422.51,193.61,14.03,27.91,2.74,estimasi_takaran_sumber_mendeley
+RCP-MDL-0994,Garut + referensi non-Garut,2026-10-05,35358.96,8839.74,186.12,17.28,11.06,8.80,estimasi_takaran_sumber_mendeley
+RCP-MDL-1004,Garut + referensi non-Garut,2026-10-05,102897.54,25724.39,306.74,11.31,66.35,0.62,estimasi_takaran_sumber_mendeley
+RCP-MDL-1006,Garut + referensi non-Garut,2026-10-05,104296.25,26074.06,833.04,25.48,38.22,68.38,estimasi_takaran_sumber_mendeley
+RCP-MDL-1010,Garut + referensi non-Garut,2026-10-05,33548.76,11182.92,366.36,32.99,32.09,12.72,estimasi_takaran_sumber_mendeley
+RCP-MDL-1017,Garut + referensi non-Garut,2026-10-05,61546.08,10257.68,295.47,20.79,38.03,6.35,estimasi_takaran_sumber_mendeley
+RCP-MDL-1018,Garut + referensi non-Garut,2026-10-05,84595.21,21148.80,721.47,27.99,30.93,58.99,estimasi_takaran_sumber_mendeley
+RCP-MDL-1027,Garut + referensi non-Garut,2026-10-05,39158.96,4894.87,287.74,23.67,11.52,17.92,estimasi_takaran_sumber_mendeley
+RCP-MDL-1033,Garut + referensi non-Garut,2026-10-05,19598.03,9799.02,363.08,35.64,25.20,15.07,estimasi_takaran_sumber_mendeley
+RCP-MDL-1041,Garut + referensi non-Garut,2026-10-05,13944.60,6972.30,356.53,20.53,33.89,15.58,estimasi_takaran_sumber_mendeley
+RCP-MDL-1042,Garut + referensi non-Garut,2026-10-05,40439.80,10109.95,409.72,20.11,29.81,24.52,estimasi_takaran_sumber_mendeley
+RCP-MDL-1043,Garut + referensi non-Garut,2026-10-05,24920.45,6230.11,234.34,14.19,24.04,9.71,estimasi_takaran_sumber_mendeley
+RCP-MDL-1053,Garut + referensi non-Garut,2026-10-05,74632.17,18658.04,717.85,27.73,22.17,60.27,estimasi_takaran_sumber_mendeley
+RCP-MDL-1054,Garut + referensi non-Garut,2026-10-05,9735.18,4867.59,299.69,13.09,38.78,12.41,estimasi_takaran_sumber_mendeley
+RCP-MDL-1069,Garut + referensi non-Garut,2026-10-05,35566.72,5927.79,234.80,13.84,13.29,14.32,estimasi_takaran_sumber_mendeley
+RCP-MDL-1082,Garut + referensi non-Garut,2026-10-05,26738.45,8912.82,436.06,35.61,22.13,24.31,estimasi_takaran_sumber_mendeley
+RCP-MDL-1090,Garut + referensi non-Garut,2026-10-05,29905.75,9968.58,226.99,23.37,17.36,7.25,estimasi_takaran_sumber_mendeley
+RCP-MDL-1097,Garut + referensi non-Garut,2026-10-05,38192.50,9548.13,178.89,21.89,14.79,4.36,estimasi_takaran_sumber_mendeley
+RCP-MDL-1105,Garut + referensi non-Garut,2026-10-05,27315.41,5463.08,157.83,23.01,6.88,3.99,estimasi_takaran_sumber_mendeley
+RCP-MDL-1107,Garut + referensi non-Garut,2026-10-05,17475.16,4368.79,211.77,13.57,12.43,13.95,estimasi_takaran_sumber_mendeley
+RCP-MDL-1116,Garut + referensi non-Garut,2026-10-05,12810.46,3202.61,434.02,13.76,97.90,0.53,estimasi_takaran_sumber_mendeley
+RCP-MDL-1118,Garut + referensi non-Garut,2026-10-05,17054.18,4263.55,204.26,12.29,12.54,11.89,estimasi_takaran_sumber_mendeley
+RCP-MDL-1120,Garut + referensi non-Garut,2026-10-05,53859.20,10771.84,295.55,17.08,33.31,10.34,estimasi_takaran_sumber_mendeley
+RCP-MDL-1127,Garut + referensi non-Garut,2026-10-05,44633.64,7438.94,241.91,7.45,19.19,17.77,estimasi_takaran_sumber_mendeley
+RCP-MDL-1139,Garut + referensi non-Garut,2026-10-05,27515.38,9171.79,280.03,37.57,18.58,6.71,estimasi_takaran_sumber_mendeley
+RCP-MDL-1152,Garut + referensi non-Garut,2026-10-05,14129.00,4709.67,230.32,15.30,14.19,13.52,estimasi_takaran_sumber_mendeley
+RCP-MDL-1153,Garut + referensi non-Garut,2026-10-05,24605.07,4921.01,232.24,9.73,34.70,6.25,estimasi_takaran_sumber_mendeley
+RCP-MDL-1157,Garut + referensi non-Garut,2026-10-05,60903.85,12180.77,480.95,45.32,46.40,13.45,estimasi_takaran_sumber_mendeley
+RCP-MDL-1158,Garut + referensi non-Garut,2026-10-05,65115.26,9302.18,357.91,17.23,49.90,9.43,estimasi_takaran_sumber_mendeley
+RCP-MDL-1160,Garut + referensi non-Garut,2026-10-05,102933.76,34311.25,1230.50,61.64,227.12,8.88,estimasi_takaran_sumber_mendeley
+RCP-MDL-1174,Garut + referensi non-Garut,2026-10-05,52934.41,8822.40,390.63,18.36,16.34,30.15,estimasi_takaran_sumber_mendeley
+RCP-MDL-1191,Garut + referensi non-Garut,2026-10-05,14796.62,7398.31,581.79,40.63,37.63,32.58,estimasi_takaran_sumber_mendeley
+RCP-MDL-1199,Garut + referensi non-Garut,2026-10-05,52643.95,8773.99,145.30,21.18,5.30,4.65,estimasi_takaran_sumber_mendeley
+RCP-MDL-1215,Garut + referensi non-Garut,2026-10-05,53781.16,17927.05,626.08,26.74,99.75,13.37,estimasi_takaran_sumber_mendeley
+RCP-MDL-1216,Garut + referensi non-Garut,2026-10-05,37181.46,6196.91,163.65,16.92,7.51,8.06,estimasi_takaran_sumber_mendeley
+RCP-MDL-1227,Garut + referensi non-Garut,2026-10-05,61421.31,6824.59,183.93,25.31,11.28,4.34,estimasi_takaran_sumber_mendeley
+RCP-MDL-1233,Garut + referensi non-Garut,2026-10-05,17308.79,4327.20,171.04,15.70,10.15,8.05,estimasi_takaran_sumber_mendeley
+RCP-MDL-1235,Garut + referensi non-Garut,2026-10-05,25594.93,4265.82,173.74,13.37,11.91,8.56,estimasi_takaran_sumber_mendeley
+RCP-MDL-1237,Garut + referensi non-Garut,2026-10-05,32774.93,6554.99,219.58,18.52,14.28,10.58,estimasi_takaran_sumber_mendeley
+RCP-MDL-1261,Garut + referensi non-Garut,2026-10-05,40813.17,10203.29,370.97,23.61,38.79,14.43,estimasi_takaran_sumber_mendeley
+RCP-MDL-1263,Garut + referensi non-Garut,2026-10-05,10240.68,5120.34,436.03,43.43,25.19,21.75,estimasi_takaran_sumber_mendeley
+RCP-MDL-1266,Garut + referensi non-Garut,2026-10-05,29124.73,7281.18,269.91,16.78,10.52,18.03,estimasi_takaran_sumber_mendeley
+RCP-MDL-1270,Garut + referensi non-Garut,2026-10-05,67246.48,11207.75,159.87,23.78,10.63,2.65,estimasi_takaran_sumber_mendeley
+RCP-MDL-1278,Garut + referensi non-Garut,2026-10-05,32557.08,6511.42,215.35,7.94,18.10,12.89,estimasi_takaran_sumber_mendeley
+RCP-MDL-1284,Garut + referensi non-Garut,2026-10-05,53707.37,26853.68,383.09,28.40,57.08,4.15,estimasi_takaran_sumber_mendeley
+RCP-MDL-1310,Garut + referensi non-Garut,2026-10-05,40185.56,8037.11,277.42,33.58,14.60,9.85,estimasi_takaran_sumber_mendeley
+RCP-MDL-1324,Garut + referensi non-Garut,2026-10-05,29214.83,14607.41,493.13,15.81,33.51,36.74,estimasi_takaran_sumber_mendeley
+RCP-MDL-1325,Garut + referensi non-Garut,2026-10-05,20766.58,2966.65,159.66,7.24,8.13,11.03,estimasi_takaran_sumber_mendeley
+RCP-MDL-1333,Garut + referensi non-Garut,2026-10-05,63118.97,6311.90,200.23,23.27,13.37,6.21,estimasi_takaran_sumber_mendeley
+RCP-MDL-1334,Garut + referensi non-Garut,2026-10-05,32943.64,16471.82,418.26,38.80,17.22,21.84,estimasi_takaran_sumber_mendeley
+RCP-MDL-1343,Garut + referensi non-Garut,2026-10-05,37343.57,37343.57,766.10,60.47,77.36,27.08,estimasi_takaran_sumber_mendeley
+RCP-MDL-1354,Garut + referensi non-Garut,2026-10-05,43115.84,7185.97,340.43,16.55,19.94,21.95,estimasi_takaran_sumber_mendeley
+RCP-MDL-1358,Garut + referensi non-Garut,2026-10-05,11330.46,3776.82,211.30,11.97,25.91,6.64,estimasi_takaran_sumber_mendeley
+RCP-MDL-1360,Garut + referensi non-Garut,2026-10-05,72944.56,14588.91,438.80,64.75,20.06,11.54,estimasi_takaran_sumber_mendeley
+RCP-MDL-1364,Garut + referensi non-Garut,2026-10-05,28921.89,14460.95,201.59,7.08,37.04,10.47,estimasi_takaran_sumber_mendeley
+RCP-MDL-1368,Garut + referensi non-Garut,2026-10-05,29339.41,9779.80,181.64,19.19,13.78,6.84,estimasi_takaran_sumber_mendeley
+RCP-MDL-1372,Garut + referensi non-Garut,2026-10-05,45955.25,9191.05,952.20,16.33,219.18,2.92,estimasi_takaran_sumber_mendeley
+RCP-MDL-1389,Garut + referensi non-Garut,2026-10-05,42906.88,8581.38,309.66,18.83,17.48,18.61,estimasi_takaran_sumber_mendeley
