@@ -10,12 +10,29 @@ from .models import RecipeDataReport, RecipeReview
 
 @admin.register(RecipeDataReport)
 class RecipeDataReportAdmin(admin.ModelAdmin):
-    list_display = ("recipe", "category", "status", "reporter", "created_at")
-    list_filter = ("status", "category", "created_at")
-    search_fields = ("recipe__name", "recipe__recipe_code", "details", "reporter__username")
-    readonly_fields = ("recipe", "reporter", "category", "details", "created_at")
-    fields = ("recipe", "reporter", "category", "details", "status", "created_at")
-    ordering = ("status", "-created_at")
+    list_display = (
+        "recipe", "category", "status", "assigned_to", "follow_up_at",
+        "reporter", "created_at", "updated_at",
+    )
+    list_filter = ("status", "category", "assigned_to", "follow_up_at", "created_at")
+    search_fields = (
+        "recipe__name", "recipe__recipe_code", "details", "reporter__username",
+        "assigned_to__username", "decision_note",
+    )
+    readonly_fields = ("recipe", "reporter", "category", "details", "created_at", "updated_at")
+    fields = (
+        "recipe", "reporter", "category", "details", "status", "assigned_to",
+        "follow_up_at", "decision_note", "created_at", "updated_at",
+    )
+    ordering = ("status", "follow_up_at", "created_at")
+    date_hierarchy = "created_at"
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "assigned_to":
+            kwargs["queryset"] = db_field.remote_field.model.objects.filter(
+                is_active=True, is_staff=True
+            ).order_by("username")
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def has_add_permission(self, request):
         return False
@@ -27,7 +44,7 @@ class RecipeReviewAdmin(admin.ModelAdmin):
         "recipe", "user", "rating", "is_hidden", "photo_is_hidden", "photo_consent",
         "photo_moderation", "photo_moderated_at", "photo_moderated_by", "updated_at",
     )
-    list_filter = ("is_hidden", "photo_is_hidden", "rating")
+    list_filter = ("photo_is_hidden", "photo_permission_granted", "is_hidden", "rating", "updated_at")
     search_fields = ("recipe__name", "user__username", "comment")
     readonly_fields = (
         "user", "recipe", "rating", "comment", "photo", "photo_permission_granted",
@@ -35,6 +52,8 @@ class RecipeReviewAdmin(admin.ModelAdmin):
         "version", "created_at", "updated_at",
     )
     actions = ("approve_consented_photos", "hide_selected_photos")
+    date_hierarchy = "updated_at"
+    ordering = ("photo_is_hidden", "updated_at")
 
     @admin.display(description="Foto")
     def photo_moderation(self, obj):

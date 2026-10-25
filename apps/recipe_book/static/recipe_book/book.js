@@ -36,6 +36,8 @@ if (detail) {
   const errorText = document.querySelector('#cooking-error');
   const manualBox = document.querySelector('#manual-batches');
   const confirm = document.querySelector('#confirm-cooking');
+  const openCooking = document.querySelector('#open-cooking');
+  let dialogTrigger = null;
   let approved = null;
   let operationKey = null;
   let sequence = 0;
@@ -55,9 +57,16 @@ if (detail) {
     }
   }
   form.addEventListener('input', invalidate);
-  document.querySelector('#open-cooking').addEventListener('click', () => dialog.showModal());
+  openCooking.addEventListener('click', () => {
+    dialogTrigger = openCooking;
+    dialog.showModal();
+    form.elements.namedItem('servings')?.focus();
+  });
   document.querySelector('#close-cooking').addEventListener('click', () => { if (!sending) dialog.close(); });
   dialog.addEventListener('cancel', (event) => { if (sending) event.preventDefault(); });
+  dialog.addEventListener('close', () => {
+    if (dialogTrigger?.isConnected && !dialogTrigger.disabled) dialogTrigger.focus();
+  });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     invalidate();

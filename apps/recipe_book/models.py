@@ -132,10 +132,31 @@ class RecipeDataReport(models.Model):
     reporter = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
     )
+    assigned_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="assigned_recipe_data_reports",
+    )
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     details = models.CharField(max_length=1000)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open", db_index=True)
+    decision_note = models.TextField(max_length=1000, blank=True)
+    follow_up_at = models.DateTimeField(null=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["status", "-created_at"]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        super().clean()
+        if self.status == "reviewing" and not self.assigned_to_id:
+            raise ValidationError({"assigned_to": "Pilih penanggung jawab saat laporan ditinjau."})
+        if self.status == "reviewing" and not self.follow_up_at:
+            raise ValidationError({"follow_up_at": "Tentukan waktu tindak lanjut saat laporan ditinjau."})
+        if self.status in {"resolved", "dismissed"} and not self.decision_note.strip():
+            raise ValidationError({"decision_note": "Catat alasan sebelum menutup laporan."})

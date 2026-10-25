@@ -1,0 +1,21 @@
+<section class="panel">
+  <div class="section-heading">
+  <h2>Resep favorit</h2>
+  <span>{{ favorites|length }}</span>
+  </div>
+  <ul class="side-list">
+  {% for favorite in favorites %}
+  <li>
+  {% if favorite.available %}
+  <a href="?recipe={{ favorite.recipe_id|urlencode }}#recipe-detail">{{ favorite.recipe.name }}</a>
+  {% else %}
+  <span>{{ favorite.recipe.name }}</span>
+  <small>Tidak tersedia / tidak sesuai preferensi</small>
+  {% endif %}
+  <button type="button" class="text-button" data-remove-favorite="{{ favorite.recipe_id }}" data-url="{% url 'modul4-favorite' %}">Hapus favorit</button>
+  </li>
+  {% empty %}
+  <li class="empty-state">Simpan resep lewat tombol ♡.</li>
+  {% endfor %}
+  </ul>
+  </section>

@@ -277,6 +277,7 @@ def book_page(request):
         else 0
     )
     query = recipe_query(request.user)
+    available_recipe_count = query.count()
     term = request.GET.get("q", "").strip()[:100]
     if term:
         alias_ingredients = IngredientAlias.objects.filter(
@@ -300,10 +301,14 @@ def book_page(request):
         max_price = int(request.GET.get("max_price", ""))
     except ValueError:
         max_price = None
+    price_unavailable_count = 0
+    price_candidate_count = 0
     if max_price in PRICE_LIMITS:
         started = perf_counter()
         codes = set(query.values_list("pk", flat=True))
         costs = recipe_costs(profile.servings, codes)
+        price_candidate_count = len(codes)
+        price_unavailable_count = len(codes) - len(costs)
         query = query.filter(pk__in=[code for code, cost in costs.items() if cost <= max_price])
         duration_ms = (perf_counter() - started) * 1000
         logger.log(
@@ -342,6 +347,31 @@ def book_page(request):
             )
         else:
             query = query.filter(pk__in=[row["recipe_code"] for row in rows if row[stock_filter]])
+    active_filters = []
+    if term:
+        active_filters.append(f"Pencarian: {term}")
+    meal_labels = {
+        "sarapan": "Sarapan",
+        "makan_siang": "Makan siang",
+        "makan_malam": "Makan malam",
+    }
+    if meal in meal_labels:
+        active_filters.append(f"Waktu makan: {meal_labels[meal]}")
+    stock_labels = {
+        "best": "Paling cocok dengan stok",
+        "complete": "Bahan utama lengkap",
+        "soon": "Gunakan segera",
+    }
+    if stock_filter in stock_labels:
+        active_filters.append(f"Stok: {stock_labels[stock_filter]}")
+    if max_price is not None:
+        active_filters.append(f"Harga maksimal: Rp{max_price:,}".replace(",", "."))
+    if request.GET.get("favorites") == "1":
+        active_filters.append("Favorit saja")
+    if request.GET.get("guidance") == "1":
+        active_filters.append("Hanya resep dengan panduan")
+    if groups or profile.avoided_ingredients.exists():
+        active_filters.append("Preferensi profil (alergi/pantangan)")
     ordered_query = query if stock_filter == "best" else query.order_by("name")
     page = Paginator(
         ordered_query.prefetch_related("recipeingredient_set__ingredient"), 12
@@ -482,6 +512,10 @@ def book_page(request):
             "unknown_count": unknown_count,
             "allergen_count": allergen_count,
             "held_count": held_count,
+            "available_recipe_count": available_recipe_count,
+            "active_filters": active_filters,
+            "price_unavailable_count": price_unavailable_count,
+            "price_candidate_count": price_candidate_count,
             "guidance_only": request.GET.get("guidance") == "1",
             "q": term,
             "meal": meal,

@@ -56,7 +56,7 @@ if (startButton && mode) {
     previousButton.disabled = activeStep === 0;
     nextButton.disabled = false;
     nextButton.textContent = activeStep === steps.length - 1 ? 'Selesai' : 'Berikutnya';
-    modeStatus.textContent = '';
+    modeStatus.textContent = `Langkah ${activeStep + 1} dari ${steps.length}.`;
     if (focus) currentStep.focus();
   }
 
@@ -101,9 +101,12 @@ if (startButton && mode) {
     activeStep = progress?.step ?? 0;
     checkboxes.forEach((checkbox, index) => { checkbox.checked = progress?.checked[index] ?? false; });
     renderStep();
-    modeStatus.textContent = progress ? 'Langkah dan checklist dipulihkan. Mulai ulang timer untuk langkah ini.' : '';
+    modeStatus.textContent = progress
+      ? `Langkah dan checklist dipulihkan. Langkah ${activeStep + 1} dari ${steps.length}. Mulai ulang timer untuk langkah ini.`
+      : `Mode memasak dimulai. Langkah ${activeStep + 1} dari ${steps.length}.`;
     stepList.hidden = true;
     mode.hidden = false;
+    startButton.setAttribute('aria-expanded', 'true');
     currentStep.focus();
   });
 
@@ -111,6 +114,7 @@ if (startButton && mode) {
     stopTimer();
     mode.hidden = true;
     stepList.hidden = false;
+    startButton.setAttribute('aria-expanded', 'false');
     saveProgress();
     startButton.focus();
   });

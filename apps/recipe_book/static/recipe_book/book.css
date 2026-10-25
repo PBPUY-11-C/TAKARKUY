@@ -53,3 +53,20 @@ button,input,select{font:inherit}button,a,input,select{touch-action:manipulation
 .note-actions button { padding:9px 13px; font-size:12px; }
 .note-actions .secondary { margin:0; }
 .external-ingredient { background:#eef8f2; border-radius:8px; padding:9px; }
+.recipe-result-summary { margin:16px 0 8px; font-size:13px; color:var(--ink); }
+.active-filter-list { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin:8px 0; font-size:11px; color:var(--muted); }
+.active-filter-chip { display:inline-flex; align-items:center; border-radius:999px; padding:5px 9px; background:#e7f4ef; color:var(--green); font-weight:700; }
+.price-availability-note { border-left:3px solid #e3a43b; padding-left:10px; }
+
+/* Keep cooking controls comfortable to tap and visible while scrolling on phones. */
+@media(max-width:520px) {
+  dialog { width:calc(100% - 20px); max-width:none; max-height:calc(100dvh - 20px); padding:18px; border-radius:14px; }
+  dialog button, .cooking-mode button, .cooking-mode-controls button,
+  .timer-controls button, .note-actions button { min-height:44px; }
+  .cooking-mode { padding:14px; scroll-margin-top:12px; }
+  .cooking-current-step { min-height:110px; padding:14px; font-size:17px; }
+  .cooking-mode .section-heading { align-items:flex-start; }
+  .timer-controls input { width:86px; }
+  .check-field input, .cooking-checklist input { width:22px; height:22px; }
+  .recipe-detail, .recipe-list, .panel { min-width:0; }
+}
