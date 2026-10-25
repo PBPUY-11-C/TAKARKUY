@@ -4,6 +4,7 @@ from tempfile import TemporaryDirectory
 from datetime import timedelta
 
 from django.contrib import admin
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.files.base import ContentFile
@@ -20,6 +21,7 @@ from . import tests as cooking_tests
 from .models import CookingHistory, RecipePhotoCleanup, RecipeReview, ReviewQuota
 from .reviews import attach_review_photo, public_username, review_context
 from .services import cook
+from .views import recipe_review_photo_file
 
 
 class MemoryPhotoStorage:
@@ -209,8 +211,11 @@ class ReviewTests(TestCase):
         review = RecipeReview.objects.get(user=self.user, recipe=self.recipe)
         upload_url = reverse("modul4-review-photo-upload")
         photo_url = reverse("modul4-review-photo", args=[review.pk])
-        other_client = Client()
-        other_client.force_login(self.other)
+
+        def photo_response(user):
+            request = RequestFactory().get(photo_url)
+            request.user = user
+            return recipe_review_photo_file(request, review.pk)
 
         with TemporaryDirectory() as media_root, override_settings(MEDIA_ROOT=media_root):
             denied = self.client.post(upload_url, {
@@ -232,16 +237,14 @@ class ReviewTests(TestCase):
             self.assertTrue(review.photo_is_hidden)
             self.assertEqual(review.version, 2)
             self.assertTrue(review.photo.storage.exists(review.photo.name))
-            anonymous_response = Client().get(photo_url)
+            anonymous_response = photo_response(AnonymousUser())
             self.assertEqual(anonymous_response.status_code, 302)
-            anonymous_response.close()
-            owner_response = self.client.get(photo_url)
+            owner_response = photo_response(self.user)
             self.assertEqual(owner_response.status_code, 200)
-            owner_response.close()
+            owner_response.file_to_stream.close()
 
-            other_response = other_client.get(photo_url)
+            other_response = photo_response(self.other)
             self.assertEqual(other_response.status_code, 404)
-            other_response.close()
 
             staff = get_user_model().objects.create_user("moderator", is_staff=True)
             request = RequestFactory().post("/admin/")
@@ -252,9 +255,9 @@ class ReviewTests(TestCase):
             review.refresh_from_db()
             self.assertFalse(review.photo_is_hidden)
             self.assertEqual(review.version, 3)
-            public_response = other_client.get(photo_url)
+            public_response = photo_response(self.other)
             self.assertEqual(public_response.status_code, 200)
-            public_response.close()
+            public_response.file_to_stream.close()
 
             self.assertEqual(self.post_review(version=2).status_code, 409)
             model_admin.hide_selected_photos(
@@ -266,9 +269,8 @@ class ReviewTests(TestCase):
 
             review.photo.storage.delete(review.photo.name)
             with self.assertLogs("apps.recipe_book.views", level="WARNING") as logs:
-                missing_response = self.client.get(photo_url)
+                missing_response = photo_response(self.user)
                 self.assertEqual(missing_response.status_code, 404)
-                missing_response.close()
             self.assertIn("review_id=", logs.output[0])
 
     def test_photo_upload_rejects_invalid_format_and_file_over_limit(self):
