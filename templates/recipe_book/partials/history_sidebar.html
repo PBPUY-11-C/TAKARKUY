@@ -1,0 +1,47 @@
+<section class="panel" id="cooking-history">
+  <div class="section-heading">
+  <h2>Riwayat masak</h2>
+  <span>{{ week_count }} / 7 hari</span>
+  </div>
+  <ul class="side-list">
+  {% for entry in history %}
+  <li>
+  <small>{{ entry.cooked_at|date:'d M Y, H:i' }}</small>
+  <strong>{{ entry.recipe_name }}</strong>
+  <span>{{ entry.servings }} porsi · Stok tercatat</span>
+  <details>
+  <summary>Bahan terpakai</summary>
+  <ul>
+  {% for move in entry.operation.pantrymovement_set.all %}
+  <li>{{ move.snapshot.before.name }} · {{ move.consumed_grams|floatformat:1 }} g · {{ move.quantity_before }} → {{ move.quantity_after }} {{ move.snapshot.before.unit }}</li>
+  {% empty %}
+  <li>Bumbu dapur yang tidak dilacak tidak mengurangi stok.</li>
+  {% endfor %}
+  </ul>
+  </details>
+  {% if entry.snapshot.external_ingredients %}
+  <details>
+  <summary>Bahan dari luar Pantry</summary>
+  <ul>
+  {% for item in entry.snapshot.external_ingredients %}
+  <li>{{ item.name }} &middot; {{ item.grams|floatformat:1 }} g</li>
+  {% endfor %}
+  </ul>
+  </details>
+  {% endif %}
+  </li>
+  {% empty %}
+  <li class="empty-state">Belum ada masakan tercatat.</li>
+  {% endfor %}
+  </ul>
+  <nav class="pagination" aria-label="Halaman riwayat">
+  {% if history.has_previous %}
+  <a href="?{{ history_params }}&amp;history_page={{ history.previous_page_number }}">←</a>
+  {% endif %}
+  <span>{{ history.number }} / {{ history.paginator.num_pages }}</span>
+  {% if history.has_next %}
+  <a href="?{{ history_params }}&amp;history_page={{ history.next_page_number }}">→</a>
+  {% endif %}
+  </nav>
+  <p class="helper">Salah input? Koreksi lewat <a href="{% url 'modul2' %}">Smart Pantry</a>. Koreksi stok tidak menghapus riwayat masak.</p>
+  </section>

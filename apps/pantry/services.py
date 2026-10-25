@@ -268,9 +268,11 @@ def plan_consumption(
     }
 
 
-def execute_consumption(user, requirements, event, *, manual=None, allow_unknown_expiry=False):
+def execute_consumption(
+    user, requirements, event, *, manual=None, allow_unknown_expiry=False, planned=None
+):
     """Caller holds the account lock and transaction, then we lock FEFO batches."""
-    plan = plan_consumption(
+    plan = planned or plan_consumption(
         user, requirements, manual=manual, allow_unknown_expiry=allow_unknown_expiry, lock=True
     )
     if plan["missing"]:

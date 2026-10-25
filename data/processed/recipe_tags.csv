@@ -850,6 +850,250 @@ TAG-E66C00D29500,RCP-TMDB-53257,kategori_sumber_lamb,TheMealDB API
 TAG-E385CE0C671B,RCP-TMDB-52997,kandidat_belum_dikurasi,TheMealDB API
 TAG-48776478E227,RCP-TMDB-52997,slot_saran_makan_malam,TAKARKUY; penempatan sementara
 TAG-12B49AEB9EF0,RCP-TMDB-52997,kategori_sumber_beef,TheMealDB API
+TAG-2D7BF048D51A,RCP-TMDB-53144,kandidat_belum_dikurasi,TheMealDB API
+TAG-81E83D2DB7EA,RCP-TMDB-53144,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-EE28D3D5F2DF,RCP-TMDB-53144,kategori_sumber_seafood,TheMealDB API
+TAG-E59AD2CF30C2,RCP-TMDB-53172,kandidat_belum_dikurasi,TheMealDB API
+TAG-15C42005ED6F,RCP-TMDB-53172,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-4CED997D8FF8,RCP-TMDB-53172,kategori_sumber_vegetarian,TheMealDB API
+TAG-4893BC02704F,RCP-TMDB-52930,kandidat_belum_dikurasi,TheMealDB API
+TAG-FFBF2D4B5D80,RCP-TMDB-52930,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-E2C7F5039448,RCP-TMDB-52930,kategori_sumber_beef,TheMealDB API
+TAG-AD7ADA24FE30,RCP-TMDB-52933,kandidat_belum_dikurasi,TheMealDB API
+TAG-104623774C4A,RCP-TMDB-52933,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-8FA7CDBEE34C,RCP-TMDB-52933,kategori_sumber_chicken,TheMealDB API
+TAG-BE7E8E32A071,RCP-TMDB-53017,kandidat_belum_dikurasi,TheMealDB API
+TAG-BACBBAAA4D60,RCP-TMDB-53017,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-382438C96B54,RCP-TMDB-53017,kategori_sumber_beef,TheMealDB API
+TAG-2ADB5D695B8D,RCP-TMDB-53023,kandidat_belum_dikurasi,TheMealDB API
+TAG-1D19775D79C0,RCP-TMDB-53023,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-24AA5EAE3374,RCP-TMDB-53023,kategori_sumber_seafood,TheMealDB API
+TAG-35E46A6A3679,RCP-TMDB-52887,kandidat_belum_dikurasi,TheMealDB API
+TAG-66A575C2782A,RCP-TMDB-52887,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-5439683FD807,RCP-TMDB-52887,kategori_sumber_seafood,TheMealDB API
+TAG-4C364113C3D6,RCP-TMDB-52872,kandidat_belum_dikurasi,TheMealDB API
+TAG-8F55F036FADC,RCP-TMDB-52872,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-6D062E66B700,RCP-TMDB-52872,kategori_sumber_vegetarian,TheMealDB API
+TAG-82614630527A,RCP-TMDB-52824,kandidat_belum_dikurasi,TheMealDB API
+TAG-BF7375338EFE,RCP-TMDB-52824,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-6CA47D88DE70,RCP-TMDB-52824,kategori_sumber_beef,TheMealDB API
+TAG-156EC88B7360,RCP-TMDB-53097,kandidat_belum_dikurasi,TheMealDB API
+TAG-A02452FB56E8,RCP-TMDB-53097,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-69248A958227,RCP-TMDB-53097,kategori_sumber_miscellaneous,TheMealDB API
+TAG-F182697E894C,RCP-TMDB-53335,kandidat_belum_dikurasi,TheMealDB API
+TAG-44E1E0BA52C4,RCP-TMDB-53335,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-A413173FB770,RCP-TMDB-53335,kategori_sumber_beef,TheMealDB API
+TAG-842DAD9C0E1B,RCP-TMDB-53006,kandidat_belum_dikurasi,TheMealDB API
+TAG-7B77C01B1068,RCP-TMDB-53006,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-71D955EC6F57,RCP-TMDB-53006,kategori_sumber_beef,TheMealDB API
+TAG-015F14986569,RCP-TMDB-53160,kandidat_belum_dikurasi,TheMealDB API
+TAG-FBC18F0B2C6E,RCP-TMDB-53160,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-66B665F386D1,RCP-TMDB-53160,kategori_sumber_vegetarian,TheMealDB API
+TAG-919139E59475,RCP-TMDB-53142,kandidat_belum_dikurasi,TheMealDB API
+TAG-AFA014F0999B,RCP-TMDB-53142,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-487DAE82DB39,RCP-TMDB-53142,kategori_sumber_vegetarian,TheMealDB API
+TAG-A3DA9FD1B3A8,RCP-TMDB-53011,kandidat_belum_dikurasi,TheMealDB API
+TAG-3174D17882E2,RCP-TMDB-53011,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-8A5EFDE43B10,RCP-TMDB-53011,kategori_sumber_chicken,TheMealDB API
+TAG-7A56C0701A26,RCP-TMDB-53096,kandidat_belum_dikurasi,TheMealDB API
+TAG-8AD219812BCE,RCP-TMDB-53096,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-75C7C17484CA,RCP-TMDB-53096,kategori_sumber_beef,TheMealDB API
+TAG-8A66AEB935EF,RCP-TMDB-53171,kandidat_belum_dikurasi,TheMealDB API
+TAG-C3F53C6AE553,RCP-TMDB-53171,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-8C2A82D94E2A,RCP-TMDB-53171,kategori_sumber_seafood,TheMealDB API
+TAG-6590675D2DAC,RCP-TMDB-53164,kandidat_belum_dikurasi,TheMealDB API
+TAG-D1123B64D426,RCP-TMDB-53164,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-4BB2D15CB7BF,RCP-TMDB-53164,kategori_sumber_chicken,TheMealDB API
+TAG-1BB710D9E48C,RCP-TMDB-53012,kandidat_belum_dikurasi,TheMealDB API
+TAG-91041BA8D6C8,RCP-TMDB-53012,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-ACD74FB4C512,RCP-TMDB-53012,kategori_sumber_vegetarian,TheMealDB API
+TAG-157F07B86DBB,RCP-TMDB-53020,kandidat_belum_dikurasi,TheMealDB API
+TAG-0C6A609AEAA0,RCP-TMDB-53020,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-BC8EC1D0DA9A,RCP-TMDB-53020,kategori_sumber_chicken,TheMealDB API
+TAG-D83967AEA8D2,RCP-TMDB-53102,kandidat_belum_dikurasi,TheMealDB API
+TAG-8E14F95CB2B3,RCP-TMDB-53102,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-F75E135F8EF3,RCP-TMDB-53102,kategori_sumber_seafood,TheMealDB API
+TAG-B74C86E48C3A,RCP-TMDB-53098,kandidat_belum_dikurasi,TheMealDB API
+TAG-43E7728692DD,RCP-TMDB-53098,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-AC1DA781D72D,RCP-TMDB-53098,kategori_sumber_beef,TheMealDB API
+TAG-1FB27BBED7C5,RCP-TMDB-52863,kandidat_belum_dikurasi,TheMealDB API
+TAG-59B7FDEDD6A9,RCP-TMDB-52863,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-C6C093EF5B2A,RCP-TMDB-52863,kategori_sumber_vegetarian,TheMealDB API
+TAG-38DAEE151336,RCP-TMDB-53296,kandidat_belum_dikurasi,TheMealDB API
+TAG-4246A9AA6230,RCP-TMDB-53296,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-59888876671D,RCP-TMDB-53296,kategori_sumber_vegetarian,TheMealDB API
+TAG-45FFDA13E4E0,RCP-TMDB-53152,kandidat_belum_dikurasi,TheMealDB API
+TAG-A92754F5DD23,RCP-TMDB-53152,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-047BF4A1822F,RCP-TMDB-53152,kategori_sumber_seafood,TheMealDB API
+TAG-DF61F93B9E8A,RCP-TMDB-53155,kandidat_belum_dikurasi,TheMealDB API
+TAG-A54FE3A8CD8F,RCP-TMDB-53155,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-52B674810E06,RCP-TMDB-53155,kategori_sumber_chicken,TheMealDB API
+TAG-6E9F0433B168,RCP-TMDB-53184,kandidat_belum_dikurasi,TheMealDB API
+TAG-57FBEFD09B87,RCP-TMDB-53184,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-2F3802F727C2,RCP-TMDB-53184,kategori_sumber_seafood,TheMealDB API
+TAG-216B48E4C49F,RCP-TMDB-52960,kandidat_belum_dikurasi,TheMealDB API
+TAG-A03789912CF4,RCP-TMDB-52960,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-3E06F5B0CB7C,RCP-TMDB-52960,kategori_sumber_seafood,TheMealDB API
+TAG-2582D3F01636,RCP-TMDB-52927,kandidat_belum_dikurasi,TheMealDB API
+TAG-9A22A8D38F53,RCP-TMDB-52927,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-969E46BE58C0,RCP-TMDB-52927,kategori_sumber_beef,TheMealDB API
+TAG-B7D63099B682,RCP-TMDB-53297,kandidat_belum_dikurasi,TheMealDB API
+TAG-50070F424388,RCP-TMDB-53297,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-68BACA67DD37,RCP-TMDB-53297,kategori_sumber_vegetarian,TheMealDB API
+TAG-DF2DA6017750,RCP-TMDB-53181,kandidat_belum_dikurasi,TheMealDB API
+TAG-08F13F377D26,RCP-TMDB-53181,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-47C78C346524,RCP-TMDB-53181,kategori_sumber_chicken,TheMealDB API
+TAG-A577F25CD23E,RCP-TMDB-53058,kandidat_belum_dikurasi,TheMealDB API
+TAG-1CCCB22EC72D,RCP-TMDB-53058,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-797B9F781C6F,RCP-TMDB-53058,kategori_sumber_beef,TheMealDB API
+TAG-3614B76D804D,RCP-TMDB-53178,kandidat_belum_dikurasi,TheMealDB API
+TAG-D7605810C44B,RCP-TMDB-53178,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-F81223020F7D,RCP-TMDB-53178,kategori_sumber_seafood,TheMealDB API
+TAG-742FF855F473,RCP-TMDB-52836,kandidat_belum_dikurasi,TheMealDB API
+TAG-3FB6F159DD6B,RCP-TMDB-52836,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-1FD9AF416193,RCP-TMDB-52836,kategori_sumber_seafood,TheMealDB API
+TAG-748D56E96DBC,RCP-TMDB-53021,kandidat_belum_dikurasi,TheMealDB API
+TAG-700EA0E0233E,RCP-TMDB-53021,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-056BC67D5F78,RCP-TMDB-53021,kategori_sumber_beef,TheMealDB API
+TAG-4F11599D92BC,RCP-TMDB-53105,kandidat_belum_dikurasi,TheMealDB API
+TAG-38B9E6D4CE80,RCP-TMDB-53105,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-90BAB3782AF2,RCP-TMDB-53105,kategori_sumber_chicken,TheMealDB API
+TAG-E2CA08FB0808,RCP-TMDB-53340,kandidat_belum_dikurasi,TheMealDB API
+TAG-2E86E1828EF8,RCP-TMDB-53340,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-8EBEBF45E021,RCP-TMDB-53340,kategori_sumber_vegetarian,TheMealDB API
+TAG-7D5BC5D11522,RCP-TMDB-53182,kandidat_belum_dikurasi,TheMealDB API
+TAG-2A190042871A,RCP-TMDB-53182,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-00591D6ACFC5,RCP-TMDB-53182,kategori_sumber_seafood,TheMealDB API
+TAG-798EF9C6757F,RCP-TMDB-52876,kandidat_belum_dikurasi,TheMealDB API
+TAG-E5AAD0F46E32,RCP-TMDB-52876,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-E871EA25094F,RCP-TMDB-52876,kategori_sumber_beef,TheMealDB API
+TAG-36CBCA1C5DF6,RCP-TMDB-52881,kandidat_belum_dikurasi,TheMealDB API
+TAG-63880A09CE1D,RCP-TMDB-52881,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-BCA50ED88909,RCP-TMDB-52881,kategori_sumber_beef,TheMealDB API
+TAG-881760C48452,RCP-TMDB-52804,kandidat_belum_dikurasi,TheMealDB API
+TAG-004F468BA327,RCP-TMDB-52804,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-1FC19C1738AD,RCP-TMDB-52804,kategori_sumber_miscellaneous,TheMealDB API
+TAG-1CF69DA1FC18,RCP-TMDB-52811,kandidat_belum_dikurasi,TheMealDB API
+TAG-3233528AE369,RCP-TMDB-52811,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-F6757D1A3EE3,RCP-TMDB-52811,kategori_sumber_vegetarian,TheMealDB API
+TAG-CCF405A691AF,RCP-TMDB-52784,kandidat_belum_dikurasi,TheMealDB API
+TAG-44D9F1ECAD91,RCP-TMDB-52784,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-68FB33466B9F,RCP-TMDB-52784,kategori_sumber_vegetarian,TheMealDB API
+TAG-E363EE47B0E4,RCP-TMDB-52802,kandidat_belum_dikurasi,TheMealDB API
+TAG-6A08914C7686,RCP-TMDB-52802,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-9F70B8DC366C,RCP-TMDB-52802,kategori_sumber_seafood,TheMealDB API
+TAG-6C7032F8CADD,RCP-TMDB-53109,kandidat_belum_dikurasi,TheMealDB API
+TAG-B72A49EB7863,RCP-TMDB-53109,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-82D750062E80,RCP-TMDB-53109,kategori_sumber_beef,TheMealDB API
+TAG-8AFF51479838,RCP-TMDB-53180,kandidat_belum_dikurasi,TheMealDB API
+TAG-0E732F105472,RCP-TMDB-53180,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-D3FD076D581C,RCP-TMDB-53180,kategori_sumber_seafood,TheMealDB API
+TAG-41B1A4B935FF,RCP-TMDB-53143,kandidat_belum_dikurasi,TheMealDB API
+TAG-564EC68D8F19,RCP-TMDB-53143,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-45D4AC450734,RCP-TMDB-53143,kategori_sumber_chicken,TheMealDB API
+TAG-C973D5D5E77C,RCP-TMDB-53057,kandidat_belum_dikurasi,TheMealDB API
+TAG-B5F168E39397,RCP-TMDB-53057,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-0CC123DD13C8,RCP-TMDB-53057,kategori_sumber_beef,TheMealDB API
+TAG-70E5A8589945,RCP-TMDB-53086,kandidat_belum_dikurasi,TheMealDB API
+TAG-1D58316100EA,RCP-TMDB-53086,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-8D6148B74105,RCP-TMDB-53086,kategori_sumber_miscellaneous,TheMealDB API
+TAG-9F80856D4237,RCP-TMDB-52866,kandidat_belum_dikurasi,TheMealDB API
+TAG-2BECE6E912F6,RCP-TMDB-52866,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-6BB15CCF1726,RCP-TMDB-52866,kategori_sumber_vegetarian,TheMealDB API
+TAG-14D35906E805,RCP-TMDB-53167,kandidat_belum_dikurasi,TheMealDB API
+TAG-007DBE33A840,RCP-TMDB-53167,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-AC71368B3B88,RCP-TMDB-53167,kategori_sumber_seafood,TheMealDB API
+TAG-167D008A0F67,RCP-TMDB-53056,kandidat_belum_dikurasi,TheMealDB API
+TAG-732608DDEF5F,RCP-TMDB-53056,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-E77426A59F45,RCP-TMDB-53056,kategori_sumber_beef,TheMealDB API
+TAG-6B716FF213F5,RCP-TMDB-53108,kandidat_belum_dikurasi,TheMealDB API
+TAG-BE1B5F8DE214,RCP-TMDB-53108,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-193278AD2BE7,RCP-TMDB-53108,kategori_sumber_seafood,TheMealDB API
+TAG-3C629F601426,RCP-TMDB-52777,kandidat_belum_dikurasi,TheMealDB API
+TAG-6193DBEAF4E0,RCP-TMDB-52777,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-0C886EBBF891,RCP-TMDB-52777,kategori_sumber_seafood,TheMealDB API
+TAG-7EA0993DF3C3,RCP-TMDB-53174,kandidat_belum_dikurasi,TheMealDB API
+TAG-49065ED230B2,RCP-TMDB-53174,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-0953189607F2,RCP-TMDB-53174,kategori_sumber_seafood,TheMealDB API
+TAG-8952856B5DA1,RCP-TMDB-52873,kandidat_belum_dikurasi,TheMealDB API
+TAG-8387C89956AA,RCP-TMDB-52873,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-DAF5E8AFC8CD,RCP-TMDB-52873,kategori_sumber_beef,TheMealDB API
+TAG-62E333E256D9,RCP-TMDB-53305,kandidat_belum_dikurasi,TheMealDB API
+TAG-CA3DC9BEB936,RCP-TMDB-53305,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-B12E1A79FB03,RCP-TMDB-53305,kategori_sumber_vegetarian,TheMealDB API
+TAG-264AF9C17011,RCP-TMDB-52810,kandidat_belum_dikurasi,TheMealDB API
+TAG-706C452B0F63,RCP-TMDB-52810,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-3734526DA757,RCP-TMDB-52810,kategori_sumber_miscellaneous,TheMealDB API
+TAG-C8ED466387CD,RCP-TMDB-53343,kandidat_belum_dikurasi,TheMealDB API
+TAG-8559DD001E26,RCP-TMDB-53343,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-C11743CE86E9,RCP-TMDB-53343,kategori_sumber_beef,TheMealDB API
+TAG-F80B6963014D,RCP-TMDB-53055,kandidat_belum_dikurasi,TheMealDB API
+TAG-E20E065B57DD,RCP-TMDB-53055,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-2606D8A17619,RCP-TMDB-53055,kategori_sumber_beef,TheMealDB API
+TAG-25FBDE93DDFF,RCP-TMDB-52882,kandidat_belum_dikurasi,TheMealDB API
+TAG-B12A6A3345A1,RCP-TMDB-52882,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-3394547173A4,RCP-TMDB-52882,kategori_sumber_seafood,TheMealDB API
+TAG-B3F244A27FBA,RCP-TMDB-52845,kandidat_belum_dikurasi,TheMealDB API
+TAG-509099C77AAA,RCP-TMDB-52845,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-E9BFBACC46DE,RCP-TMDB-52845,kategori_sumber_miscellaneous,TheMealDB API
+TAG-518464316DAE,RCP-TMDB-53014,kandidat_belum_dikurasi,TheMealDB API
+TAG-07D869595D66,RCP-TMDB-53014,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-EE64501E6750,RCP-TMDB-53014,kategori_sumber_miscellaneous,TheMealDB API
+TAG-E2464A785294,RCP-TMDB-52823,kandidat_belum_dikurasi,TheMealDB API
+TAG-BF81FABFB12D,RCP-TMDB-52823,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-975B5B624CC6,RCP-TMDB-52823,kategori_sumber_seafood,TheMealDB API
+TAG-CC6F52E4D718,RCP-TMDB-52838,kandidat_belum_dikurasi,TheMealDB API
+TAG-94DC2565A222,RCP-TMDB-52838,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-4036A2D81A3D,RCP-TMDB-52838,kategori_sumber_pasta,TheMealDB API
+TAG-496CD2BE7320,RCP-TMDB-52875,kandidat_belum_dikurasi,TheMealDB API
+TAG-8A39772FCF4E,RCP-TMDB-52875,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-3ABC2C7A6935,RCP-TMDB-52875,kategori_sumber_chicken,TheMealDB API
+TAG-51A5AFC475BD,RCP-TMDB-53162,kandidat_belum_dikurasi,TheMealDB API
+TAG-23094FB0E829,RCP-TMDB-53162,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-89686604E0D0,RCP-TMDB-53162,kategori_sumber_chicken,TheMealDB API
+TAG-4677D54B8950,RCP-TMDB-53000,kandidat_belum_dikurasi,TheMealDB API
+TAG-0A4EE42B5B10,RCP-TMDB-53000,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-3C30B58029B1,RCP-TMDB-53000,kategori_sumber_beef,TheMealDB API
+TAG-F08F46F62B38,RCP-TMDB-53110,kandidat_belum_dikurasi,TheMealDB API
+TAG-A3DE34C76ED9,RCP-TMDB-53110,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-4B86B0DEF4FB,RCP-TMDB-53110,kategori_sumber_chicken,TheMealDB API
+TAG-5EC61E852FEF,RCP-TMDB-52780,kandidat_belum_dikurasi,TheMealDB API
+TAG-DFBD020AF1E8,RCP-TMDB-52780,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-C841559A2899,RCP-TMDB-52780,kategori_sumber_chicken,TheMealDB API
+TAG-3211F91B6C07,RCP-TMDB-53186,kandidat_belum_dikurasi,TheMealDB API
+TAG-A450CE5A7BB9,RCP-TMDB-53186,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-593610EE126D,RCP-TMDB-53186,kategori_sumber_chicken,TheMealDB API
+TAG-DA4EDD06E818,RCP-TMDB-53183,kandidat_belum_dikurasi,TheMealDB API
+TAG-182BFE393909,RCP-TMDB-53183,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-71354EB94C36,RCP-TMDB-53183,kategori_sumber_miscellaneous,TheMealDB API
+TAG-02A9A0FA9C3C,RCP-TMDB-52849,kandidat_belum_dikurasi,TheMealDB API
+TAG-DFFA3BFC4281,RCP-TMDB-52849,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-7CBF6FF34C19,RCP-TMDB-52849,kategori_sumber_vegetarian,TheMealDB API
+TAG-BA723472F252,RCP-TMDB-53309,kandidat_belum_dikurasi,TheMealDB API
+TAG-BB26E1E25520,RCP-TMDB-53309,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-CE312C991532,RCP-TMDB-53309,kategori_sumber_vegetarian,TheMealDB API
+TAG-F0E5316E077F,RCP-TMDB-53151,kandidat_belum_dikurasi,TheMealDB API
+TAG-2161E023DFB8,RCP-TMDB-53151,slot_saran_belum_diatur,TAKARKUY; penempatan sementara
+TAG-2C6ECA2902ED,RCP-TMDB-53151,kategori_sumber_seafood,TheMealDB API
+TAG-8137A12D3053,RCP-TMDB-52770,halal,TheMealDB API; kurasi TAKARKUY
+TAG-26CEE1E9D386,RCP-TMDB-52770,kategori_sumber_themealdb,TheMealDB API; kurasi TAKARKUY
+TAG-3B7D9B9EB5A8,RCP-TMDB-52770,makan_malam,TheMealDB API; kurasi TAKARKUY
+TAG-5CB4AA27367A,RCP-TMDB-52770,seimbang_internal,TheMealDB API; kurasi TAKARKUY
+TAG-0B24B30A5D0E,RCP-TMDB-52770,takaran_estimasi,TheMealDB API; kurasi TAKARKUY
+TAG-46D19F2B1C99,RCP-TMDB-52770,tinggi_protein,TheMealDB API; kurasi TAKARKUY
+TAG-EAC923A6D859,RCP-TMDB-52771,halal,TheMealDB API; kurasi TAKARKUY
+TAG-6853408ABF89,RCP-TMDB-52771,kategori_sumber_themealdb,TheMealDB API; kurasi TAKARKUY
+TAG-168F6DE905F9,RCP-TMDB-52771,makan_malam,TheMealDB API; kurasi TAKARKUY
+TAG-EC56151C9FD6,RCP-TMDB-52771,rendah_kalori,TheMealDB API; kurasi TAKARKUY
+TAG-1F65DA6C1EE2,RCP-TMDB-52771,takaran_estimasi,TheMealDB API; kurasi TAKARKUY
+TAG-FB14A9221064,RCP-TMDB-52771,vegetarian,TheMealDB API; kurasi TAKARKUY
+TAG-50F41F83BAFD,RCP-TMDB-52998,halal,TheMealDB API; kurasi TAKARKUY
+TAG-479FB2E597D6,RCP-TMDB-52998,kategori_sumber_themealdb,TheMealDB API; kurasi TAKARKUY
+TAG-62AC4A19EAC7,RCP-TMDB-52998,makan_malam,TheMealDB API; kurasi TAKARKUY
+TAG-C4F71139F61A,RCP-TMDB-52998,rendah_kalori,TheMealDB API; kurasi TAKARKUY
+TAG-97983D44F73E,RCP-TMDB-52998,seimbang_internal,TheMealDB API; kurasi TAKARKUY
+TAG-243C6C9CE2CA,RCP-TMDB-52998,takaran_estimasi,TheMealDB API; kurasi TAKARKUY
+TAG-CDD30327B803,RCP-TMDB-52998,tinggi_protein,TheMealDB API; kurasi TAKARKUY
 TAG-3CE7215BAF61,RCP-KAGGLE-4473027,takaran_estimasi,TAKARKUY estimasi v2
 TAG-E6AF81D7FF69,RCP-KAGGLE-4473027,halal,TAKARKUY heuristik daftar bahan estimasi
 TAG-BB98929146CB,RCP-KAGGLE-4473027,makan_siang,TAKARKUY heuristik daftar bahan estimasi

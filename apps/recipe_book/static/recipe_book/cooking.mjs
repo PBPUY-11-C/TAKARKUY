@@ -1,7 +1,7 @@
-export function cookingPayload(dataset, fields, manual) {
+export function cookingPayload(dataset, fields, manual, externalIngredients = []) {
   const payload = {recipe_code: dataset.code, servings: Number(fields.servings.value),
-    include_staples: fields.include_staples.checked,
     allow_unknown_expiry: fields.allow_unknown_expiry.checked, manual};
+  if (externalIngredients.length) payload.external_ingredients = externalIngredients;
   if (dataset.slot) { payload.planned_meal = Number(dataset.slot); payload.version = Number(dataset.version); }
   return payload;
 }

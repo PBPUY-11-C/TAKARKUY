@@ -1,0 +1,29 @@
+<a class="panel recipe-card" href="?{{ query_params }}&amp;recipe={{ recipe.pk|urlencode }}&amp;page={{ recipes.number }}#recipe-detail">
+  {% if recipe.photo %}
+  <img class="recipe-card-photo" src="{{ recipe.photo.image_url }}" alt="" loading="lazy">
+  {% else %}
+  <div class="recipe-card-photo-placeholder" aria-label="Foto belum tersedia">
+  <span aria-hidden="true">♨</span>
+  <small>Foto belum tersedia</small>
+  </div>
+  {% endif %}
+  <h3>{{ recipe.name }}</h3>
+  {% if recipe.stock_match %}
+  <p class="stock-match">
+  <strong>Stok cocok {{ recipe.stock_match.coverage_percent }}%</strong>
+  {% if recipe.stock_match.missing_names %}
+  <small>Kurang: {{ recipe.stock_match.missing_names|join:', ' }}</small>
+  {% endif %}
+  {% if recipe.stock_match.unknown_expiry %}
+  <small>Tanggal kedaluwarsa sebagian stok belum diketahui</small>
+  {% endif %}
+  </p>
+  {% endif %}
+  {% if recipe.instruction_status == 'withheld' %}
+  <small class="recipe-guidance-notice">Panduan memasak belum tersedia</small>
+  {% endif %}
+  {% if recipe.photo %}
+  <small class="photo-credit">{{ recipe.photo.creator }} · {{ recipe.photo.license_name }}</small>
+  {% endif %}
+  <span class="quiet-link">Lihat resep →</span>
+  </a>

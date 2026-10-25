@@ -13,10 +13,13 @@ class Element{
 }
 function setup(){
   const rows=new Map(),get=k=>{if(!rows.has(k))rows.set(k,new Element());return rows.get(k);};
-  get('#review-form').dataset={code:'TEST',url:'/modul4/review/',version:'2'};
-  get('#review-form').elements={rating:{value:'5'},comment:{value:'<script>user text</script>'}};
+  get('#review-form').dataset={code:'TEST',url:'/modul4/review/',photoDeleteUrl:'/modul4/review/photo/delete/',version:'2'};
+  const elements={rating:{value:'5'},comment:{value:'<script>user text</script>'},
+    photo:Object.assign(new Element(),{files:[]}),photo_permission:{checked:false}};
+  elements.namedItem=name=>elements[name]??null;
+  get('#review-form').elements=elements;
   let requests=[],ok=false,reloads=0;
-  runInNewContext(script,{document:{querySelector:get},window:{confirm:()=>true},location:{reload:()=>reloads++},
+  runInNewContext(script,{document:{querySelector:get},window:{confirm:()=>true,addEventListener(){}},location:{reload:()=>reloads++},
     fetch:async(url,o)=>{requests.push(JSON.parse(o.body));return{ok,json:async()=>ok?{version:3}:{error:'<img onerror=alert(1)>'}};}});
   return{get,requests,setOK:v=>ok=v,reloads:()=>reloads};
 }
@@ -28,4 +31,12 @@ test('review edits include own version and errors render as text',async()=>{
 test('delete is explicit and preserves required version',async()=>{
   const ui=setup();ui.setOK(true);ui.get('#delete-review').listeners.click();await new Promise(r=>setImmediate(r));
   assert.equal(ui.requests[0].action,'delete');assert.equal(ui.requests[0].version,2);assert.equal(ui.reloads(),1);
+});
+test('photo deletion sends version and reloads while preserving the written review',async()=>{
+  const ui=setup();ui.setOK(true);
+  ui.get('#delete-review-photo').listeners.click({currentTarget:ui.get('#delete-review-photo')});
+  await new Promise(r=>setImmediate(r));
+  assert.equal(ui.requests[0].recipe_code,'TEST');
+  assert.equal(ui.requests[0].version,2);
+  assert.equal(ui.reloads(),1);
 });

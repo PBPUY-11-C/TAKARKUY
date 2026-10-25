@@ -1,22 +1,24 @@
 import json
 from datetime import timedelta
 from decimal import Decimal
+from unittest.mock import patch
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.db import IntegrityError, transaction
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.preferences import preferences_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
 from apps.catalog.aggregation import expected_allergens
-from apps.catalog.models import Ingredient, Recipe, RecipeIngredient, RecipeTag
+from apps.catalog.models import Ingredient, IngredientAlias, Recipe, RecipeIngredient, RecipeTag
 from apps.pantry.models import PantryItem, PantryMovement, PantryOperation
 from apps.pantry.services import StockError, plan_consumption
 
-from .models import CookingHistory
+from .models import CookingHistory, RecipeFavorite, RecipeNote
 from .services import cook, preview_cooking, recipe_query, stock_matches
 
 
@@ -112,6 +114,72 @@ class CookingTests(TestCase):
         preferences.save()
         self.assertEqual(self.post("modul4-cook").status_code, 404)
         self.assertFalse(CookingHistory.objects.exists())
+
+    def test_recipe_search_matches_reviewed_ingredient_aliases_only(self):
+        IngredientAlias.objects.create(
+            alias_code="TEST-BAYAM-ALIAS",
+            source="uji kurasi",
+            raw_name="Sayur Bayem",
+            ingredient=self.ingredient,
+            mapping_status="reviewed",
+        )
+        IngredientAlias.objects.create(
+            alias_code="TEST-BAYAM-CANDIDATE",
+            source="uji belum ditinjau",
+            raw_name="Kangkung",
+            ingredient=self.ingredient,
+            mapping_status="candidate",
+        )
+
+        response = self.client.get(reverse("modul4"), {"q": "bayem"})
+        self.assertEqual(response.context["recipes"].paginator.count, 1)
+        self.assertContains(response, "Sup bayam")
+        response = self.client.get(reverse("modul4"), {"q": "kangkung"})
+        self.assertEqual(response.context["recipes"].paginator.count, 0)
+
+    def test_recipe_notes_are_private_editable_and_deletable(self):
+        payload = {"recipe_code": self.recipe.pk, "content": "Kurangi cabai; masak 3 menit lebih lama."}
+        response = self.post("modul4-note", payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["saved"])
+        self.assertEqual(RecipeNote.objects.get(user=self.user).content, payload["content"])
+
+        own_page = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
+        self.assertContains(own_page, payload["content"])
+        self.client.force_login(self.other)
+        other_page = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
+        self.assertNotContains(other_page, payload["content"])
+
+        self.client.force_login(self.user)
+        response = self.post("modul4-note", {**payload, "content": "Tambahkan jeruk nipis."})
+        self.assertTrue(response.json()["saved"])
+        self.assertEqual(RecipeNote.objects.get(user=self.user).content, "Tambahkan jeruk nipis.")
+        response = self.post("modul4-note", {**payload, "content": "   "})
+        self.assertFalse(response.json()["saved"])
+        self.assertFalse(RecipeNote.objects.exists())
+
+    def test_recipe_note_rejects_invalid_content(self):
+        for content in (None, 12, "x" * 2001):
+            self.assertEqual(
+                self.post("modul4-note", {"recipe_code": self.recipe.pk, "content": content}).status_code,
+                400,
+            )
+
+    @patch("apps.recipe_book.views.estimated_recipe_cost", return_value=12345)
+    def test_serving_price_estimate_uses_selected_portion_count(self, estimate):
+        response = self.post(
+            "modul4-estimate", {"recipe_code": self.recipe.pk, "servings": 4}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"servings": 4, "cost": 12345})
+        estimate.assert_called_once_with(self.recipe, 4)
+        for servings in (True, 0, 11, "4"):
+            self.assertEqual(
+                self.post(
+                    "modul4-estimate", {"recipe_code": self.recipe.pk, "servings": servings}
+                ).status_code,
+                400,
+            )
 
     def test_preview_cook_and_replay_use_same_ledger(self):
         early = self.batch(
@@ -211,6 +279,32 @@ class CookingTests(TestCase):
         self.assertEqual(self.post("modul4-cook").status_code, 409)
         self.assertEqual(CookingHistory.objects.count(), 1)
 
+    def test_slot_cook_rejects_stale_plan_version_without_consuming_stock(self):
+        batch = self.batch(quantity=300)
+        slot = self.slot()
+        self.payload.update(planned_meal=slot.pk, version=slot.plan.version + 1)
+
+        response = self.post("modul4-cook")
+
+        self.assertEqual(response.status_code, 409)
+        batch.refresh_from_db()
+        self.assertEqual(batch.quantity, 300)
+        self.assertFalse(PantryMovement.objects.exists())
+        self.assertFalse(CookingHistory.objects.exists())
+
+    def test_slot_cook_rejects_portion_different_from_planner_slot(self):
+        batch = self.batch(quantity=300)
+        slot = self.slot()
+        self.payload.update(planned_meal=slot.pk, version=slot.plan.version, servings=1)
+
+        response = self.post("modul4-cook")
+
+        self.assertEqual(response.status_code, 400)
+        batch.refresh_from_db()
+        self.assertEqual(batch.quantity, 300)
+        self.assertFalse(PantryMovement.objects.exists())
+        self.assertFalse(CookingHistory.objects.exists())
+
     def test_missing_version_and_draft_cooking_rejected(self):
         self.batch()
         slot = self.slot()
@@ -272,6 +366,55 @@ class CookingTests(TestCase):
         batch.refresh_from_db()
         self.assertEqual(batch.quantity, Decimal("50"))
 
+    def test_favorites_are_idempotent_personal_and_inactive_visible(self):
+        data = {"recipe_code": self.recipe.pk, "favorite": True}
+        self.assertEqual(self.post("modul4-favorite", data).status_code, 200)
+        self.post("modul4-favorite", data)
+        self.assertEqual(RecipeFavorite.objects.count(), 1)
+        self.recipe.is_active = False
+        self.recipe.save()
+        self.assertContains(self.client.get(reverse("modul4")), "Tidak tersedia")
+        self.client.force_login(self.other)
+        self.assertNotContains(self.client.get(reverse("modul4")), "Sup bayam")
+        self.client.force_login(self.user)
+        self.assertEqual(self.post("modul4-favorite", {**data, "favorite": False}).status_code, 200)
+
+    def test_guidance_visible_by_default_with_optional_guidance_filter(self):
+        self.recipe.instruction_status = "withheld"
+        self.recipe.save()
+        response = self.client.get(reverse("modul4"))
+        self.assertContains(response, "Sup bayam")
+        self.assertNotContains(response, "Rebus air.")
+        self.assertContains(response, "1 resep belum memiliki panduan memasak")
+        filtered = self.client.get(reverse("modul4"), {"guidance": "1"})
+        self.assertNotContains(filtered, "Sup bayam")
+        response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
+        self.assertContains(response, "Panduan memasak belum tersedia")
+        self.assertNotContains(response, "Rebus air")
+
+    def test_allergen_index_changes_on_ingredient_link_tag_and_delete(self):
+        self.recipe.refresh_from_db()
+        self.assertTrue(self.recipe.allergen_reviewed)
+        preference = preferences_for(self.user)
+        preference.allergens = ["kacang_pohon"]
+        preference.save(update_fields=["allergens"])
+        self.ingredient.allergens = ["kacang_pohon"]
+        self.ingredient.save()
+        self.assertFalse(recipe_query(self.user).exists())
+        self.assertContains(self.client.get(reverse("modul4")), "1 karena alergen")
+        self.ingredient.allergens = []
+        self.ingredient.save()
+        self.assertTrue(recipe_query(self.user).exists())
+        tag = RecipeTag.objects.create(
+            recipe_tag_code="TEST-MINOR", recipe=self.recipe, tag="bumbu_minor_tidak_dihitung"
+        )
+        self.assertFalse(recipe_query(self.user).exists())
+        tag.delete()
+        self.assertTrue(recipe_query(self.user).exists())
+        self.link.delete()
+        self.recipe.refresh_from_db()
+        self.assertFalse(self.recipe.allergen_reviewed)
+        call_command("rebuild_recipe_allergens", check=True, verbosity=0)
     def test_stale_aggregate_does_not_bypass_execution_screening(self):
         self.batch()
         profile = preferences_for(self.user)
@@ -285,6 +428,46 @@ class CookingTests(TestCase):
             set(self.recipe.allergen_groups.values_list("group", flat=True)),
         )
 
+    def test_api_guards_bad_inputs_csrf_and_guest(self):
+        self.batch()
+        for changes in (
+            {"servings": True},
+            {"servings": -1},
+            {"manual": {}},
+            {"recipe_code": {}},
+            {"allow_unknown_expiry": "true"},
+        ):
+            self.assertEqual(self.post("modul4-cook", {**self.payload, **changes}).status_code, 400)
+        deep = '{"manual":' + "[" * 1500 + "0" + "]" * 1500 + "}"
+        self.assertEqual(
+            self.client.post(
+                reverse("modul4-cook"), deep, content_type="application/json"
+            ).status_code,
+            400,
+        )
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.user)
+        self.assertEqual(
+            csrf_client.post(
+                reverse("modul4-cook"), json.dumps(self.payload), content_type="application/json"
+            ).status_code,
+            403,
+        )
+        self.assertEqual(
+            csrf_client.post(
+                reverse("modul4-note"),
+                json.dumps({"recipe_code": self.recipe.pk, "content": "Catatan"}),
+                content_type="application/json",
+            ).status_code,
+            403,
+        )
+        self.client.logout()
+        self.assertEqual(self.client.get(reverse("modul4")).status_code, 302)
+        self.assertEqual(self.post("modul4-cook").status_code, 403)
+        self.assertEqual(
+            self.post("modul4-note", {"recipe_code": self.recipe.pk, "content": "Catatan"}).status_code,
+            403,
+        )
     def test_manual_overuse_and_invalid_conversion_rejected(self):
         batch = self.batch(quantity=200)
         for weight, amount in (("2", "50"), ("1", "200"), ("NaN", "1"), ("0", "1")):
@@ -345,6 +528,57 @@ class CookingTests(TestCase):
         self.assertEqual(history.cooked_at, actual)
         self.assertEqual(slot.scheduled_on, timezone.localdate())
 
+    def test_stock_filters_are_read_only_and_portion_aware(self):
+        batch = self.batch(
+            quantity=99, estimated_expires_on=timezone.localdate() + timedelta(days=1)
+        )
+        self.assertNotContains(
+            self.client.get(reverse("modul4"), {"stock": "complete"}), "Sup bayam"
+        )
+        self.assertContains(self.client.get(reverse("modul4"), {"stock": "soon"}), "Sup bayam")
+        batch.quantity = 100
+        batch.save()
+        self.assertContains(self.client.get(reverse("modul4"), {"stock": "complete"}), "Sup bayam")
+        self.assertFalse(PantryMovement.objects.exists())
+
+    def test_best_stock_filter_ranks_recipes_and_explains_missing_ingredients(self):
+        self.batch(quantity=40)
+        better_match = Recipe.objects.create(
+            recipe_code="TEST-SUP-ALT",
+            name="Sup Bayam Lebih Cocok",
+            base_servings=2,
+            meal_type="makan_malam",
+            is_plannable=True,
+            instructions="Masak bayam.",
+            instruction_status="authored_reviewed",
+            instruction_review_note="Panduan tim diuji.",
+            instruction_reviewed_on=timezone.localdate(),
+            source_url="https://example.org",
+        )
+        RecipeTag.objects.create(recipe_tag_code="TEST-ALT-HALAL", recipe=better_match, tag="halal")
+        RecipeIngredient.objects.create(
+            recipe_ingredient_code="TEST-ALT-LINK",
+            recipe=better_match,
+            ingredient=self.ingredient,
+            quantity=50,
+            unit="g",
+            quantity_status="verified",
+        )
+
+        response = self.client.get(reverse("modul4"), {"stock": "best"})
+        content = response.content.decode()
+        self.assertEqual(response.status_code, 200)
+        cards = content[content.index('class="recipe-cards"'):]
+        self.assertLess(cards.index("Sup Bayam Lebih Cocok"), cards.index("Sup bayam"))
+        self.assertContains(response, "Stok cocok 80%")
+        self.assertContains(response, "Stok cocok 40%")
+        self.assertContains(response, "Kurang: Bayam")
+        self.assertFalse(PantryMovement.objects.exists())
+
+    def test_best_stock_filter_explains_when_pantry_has_no_matching_stock(self):
+        response = self.client.get(reverse("modul4"), {"stock": "best"})
+        self.assertContains(response, "Belum ada kecocokan resep dengan bahan di Pantry")
+        self.assertEqual(response.context["recipes"].paginator.count, 0)
     def test_stock_matches_counts_unknown_expiry_and_flags_it(self):
         self.batch(estimated_expires_on=None, expiry_source="unknown")
         [row] = stock_matches(self.user, 2)
