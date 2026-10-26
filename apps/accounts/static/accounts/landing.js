@@ -131,6 +131,6 @@
 
   calculate();
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    setInterval(() => { tick += 1; renderMenu(); }, 2500);
+    setInterval(() => { tick += 1; renderMenu(); }, 5000);
   }
 })();

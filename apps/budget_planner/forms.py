@@ -26,11 +26,13 @@ class PlannerForm(forms.Form):
         ("rendah_kalori", "Rendah kalori"),
     ]
     budget = forms.CharField(
+        label="Budget",
         widget=forms.TextInput(
             attrs={"inputmode": "numeric", "autocomplete": "off", "class": "js-rupiah-input"}
         ),
     )
     days = forms.IntegerField(
+        label="Hari",
         min_value=1,
         max_value=7,
         widget=forms.NumberInput(
@@ -43,6 +45,7 @@ class PlannerForm(forms.Form):
         },
     )
     servings = forms.IntegerField(
+        label="Orang",
         min_value=1,
         max_value=10,
         widget=forms.NumberInput(
@@ -55,16 +58,19 @@ class PlannerForm(forms.Form):
         },
     )
     meal_types = forms.MultipleChoiceField(
+        label="Waktu makan",
         choices=MEAL_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         error_messages={"required": "Pilih minimal satu waktu makan."},
     )
     targets = forms.MultipleChoiceField(
+        label="Target gizi",
         choices=TARGET_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         error_messages={"required": "Pilih minimal satu target gizi."},
     )
     exclude_ingredients = forms.CharField(
+        label="Bahan dihindari",
         required=False,
         max_length=250,
         widget=forms.TextInput(
@@ -77,7 +83,9 @@ class PlannerForm(forms.Form):
         ("yes", "Selalu tambahkan"),
         ("no", "Tanpa nasi"),
     ]
-    rice = forms.ChoiceField(choices=RICE_CHOICES, required=False, initial="auto")
+    rice = forms.ChoiceField(
+        label="Nasi untuk lauk", choices=RICE_CHOICES, required=False, initial="auto"
+    )
 
     def clean_rice(self):
         # Plans saved before this option existed had no rice; keep them that way.
@@ -101,6 +109,8 @@ class PlannerForm(forms.Form):
     def clean_budget(self):
         raw = str(self.cleaned_data["budget"]).strip()
         # Accept Indonesian thousands separators, e.g. 10.000 or Rp 10.000.
+        if "," in raw:
+            raise forms.ValidationError("Tulis tanpa koma atau sen, misalnya 150.000.")
         normalized = raw.replace("Rp", "").replace("rp", "").replace(".", "").replace(" ", "")
         if not normalized.isascii() or not normalized.isdigit():
             raise forms.ValidationError("Masukkan nominal rupiah dengan angka, misalnya 10.000.")

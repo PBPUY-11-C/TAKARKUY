@@ -2,6 +2,7 @@ from decimal import Decimal
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from apps.catalog.models import Ingredient, IngredientPrice, Recipe
@@ -13,12 +14,20 @@ from .planner import (
     build_plan,
     money,
     purchase_grams,
+    replacement_options,
 )
 from .purchase_units import load_fruit_rules, whole_fruit_quote
 
 
 class PlannerCatalogTests(TestCase):
     fixtures = ["catalog_seed"]
+
+    def setUp(self):
+        self.client.force_login(get_user_model().objects.create_user("planner-catalog"))
+
+    def post_planner(self, data):
+        # The planner redirects to the generated draft (Post/Redirect/Get).
+        return self.client.post("/planner/", {**data, "new_plan": "1"}, follow=True)
 
     def test_whole_chicken_purchase_uses_gross_mass_but_nutrition_uses_meat(self):
         recipe = Recipe.objects.get(pk="RCP-KAGGLE-4473027")
@@ -48,8 +57,7 @@ class PlannerCatalogTests(TestCase):
         self.assertEqual(result["schedule"][0]["protein"], money(protein / recipe.base_servings))
         self.assertTrue(result["purchase_yield_estimates"])
         self.assertIn("Daun Salam Segar (Estimasi)", result["nutrition_proxy_names"])
-        response = self.client.post(
-            "/planner/",
+        response = self.post_planner(
             {
                 "budget": "100000",
                 "days": "1",
@@ -88,8 +96,7 @@ class PlannerCatalogTests(TestCase):
         self.assertEqual(
             ingredients["Parsley Segar"]["price_reference"], "UbiFresh Pasar Modern BSD"
         )
-        response = self.client.post(
-            "/planner/",
+        response = self.post_planner(
             {
                 "budget": "100000",
                 "days": "1",
@@ -153,6 +160,61 @@ class PlannerCatalogTests(TestCase):
         self.assertLess(combined["cost"], daily["cost"] * 3)
         self.assertGreater(combined["leftover_edible_grams"], 0)
 
+    def test_generous_budget_does_not_fill_breakfast_with_fruit_only_recipes(self):
+        fruit = {
+            recipe.pk
+            for recipe in Recipe.objects.filter(is_active=True, is_plannable=True)
+            if {link.ingredient.category for link in recipe.recipeingredient_set.all()}
+            == {"buah"}
+        }
+        self.assertTrue(fruit)
+        for seed in range(5):
+            result = build_plan(
+                budget=Decimal("150000"),
+                days=3,
+                servings=2,
+                meal_types=["sarapan"],
+                targets=["seimbang"],
+                exclude_ingredients=[],
+                seed=seed,
+            )
+            chosen = {meal["recipe_code"] for day in result["schedule"] for meal in day["meals"]}
+            self.assertFalse(chosen & fruit, seed)
+
+    def test_replacement_options_rank_target_fit_then_price_change(self):
+        inputs = dict(
+            budget=Decimal("150000"),
+            days=1,
+            servings=1,
+            meal_types=["sarapan"],
+            targets=["seimbang"],
+            exclude_ingredients=[],
+        )
+        plan = build_plan(**inputs, seed=1)
+        schedule = [{"sarapan": plan["schedule"][0]["meals"][0]["recipe_code"]}]
+        options = replacement_options(
+            **inputs, schedule=schedule, day=1, meal="sarapan", current_total=plan["total"]
+        )
+        balanced = set(
+            Recipe.objects.filter(recipetag__tag="seimbang_internal").values_list("pk", flat=True)
+        )
+        fruit = {
+            recipe.pk
+            for recipe in Recipe.objects.filter(is_active=True, is_plannable=True)
+            if {link.ingredient.category for link in recipe.recipeingredient_set.all()}
+            == {"buah"}
+        }
+        ranks = [
+            (option["recipe_code"] in fruit, option["recipe_code"] not in balanced)
+            for option in options
+        ]
+        self.assertGreater(len(options), 10)
+        self.assertEqual(ranks, sorted(ranks))
+        for rank in set(ranks):
+            deltas = [o["delta"] for o, r in zip(options, ranks, strict=True) if r == rank]
+            self.assertEqual(deltas, sorted(deltas))
+        self.assertTrue(all(set(option) == {"recipe_code", "name", "delta"} for option in options))
+
     def test_three_people_one_day_and_one_person_three_days_buy_same_fruit(self):
         Recipe.objects.exclude(pk="RCP-MVP-022").update(is_active=False)
         self.assertTrue(Recipe.objects.get(pk="RCP-MVP-022").is_plannable)
@@ -178,8 +240,7 @@ class PlannerCatalogTests(TestCase):
             self.assertEqual(first[name]["purchase_units"], second[name]["purchase_units"])
             self.assertEqual(first[name]["cost"], second[name]["cost"])
             self.assertGreater(first[name]["leftover_edible_grams"], 0)
-        response = self.client.post(
-            "/planner/",
+        response = self.post_planner(
             {
                 "budget": "18.000",
                 "days": "3",
@@ -341,8 +402,7 @@ class PlannerCatalogTests(TestCase):
             )
 
     def test_nutritional_result_renders_daily_targets(self):
-        response = self.client.post(
-            "/planner/",
+        response = self.post_planner(
             {
                 "budget": "300.000",
                 "days": "1",
@@ -356,6 +416,23 @@ class PlannerCatalogTests(TestCase):
         self.assertContains(response, "minimal 80 g protein")
         self.assertContains(response, "maksimal 1150 kkal")
         self.assertContains(response, "kkal / orang (waktu makan terpilih)")
+
+    def test_budget_rejects_cents_and_explains_invalid_input(self):
+        base = {"days": "1", "servings": "1", "meal_types": ["sarapan"], "targets": ["seimbang"]}
+        for raw in ("Rp 150.000", "150000", "rp150000"):
+            form = PlannerForm({**base, "budget": raw})
+            self.assertTrue(form.is_valid(), (raw, form.errors))
+            self.assertEqual(form.cleaned_data["budget"], Decimal("150000"))
+        for raw in ("Rp 150.000,00", "150.000,50"):
+            form = PlannerForm({**base, "budget": raw})
+            self.assertEqual(
+                form.errors["budget"], ["Tulis tanpa koma atau sen, misalnya 150.000."]
+            )
+        response = self.post_planner({**base, "budget": "seratus ribu", "meal_types": []})
+        self.assertContains(
+            response, "Budget: Masukkan nominal rupiah dengan angka, misalnya 10.000."
+        )
+        self.assertContains(response, "Waktu makan: Pilih minimal satu waktu makan.")
 
     def test_balanced_cannot_be_combined_with_specific_targets(self):
         form = PlannerForm(

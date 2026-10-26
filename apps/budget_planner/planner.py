@@ -310,6 +310,11 @@ def _target_fit(items, targets):
     return {code: value / len(keys) for code, value in fit.items()}
 
 
+def fruit_only(item):
+    """A recipe made only of fruit is a light snack, not a full meal."""
+    return all(link.ingredient.category == "buah" for link in item["ingredients"])
+
+
 def _candidate_pool(items, size, days, rng, recent_codes, targets):
     """Pick a varied, price-spread subset of recipes for one meal.
 
@@ -1243,6 +1248,13 @@ def _build_plan(
 
     for meal in available_meals:
         candidates[meal].sort(key=lambda item: item["recipe"].pk)
+        if fixed_schedule is None:
+            # Fruit-only recipes are the priciest breakfasts yet the least filling, so
+            # the 60% spending target would pick them. Generate full meals when any
+            # exist; the user can still choose fruit through Ganti Menu.
+            meals_only = [item for item in candidates[meal] if not fruit_only(item)]
+            if meals_only:
+                candidates[meal] = meals_only
         prior_codes = prior_slot_recipes.get(meal, [])
         if fixed_schedule is None and days == 1 and prior_codes and prior_codes[0]:
             alternatives = [
@@ -1595,6 +1607,7 @@ def replacement_options(
             frozen_days=frozen_days,
         )["net_total"]
     options = []
+    fit = _target_fit(candidates.get(meal, []), targets)
     for item in candidates.get(meal, []):
         if item["recipe"].pk == current_code:
             continue
@@ -1619,6 +1632,16 @@ def replacement_options(
                 "recipe_code": item["recipe"].pk,
                 "name": item["recipe"].name,
                 "delta": int(quote["net_total"] - Decimal(current_total)),
+                "rank": (fruit_only(item), -fit[id(item)]),
             }
         )
-    return sorted(options, key=lambda option: (option["name"].casefold(), option["recipe_code"]))
+    # Full meals that best suit the nutrition target first, then the cheapest change.
+    options.sort(
+        key=lambda option: (
+            option.pop("rank"),
+            option["delta"],
+            option["name"].casefold(),
+            option["recipe_code"],
+        )
+    )
+    return options
