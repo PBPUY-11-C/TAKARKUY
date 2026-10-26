@@ -184,7 +184,7 @@ class AccountFlowTests(TestCase):
 
         for name in ("modul2", "modul4"):
             response = self.client.get(reverse(name))
-            self.assertTemplateUsed(response, "kosong.html")
+            self.assertTemplateUsed(response, f"{name}.html")
             self.assertContains(
                 response,
                 'aria-label="Profil dan preferensi"',
