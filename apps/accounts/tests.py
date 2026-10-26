@@ -187,7 +187,7 @@ class AccountFlowTests(TestCase):
         self.client.post(reverse("login"), {**credentials, "remember_me": "1"})
         self.assertFalse(self.client.session.get_expire_at_browser_close())
 
-    def test_other_module_pages_remain_protected_placeholders(self):
+    def test_other_module_pages_require_login_and_use_shared_header(self):
         for name in ("modul2", "modul4"):
             url = reverse(name)
             self.assertRedirects(
@@ -199,7 +199,7 @@ class AccountFlowTests(TestCase):
 
         for name in ("modul2", "modul4"):
             response = self.client.get(reverse(name))
-            self.assertTemplateUsed(response, "kosong.html")
+            self.assertTemplateUsed(response, f"{name}.html")
             self.assertContains(
                 response,
                 'aria-label="Profil dan preferensi"',
