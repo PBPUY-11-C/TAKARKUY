@@ -243,16 +243,11 @@ def recipe_review_photo_file(request, review_id):
     public_photo = (
         review.photo_permission_granted
         and review.photo_consent_at is not None
+        and review.photo_moderated_at is not None
         and not review.is_hidden
         and not review.photo_is_hidden
     )
-    if (
-        (
-            not public_photo
-        )
-        and review.user_id != request.user.pk
-        and not request.user.is_staff
-    ):
+    if not public_photo and review.user_id != request.user.pk and not request.user.is_staff:
         return JsonResponse({"error": "Foto belum tersedia untuk publik."}, status=404)
     try:
         response = FileResponse(review.photo.open("rb"), content_type="image/jpeg")

@@ -251,6 +251,19 @@ class ReviewTests(TestCase):
             other_response = photo_response(self.other)
             self.assertEqual(other_response.status_code, 404)
 
+            # An inconsistent visible flag alone must not publish or cache a
+            # photo until the moderator approval timestamp is present.
+            review.photo_is_hidden = False
+            review.save(update_fields=["photo_is_hidden"])
+            inconsistent_owner_response = photo_response(self.user)
+            self.assertEqual(
+                inconsistent_owner_response["Cache-Control"], "private, no-store"
+            )
+            inconsistent_owner_response.file_to_stream.close()
+            self.assertEqual(photo_response(self.other).status_code, 404)
+            review.photo_is_hidden = True
+            review.save(update_fields=["photo_is_hidden"])
+
             staff = get_user_model().objects.create_user("moderator", is_staff=True)
             request = RequestFactory().post("/admin/")
             request.user = staff
