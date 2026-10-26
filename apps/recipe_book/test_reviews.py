@@ -16,6 +16,8 @@ from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
 
+from apps.catalog.recipe_images import recipe_images_for
+
 from . import tests as cooking_tests
 from .admin import RecipeReviewAdmin
 from .models import CookingHistory, RecipePhotoCleanup, RecipeReview, ReviewQuota
@@ -24,6 +26,8 @@ from .reviews import (
     attach_review_photo,
     normalize_review_photo,
     public_username,
+    review_context,
+    review_photo_url,
 )
 from .services import cook
 from .views import recipe_review_photo_file
@@ -216,8 +220,9 @@ class ReviewTests(TestCase):
         upload_url = reverse("modul4-review-photo-upload")
         photo_url = reverse("modul4-review-photo", args=[review.pk])
 
-        def photo_response(user):
-            request = RequestFactory().get(photo_url)
+        def photo_response(user, version=None):
+            url = photo_url if version is None else f"{photo_url}?v={version}"
+            request = RequestFactory().get(url)
             request.user = user
             return recipe_review_photo_file(request, review.pk)
 
@@ -241,6 +246,8 @@ class ReviewTests(TestCase):
             self.assertTrue(review.photo_is_hidden)
             self.assertEqual(review.version, 2)
             self.assertTrue(review.photo.storage.exists(review.photo.name))
+            pending_url = review_photo_url(review)
+            self.assertTrue(pending_url.endswith("?v=2"))
             anonymous_response = photo_response(AnonymousUser())
             self.assertEqual(anonymous_response.status_code, 302)
             owner_response = photo_response(self.user)
@@ -273,10 +280,22 @@ class ReviewTests(TestCase):
             review.refresh_from_db()
             self.assertFalse(review.photo_is_hidden)
             self.assertEqual(review.version, 3)
+            approved_url = review_photo_url(review)
+            self.assertTrue(approved_url.endswith("?v=3"))
+            self.assertNotEqual(pending_url, approved_url)
+            stale_response = photo_response(self.other, version=2)
+            self.assertEqual(stale_response.status_code, 404)
+            self.assertEqual(stale_response["Cache-Control"], "private, no-store")
             public_response = photo_response(self.other)
             self.assertEqual(public_response.status_code, 200)
             self.assertEqual(public_response["Cache-Control"], "private, max-age=3600")
             public_response.file_to_stream.close()
+            context = review_context(self.other, self.recipe)
+            self.assertEqual(context["reviews"][0].photo_url, approved_url)
+            self.assertEqual(
+                recipe_images_for([self.recipe.pk])[self.recipe.pk]["image_url"],
+                approved_url,
+            )
 
             self.assertEqual(self.post_review(version=2).status_code, 409)
             model_admin.hide_selected_photos(
@@ -285,6 +304,14 @@ class ReviewTests(TestCase):
             review.refresh_from_db()
             self.assertTrue(review.photo_is_hidden)
             self.assertEqual(review.version, 4)
+            self.assertNotEqual(approved_url, review_photo_url(review))
+            stale_approved_response = photo_response(self.other, version=3)
+            self.assertEqual(stale_approved_response.status_code, 404)
+            self.assertEqual(stale_approved_response["Cache-Control"], "private, no-store")
+            self.assertFalse(
+                hasattr(review_context(self.other, self.recipe)["reviews"][0], "photo_url")
+            )
+            self.assertNotIn(self.recipe.pk, recipe_images_for([self.recipe.pk]))
             hidden_response = photo_response(self.user)
             self.assertEqual(hidden_response.status_code, 200)
             self.assertEqual(hidden_response["Cache-Control"], "private, no-store")

@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 from io import BytesIO
+from urllib.parse import urlencode
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
@@ -35,6 +36,12 @@ def public_username(user):
         alias = salted_hmac("recipe-review-public-author-v1", str(user.pk)).hexdigest()[:12]
         return f"Penakar #{alias}"
     return user.username
+
+
+def review_photo_url(review):
+    """Version photo URLs so moderation and consent changes bypass stale caches."""
+    path = reverse("modul4-review-photo", args=[review.pk])
+    return f"{path}?{urlencode({'v': review.version})}"
 
 
 @transaction.atomic
@@ -230,9 +237,15 @@ def review_context(user, recipe, page=1):
         entry.public_name = public_username(entry.user)
     own = RecipeReview.objects.filter(recipe=recipe, user=user).first()
     if own and own.photo:
-        own.photo_url = reverse("modul4-review-photo", args=[own.pk])
+        own.photo_url = review_photo_url(own)
     for entry in reviews:
-        if entry.photo and not entry.photo_is_hidden and entry.photo_permission_granted:
-            entry.photo_url = reverse("modul4-review-photo", args=[entry.pk])
+        if (
+            entry.photo
+            and not entry.photo_is_hidden
+            and entry.photo_permission_granted
+            and entry.photo_consent_at is not None
+            and entry.photo_moderated_at is not None
+        ):
+            entry.photo_url = review_photo_url(entry)
     can_review = CookingHistory.objects.filter(user=user, recipe=recipe).exists()
     return {"review_stats": stats, "reviews": reviews, "own_review": own, "can_review": can_review}

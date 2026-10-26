@@ -5,7 +5,6 @@ from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlencode
 
-
 MAPPING_PATH = Path(__file__).resolve().parents[2] / "data" / "mapping" / "recipe_image_mapping.csv"
 
 
@@ -48,7 +47,7 @@ def recipe_images_for(recipe_codes):
     from django.urls import reverse
 
     from apps.recipe_book.models import RecipeReview
-    from apps.recipe_book.reviews import public_username
+    from apps.recipe_book.reviews import public_username, review_photo_url
 
     source_base = reverse("modul4")
     reviews = (
@@ -60,6 +59,7 @@ def recipe_images_for(recipe_codes):
             is_hidden=False,
             photo_permission_granted=True,
             photo_consent_at__isnull=False,
+            photo_moderated_at__isnull=False,
         )
         .select_related("recipe", "user")
         .order_by("recipe_id", "-updated_at", "-pk")
@@ -69,7 +69,7 @@ def recipe_images_for(recipe_codes):
             continue
         review_url = f"{source_base}?{urlencode({'recipe': review.recipe_id})}#recipe-reviews"
         images[review.recipe_id] = {
-            "image_url": reverse("modul4-review-photo", args=[review.pk]),
+            "image_url": review_photo_url(review),
             "source_url": review_url,
             "creator": public_username(review.user),
             "license_name": "Foto komunitas · izin untuk TAKARKUY",

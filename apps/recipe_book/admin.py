@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.db import transaction
 from django.db.models import F
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 
 from .models import RecipeDataReport, RecipeReview
+from .reviews import review_photo_url
 
 
 @admin.register(RecipeDataReport)
@@ -61,7 +61,11 @@ class RecipeReviewAdmin(admin.ModelAdmin):
     def photo_moderation(self, obj):
         if not obj.photo:
             return "—"
-        return format_html('<a href="{}">Lihat foto</a> · {}', reverse("modul4-review-photo", args=[obj.pk]), "Menunggu" if obj.photo_is_hidden else "Tampil")
+        return format_html(
+            '<a href="{}">Lihat foto</a> · {}',
+            review_photo_url(obj),
+            "Menunggu" if obj.photo_is_hidden else "Tampil",
+        )
 
     def has_add_permission(self, request):
         return False

@@ -238,6 +238,11 @@ def recipe_review_photo(request):
 @login_required
 def recipe_review_photo_file(request, review_id):
     review = get_object_or_404(RecipeReview, pk=review_id)
+    requested_version = request.GET.get("v")
+    if requested_version is not None and requested_version != str(review.version):
+        response = JsonResponse({"error": "Foto sudah berubah. Muat ulang halaman."}, status=404)
+        patch_cache_control(response, private=True, no_store=True)
+        return response
     if not review.photo:
         return JsonResponse({"error": "Foto tidak tersedia."}, status=404)
     public_photo = (
@@ -275,14 +280,19 @@ def book_page(request):
     ).distinct()
     if profile.halal_only:
         baseline = baseline.filter(recipetag__tag="halal")
-    unknown_count = baseline.filter(allergen_reviewed=False).count() if groups else 0
-    allergen_count = (
-        baseline.filter(allergen_reviewed=True, allergen_groups__group__in=groups)
-        .distinct()
-        .count()
-        if groups
-        else 0
-    )
+    if groups:
+        allergen_counts = baseline.aggregate(
+            unknown=Count("pk", filter=Q(allergen_reviewed=False), distinct=True),
+            blocked=Count(
+                "pk",
+                filter=Q(allergen_reviewed=True, allergen_groups__group__in=groups),
+                distinct=True,
+            ),
+        )
+        unknown_count = allergen_counts["unknown"]
+        allergen_count = allergen_counts["blocked"]
+    else:
+        unknown_count = allergen_count = 0
     query = recipe_query(request.user)
     available_recipe_count = query.count()
     term = request.GET.get("q", "").strip()[:100]

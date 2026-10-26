@@ -187,6 +187,7 @@ class AccountFlowTests(TestCase):
         response = self.client.get(reverse("modul4"))
         self.assertTemplateUsed(response, "partials/head.html")
         self.assertTemplateUsed(response, "partials/app_header.html")
+        self.assertEqual(response.content.lower().count(b"<title>"), 1)
         self.assertContains(response, "TAKARKUY")
         self.assertContains(response, "Meal Planner")
         self.assertContains(response, f'href="{reverse("landing")}"')
@@ -195,6 +196,7 @@ class AccountFlowTests(TestCase):
 
         for name in ("modul1", "modul3"):
             response = self.client.get(reverse(name))
+            self.assertEqual(response.content.lower().count(b"<title>"), 1)
             self.assertContains(response, f'href="{reverse("landing")}"')
             self.assertContains(response, f'href="{reverse("modul3")}"')
             self.assertContains(response, 'action="/logout/"', count=1)
