@@ -4,8 +4,9 @@
 <head>
   {% include 'partials/head.html' with page_title="Smart Pantry" page_description="Pindai struk dan catat stok dapur TAKARKUY." %}
 
+  /* tabel tar ganti warna */
   <style>
-    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif; }
+    body { margin: 0; color: var(--ink); background: #f6f8fc;} /* background mengikuti planner.css */
     a { color: inherit; text-decoration: none; }
     button, input, select { font: inherit; }
     button:disabled { cursor: not-allowed; }
@@ -18,7 +19,7 @@
     .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--green); color: #fff; font-size: 22px; }
     .back-link { color: var(--green); font-size: 13px; font-weight: 700; }
     .back-link:hover { text-decoration: underline; }
-    .page { max-width: 1380px; margin: 0 auto; padding: 30px 24px 80px; }
+    .page { max-width:1160px; margin: auto;  padding:32px clamp(16px,4vw,32px) 72px; } /* ukuran page mengikuti planner.css */
     .page-intro { margin-bottom: 18px; }
     .eyebrow { margin: 0 0 5px; color: var(--green); font-size: 10px; font-weight: 800; letter-spacing: .12em; }
     h1, h2, p { margin-top: 0; }
@@ -147,11 +148,10 @@
 <body>
   {% include 'partials/app_header.html' %}
 
-
   <main class="page">
     <div class="page-intro">
-      <p class="eyebrow">SIMULASI MODUL 2</p>
-      <h1>Kelola Stok Dapur</h1>
+      <p class="eyebrow">PANTRY</p>
+      <h1>Stok Dapur</h1>
       {% if messages %}<ul class="feedback-list" role="status">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
     </div>
 
@@ -160,36 +160,71 @@
         <div class="panel-top">
           <div class="panel-heading">
             <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v17l-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
-            <div><h2 id="scan-title">Pindai Struk Belanja Kasir / Pasar</h2><p class="panel-subtitle">Hasil pemindaian otomatis struk. Periksa kembali item sebelum disimpan.</p></div>
+            <div>
+              <h2 id="scan-title">Pindai Struk Belanja Kasir / Pasar</h2>
+              <p class="panel-subtitle">Hasil pemindaian otomatis struk. Periksa kembali item sebelum disimpan.</p>
+            </div>
           </div>
           <span class="preview-badge">Pindai &amp; Periksa</span>
         </div>
 
         <div class="receipt-summary">
           <span class="receipt-icon" aria-hidden="true">▤</span>
-          <div class="receipt-copy"><strong id="receipt-name">Belum ada struk dipilih</strong><p id="scan-progress">Pilih foto struk yang jelas untuk mulai memindai.</p></div>
+          <div class="receipt-copy">
+            <strong id="receipt-name">Belum ada struk dipilih</strong>
+            <p id="scan-progress">Pilih foto struk yang jelas untuk mulai memindai.</p>
+          </div>
           <span id="receipt-count" class="receipt-count">0 Item Terdeteksi</span>
         </div>
+
         <div class="scan-controls">
           <input id="receipt-file" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" aria-label="Foto struk belanja" data-gemini-fallback="{{ gemini_receipt_fallback|yesno:'true,false' }}">
-          <label class="button primary" for="receipt-file">📷 Unggah Struk Belanja</label>
+          <label class="button primary" for="receipt-file">
+            <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+              <path d="M0 0h24v24H0z" fill="none" />
+              <g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd">
+                <path d="M8.25 13a3.75 3.75 0 1 1 7.5 0a3.75 3.75 0 0 1-7.5 0M12 10.75a2.25 2.25 0 1 0 0 4.5a2.25 2.25 0 0 0 0-4.5" />
+                <path d="M10.616 5.75a1.89 1.89 0 0 0-1.892 1.892a1.28 1.28 0 0 1-1.175 1.275l-2.23.18a.975.975 0 0 0-.88.792a20.8 20.8 0 0 0-.098 7.181l.097.604c.092.57.561 1.005 1.137 1.052l1.943.158a55.4 55.4 0 0 0 8.964 0l1.942-.158a1.255 1.255 0 0 0 1.138-1.052l.097-.604a20.8 20.8 0 0 0-.099-7.181a.975.975 0 0 0-.88-.791l-2.229-.181a1.28 1.28 0 0 1-1.175-1.275a1.89 1.89 0 0 0-1.892-1.892zM7.23 7.438a3.393 3.393 0 0 1 3.386-3.188h2.768c1.805 0 3.28 1.41 3.386 3.188l2.032.165a2.474 2.474 0 0 1 2.232 2.007c.481 2.54.517 5.145.106 7.698l-.097.605a2.755 2.755 0 0 1-2.497 2.308l-1.942.158a57 57 0 0 1-9.208 0l-1.942-.158a2.755 2.755 0 0 1-2.497-2.308l-.097-.605a22.3 22.3 0 0 1 .106-7.698a2.475 2.475 0 0 1 2.232-2.007z" />
+              </g>
+            </svg>
+            Unggah Struk Belanja
+          </label>
           <label class="receipt-date" for="receipt-date">Tanggal belanja / mulai simpan (opsional)<input id="receipt-date" type="date" max="{{ today|date:'Y-m-d' }}"></label>
         </div>
+
         <img id="receipt-preview" class="receipt-preview" alt="Foto struk yang dipilih" hidden>
         {% if gemini_receipt_fallback %}<p class="sample-note">Jika hasil pindai kurang yakin, foto struk dikirim ke Gemini untuk dibaca ulang. Foto tidak disimpan di pantry.</p>{% endif %}
         <p id="scan-feedback" class="feedback" role="status" aria-live="polite"></p>
 
-        <div id="draft-empty" class="empty-draft"><span class="empty-draft-icon" aria-hidden="true">▤</span><p>Belum ada struk yang diunggah. Unggah struk untuk mendeteksi bahan makanan secara otomatis.</p></div>
+        <div id="draft-empty" class="empty-draft">
+          <span class="empty-draft-icon" aria-hidden="true">▤</span>
+          <p>Belum ada struk yang diunggah. Unggah struk untuk mendeteksi bahan makanan secara otomatis.</p>
+        </div>
+
         <div id="draft-table-wrap" class="table-wrap" hidden>
           <table class="draft-table">
             <thead><tr><th scope="col">Nama Bahan</th><th scope="col">Jumlah</th><th scope="col">Satuan</th><th scope="col">Aksi</th></tr></thead>
             <tbody id="draft-rows"></tbody>
           </table>
         </div>
-        <p class="sample-note">💡 Periksa kembali nama dan jumlah bahan sebelum disimpan ke pantry.</p>
+
+        <p class="sample-note">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M8.19 15.08c.26.36.62 1.38.81 2.05v2.86c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-2.86c.2-.68.56-1.7.82-2.06c.35-.5.72-.93 1.08-1.36c1.03-1.21 2.1-2.46 2.1-4.72c0-3.86-3.14-7-7-7s-7 3.14-7 7c0 2.29 1.07 3.53 2.1 4.73c.36.42.73.85 1.09 1.35ZM11 20v-2h2.02L13 20zm1-16c2.76 0 5 2.24 5 5c0 1.53-.64 2.28-1.62 3.42c-.37.43-.79.93-1.2 1.51c-.37.53-.7 1.42-.92 2.07h-2.52c-.21-.65-.55-1.55-.93-2.08c-.41-.57-.83-1.06-1.2-1.49C7.64 11.3 6.99 10.55 6.99 9c0-2.76 2.24-5 5-5Z" />
+            <path fill="currentColor" d="M12 7V5C9.79 5 8 6.79 8 9h2c0-1.1.9-2 2-2" />
+          </svg>
+          Periksa kembali nama dan jumlah bahan sebelum disimpan ke pantry.
+        </p>
+        
         <div class="panel-footer">
-          <div><span class="total-label">Baris siap diperiksa</span><strong id="draft-count" class="total-value">0 bahan</strong></div>
-          <div class="footer-actions"><button id="add-draft-row" class="button secondary" type="button">+ Tambah Baris</button><button id="save-draft" class="button primary" type="button">Simpan ke Pantry</button></div>
+          <div>
+            <span class="total-label">Baris siap diperiksa</span>
+            <strong id="draft-count" class="total-value">0 bahan</strong>
+          </div>
+          <div class="footer-actions">
+            <button id="add-draft-row" class="button secondary" type="button">+ Tambah Baris</button>
+            <button id="save-draft" class="button primary" type="button">Simpan ke Pantry</button>
+          </div>
         </div>
       </section>
 
@@ -197,7 +232,10 @@
         <div class="panel-top">
           <div class="panel-heading">
             <span class="icon green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h10M5 10h10M5 14h7"/><path d="m14 18 5-5 2 2-5 5-3 1z"/></svg></span>
-            <div><h2 id="manual-title">Input Manual Bahan Dapur</h2><p class="panel-subtitle">Tambah stok bahan dapur secara manual ke dalam sistem.</p></div>
+            <div>
+              <h2 id="manual-title">Input Manual Bahan Dapur</h2>
+              <p class="panel-subtitle">Tambah stok bahan dapur secara manual ke dalam sistem.</p>
+            </div>
           </div>
           <span class="preview-badge">Tanpa Struk</span>
         </div>
@@ -237,8 +275,10 @@
         {% endfor %}
       </tbody></table></div>
       {% else %}<p class="saved-empty">Belum ada bahan tersimpan. Pindai struk atau masukkan bahan secara manual.</p>{% endif %}
+      
       {% if used_up_items %}<details class="used-up"><summary>Stok habis (30 hari terakhir) · {{ used_up_items|length }}</summary><ul>{% for item in used_up_items %}<li><strong>{{ item.name }}</strong> · habis {{ item.updated_at|date:"d M Y" }}<ul>{% for move in item.movements.all %}<li>{{ move.created_at|date:"d M Y, H:i" }} · {{ move.get_kind_display }}: {{ move.quantity_before|floatformat:"-2" }} → {{ move.quantity_after|floatformat:"-2" }}</li>{% endfor %}</ul></li>{% endfor %}</ul></details>{% endif %}
     </section>
+
     <section class="panel pantry-list" aria-labelledby="staple-preferences-title">
       <h2 id="staple-preferences-title">Bumbu dapur yang dilacak</h2>
       <p class="sample-note">Bumbu tetap dicantumkan dengan takarannya di resep. Secara default, garam, merica, air, gula, dan penyedap tidak menghalangi ide menu atau konfirmasi masak. Pilih bumbu yang ingin Anda kelola stoknya; jika dipilih, stok harus tersedia di Pantry dan akan dikurangi saat memasak. Minyak goreng dilacak secara default agar aplikasi tidak menganggap semua dapur selalu memilikinya.</p>
@@ -249,6 +289,7 @@
         <button class="button primary" type="submit">Simpan pilihan bumbu</button>
       </form>
     </section>
+
     <section class="panel pantry-list" aria-labelledby="stock-recipes-title">
       <h2 id="stock-recipes-title">Ide Menu dari Stok</h2>
       <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, memiliki konversi berat, dan belum kedaluwarsa. Stok dengan tanggal kedaluwarsa yang belum diketahui tetap dihitung dan ditandai. Bumbu yang Anda atur untuk tidak dilacak tidak menjadi syarat stok; minyak goreng dilacak secara default. Kecocokan stok bukan jaminan keamanan bahan dan tidak mengurangi stok.</p>
