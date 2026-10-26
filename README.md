@@ -190,3 +190,5 @@ Total aplikasi **8 halaman**. Market locator berupa popup di Dashboard, bukan ha
 Modul 1 (`/planner/`) dan Modul 3 (landing, daftar, masuk, profil dan preferensi) aktif. Halaman Modul 2, 4, dan 5 masih berupa placeholder mengikuti `main`; endpoint integrasi planner tetap tersedia. Setelah daftar/masuk, pengguna diarahkan ke planner sementara Dashboard belum aktif.
 
 Jalankan `python manage.py migrate --noinput` untuk menerapkan pemisahan `FoodPreference` tanpa menghapus data preferensi lama, lalu `python manage.py collectstatic --noinput` saat deployment.
+
+Foto ulasan saat ini menggunakan `MEDIA_ROOT` lokal (`BASE_DIR / "media"`) melalui penyimpanan bawaan Django. Pada deployment, pastikan direktori media berada di disk persisten yang dicadangkan dan dapat diakses semua instance, atau konfigurasi `STORAGES["default"]` ke layanan object storage persisten yang kompatibel. Jangan mengandalkan filesystem container sementara: foto dapat hilang saat instance/deploy diganti sementara database masih menyimpan referensinya. Worker foto pada `Procfile` juga perlu dijalankan sebagai proses terpisah; memiliki definisi di `Procfile` saja tidak otomatis mengaktifkannya.

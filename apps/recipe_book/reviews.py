@@ -1,12 +1,13 @@
 """Public reviews only after cooking; account-wide quota and optimistic locking."""
 
-from io import BytesIO
 from datetime import timedelta
+from io import BytesIO
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Avg, Count
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import salted_hmac
 from PIL import Image, ImageOps, UnidentifiedImageError
@@ -15,11 +16,11 @@ from apps.budget_planner.services import PreviewRateLimit
 from apps.catalog.models import Recipe
 from apps.pantry.services import StockError
 
-from .models import CookingHistory, RecipeReview, ReviewQuota
 from . import photo_storage
+from .models import CookingHistory, RecipeReview, ReviewQuota
 
 MAX_REVIEW_PHOTO_BYTES = 6 * 1024 * 1024
-MAX_REVIEW_PHOTO_PIXELS = 40_000_000
+MAX_REVIEW_PHOTO_PIXELS = 16_000_000
 
 
 class ReviewLimited(PreviewRateLimit):
@@ -141,8 +142,10 @@ def attach_review_photo(user, code, version, upload, *, permission_granted=False
         raise ValueError("Versi ulasan tidak valid. Simpan ulasan lalu coba lagi.")
     if permission_granted is not True:
         raise ValueError("Konfirmasi hak penggunaan foto sebelum mengunggah.")
-    normalized = normalize_review_photo(upload)
+    # Reserve before Pillow decodes/normalizes the image so repeated expensive
+    # uploads are throttled even when the image is invalid or storage later fails.
     reserve_review(user)
+    normalized = normalize_review_photo(upload)
     saved_name = ""
     try:
         with transaction.atomic():
@@ -227,13 +230,9 @@ def review_context(user, recipe, page=1):
         entry.public_name = public_username(entry.user)
     own = RecipeReview.objects.filter(recipe=recipe, user=user).first()
     if own and own.photo:
-        from django.urls import reverse
-
         own.photo_url = reverse("modul4-review-photo", args=[own.pk])
     for entry in reviews:
         if entry.photo and not entry.photo_is_hidden and entry.photo_permission_granted:
-            from django.urls import reverse
-
             entry.photo_url = reverse("modul4-review-photo", args=[entry.pk])
     can_review = CookingHistory.objects.filter(user=user, recipe=recipe).exists()
     return {"review_stats": stats, "reviews": reviews, "own_review": own, "can_review": can_review}

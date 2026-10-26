@@ -1,7 +1,6 @@
 """Report missing, orphaned, and queued recipe review photo files."""
 
 import logging
-from datetime import timedelta
 
 from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand, CommandError

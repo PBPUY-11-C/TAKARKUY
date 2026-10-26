@@ -113,6 +113,23 @@ class ReviewQuota(models.Model):
         ]
 
 
+class RecipeBookPreviewQuota(models.Model):
+    """Recipe Book estimates/previews use their own account quota, separate from Planner."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True
+    )
+    window_started_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(attempts__lte=60), name="recipe_preview_quota_max_60"
+            )
+        ]
+
+
 class RecipeDataReport(models.Model):
     CATEGORY_CHOICES = [
         ("ingredients", "Bahan atau takaran"),

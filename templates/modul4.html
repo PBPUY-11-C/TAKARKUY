@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  {% include 'partials/head.html' with page_title="Recipe Book & Cooking Tracker" %}
+  <title>Resep &amp; Riwayat Masak — TAKARKUY</title>
+  {% include 'partials/head.html' %}
 
   <style>
     * { box-sizing: border-box; }
@@ -36,7 +37,7 @@
 <body>
   {% include 'partials/app_header.html' %}
   <main class="book-shell">
-    <div class="page-heading"><div><p class="eyebrow">DAPUR SAYA</p><h1>Recipe Book &amp; Cooking Tracker</h1></div><a class="quiet-link" href="{% url 'modul2' %}">Kelola pantry →</a></div>
+    <div class="page-heading"><div><p class="eyebrow">DAPUR SAYA</p><h1>Resep &amp; Riwayat Masak</h1></div><a class="quiet-link" href="{% url 'modul2' %}">Kelola pantry →</a></div>
     <div id="page-message" class="notice" role="status" hidden></div>
     <form id="csrf-bootstrap" hidden>{% csrf_token %}</form>
     <div class="book-layout">

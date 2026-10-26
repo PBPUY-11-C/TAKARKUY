@@ -8,18 +8,17 @@ from urllib.parse import urlencode
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Case, IntegerField, Q, Value, When
+from django.db.models import Case, Count, IntegerField, Q, Value, When
 from django.http import FileResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.utils.cache import patch_cache_control
+from django.views.decorators.http import require_POST
 
 from apps.accounts.preferences import effective_allergens, preferences_for
 from apps.budget_planner.models import PlannedMeal
-from apps.budget_planner.services import PreviewRateLimit, reserve_preview
 from apps.catalog.models import Ingredient, IngredientAlias, Recipe
-from apps.catalog.recipe_images import recipe_image_for, recipe_images_for
+from apps.catalog.recipe_images import recipe_images_for
 from apps.pantry.services import StockError, plan_consumption
 
 from .models import CookingHistory, RecipeDataReport, RecipeFavorite, RecipeNote, RecipeReview
@@ -31,13 +30,16 @@ from .reviews import (
     write_review,
 )
 from .services import (
+    RecipeBookRateLimit,
     cook,
     estimated_recipe_cost,
     get_recipe,
+    guidance_condition,
     preview_cooking,
     recipe_costs,
     recipe_query,
     recipe_requirements,
+    reserve_recipe_book_preview,
     slot_has_rice,
     stock_matches,
     with_guidance,
@@ -69,11 +71,14 @@ def api(view):
             if not isinstance(data, dict):
                 raise ValueError("Data harus berupa objek.")
             response = view(request, data)
-        except StockError as exc:
-            response = JsonResponse({"error": str(exc)}, status=exc.status)
-        except PreviewRateLimit as exc:
+        except RecipeBookRateLimit as exc:
             response = JsonResponse({"error": str(exc)}, status=429)
             response["Retry-After"] = str(exc.retry_after)
+        except ReviewLimited as exc:
+            response = JsonResponse({"error": str(exc)}, status=429)
+            response["Retry-After"] = str(exc.retry_after)
+        except StockError as exc:
+            response = JsonResponse({"error": str(exc)}, status=exc.status)
         except (ValueError, TypeError, RecursionError) as exc:
             response = JsonResponse(
                 {"error": str(exc) if isinstance(exc, ValueError) else "Data tidak valid."},
@@ -135,14 +140,14 @@ def estimate_recipe_cost(request, data):
         raise ValueError("Kode resep tidak valid.")
     if type(servings) is not int or not 1 <= servings <= 10:
         raise ValueError("Porsi harus bilangan bulat antara 1 dan 10.")
-    reserve_preview(request.user)
+    reserve_recipe_book_preview(request.user)
     recipe = get_recipe(request.user, code)
     return JsonResponse({"servings": servings, "cost": estimated_recipe_cost(recipe, servings)})
 
 
 @api
 def cooking_preview(request, data):
-    reserve_preview(request.user)
+    reserve_recipe_book_preview(request.user)
     return JsonResponse(preview_cooking(request.user, data))
 
 
@@ -235,12 +240,15 @@ def recipe_review_photo_file(request, review_id):
     review = get_object_or_404(RecipeReview, pk=review_id)
     if not review.photo:
         return JsonResponse({"error": "Foto tidak tersedia."}, status=404)
+    public_photo = (
+        review.photo_permission_granted
+        and review.photo_consent_at is not None
+        and not review.is_hidden
+        and not review.photo_is_hidden
+    )
     if (
         (
-            not review.photo_permission_granted
-            or review.photo_consent_at is None
-            or review.is_hidden
-            or review.photo_is_hidden
+            not public_photo
         )
         and review.user_id != request.user.pk
         and not request.user.is_staff
@@ -257,7 +265,9 @@ def recipe_review_photo_file(request, review_id):
         )
         return JsonResponse({"error": "Berkas foto tidak ditemukan."}, status=404)
     response["X-Content-Type-Options"] = "nosniff"
-    response["Cache-Control"] = "private, no-store"
+    response["Cache-Control"] = (
+        "private, max-age=3600" if public_photo else "private, no-store"
+    )
     return response
 
 
@@ -296,7 +306,11 @@ def book_page(request):
         query = query.filter(meal_type=meal)
     if request.GET.get("favorites") == "1":
         query = query.filter(recipefavorite__user=request.user)
-    held_count = query.count() - with_guidance(query).count()
+    guidance_counts = query.aggregate(
+        total=Count("pk", distinct=True),
+        guided=Count("pk", filter=guidance_condition(), distinct=True),
+    )
+    held_count = guidance_counts["total"] - guidance_counts["guided"]
     if request.GET.get("guidance") == "1":
         query = with_guidance(query)
     try:
@@ -414,7 +428,10 @@ def book_page(request):
         except (ValueError, OverflowError):
             slot = None
         if slot:
-            code = slot.recipe_id
+            if slot.recipe_id:
+                code = slot.recipe_id
+            else:
+                selection_error = "Menu di rencana ini tidak memiliki resep yang tersedia."
         else:
             selection_error = "Menu rencana tidak ditemukan."
     if not code and page.object_list and not selection_error:

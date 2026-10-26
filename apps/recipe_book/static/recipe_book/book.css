@@ -58,6 +58,34 @@ button,input,select{font:inherit}button,a,input,select{touch-action:manipulation
 .active-filter-chip { display:inline-flex; align-items:center; border-radius:999px; padding:5px 9px; background:#e7f4ef; color:var(--green); font-weight:700; }
 .price-availability-note { border-left:3px solid #e3a43b; padding-left:10px; }
 
+/* Keep recipe metadata readable and make filter controls match the Planner. */
+.metrics span,
+.ingredient-grid small,
+.recipe-card small,
+.recipe-card .quiet-link,
+.side-list small,
+.side-list span,
+.side-list details,
+.text-button,
+.chip,
+.recipe-photo figcaption,
+.recipe-card-photo-placeholder small,
+.recipe-photo-placeholder figcaption,
+.active-filter-list { font-size:12px; }
+.filters { gap:10px 14px; }
+.filters > label:not(:has(input[type="checkbox"])) { flex-wrap:wrap; }
+.filters select { min-height:38px; padding:8px 12px; border-radius:9px; background:#fff; }
+.recipe-card-photo-placeholder svg,
+.recipe-photo-placeholder svg { color:var(--green); }
+.recipe-card-photo-placeholder[data-meal="sarapan"],
+.recipe-photo-placeholder[data-meal="sarapan"] { background:linear-gradient(135deg,#fff4dc,#fffaf0); color:#8b651d; }
+.recipe-card-photo-placeholder[data-meal="makan_siang"],
+.recipe-photo-placeholder[data-meal="makan_siang"] { background:linear-gradient(135deg,#e5f5ed,#f3fbf7); color:#287456; }
+.recipe-card-photo-placeholder[data-meal="makan_malam"],
+.recipe-photo-placeholder[data-meal="makan_malam"] { background:linear-gradient(135deg,#e9edff,#f7f8ff); color:#4d5f9a; }
+.recipe-card-photo-placeholder[data-meal] svg,
+.recipe-photo-placeholder[data-meal] svg { color:currentColor; }
+
 /* Keep cooking controls comfortable to tap and visible while scrolling on phones. */
 @media(max-width:520px) {
   dialog { width:calc(100% - 20px); max-width:none; max-height:calc(100dvh - 20px); padding:18px; border-radius:14px; }
