@@ -1,12 +1,11 @@
 {% extends "accounts/base.html" %}
 {% load static %}
 {% block title %}Profil & Preferensi{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/profile.css' %}">{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/profile.css' %}?v=20261026-chips">{% endblock %}
 {% block body_class %}has-app-nav profile-page{% endblock %}
 {% block header %}{% include "partials/app_header.html" %}{% endblock %}
 {% block content %}
 <main id="main" class="profile-card">
-  <a class="back-home" href="{% url 'modul1' %}">← Kembali ke beranda</a>
   <h1>Profil & Preferensi</h1>
   <p class="profile-intro">Kelola informasi akun dan kebutuhan makanmu. Preferensi ini digunakan untuk menyusun rencana dan memilih resep.</p>
   {% for message in messages %}<p class="success-message" role="status">{{ message }}</p>{% endfor %}
@@ -32,12 +31,39 @@
       <h2>Preferensi makanan</h2>
       <p class="profile-note">Preferensi menjadi nilai awal rencana baru. Pilihan halal terbaru diterapkan saat mencari atau mengganti menu. Bahan yang ingin dihindari dapat diubah per rencana. Alergi tetap diterapkan pada menu baru dan penggantian menu.</p>
       <form method="post">{% csrf_token %}<input type="hidden" name="action" value="preferences">
-        {{ preference_form.as_div }}
-        <p class="profile-note">Filter ini bukan jaminan bebas alergen. Daftar ini mencakup 11 kelompok, bukan seluruh jenis alergi. Periksa label komposisi dan risiko kontaminasi silang. Resep dengan bahan yang belum ditinjau atau bumbu minor yang tidak tercatat dikecualikan saat alergi dipilih.</p>
-        <p class="profile-note">Pilihan halal berlaku untuk menu baru, pencarian resep, dan penggantian menu. “Tidak membatasi” tetap dapat menampilkan resep halal. Label halal katalog bukan sertifikasi halal.</p>
+        {{ preference_form.non_field_errors }}
+        {% for field in preference_form %}
+          {% if field.is_hidden %}
+            {{ field }}
+          {% elif field.name == "avoided_ingredients" %}
+            <fieldset class="ingredient-picker" data-ingredient-picker data-limit="10">
+              <legend>{{ field.label }}</legend>
+              {{ field.errors }}
+              <p class="helptext" id="ingredient-help">{{ field.help_text }}</p>
+              <div class="ingredient-tools" hidden>
+                <label for="ingredient-search">Cari bahan</label>
+                <input type="search" id="ingredient-search" placeholder="Ketik nama bahan" aria-controls="id_avoided_ingredients" autocomplete="off">
+                <output id="ingredient-count" aria-live="polite"></output>
+                <p class="helptext" id="ingredient-limit-note">Pada 10 pilihan, hapus satu pilihan untuk memilih bahan lain.</p>
+              </div>
+              {{ field }}
+              <p class="helptext ingredient-empty" role="status" hidden>Bahan tidak ditemukan.</p>
+            </fieldset>
+          {% else %}
+            <div>{{ field.as_field_group }}</div>
+          {% endif %}
+        {% endfor %}
+        <p class="profile-note">Filter membantu memilih menu; tetap periksa komposisi bahan dan label halal.</p>
+        <details class="preference-details">
+          <summary>Selengkapnya tentang alergi dan halal</summary>
+          <p class="profile-note">Filter bukan jaminan bebas alergen. Daftar mencakup 11 kelompok, bukan seluruh jenis alergi. Periksa label komposisi dan risiko kontaminasi silang. Resep dengan bahan yang belum ditinjau atau bumbu minor yang tidak tercatat dikecualikan saat alergi dipilih.</p>
+          <p class="profile-note">Pilihan halal berlaku untuk menu baru, pencarian resep, dan penggantian menu. Tidak membatasi tetap dapat menampilkan resep halal. Label halal katalog bukan sertifikasi halal.</p>
+        </details>
         <button class="submit" type="submit">Simpan preferensi</button>
       </form>
     </section>
   </div>
 </main>
 {% endblock %}
+
+{% block scripts %}<script src="{% static 'accounts/profile.js' %}?v=20261026-chips" defer></script>{% endblock %}

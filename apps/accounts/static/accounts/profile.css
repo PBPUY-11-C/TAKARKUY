@@ -1,6 +1,5 @@
 body.profile-page { display: block; padding: 0; place-items: normal; }
 .profile-card { max-width: 1120px; margin: 0 auto; padding: 36px 24px 56px; }
-.profile-card .back-home { margin-bottom: 18px; }
 .profile-card h1 { max-width: none; text-align: left; margin: 0 0 12px; font-size: clamp(25px, 4vw, 34px); }
 .profile-intro { margin: 0 0 26px; color: var(--muted); font-size: 14px; line-height: 1.7; }
 .profile-card h2 { font: 700 18px "Plus Jakarta Sans", sans-serif; margin: 0 0 22px; }
@@ -15,7 +14,20 @@ body.profile-page { display: block; padding: 0; place-items: normal; }
 .profile-section select { min-height: 140px; font-size: 13px; }
 .profile-section fieldset { padding: 0; margin: 0; border: 0; min-width: 0; }
 .profile-section legend { font-size: 13px; font-weight: 800; margin-bottom: 12px; }
-.profile-section #id_allergens { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.profile-section .preference-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.preference-chips > div { max-width: 100%; }
+.profile-section .preference-chips label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); font-size: 13px; font-weight: 600; cursor: pointer; }
+.preference-chips label:has(input:checked) { background: var(--green); border-color: var(--green); color: var(--lime); }
+.preference-chips label:has(input:focus-visible) { outline: 2px solid var(--green); outline-offset: 3px; }
+.preference-chips label:has(input:disabled) { opacity: .5; cursor: not-allowed; }
+.profile-section .preference-chips input { flex-shrink: 0; width: 16px; height: 16px; margin: 0; accent-color: var(--green); }
+.profile-section .ingredient-picker { margin-bottom: 20px; }
+.ingredient-tools { margin-bottom: 12px; }
+.ingredient-tools output { display: block; margin-top: 10px; font-weight: 700; font-size: 13px; }
+.ingredient-options { max-height: 320px; overflow-y: auto; align-content: start; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.preference-chips [hidden], .ingredient-picker [hidden] { display: none !important; }
+.preference-details { margin: 16px 0; }
+.preference-details summary { min-height: 44px; padding: 10px 0; color: var(--green); font-weight: 700; cursor: pointer; }
 .helptext, .profile-note { color: var(--muted); font-size: 12px; line-height: 1.7; }
 .profile-section .helptext ul { padding-left: 20px; }
 .errorlist { padding: 0; color: #aa3737; font-size: 12px; list-style: none; }
@@ -23,5 +35,4 @@ body.profile-page { display: block; padding: 0; place-items: normal; }
 @media (max-width: 720px) { .profile-grid { grid-template-columns: 1fr; } .profile-section { padding: 20px; } }
 @media (max-width: 520px) {
   .profile-card { padding: 24px 18px 40px; }
-  .profile-section #id_allergens { grid-template-columns: 1fr; }
 }

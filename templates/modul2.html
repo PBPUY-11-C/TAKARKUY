@@ -147,14 +147,12 @@
       .manual-fields .field:nth-child(2) { grid-column: auto; }
     }
   </style>
+  {% include "partials/head.html" %}
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}"><span class="brand-mark" aria-hidden="true">✳</span> TAKARKUY</a>
-    <a class="back-link" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}">← Kembali ke beranda</a>
-  </header>
+<body class="has-app-nav">
+  {% include "partials/app_header.html" %}
 
-  <main class="page">
+  <main id="main" class="page">
     <div class="page-intro">
       <p class="eyebrow">SIMULASI MODUL 2</p>
       <h1>Kelola Stok Dapur</h1>

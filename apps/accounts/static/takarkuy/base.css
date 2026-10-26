@@ -156,7 +156,7 @@ textarea:focus-visible, summary:focus-visible, label:focus-within > input[type="
 }
 
 /* Phones: the main navigation becomes a bottom tab bar within thumb reach. */
-@media (max-width: 760px) {
+@media (max-width: 960px) {
   body.has-app-nav { padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom)); }
   /* backdrop-filter would make the header the containing block of the fixed tab bar. */
   .app-header { min-height: 60px; gap: 10px; background: var(--green); backdrop-filter: none; }

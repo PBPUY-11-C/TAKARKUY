@@ -184,7 +184,7 @@ Total aplikasi **8 halaman**. Market locator berupa popup di Dashboard, bukan ha
 
 ## Status Integrasi
 
-Modul 1 (`/planner/`) dan Modul 3 (landing, daftar, masuk, profil dan preferensi) aktif. Halaman Modul 2, 4, dan 5 masih berupa placeholder mengikuti `main`; endpoint integrasi planner tetap tersedia. Setelah daftar/masuk, pengguna diarahkan ke planner sementara Dashboard belum aktif.
+Seluruh modul memakai view aslinya dan wajib login. Landing, daftar/masuk, dan kalkulator pembagian budget tetap publik. Setelah daftar/masuk, pengguna diarahkan ke planner. Profil menggunakan chip preferensi dan pencarian bahan (maksimal 10 pilihan). Ganti sandi dibatasi 5 percobaan per akun dan 30 per IP dalam jendela 15 menit.
 
 Jalankan `python manage.py migrate --noinput` untuk menerapkan pemisahan `FoodPreference` tanpa menghapus data preferensi lama, lalu `python manage.py collectstatic --noinput` saat deployment.
 

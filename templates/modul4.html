@@ -31,13 +31,11 @@
   <link rel="stylesheet" href="{% static 'recipe_book/reviews.css' %}">
   <script type="module" src="{% static 'recipe_book/book.js' %}"></script>
   <script type="module" src="{% static 'recipe_book/reviews.js' %}"></script>
+  {% include "partials/head.html" %}
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}" aria-label="TAKARKUY beranda"><span class="brand-mark" aria-hidden="true">✳</span> TAKARKUY</a>
-    <a class="back-link" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}">← Kembali ke beranda</a>
-  </header>
-  <main class="book-shell">
+<body class="has-app-nav">
+  {% include "partials/app_header.html" %}
+  <main id="main" class="book-shell">
     <div class="page-heading"><div><p class="eyebrow">DAPUR SAYA</p><h1>Recipe Book &amp; Cooking Tracker</h1></div><a class="quiet-link" href="{% url 'modul2' %}">Kelola pantry →</a></div>
     <div id="page-message" class="notice" role="status" hidden></div>
     <div class="book-layout">

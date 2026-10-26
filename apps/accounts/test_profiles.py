@@ -217,7 +217,9 @@ class ProfileTests(TestCase):
             ingredient_code="TEST-BAYAM", name="Bayam", category="sayur", base_unit="g"
         )
         response = self.client.get(reverse("modul3"))
-        self.assertContains(response, '<option value="TEST-BAYAM">Bayam</option>', html=True)
+        self.assertContains(response, 'value="TEST-BAYAM"')
+        self.assertContains(response, "Bayam")
+        self.assertNotContains(response, '<select name="avoided_ingredients"')
         self.assertNotContains(response, "Ingredient object")
         profile = UserProfile.objects.get(user=self.user)
         data = {
@@ -252,6 +254,65 @@ class ProfileTests(TestCase):
         client = Client(enforce_csrf_checks=True)
         client.force_login(self.user)
         self.assertEqual(client.post(reverse("modul3"), self.details()).status_code, 403)
+
+    def test_password_attempts_share_account_quota_across_devices(self):
+        other_device = Client()
+        other_device.force_login(self.user)
+        payload = {"action": "password", "old_password": "wrong"}
+        with patch("apps.accounts.rate_limits.datetime", wraps=datetime) as clock:
+            clock.now.return_value = datetime(2026, 10, 26, 9, 1, tzinfo=UTC)
+            for _ in range(5):
+                self.assertEqual(self.client.post(reverse("modul3"), payload).status_code, 400)
+            with patch("apps.accounts.views.PasswordChangeForm") as validator:
+                response = other_device.post(reverse("modul3"), payload)
+            self.assertEqual(response.status_code, 429)
+            self.assertGreater(int(response["Retry-After"]), 0)
+            self.assertIn("no-store", response["Cache-Control"])
+            validator.assert_not_called()
+            self.user.refresh_from_db()
+            self.assertTrue(self.user.check_password("Password!827"))
+            self.assertEqual(self.client.get(reverse("modul3")).status_code, 200)
+            # A password quota must not lock out account/preference edits.
+            self.assertRedirects(
+                self.client.post(reverse("modul3"), self.details()), reverse("modul3")
+            )
+            clock.now.return_value = datetime(2026, 10, 26, 9, 16, tzinfo=UTC)
+            self.assertEqual(self.client.post(reverse("modul3"), payload).status_code, 400)
+
+    def test_password_csrf_rejection_does_not_consume_attempt(self):
+        device = Client(enforce_csrf_checks=True)
+        device.force_login(self.user)
+        self.assertEqual(
+            device.post(reverse("modul3"), {"action": "password"}).status_code, 403
+        )
+        self.assertFalse(AuthRateBucket.objects.exists())
+
+    def test_preference_limit_is_enforced_without_javascript(self):
+        from apps.catalog.models import Ingredient
+
+        ingredients = [Ingredient.objects.create(
+            ingredient_code=f"CHOICE-{index}", name=f"Bahan {index}", category="sayur", base_unit="g"
+        ) for index in range(11)]
+        self.client.get(reverse("modul3"))
+        response = self.client.post(reverse("modul3"), {
+            "action": "preferences", "targets": ["seimbang"], "meal_types": ["sarapan"],
+            "servings": 2, "halal_only": "yes", "version": UserProfile.objects.get(user=self.user).version,
+            "avoided_ingredients": [item.pk for item in ingredients],
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertContains(response, "Pilih maksimal 10 bahan", status_code=400)
+        self.assertFalse(FoodPreference.objects.get(user=self.user).avoided_ingredients.exists())
+
+    def test_account_pages_have_one_title_and_profile_has_searchable_choices(self):
+        for name in ("signup", "login"):
+            response = Client().get(reverse(name))
+            self.assertContains(response, "<title>", count=1)
+            self.assertNotContains(response, "TAKARKUY — TAKARKUY")
+        response = self.client.get(reverse("modul3"))
+        self.assertContains(response, "<title>", count=1)
+        self.assertContains(response, 'id="ingredient-search"')
+        self.assertContains(response, "preference-chips")
+        self.assertNotContains(response, 'class="back-home"')
 
 
 class RateLimitTests(TestCase):

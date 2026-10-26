@@ -16,14 +16,11 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-from django.views.generic import TemplateView
 
 from apps.accounts.forms import EmailOrUsernameAuthenticationForm
 from apps.accounts.views import AccountLoginView, landing_view, profile_view, signup_view
-
 from apps.budget_planner.plan_views import (
     add_plan_purchases,
     apply_plan_preview,
@@ -33,27 +30,25 @@ from apps.budget_planner.plan_views import (
     save_account_plan,
 )
 from apps.budget_planner.views import planner_page
-from apps.dashboard.views import market_lookup
+from apps.dashboard.views import dashboard_page, market_lookup
 from apps.pantry.views import (
     delete_pantry_item,
     fallback_receipt_ocr,
     pantry_movements,
+    pantry_page,
     pantry_recipe_matches,
     save_pantry_items,
     suggest_receipt_items,
     update_pantry_details,
 )
 from apps.recipe_book.views import (
+    book_page,
     cooking_preview,
     recipe_review,
     record_cooking,
     set_favorite,
     set_slot_status,
 )
-
-# Modul 1 and Modul 3 are active. Other module pages remain placeholders;
-# their backend endpoints are reused by the planner.
-kosong = login_required(TemplateView.as_view(template_name="kosong.html"))
 
 urlpatterns = [
     path("", landing_view, name="landing"),
@@ -80,7 +75,7 @@ urlpatterns = [
     path(
         "planner/previews/<uuid:preview_id>/apply/", apply_plan_preview, name="modul1-preview-apply"
     ),
-    path("modul2/", kosong, name="modul2"),
+    path("modul2/", pantry_page, name="modul2"),
     path("modul2/items/", save_pantry_items, name="modul2-items"),
     path("modul2/suggestions/", suggest_receipt_items, name="modul2-suggestions"),
     path("modul2/ocr-fallback/", fallback_receipt_ocr, name="modul2-ocr-fallback"),
@@ -88,13 +83,13 @@ urlpatterns = [
     path("modul2/items/<int:item_id>/delete/", delete_pantry_item, name="modul2-item-delete"),
     path("modul2/items/<int:item_id>/movements/", pantry_movements, name="modul2-item-movements"),
     path("modul2/recipes/", pantry_recipe_matches, name="modul2-recipes"),
-    path("modul4/", kosong, name="modul4"),
+    path("modul4/", book_page, name="modul4"),
     path("modul4/favorite/", set_favorite, name="modul4-favorite"),
     path("modul4/preview/", cooking_preview, name="modul4-preview"),
     path("modul4/cook/", record_cooking, name="modul4-cook"),
     path("modul4/review/", recipe_review, name="modul4-review"),
     path("modul4/slot-status/", set_slot_status, name="modul4-slot-status"),
-    path("modul5/", kosong, name="modul5"),
+    path("modul5/", dashboard_page, name="modul5"),
     path("modul5/places/", market_lookup, name="modul5-places"),
     path("admin/", admin.site.urls),
 ]

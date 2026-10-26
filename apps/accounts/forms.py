@@ -199,29 +199,31 @@ class PreferenceForm(forms.Form):
         choices=(("yes", "Halal saja"), ("no", "Tidak membatasi")),
         coerce=lambda value: value == "yes",
         initial="yes",
-        widget=forms.RadioSelect,
+        widget=forms.RadioSelect(attrs={"class": "preference-chips"}),
     )
     targets = forms.MultipleChoiceField(
         choices=PlannerForm.TARGET_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips"}),
         label="Target makan",
     )
     meal_types = forms.MultipleChoiceField(
-        choices=PlannerForm.MEAL_CHOICES, widget=forms.CheckboxSelectMultiple, label="Waktu makan"
+        choices=PlannerForm.MEAL_CHOICES,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips"}),
+        label="Waktu makan",
     )
     servings = forms.IntegerField(min_value=1, max_value=10, label="Jumlah orang")
     allergens = forms.MultipleChoiceField(
         choices=ALLERGEN_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips"}),
         label="Alergi",
     )
     avoided_ingredients = IngredientChoiceField(
         queryset=Ingredient.objects.order_by("name"),
         required=False,
         label="Bahan yang ingin dihindari (bukan alergi)",
-        help_text="Maksimal 10 bahan. Tahan Ctrl (Windows) atau ⌘ (Mac) untuk memilih beberapa bahan.",
-        widget=forms.SelectMultiple(attrs={"size": 8}),
+        help_text="Pilih maksimal 10 bahan. Gunakan pencarian untuk menemukan bahan.",
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips ingredient-options"}),
     )
     version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
 
