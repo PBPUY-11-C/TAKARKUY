@@ -95,15 +95,7 @@ urlpatterns = [
     path(
         "planner/previews/<uuid:preview_id>/apply/", apply_plan_preview, name="modul1-preview-apply"
     ),
-    path("modul2/", pantry_page, name="modul2"),
-    path("modul2/items/", save_pantry_items, name="modul2-items"),
-    path("modul2/suggestions/", suggest_receipt_items, name="modul2-suggestions"),
-    path("modul2/ocr-fallback/", fallback_receipt_ocr, name="modul2-ocr-fallback"),
-    path("modul2/items/<int:item_id>/", update_pantry_details, name="modul2-item-details"),
-    path("modul2/items/<int:item_id>/delete/", delete_pantry_item, name="modul2-item-delete"),
-    path("modul2/items/<int:item_id>/movements/", pantry_movements, name="modul2-item-movements"),
-    path("modul2/recipes/", pantry_recipe_matches, name="modul2-recipes"),
-    path("modul2/staples/", save_staple_preferences, name="modul2-staples"),
+
     path("pantry/", pantry_page, name="modul2"),
     path("pantry/items/", save_pantry_items, name="modul2-items"),
     path("pantry/suggestions/", suggest_receipt_items, name="modul2-suggestions"),
@@ -112,8 +104,9 @@ urlpatterns = [
     path("pantry/items/<int:item_id>/delete/", delete_pantry_item, name="modul2-item-delete"),
     path("pantry/items/<int:item_id>/movements/", pantry_movements, name="modul2-item-movements"),
     path("pantry/recipes/", pantry_recipe_matches, name="modul2-recipes"),
-    path("modul4/", book_page, name="modul4"),
+    path("pantry/staples/", save_staple_preferences, name="modul2-staples"),
 
+    path("modul4/", book_page, name="modul4"),
     path("modul4/favorite/", set_favorite, name="modul4-favorite"),
     path("modul4/note/", save_recipe_note, name="modul4-note"),
     path("modul4/estimate/", estimate_recipe_cost, name="modul4-estimate"),
@@ -125,7 +118,9 @@ urlpatterns = [
     path("modul4/review/photo/delete/", recipe_review_photo_delete, name="modul4-review-photo-delete"),
     path("modul4/reviews/<int:review_id>/photo/", recipe_review_photo_file, name="modul4-review-photo"),
     path("modul4/slot-status/", set_slot_status, name="modul4-slot-status"),
+
     path("modul5/", dashboard_page, name="modul5"),
     path("modul5/places/", market_lookup, name="modul5-places"),
+
     path("admin/", admin.site.urls),
 ]

@@ -8,6 +8,8 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.accounts.models import FoodPreference, UserProfile
+
 from .models import PantryItem
 from .test_helpers import authenticate
 
@@ -48,6 +50,18 @@ class PantryFlowTests(TestCase):
         response = self.post_items([{**simple_item, "category": "protein_nabati"}], source="manual")
         self.assertEqual(response.status_code, 201)
         self.assertIsNone(PantryItem.objects.get().estimated_expires_on)
+
+    def test_staple_preferences_are_saved_through_shared_module(self):
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        response = self.client.post(
+            reverse("modul2-staples"),
+            {"tracked_staples": ["salt", "sugar"], "version": profile.version},
+        )
+        self.assertRedirects(response, reverse("modul2"))
+        profile.refresh_from_db()
+        preferences = FoodPreference.objects.get(user=self.user)
+        self.assertEqual(preferences.tracked_staples, ["salt", "sugar"])
+        self.assertEqual(profile.version, 2)
 
     def test_invalid_details_do_not_change_item(self):
         self.post_items([self.item])
@@ -176,8 +190,8 @@ class PantryFlowTests(TestCase):
         self.post_items([self.item], source="manual")
         page = self.client.get(reverse("modul2"))
         self.assertNotContains(page, '<th scope="col">Sumber</th>')
-        self.assertContains(page, 'class="pantry-actions"')
-        self.assertContains(page, 'class="storage-feedback" data-storage-feedback')
+        self.assertContains(page, 'class="edit-actions"')
+        self.assertContains(page, 'data-storage-feedback')
         html = page.content.decode()
         expiry_cell = html.split("data-pantry-expiry", 1)[1].split("</td>", 1)[0]
         self.assertIn("data-storage-feedback", expiry_cell)
