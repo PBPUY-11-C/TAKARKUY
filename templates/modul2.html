@@ -4,7 +4,6 @@
 <head>
   {% include 'partials/head.html' with page_title="Smart Pantry" page_description="Pindai struk dan catat stok dapur TAKARKUY." %}
 
-  /* tabel tar ganti warna */
   <style>
     body { margin: 0; color: var(--ink); background: #f6f8fc;} /* background mengikuti planner.css */
     a { color: inherit; text-decoration: none; }
@@ -44,7 +43,7 @@
     .button:disabled { opacity: .72; }
     .button.primary { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 0 5px 12px rgba(0, 116, 82, .12); }
     .button.secondary { border-color: #d6e5ff; background: #dce9ff; }
-    .table-wrap { overflow-x: auto; border: 1px solid #e2e9f4; border-radius: 14px; }
+    .table-wrap { overflow-x: auto; border: 1px solid #e2e9f4; border-radius: 14px; margin: 16px 0; }
     table { width: 100%; border-collapse: collapse; table-layout: fixed; text-align: left; }
     thead { background: var(--soft); }
     th, td { padding: 13px 15px; border-bottom: 1px solid var(--line); font-size: 13px; }
@@ -65,7 +64,7 @@
     .empty-draft { display: grid; justify-items: center; gap: 8px; padding: 36px 18px; border: 1px dashed #c9d9e7; border-radius: 14px; background: #f8fbff; color: #667782; text-align: center; font-size: 13px; line-height: 1.5; }
     .empty-draft-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: #e4f4ed; color: var(--green); font-size: 24px; }
     .empty-draft p { max-width: 360px; margin: 0; }
-    .sample-note { margin: 10px 0 0; color: #68767e; font-size: 11px; }
+    .sample-note { margin: 0 0; color: #68767e; font-size: 11px; }
     .feedback { min-height: 18px; margin: 11px 0 0; color: var(--green-dark); font-size: 12px; font-weight: 600; line-height: 1.5; }
     .feedback.error { color: #a43d32; }
     .scan-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
@@ -92,7 +91,6 @@
     #ingredient-quantity::-webkit-inner-spin-button, #ingredient-quantity::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
     .pantry-list { margin-top: 20px; }
     .pantry-list h2 { margin: 0 0 14px; font: 800 20px var(--font); }
-    .pantry-list .sample-note { margin: 0 0 12px; line-height: 1.5; }
     .staple-choice-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin: 16px 0; }
     .staple-choice-list label { display: flex; align-items: flex-start; gap: 9px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #f8faff; font-size: 13px; }
     .staple-choice-list input { margin: 2px 0 0; accent-color: var(--green); }
@@ -120,6 +118,8 @@
     .row-feedback.error { color: #a43d32; }
     .storage-feedback { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; font-weight: 400; line-height: 1.45; overflow-wrap: anywhere; }
     .saved-empty { padding: 20px; border: 1px dashed #cad7e3; border-radius: 12px; color: var(--muted); background: #fff; font-size: 13px; }
+    .pantry-more summary { cursor: pointer; margin-top: 4px; min-height: 24px; font-weight: 700; color: var(--green); }
+    .stock-recipe-details { margin: 16px 0; }
     [hidden] { display: none !important; }
     @media (max-width: 1120px) {
       .panel-grid { grid-template-columns: 1fr; }
@@ -260,7 +260,12 @@
 
     <section class="panel pantry-list" aria-labelledby="pantry-title">
       <h2 id="pantry-title">Stok Pantry Saat Ini</h2>
-      <p class="sample-note">Lokasi awal: suhu ruang. Perkiraan mengikuti lokasi dan tanggal belanja/ditambahkan, bukan jaminan keamanan. Bahan mudah rusak perlu segera disimpan dingin; pindah ke kulkas tidak membuat bahan kembali segar.</p>
+      <p class="sample-note">Perkiraan kedaluwarsa mengikuti lokasi simpan dan tanggal belanja, bukan jaminan keamanan bahan.</p>
+      <details class="pantry-more">
+        <summary>Catatan penyimpanan</summary>
+        <p class="sample-note">Lokasi awal adalah suhu ruang. Bahan mudah rusak perlu segera disimpan dingin;
+        pindah ke kulkas tidak membuat bahan kembali segar.</p>
+      </details>
       {% if pantry_items %}
       <div class="table-wrap"><table class="saved-table"><colgroup><col style="width:14%"><col style="width:12%"><col style="width:17%"><col style="width:18%"><col style="width:21%"><col style="width:18%"></colgroup><thead><tr><th scope="col">Bahan</th><th scope="col">Jumlah</th><th scope="col">Kategori</th><th scope="col">Lokasi Simpan</th><th scope="col">Perkiraan kedaluwarsa</th><th scope="col">Aksi</th></tr></thead><tbody>
         {% for item in pantry_items %}
@@ -280,8 +285,15 @@
     </section>
 
     <section class="panel pantry-list" aria-labelledby="staple-preferences-title">
-      <h2 id="staple-preferences-title">Bumbu dapur yang dilacak</h2>
-      <p class="sample-note">Bumbu tetap dicantumkan dengan takarannya di resep. Secara default, garam, merica, air, gula, dan penyedap tidak menghalangi ide menu atau konfirmasi masak. Pilih bumbu yang ingin Anda kelola stoknya; jika dipilih, stok harus tersedia di Pantry dan akan dikurangi saat memasak. Minyak goreng dilacak secara default agar aplikasi tidak menganggap semua dapur selalu memilikinya.</p>
+      <h2 id="staple-preferences-list">Bumbu dapur yang dilacak</h2>
+      <p class="sample-note">Pilih bumbu yang stoknya ingin Anda kelola; bumbu yang dipilih akan dikurangi saat memasak.</p>
+      <details class="pantry-more">
+        <summary>Cara bumbu dilacak</summary>
+        <p class="sample-note">Bumbu tetap dicantumkan dengan takarannya di resep. Secara default, garam, merica,
+        air, gula, dan penyedap tidak menghalangi ide menu atau konfirmasi masak.</p>
+        <p class="sample-note">Jika sebuah bumbu dipilih, stoknya harus tersedia di Pantry. Minyak goreng dilacak
+        secara default agar aplikasi tidak menganggap semua dapur selalu memilikinya.</p>
+      </details>
       <form method="post" action="{% url 'modul2-staples' %}" class="staple-preferences-form">
         {% csrf_token %}
         <input type="hidden" name="version" value="{{ staple_preferences_form.version.value }}">
@@ -292,9 +304,19 @@
 
     <section class="panel pantry-list" aria-labelledby="stock-recipes-title">
       <h2 id="stock-recipes-title">Ide Menu dari Stok</h2>
-      <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, memiliki konversi berat, dan belum kedaluwarsa. Stok dengan tanggal kedaluwarsa yang belum diketahui tetap dihitung dan ditandai. Bumbu yang Anda atur untuk tidak dilacak tidak menjadi syarat stok; minyak goreng dilacak secara default. Kecocokan stok bukan jaminan keamanan bahan dan tidak mengurangi stok.</p>
-      <label for="stock-recipe-servings">Porsi <input id="stock-recipe-servings" type="number" min="1" max="10" inputmode="numeric" value="1"></label>
-      <button class="button secondary" type="button" id="stock-recipes-button">Cari Menu dari Stok</button>
+      <p class="sample-note">Menu disarankan dari stok yang belum kedaluwarsa; kecocokan stok bukan jaminan keamanan bahan.</p>
+      <details class="pantry-more">
+        <summary>Bagaimana ide menu dipilih</summary>
+        <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, memiliki konversi berat, dan belum
+        kedaluwarsa. Stok dengan tanggal kedaluwarsa yang belum diketahui tetap dihitung
+        dan ditandai.</p>
+        <p class="sample-note">Bumbu yang Anda atur untuk tidak dilacak tidak menjadi syarat stok; minyak goreng
+        dilacak secara default. Ide menu tidak mengurangi stok.</p>
+      </details>
+      <div class="stock-recipe-details">
+        <label for="stock-recipe-servings">Porsi <input id="stock-recipe-servings" type="number" min="1" max="10" inputmode="numeric" value="1"></label>
+        <button class="button secondary" type="button" id="stock-recipes-button">Cari Menu dari Stok</button>
+      </div>
       <div id="stock-recipes-output" role="status" aria-live="polite"></div>
     </section>
   </main>
