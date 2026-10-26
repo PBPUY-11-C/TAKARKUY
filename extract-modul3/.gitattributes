@@ -1,2 +1,0 @@
-# Keep LF everywhere so Windows checkouts match CI and the JS tests.
-* text=auto eol=lf

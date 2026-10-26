@@ -1,6 +1,6 @@
 {% load static %}{% with current=request.resolver_match.url_name %}<a class="skip-link" href="#main">Langsung ke konten</a>
 <header class="app-header">
-  <a class="app-brand" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}" aria-label="TAKARKUY, ke beranda">
+  <a class="app-brand" href="{% if user.is_authenticated %}{% url 'modul5' %}{% else %}{% url 'landing' %}{% endif %}" aria-label="TAKARKUY, ke beranda"><img src="{% static 'takarkuy/logo-light.svg' %}" alt="" width="34" height="40"><span>TAKARKUY</span></a>
   <nav class="app-nav" aria-label="Navigasi utama">
     <a href="{% url 'modul1' %}"{% if current == 'modul1' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/></svg>Meal Planner</a>
     <a href="{% url 'modul2' %}"{% if current == 'modul2' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 10h14M9 6.5v1M9 13v3"/></svg>Pantry</a>
