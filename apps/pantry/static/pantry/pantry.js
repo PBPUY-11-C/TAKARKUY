@@ -430,6 +430,62 @@ manualForm.addEventListener("submit", async (event) => {
   }
 });
 
+const MS_PER_DAY = 86400000;
+const dateFormat = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" });
+
+function parseIsoDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  return match ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])) : null;
+}
+
+function expiryBadge(value) {
+  const target = parseIsoDate(value);
+  if (!target) return { tone: "unknown", label: "Tanggal belum diketahui" };
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((target - today) / MS_PER_DAY);
+  if (days < 0) return { tone: "bad", label: "Sudah kedaluwarsa" };
+  if (days === 0) return { tone: "warn", label: "Hari ini" };
+  if (days <= 3) return { tone: "warn", label: `${days} hari lagi` };
+  return { tone: "ok", label: `${days} hari lagi` };
+}
+
+function selectedText(select) {
+  return select.selectedOptions[0]?.textContent.trim() || "";
+}
+
+// Ringkasan baris dibaca dari kontrol di panel edit, sehingga selalu sama dengan data tersimpan.
+function refreshSummary(row) {
+  const get = (selector) => row.querySelector(selector);
+  const name = get("[data-edit-name]").value.trim();
+  get("[data-sum-name]").textContent = name;
+  get(".delete-pantry-item").dataset.itemName = name;
+
+  const category = get("[data-edit-category]");
+  const categoryLabel = category.value ? selectedText(category) : "";
+  const categoryNode = get("[data-sum-category]");
+  categoryNode.textContent = categoryLabel;
+  categoryNode.hidden = !categoryLabel;
+
+  const rawQuantity = get("[data-edit-quantity]").value;
+  const quantity = Number(String(rawQuantity).replace(",", "."));
+  const quantityText = rawQuantity !== "" && Number.isFinite(quantity)
+    ? quantity.toLocaleString("id-ID", { maximumFractionDigits: 3 })
+    : rawQuantity;
+  get("[data-sum-qty]").textContent = `${quantityText} ${selectedText(get("[data-edit-unit]"))}`.trim();
+  get("[data-sum-location]").textContent = selectedText(get("[data-pantry-location]"));
+
+  const expiry = get("[data-pantry-expiry]").value;
+  const badge = expiryBadge(expiry);
+  const badgeNode = get("[data-sum-badge]");
+  badgeNode.className = `exp-badge ${badge.tone}`;
+  badgeNode.textContent = badge.label;
+  const dateNode = get("[data-sum-date]");
+  const date = parseIsoDate(expiry);
+  dateNode.textContent = date ? dateFormat.format(date) : "";
+  dateNode.hidden = !date;
+}
+
 const pantryStorage = JSON.parse(document.getElementById("pantry-storage-data").textContent);
 document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   const button = row.querySelector(".save-pantry-details");
@@ -440,6 +496,37 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   const storageFeedback = row.querySelector("[data-storage-feedback]");
   const sourceInput = row.querySelector("[data-expiry-source]");
   let expiryMode = "";
+  const panel = row.querySelector(".pantry-edit");
+  const toggle = row.querySelector(".pantry-edit-toggle");
+  const cancelButton = row.querySelector(".cancel-pantry-edit");
+  const summaryFeedback = row.querySelector("[data-summary-feedback]");
+  const editControls = () => [...panel.querySelectorAll("input, select")];
+  let snapshot = null;
+  let storageSnapshot = "";
+  refreshSummary(row);
+  function setPanel(open) {
+    panel.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.textContent = open ? "Tutup" : "Ubah";
+  }
+  function openEdit() {
+    snapshot = editControls().map((control) => control.value);
+    storageSnapshot = storageFeedback.textContent;
+    feedback(rowFeedback, "");
+    setPanel(true);
+    row.querySelector("[data-edit-name]").focus();
+  }
+    function cancelEdit() {
+    if (snapshot) editControls().forEach((control, index) => { control.value = snapshot[index]; });
+    expiryMode = "";
+    renamed = false;
+    storageFeedback.textContent = storageSnapshot;
+    feedback(rowFeedback, "");
+    setPanel(false);
+    toggle.focus();
+  }
+  toggle.addEventListener("click", () => (panel.hidden ? openEdit() : cancelEdit()));
+  cancelButton.addEventListener("click", cancelEdit);
   locationInput.addEventListener("change", () => {
     const estimate = storagePreview(pantryStorage[row.dataset.pantryItem], locationInput.value);
     const change = locationExpiry(sourceInput.value, expiryInput.value, estimate);
@@ -503,7 +590,12 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
       expiryInput.value = data.estimated_expires_on;
       storageFeedback.textContent = data.message;
       expiryMode = "";
-      feedback(rowFeedback, "Tersimpan");
+      feedback(rowFeedback, "");
+      refreshSummary(row);
+      setPanel(false);
+      toggle.focus();
+      feedback(summaryFeedback, "Tersimpan");
+      setTimeout(() => feedback(summaryFeedback, ""), 4000);
     } catch (error) {
       feedback(rowFeedback, error.message || "Gagal menyimpan perubahan.", true);
     } finally {
