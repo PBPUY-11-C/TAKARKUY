@@ -12,7 +12,7 @@ class AccountFlowTests(TestCase):
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("planner"), {"new": "1"})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Buat Rencana Makan")
+        self.assertContains(response, "Buat rencana")
 
     def test_header_has_guest_links_and_authenticated_profile_avatar(self):
         landing = self.client.get(reverse("landing"))

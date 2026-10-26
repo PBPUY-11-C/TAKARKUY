@@ -11,7 +11,7 @@ from django.utils import timezone
 from apps.accounts.choices import ALLERGEN_KEYS
 from apps.accounts.preferences import effective_allergens, preferences_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
-from apps.budget_planner.planner import RICE_CODE, RICE_GRAMS_PER_SERVING, purchase_grams
+from apps.budget_planner.planner import RICE_CODE, meal_staple, purchase_grams
 from apps.catalog.allergens import recipe_allowed
 from apps.catalog.models import Ingredient, Recipe
 from apps.pantry.services import (
@@ -212,30 +212,33 @@ def get_recipe(user, code, *, inputs=None):
     return recipe
 
 
-def recipe_requirements(recipe, servings, *, tracked_staples=(), with_rice=False):
-    """Stock needs per ingredient; selected staple groups are managed like other stock."""
+def recipe_requirements(recipe, servings, *, tracked_staples=(), staple=None):
+    """Stock needs per ingredient; selected staple groups are managed like other stock.
+
+    `staple` is the planner's side staple for this slot (see meal_staple), if any.
+    """
     if type(servings) is not int or not 1 <= servings <= 10:
         raise StockError("Porsi harus bilangan bulat 1–10.", 400)
     if not recipe.base_servings:
         raise StockError("Porsi dasar resep belum tersedia.", 400)
     needs, ingredients = {}, []
     nutrition = {key: Decimal(0) for key in ("calories", "protein", "carbs", "fat")}
-    rice = Ingredient.objects.filter(pk=RICE_CODE).first() if with_rice else None
-    if rice is not None:
-        grams = Decimal(RICE_GRAMS_PER_SERVING * servings)
+    side = Ingredient.objects.filter(pk=staple["ingredient_code"]).first() if staple else None
+    if side is not None:
+        grams = Decimal(staple["grams"] * servings)
         ingredients.append(
             {
-                "ingredient_code": rice.pk,
-                "name": f"{rice.name} (nasi pendamping)",
+                "ingredient_code": side.pk,
+                "name": f"{side.name} ({'nasi ' if side.pk == RICE_CODE else ''}pendamping)",
                 "grams": str(grams),
                 "tracked": True,
                 "optional": False,
                 "estimated": False,
             }
         )
-        needs[rice.pk] = grams
+        needs[side.pk] = grams
         for key in nutrition:
-            value = getattr(rice, f"{key}_per_100g")
+            value = getattr(side, f"{key}_per_100g")
             nutrition[key] = None if value is None else grams * Decimal(str(value)) / 100
     for link in recipe.recipeingredient_set.all():
         try:
@@ -314,13 +317,13 @@ def cooking_inputs(user, payload, *, lock=False):
         recipe,
         payload.get("servings"),
         tracked_staples=tracked_staple_codes(user),
-        with_rice=slot_has_rice(slot),
+        staple=slot_staple(slot),
     )
     return recipe, slot, needs, ingredients, nutrition
 
 
-def slot_has_rice(slot):
-    return bool(slot and isinstance(slot.snapshot, dict) and slot.snapshot.get("with_rice"))
+def slot_staple(slot):
+    return meal_staple(slot.snapshot) if slot else None
 
 
 def _apply_external_ingredients(payload, needs, ingredients, allocation):

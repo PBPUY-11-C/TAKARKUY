@@ -124,7 +124,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             page.locator('[name="budget"]').fill("1000000")
             page.locator('[name="days"]').fill("1")
             page.locator('[name="servings"]').fill("1")
-            page.get_by_role("button", name="Buat Rencana Makan").click()
+            page.get_by_role("button", name="Buat rencana").click()
             expect(page.get_by_role("heading", name="Rencana makan 1 hari", exact=True)).to_be_visible()
             expect(page.get_by_text("Masih dalam budget", exact=True)).to_be_visible()
             draft = database(lambda: BudgetPlan.objects.get(user=user, status="draft"))

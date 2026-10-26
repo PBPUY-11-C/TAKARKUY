@@ -26,7 +26,7 @@
   </figure>
   {% endif %}
           {% if slot %}
-  <p class="helper">{{ slot.plan.title }} - Hari {{ slot.day }} - {{ slot.get_status_display }} - {{ slot.servings }} porsi{% if with_rice %} - dengan nasi dari rencana{% endif %}
+  <p class="helper">{{ slot.plan.title }} - Hari {{ slot.day }} - {{ slot.get_status_display }} - {{ slot.servings }} porsi{% if staple %} - dengan {{ staple.label|lower }} dari rencana{% endif %}
   </p>
   {% endif %}
   {% if not slot %}

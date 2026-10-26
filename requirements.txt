@@ -4,3 +4,4 @@ gunicorn
 psycopg2-binary
 python-dotenv
 whitenoise
+reportlab>=4.2,<6

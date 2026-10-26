@@ -347,7 +347,7 @@ class SavedPlanTests(TestCase):
         draft, stock = self.stocked_draft()
         net = thaw(draft.snapshot)["net_total"]
         page = self.client.get(reverse("modul1") + f"?plan={draft.pk}")
-        self.assertContains(page, f"Uang belanja Rp {net:,}".replace(",", "."))
+        self.assertContains(page, f'<p class="big">Rp {net:,} <span>'.replace(",", "."))
         preview = preview_data(self.replacement(draft, code=self.quotes[0][1]))
         self.assertEqual(preview["before"], net)
 
