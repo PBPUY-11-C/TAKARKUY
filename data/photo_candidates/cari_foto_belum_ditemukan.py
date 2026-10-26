@@ -2,23 +2,22 @@
 
 from __future__ import annotations
 
-import csv
 import argparse
+import csv
 import html
 import json
 import re
 import sys
 import time
 from pathlib import Path
-from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.error import HTTPError
+from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
-
 
 ROOT = Path(__file__).resolve().parent
 CSV_PATH = ROOT / "kandidat_foto.csv"
 HTML_PATH = ROOT / "kandidat_foto.html"
-REPO = ROOT.parent
+REPO = ROOT.parent.parent
 OPENVERSE_API = "https://api.openverse.org/v1/images/"
 RECIPE_CSV = REPO / "data" / "processed" / "recipes.csv"
 MAPPING_CSV = REPO / "data" / "mapping" / "recipe_image_mapping.csv"
@@ -26,7 +25,7 @@ SEARCH_VERSION = "openverse-match-v5"
 # Use the same curated names and spelling rules as the recipe catalog builder.
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
-from data.recipe_names import DEACTIVATE, EXCLUDE, load_overrides, standard_name
+from data.recipe_names import DEACTIVATE, EXCLUDE, load_overrides, standard_name  # noqa: E402
 
 FIELDS = [
     "kode", "nama", "query", "sumber", "halaman_sumber",
