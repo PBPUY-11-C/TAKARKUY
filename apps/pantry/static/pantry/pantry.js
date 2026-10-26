@@ -451,7 +451,7 @@ function expiryBadge(value) {
 }
 
 function selectedText(select) {
-  return select.selectedOptions[0]?.textContent.trim() || "";
+  return select.selectedOptions?.[0]?.textContent?.trim() || "";
 }
 
 // Ringkasan baris dibaca dari kontrol di panel edit, sehingga selalu sama dengan data tersimpan.
