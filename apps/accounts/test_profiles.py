@@ -192,7 +192,7 @@ class ProfileTests(TestCase):
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password("NewPassword!938"))
 
-    def test_preferences_are_owned_and_halal_choice_requires_fresh_version(self):
+    def test_preferences_are_owned_and_require_fresh_version(self):
         self.client.get(reverse("modul3"))
         profile = UserProfile.objects.get(user=self.user)
         other = FoodPreference.objects.create(user=self.other)
@@ -202,13 +202,14 @@ class ProfileTests(TestCase):
             "version": profile.version, "user_id": self.other.pk,
         }
         self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
-        self.assertFalse(FoodPreference.objects.get(user=self.user).halal_only)
+        self.assertTrue(FoodPreference.objects.get(user=self.user).halal_only)
         other.refresh_from_db()
         self.assertTrue(other.halal_only)
         self.assertEqual(other.servings, 2)
         self.assertEqual(self.client.post(reverse("modul3"), data).status_code, 409)
         response = self.client.get(reverse("modul3"))
-        self.assertEqual(response.context["preference_form"]["halal_only"].value(), "no")
+        self.assertNotIn("halal_only", response.context["preference_form"].fields)
+        self.assertNotContains(response, "Preferensi halal")
 
     def test_avoided_ingredients_show_names_and_can_be_cleared(self):
         from apps.catalog.models import Ingredient

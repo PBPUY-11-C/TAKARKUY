@@ -170,7 +170,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             while picker.locator('input:checked').count():
                 picker.locator('input:checked').first.uncheck()
             expect(page.locator('#ingredient-count')).to_have_text('0/10 dipilih')
-            page.locator('[name="halal_only"][value="no"]').check()
+            expect(page.locator('[name="halal_only"]')).to_have_count(0)
             page.locator('[name="targets"][value="tinggi_protein"]').check()
             page.get_by_role("button", name="Simpan preferensi", exact=True).click()
             expect(page.get_by_text("Seimbang tidak dapat digabung dengan target lain.")).to_be_visible()
@@ -184,7 +184,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             preference = database(lambda: FoodPreference.objects.get(user=user))
             expect(page.locator('[name="avoided_ingredients"][value="' + ingredient.pk + '"]')).to_be_checked()
             expect(page.locator("#ingredient-count")).to_have_text("1/10 dipilih")
-            self.assertFalse(preference.halal_only)
+            self.assertTrue(preference.halal_only)
             self.assertEqual(preference.servings, 3)
             self.assertEqual(preference.allergens, ["telur"])
             self.assertTrue(database(lambda: preference.avoided_ingredients.filter(pk=ingredient.pk).exists()))
@@ -206,7 +206,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             self.assertTrue(user.check_password("BrowserChanged!938"))
             open_page("/planner/?new=1")
             expect(page.locator('[name="servings"]')).to_have_value("3")
-            expect(page.get_by_text("Tidak membatasi", exact=False)).to_be_visible()
+            expect(page.get_by_text("Preferensi halal:", exact=False)).to_have_count(0)
             capture("planner", widths=(1440, 390))
             for path, name in (("/modul2/", "pantry"), ("/modul4/", "recipe-book"), ("/modul5/", "dashboard")):
                 open_page(path)

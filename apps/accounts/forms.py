@@ -194,13 +194,6 @@ class PreferenceForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["version"].widget.attrs["id"] = "preference-version"
 
-    halal_only = forms.TypedChoiceField(
-        label="Preferensi halal",
-        choices=(("yes", "Halal saja"), ("no", "Tidak membatasi")),
-        coerce=lambda value: value == "yes",
-        initial="yes",
-        widget=forms.RadioSelect(attrs={"class": "preference-chips"}),
-    )
     targets = forms.MultipleChoiceField(
         choices=PlannerForm.TARGET_CHOICES,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips"}),

@@ -72,7 +72,6 @@ def profile_view(request):
             "meal_types": food.meal_types,
             "servings": food.servings,
             "allergens": food.allergens,
-            "halal_only": "yes" if food.halal_only else "no",
             "avoided_ingredients": food.avoided_ingredients.all(),
             "version": profile.version,
         }
@@ -128,8 +127,9 @@ def profile_view(request):
                         locked.save(update_fields=["first_name", "last_name", "username", "email"])
                     elif action == "preferences":
                         food = preferences_for(locked)
-                        for field in ("targets", "meal_types", "servings", "allergens", "halal_only"):
+                        for field in ("targets", "meal_types", "servings", "allergens"):
                             setattr(food, field, form.cleaned_data[field])
+                        food.halal_only = True
                         food.save()
                         food.avoided_ingredients.set(form.cleaned_data["avoided_ingredients"])
                     else:

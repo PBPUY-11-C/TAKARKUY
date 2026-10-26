@@ -89,7 +89,7 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 
 - **Landing page:** hero, cara kerja, fitur, dan FAQ untuk guest.
 - **Autentikasi:** daftar, masuk (username atau email), dan keluar.
-- **Profil & Preferensi:** nama, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, pilihan halal per pengguna, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
+- **Profil & Preferensi:** nama, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
 - **Data yang dipegang:** `User`, `UserProfile`, `FoodPreference`.
 - **Halaman:** Landing, Daftar, Masuk, serta Profil & Preferensi.
 
