@@ -4,8 +4,11 @@ from django.urls import reverse
 
 
 class AccountFlowTests(TestCase):
-    def test_planner_alias_opens_for_guests_and_authenticated_accounts(self):
-        self.assertEqual(self.client.get(reverse("planner")).status_code, 200)
+    def test_planner_requires_login_and_opens_for_accounts(self):
+        self.assertRedirects(
+            self.client.get(reverse("planner")),
+            f"{reverse('login')}?next={reverse('planner')}",
+        )
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("planner"), {"new": "1"})
         self.assertEqual(response.status_code, 200)
@@ -45,20 +48,34 @@ class AccountFlowTests(TestCase):
             **changes,
         }
 
-    def test_landing_calculator_prefills_guest_planner(self):
+    def test_landing_calculator_prefills_planner_after_signup(self):
         landing = self.client.get(reverse("landing"))
         self.assertContains(landing, f'action="{reverse("planner")}" method="get"')
         self.assertContains(landing, 'id="landing-menu"')
         self.assertNotContains(landing, 'href="#fitur"')
-        planner = self.client.get(reverse("planner"), {
-            "budget": "240000", "days": "4", "servings": "2",
-            "meal_types": ["makan_siang", "makan_malam", "bukan_menu"],
-        })
+        query = "budget=240000&days=4&servings=2&meal_types=makan_siang"
+        query += "&meal_types=makan_malam&meal_types=bukan_menu"
+        target = f"{reverse('planner')}?{query}"
+        guest = self.client.get(target)
+        self.assertEqual(guest.status_code, 302)
+        login_url = guest["Location"]
+        signup_url = login_url.replace(reverse("login"), reverse("signup"), 1)
+        self.assertContains(self.client.get(login_url), signup_url.replace("&", "&amp;"))
+        response = self.client.post(signup_url, {**self.signup_data(), "next": target})
+        self.assertRedirects(response, target, fetch_redirect_response=False)
+        planner = self.client.get(target)
+        self.assertIsNone(planner.context["plan"])
         form = planner.context["form"]
         self.assertEqual(form.initial["budget"], 240000)
         self.assertEqual(form.initial["days"], 4)
         self.assertEqual(form.initial["servings"], 2)
         self.assertEqual(form.initial["meal_types"], ["makan_siang", "makan_malam"])
+
+    def test_signup_rejects_external_next(self):
+        response = self.client.post(
+            reverse("signup"), {**self.signup_data(), "next": "https://example.org/evil"}
+        )
+        self.assertRedirects(response, reverse("modul5"))
 
     def test_landing_cta_opens_signup_and_pages_link_to_each_other(self):
         landing = self.client.get(reverse("landing"))
@@ -187,7 +204,7 @@ class AccountFlowTests(TestCase):
         self.client.post(reverse("login"), {**credentials, "remember_me": "1"})
         self.assertFalse(self.client.session.get_expire_at_browser_close())
 
-    def test_other_module_pages_remain_protected_placeholders(self):
+    def test_other_module_pages_require_login_and_use_shared_header(self):
         for name in ("modul2", "modul4"):
             url = reverse(name)
             self.assertRedirects(
@@ -199,7 +216,7 @@ class AccountFlowTests(TestCase):
 
         for name in ("modul2", "modul4"):
             response = self.client.get(reverse(name))
-            self.assertTemplateUsed(response, "kosong.html")
+            self.assertTemplateUsed(response, f"{name}.html")
             self.assertContains(
                 response,
                 'aria-label="Profil dan preferensi"',

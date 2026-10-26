@@ -150,8 +150,9 @@ class MaintenanceTests(TestCase):
 
     @override_settings(MAINTENANCE_MODE=False)
     def test_switching_off_restores_normal_pages_and_authorization(self):
-        for name in ("landing", "login", "signup", "modul1"):
+        for name in ("landing", "login", "signup"):
             self.assertEqual(self.client.get(reverse(name)).status_code, 200)
-        self.assertEqual(self.client.get(reverse("modul5")).status_code, 302)
+        for name in ("modul1", "modul5"):
+            self.assertEqual(self.client.get(reverse(name)).status_code, 302)
         self.client.force_login(self.user)
         self.assertEqual(self.client.get(reverse("modul5")).status_code, 200)

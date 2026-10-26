@@ -23,7 +23,7 @@ from apps.catalog.recipe_images import recipe_images_for
 
 from .forms import PlanMetadataForm, PlannerForm
 from .models import BudgetPlan, PlanPreview
-from .planner import budget_preference_notes, build_plan, replacement_options
+from .planner import MEALS, budget_preference_notes, build_plan, replacement_options
 from .services import (
     PlanConflict,
     PreviewRateLimit,
@@ -142,15 +142,30 @@ def pantry_annotations(user, plan, result, display_schedule):
     return groups, saving // 100 * 100
 
 
+def landing_prefill(query):
+    """Budget, days, servings and meals carried from the landing calculator."""
+    values = {
+        key: int(query[key])
+        for key in ("budget", "days", "servings")
+        if query.get(key, "").isdigit()
+    }
+    meals = [meal for meal in query.getlist("meal_types") if meal in MEALS]
+    if meals:
+        values["meal_types"] = meals
+    return values
+
+
 def account_page(request, builder):
     plan = None
+    # Values from the landing calculator start a new plan; the form still validates on submit.
+    prefill = landing_prefill(request.GET) if request.method == "GET" else {}
     requested = request.POST.get("plan_id") if request.method == "POST" else request.GET.get("plan")
     if requested:
         try:
             plan = owned_plan(request, UUID(requested))
         except (ValueError, TypeError):
             raise Http404("Rencana tidak ditemukan.") from None
-    elif request.GET.get("new") != "1" and not (
+    elif request.GET.get("new") != "1" and not prefill and not (
         request.method == "POST" and request.POST.get("new_plan") == "1"
     ):
         plan = BudgetPlan.objects.filter(user=request.user, status="draft").first()
@@ -166,6 +181,7 @@ def account_page(request, builder):
             "meal_types": ["sarapan", "makan_siang", "makan_malam"],
             "targets": ["seimbang"],
             **planner_defaults(request.user),
+            **prefill,
         }
     )
     form = PlannerForm(
@@ -300,7 +316,6 @@ def account_page(request, builder):
             "pantry_saving": pantry_saving,
             "error": error,
             "plan": plan,
-            "trial": None,
             "pending_preview": pending,
             "saved_plans": [
                 setattr(saved, "net_total", net_total(thaw(saved.snapshot))) or saved

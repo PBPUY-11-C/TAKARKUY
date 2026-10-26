@@ -164,11 +164,11 @@ class AuthorizationTests(TestCase):
             self.client.delete(reverse("modul2-item-delete", args=[self.item.pk])).status_code, 404
         )
 
-    def test_guest_can_only_open_public_pages_and_module_one(self):
-        for name in ("landing", "signup", "login", "modul1"):
+    def test_guest_can_only_open_public_pages(self):
+        for name in ("landing", "signup", "login"):
             with self.subTest(page=name):
                 self.assertEqual(self.client.get(reverse(name)).status_code, 200)
-        for name in ("modul2", "modul4", "modul5"):
+        for name in ("modul1", "modul2", "modul4", "modul5"):
             with self.subTest(page=name):
                 self.assertRedirects(
                     self.client.get(reverse(name)), f"{reverse('login')}?next={reverse(name)}"

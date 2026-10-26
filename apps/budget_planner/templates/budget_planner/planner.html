@@ -7,7 +7,7 @@
   <meta name="description" content="Coba perencana anggaran makan TAKARKUY dengan katalog resep dan harga bahan.">
   <title>TAKARKUY</title>
   {% include "partials/head.html" %}
-  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}?v=20261023-layout">
+  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}?v=20261026-errors">
 </head>
 <body class="has-app-nav planner-page">
   {% include "partials/app_header.html" %}
@@ -16,14 +16,6 @@
     <div class="page-heading"><div><p class="kicker">PLANNER</p><h1>Rencana Makan</h1></div></div>
     {% if user.is_authenticated %}<nav class="plan-nav" aria-label="Navigasi rencana"><a href="{% url 'modul1' %}?new=1">+ Rencana Baru</a><a href="#rencana-saya">Rencana Saya</a>{% if active_draft %}<a href="{% url 'modul1' %}?plan={{ active_draft.pk }}#hasil">Draft Terakhir</a>{% endif %}</nav>{% endif %}
     <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite"></p>
-
-    {% if trial %}
-    <aside class="trial-banner" aria-label="Kuota percobaan gratis">
-      <div><strong>Sisa percobaan: {{ trial.remaining }} dari {{ trial.limit }}</strong>
-        {% if trial.reset_at %}<small>Kuota diperbarui {{ trial.reset_label }} WIB.</small>{% endif %}
-      </div>
-    </aside>
-    {% endif %}
 
     <div class="planner-layout">
     <section class="input-card" aria-labelledby="input-title">
@@ -53,7 +45,7 @@
             <fieldset class="field"><legend>Target gizi</legend><div class="choice-row target-row">{{ form.targets }}</div>{{ form.targets.errors }}</fieldset>
             <div class="field"><label for="{{ form.rice.id_for_label }}">Nasi untuk lauk</label><div class="excluded-input">{{ form.rice }}</div>{{ form.rice.errors }}</div>
             <div class="field"><label for="{{ form.exclude_ingredients.id_for_label }}">Bahan dihindari <span class="optional">(opsional)</span></label><div class="excluded-input">{{ form.exclude_ingredients }}</div>{{ form.exclude_ingredients.errors }}</div>
-            <button type="submit" class="calculate-button"{% if trial and trial.remaining == 0 %} disabled{% endif %}>{% if plan.status == 'saved' %}Pratinjau Perubahan{% else %}Buat Rencana Makan{% endif %} <span aria-hidden="true">→</span></button>
+            <button type="submit" class="calculate-button">{% if plan.status == 'saved' %}Pratinjau Perubahan{% else %}Buat Rencana Makan{% endif %} <span aria-hidden="true">→</span></button>
           </div>
           <p class="field-note form-hint">Rendah kalori dibatasi 1.150 kkal/orang/hari · nasi otomatis untuk 1–2 orang · bahan dihindari bukan filter alergi.</p>
         </div>
@@ -61,13 +53,12 @@
     </section>
 
     <section id="hasil" class="results" aria-live="polite">
-      {% if trial_blocked or trial and trial.remaining == 0 %}<div class="notice error-notice"><strong>Kuota percobaan sudah habis.</strong><p>Masuk atau daftar untuk melanjutkan tanpa batas trial. Hasil terakhir tetap tersedia; kamu juga bisa menunggu kuota diperbarui.</p></div>{% endif %}
       {% if error %}
         <div class="notice error-notice"><strong>Rencana belum bisa dihitung.</strong><p>{{ error }}</p></div>
       {% elif form.errors %}
-        <div class="notice error-notice"><strong>Input belum valid.</strong><p>Periksa kembali kolom di atas, termasuk pilihan waktu makan.</p></div>
+        <div class="notice error-notice"><strong>Input belum valid.</strong><ul class="form-error-list">{% for field in form %}{% for message in field.errors %}<li>{{ field.label }}: {{ message }}</li>{% endfor %}{% endfor %}{% for message in form.non_field_errors %}<li>{{ message }}</li>{% endfor %}</ul></div>
       {% elif result %}
-        {% if plan and result.within_budget %}{% include 'budget_planner/plan_controls.html' %}{% elif not user.is_authenticated and result.within_budget %}<p class="selection-note">Ingin menyimpan pilihan ini? <a class="text-link" href="{% url 'login' %}?next={% url 'modul1' %}">Masuk</a> atau <a class="text-link" href="{% url 'signup' %}">daftar</a>. Hasil terakhir akan dibawa menjadi draft setelah masuk.</p>{% endif %}
+        {% if plan and result.within_budget %}{% include 'budget_planner/plan_controls.html' %}{% endif %}
         <div class="results-heading"><div><p class="kicker">HASIL SIMULASI</p><h2>Rencana makan {{ form.cleaned_data.days }} hari</h2></div></div>
         {% if result.missing_meal_labels %}<div class="notice error-notice"><strong>Rencana parsial:</strong><span>Belum ada resep yang cocok untuk {{ result.missing_meal_labels|join:", " }} dengan bahan/pantangan saat ini. Menu waktu makan lain tetap ditampilkan; katalog untuk bagian yang kosong perlu ditambah.</span></div>{% endif %}
         {% if result.unmatched_exclusions %}<div class="notice error-notice"><strong>Istilah belum ditemukan:</strong><span>{{ result.unmatched_exclusions|join:", " }}. Tidak ada nama bahan resep yang cocok; filter tersebut belum mengubah pilihan menu.</span></div>{% endif %}
@@ -121,6 +112,9 @@
   <script>
     document.querySelectorAll(".js-rupiah-input").forEach((input) => {
       const format = () => {
+        // Leave a comma for the server to reject: stripping it would read
+        // "150.000,00" as 15.000.000.
+        if (input.value.includes(",")) return;
         const digits = input.value.replace(/\D/g, "");
         input.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       };
