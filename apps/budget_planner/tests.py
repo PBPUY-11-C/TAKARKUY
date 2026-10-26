@@ -2,6 +2,7 @@ from decimal import Decimal
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from apps.catalog.models import Ingredient, IngredientPrice, Recipe
@@ -19,6 +20,9 @@ from .purchase_units import load_fruit_rules, whole_fruit_quote
 
 class PlannerCatalogTests(TestCase):
     fixtures = ["catalog_seed"]
+
+    def setUp(self):
+        self.client.force_login(get_user_model().objects.create_user("catalog-reader"))
 
     def test_whole_chicken_purchase_uses_gross_mass_but_nutrition_uses_meat(self):
         recipe = Recipe.objects.get(pk="RCP-KAGGLE-4473027")
@@ -58,6 +62,7 @@ class PlannerCatalogTests(TestCase):
                 "targets": ["seimbang"],
                 "exclude_ingredients": "",
             },
+            follow=True,
         )
         self.assertContains(response, "Biaya dan daftar belanja memakai berat utuh")
         self.assertContains(response, "Daun Salam Segar (Estimasi)")
@@ -98,6 +103,7 @@ class PlannerCatalogTests(TestCase):
                 "targets": ["seimbang"],
                 "exclude_ingredients": "",
             },
+            follow=True,
         )
         self.assertContains(response, "estimasi takaran dan jumlah porsi")
         self.assertContains(response, "bukan harga Garut")
@@ -188,6 +194,7 @@ class PlannerCatalogTests(TestCase):
                 "targets": ["seimbang"],
                 "exclude_ingredients": "",
             },
+            follow=True,
         )
         self.assertContains(response, "Perkiraan beli 5 buah")
         self.assertContains(response, "harga per kg Kabupaten Garut")
@@ -351,6 +358,7 @@ class PlannerCatalogTests(TestCase):
                 "targets": ["tinggi_protein", "rendah_kalori"],
                 "exclude_ingredients": "",
             },
+            follow=True,
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "minimal 80 g protein")

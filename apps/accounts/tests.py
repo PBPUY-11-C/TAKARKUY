@@ -4,8 +4,10 @@ from django.urls import reverse
 
 
 class AccountFlowTests(TestCase):
-    def test_planner_alias_opens_for_guests_and_authenticated_accounts(self):
-        self.assertEqual(self.client.get(reverse("planner")).status_code, 200)
+    def test_planner_alias_requires_login_and_opens_for_authenticated_accounts(self):
+        self.assertRedirects(
+            self.client.get(reverse("planner")), f"{reverse('login')}?next={reverse('planner')}"
+        )
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("planner"), {"new": "1"})
         self.assertEqual(response.status_code, 200)

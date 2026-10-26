@@ -187,3 +187,5 @@ Total aplikasi **8 halaman**. Market locator berupa popup di Dashboard, bukan ha
 Modul 1 (`/planner/`) dan Modul 3 (landing, daftar, masuk, profil dan preferensi) aktif. Halaman Modul 2, 4, dan 5 masih berupa placeholder mengikuti `main`; endpoint integrasi planner tetap tersedia. Setelah daftar/masuk, pengguna diarahkan ke planner sementara Dashboard belum aktif.
 
 Jalankan `python manage.py migrate --noinput` untuk menerapkan pemisahan `FoodPreference` tanpa menghapus data preferensi lama, lalu `python manage.py collectstatic --noinput` saat deployment.
+
+Planner wajib login, termasuk alias `/modul1/`. Guest hanya dapat membuka landing, daftar/masuk, serta kalkulator pembagian budget di landing; akses planner diarahkan ke `/login/?next=...`.
