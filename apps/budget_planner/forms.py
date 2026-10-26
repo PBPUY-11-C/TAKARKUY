@@ -78,13 +78,22 @@ class PlannerForm(forms.Form):
         ),
     )
 
-    RICE_CHOICES = [
-        ("auto", "Otomatis (1–2 orang)"),
-        ("yes", "Selalu tambahkan"),
-        ("no", "Tanpa nasi"),
+    # The staple served with a lauk that has no carbohydrate of its own.
+    STAPLE_CHOICES = [
+        ("nasi", "Nasi"),
+        ("kentang", "Kentang"),
+        ("ubi", "Ubi"),
+        ("singkong", "Singkong"),
+        ("jagung", "Jagung"),
+        ("no", "Tanpa"),
     ]
+    # Plans saved before the staple choice stored "auto" or "yes" (rice); they stay valid.
+    LEGACY_RICE_CHOICES = [("auto", "Nasi (otomatis 1–2 orang)"), ("yes", "Nasi")]
     rice = forms.ChoiceField(
-        label="Nasi untuk lauk", choices=RICE_CHOICES, required=False, initial="auto"
+        label="Karbohidrat",
+        choices=STAPLE_CHOICES + LEGACY_RICE_CHOICES,
+        required=False,
+        initial="nasi",
     )
 
     def clean_rice(self):

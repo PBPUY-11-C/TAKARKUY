@@ -14,7 +14,14 @@ from apps.catalog.models import Recipe
 from apps.pantry.models import PantryItem, PantryMovement
 
 from .models import BudgetPlan, ShoppingListItem
-from .planner import RICE_CODE, _candidate_pool, build_plan, rice_included
+from .planner import (
+    RICE_CODE,
+    STAPLES,
+    _candidate_pool,
+    build_plan,
+    meal_staple,
+    staple_choice,
+)
 from .services import (
     clean_inputs,
     expiring_stock_codes,
@@ -80,11 +87,11 @@ class RiceTests(TestCase):
         cls.lauk, cls.with_carbs = lunch_codes()
 
     def test_auto_rice_follows_servings_and_low_calorie_target(self):
-        self.assertTrue(rice_included("auto", 2, ["seimbang"]))
-        self.assertFalse(rice_included("auto", 3, ["seimbang"]))
-        self.assertFalse(rice_included("auto", 1, ["rendah_kalori"]))
-        self.assertTrue(rice_included("yes", 6, ["rendah_kalori"]))
-        self.assertFalse(rice_included("no", 1, ["seimbang"]))
+        self.assertEqual(staple_choice("auto", 2, ["seimbang"]), "nasi")
+        self.assertIsNone(staple_choice("auto", 3, ["seimbang"]))
+        self.assertIsNone(staple_choice("auto", 1, ["rendah_kalori"]))
+        self.assertEqual(staple_choice("yes", 6, ["rendah_kalori"]), "nasi")
+        self.assertIsNone(staple_choice("no", 1, ["seimbang"]))
 
     def test_lauk_gets_priced_rice_only_when_enabled(self):
         _, plain = lunch(self.lauk, rice="no")
@@ -114,6 +121,55 @@ class RiceTests(TestCase):
         self.assertNotIn("with_rice", meal(result))
         form, _ = lunch(self.lauk, rice="auto")
         self.assertEqual(stored_inputs(form)["rice"], "auto")
+
+
+class StapleTests(TestCase):
+    fixtures = ["catalog_seed"]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.lauk, cls.with_carbs = lunch_codes()
+
+    def test_choice_keeps_legacy_rice_values(self):
+        self.assertEqual(staple_choice("nasi", 6, ["rendah_kalori"]), "nasi")
+        self.assertEqual(staple_choice("yes", 6, ["seimbang"]), "nasi")
+        self.assertEqual(staple_choice("auto", 3, ["seimbang"]), None)
+        self.assertEqual(staple_choice("kentang", 1, ["seimbang"]), "kentang")
+        self.assertEqual(staple_choice("no", 1, ["seimbang"]), None)
+        self.assertEqual(staple_choice("kacang", 1, ["seimbang"]), None)
+
+    def test_each_staple_is_priced_and_stored_on_the_lauk(self):
+        _, plain = lunch(self.lauk, rice="no")
+        for key, rule in STAPLES.items():
+            with self.subTest(staple=key):
+                form, result = lunch(self.lauk, rice=key)
+                self.assertEqual(form.cleaned_data["rice"], key)
+                row = next(
+                    item
+                    for group in result["shopping_groups"]
+                    for item in group["items"]
+                    if item["ingredient_code"] == rule["ingredient_code"]
+                )
+                self.assertEqual(row["quantity"], rule["grams"])
+                self.assertGreater(meal(result)["calories"], meal(plain)["calories"])
+                self.assertEqual(meal_staple(meal(result))["label"], rule["label"])
+                # Rice keeps the older snapshot key; other staples carry their own.
+                self.assertEqual("with_rice" in meal(result), key == "nasi")
+                self.assertEqual("staple" in meal(result), key != "nasi")
+
+    def test_staple_skips_carb_recipes_and_avoided_staples(self):
+        _, carbs = lunch(self.with_carbs, rice="kentang")
+        self.assertIsNone(meal_staple(meal(carbs)))
+        _, avoided = lunch(self.lauk, rice="kentang", exclude_ingredients="kentang")
+        self.assertIsNone(meal_staple(meal(avoided)))
+
+    def test_cooking_a_slot_needs_its_staple_stock(self):
+        from apps.recipe_book.services import recipe_requirements
+
+        recipe = Recipe.objects.get(pk=self.lauk)
+        needs, ingredients, _ = recipe_requirements(recipe, 2, staple=STAPLES["singkong"])
+        self.assertEqual(needs["ING-SINGKONG"], Decimal(340))
+        self.assertIn("Singkong (pendamping)", [row["name"] for row in ingredients])
 
 
 class PantryPriorityTests(TestCase):
@@ -174,6 +230,14 @@ class PlanPantryTests(TestCase):
             estimated_expires_on=TODAY + timedelta(days=days) if days is not None else None,
         )
 
+    def item(self, response, code):
+        return next(
+            item
+            for group in response.context["shopping_groups"]
+            for item in group["items"]
+            if item["ingredient_code"] == code
+        )
+
     def add(self, items, version=None, plan=None):
         plan = plan or self.plan
         return self.client.post(
@@ -227,14 +291,18 @@ class PlanPantryTests(TestCase):
         item.expiry_source = "unknown"
         item.save()
         response = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
-        self.assertContains(response, "Sudah ada di Pantry 50 g · perlu beli 30 g")
-        self.assertContains(response, "tanggal stok belum diketahui")
+        rice = self.item(response, RICE_CODE)
+        self.assertEqual((rice["in_pantry"], rice["to_buy"]), (50, 30))
+        self.assertTrue(rice["unknown_expiry"])
 
     def test_plan_page_shows_pantry_stock_and_rice(self):
         self.batch(RICE_CODE, 50, 30)
         response = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
-        self.assertContains(response, "Sudah ada di Pantry 50 g · perlu beli 30 g")
+        rice = self.item(response, RICE_CODE)
+        self.assertEqual((rice["in_pantry"], rice["to_buy"]), (50, 30))
         self.assertContains(response, "+ Nasi")
+        # The pantry checklist dialog offers only what still has to be bought.
+        self.assertContains(response, "perlu beli 30 g")
         self.assertContains(response, "Masukkan ke Pantry")
 
     def test_increased_quantity_can_be_added_to_pantry_again(self):
@@ -277,8 +345,23 @@ class PlanPantryTests(TestCase):
         plan = save_plan(self.user, draft.pk, draft.version, "Dua hari")
         self.batch(RICE_CODE, 500, 0)  # good for today's lunch only
         response = self.client.get(reverse("modul1") + f"?plan={plan.pk}")
-        self.assertContains(response, "Sudah ada di Pantry 80 g · perlu beli 80 g")
+        rice = self.item(response, RICE_CODE)
+        self.assertEqual((rice["in_pantry"], rice["to_buy"]), (80, 80))
         self.assertContains(response, f'data-ingredient="{RICE_CODE}"')
+
+    def test_shopping_list_downloads_as_pdf_for_its_owner_only(self):
+        url = reverse("modul1-plan-pdf", args=[self.plan.pk])
+        response = self.client.get(url)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertEqual(response["Content-Disposition"], 'attachment; filename="belanja-belanja.pdf"')
+        self.assertTrue(response.content.startswith(b"%PDF"))
+        page = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
+        self.assertContains(page, f'href="{url}"')
+        summary = page.context["shopping_summary"]
+        self.assertEqual(sum(row["count"] for row in summary), page.context["item_count"])
+        other = get_user_model().objects.create_user("bukan-pemilik-pdf")
+        self.client.force_login(other)
+        self.assertEqual(self.client.get(url).status_code, 404)
 
     def test_item_fully_covered_by_pantry_cannot_be_added_again(self):
         self.batch(RICE_CODE, 500, 30)

@@ -67,9 +67,11 @@ class PlannerCatalogTests(TestCase):
                 "exclude_ingredients": "",
             },
         )
-        self.assertContains(response, "Biaya dan daftar belanja memakai berat utuh")
-        self.assertContains(response, "Daun Salam Segar (Estimasi)")
-        self.assertNotContains(response, "Proksi ikan dori menggunakan patin")
+        # The page totals the whole chicken that has to be bought.
+        names = {
+            item["name"] for group in response.context["shopping_groups"] for item in group["items"]
+        }
+        self.assertIn(chicken.ingredient.name, names)
 
     def test_legacy_estimates_without_purchase_metadata_keep_original_quantity(self):
         link = SimpleNamespace(
@@ -106,8 +108,7 @@ class PlannerCatalogTests(TestCase):
                 "exclude_ingredients": "",
             },
         )
-        self.assertContains(response, "estimasi takaran dan jumlah porsi")
-        self.assertContains(response, "bukan harga Garut")
+        self.assertContains(response, "Download detail (PDF)")
 
     def test_local_price_overrides_newer_retail_reference_for_same_ingredient(self):
         Recipe.objects.exclude(pk="RCP-TMDB-53281").update(is_active=False)
@@ -250,8 +251,13 @@ class PlannerCatalogTests(TestCase):
                 "exclude_ingredients": "",
             },
         )
-        self.assertContains(response, "Perkiraan beli 5 buah")
-        self.assertContains(response, "harga per kg Kabupaten Garut")
+        fruit = [
+            item
+            for group in response.context["shopping_groups"]
+            for item in group["items"]
+            if item.get("purchase_units")
+        ]
+        self.assertEqual({item["purchase_units"] for item in fruit}, {5})
 
     def test_kubis_is_grouped_as_vegetable_even_with_old_catalog_category(self):
         kubis = Ingredient.objects.get(pk="ING-KUBIS")
@@ -413,9 +419,9 @@ class PlannerCatalogTests(TestCase):
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "minimal 80 g protein")
-        self.assertContains(response, "maksimal 1150 kkal")
-        self.assertContains(response, "kkal / orang (waktu makan terpilih)")
+        self.assertContains(response, "≥ 80 g protein")
+        self.assertContains(response, "≤ 1150 kkal")
+        self.assertContains(response, "kkal / orang")
 
     def test_budget_rejects_cents_and_explains_invalid_input(self):
         base = {"days": "1", "servings": "1", "meal_types": ["sarapan"], "targets": ["seimbang"]}
@@ -433,6 +439,18 @@ class PlannerCatalogTests(TestCase):
             response, "Budget: Masukkan nominal rupiah dengan angka, misalnya 10.000."
         )
         self.assertContains(response, "Waktu makan: Pilih minimal satu waktu makan.")
+
+    def test_nutrition_rings_use_label_reference_and_cap_at_full(self):
+        from .plan_views import nutrition_rings
+
+        rings = nutrition_rings({"calories": 1075, "protein": 90, "carbs": 160, "fat": 26})
+        self.assertEqual([ring["percent"] for ring in rings], [50, 100, 49, 38])
+        self.assertEqual(rings[1]["value"], "90 g")
+        response = self.post_planner(
+            {"budget": "150.000", "days": "1", "servings": "1", "meal_types": ["sarapan"],
+             "targets": ["seimbang"]}
+        )
+        self.assertContains(response, "% dari acuan label gizi 2150")
 
     def test_balanced_cannot_be_combined_with_specific_targets(self):
         form = PlannerForm(

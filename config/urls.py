@@ -31,6 +31,7 @@ from apps.budget_planner.plan_views import (
     preview_plan,
     recipe_alternatives,
     save_account_plan,
+    shopping_list_download,
 )
 from apps.budget_planner.views import planner_page
 from apps.dashboard.views import dashboard_page, market_lookup
@@ -81,6 +82,11 @@ urlpatterns = [
     path("planner/plans/<uuid:plan_id>/delete/", delete_account_plan, name="modul1-plan-delete"),
     path("planner/plans/<uuid:plan_id>/pantry/", add_plan_purchases, name="modul1-plan-pantry"),
     path("planner/plans/<uuid:plan_id>/preview/", preview_plan, name="modul1-plan-preview"),
+    path(
+        "planner/plans/<uuid:plan_id>/belanja.pdf",
+        shopping_list_download,
+        name="modul1-plan-pdf",
+    ),
     path(
         "planner/plans/<uuid:plan_id>/alternatives/",
         recipe_alternatives,
