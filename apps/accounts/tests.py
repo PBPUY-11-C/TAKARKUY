@@ -45,6 +45,21 @@ class AccountFlowTests(TestCase):
             **changes,
         }
 
+    def test_landing_calculator_prefills_guest_planner(self):
+        landing = self.client.get(reverse("landing"))
+        self.assertContains(landing, f'action="{reverse("planner")}" method="get"')
+        self.assertContains(landing, 'id="landing-menu"')
+        self.assertNotContains(landing, 'href="#fitur"')
+        planner = self.client.get(reverse("planner"), {
+            "budget": "240000", "days": "4", "servings": "2",
+            "meal_types": ["makan_siang", "makan_malam", "bukan_menu"],
+        })
+        form = planner.context["form"]
+        self.assertEqual(form.initial["budget"], 240000)
+        self.assertEqual(form.initial["days"], 4)
+        self.assertEqual(form.initial["servings"], 2)
+        self.assertEqual(form.initial["meal_types"], ["makan_siang", "makan_malam"])
+
     def test_landing_cta_opens_signup_and_pages_link_to_each_other(self):
         landing = self.client.get(reverse("landing"))
         self.assertContains(landing, f'href="{reverse("signup")}"')

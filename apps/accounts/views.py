@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import LoginView
+from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.shortcuts import redirect, render
 from django.utils.cache import patch_cache_control
@@ -16,10 +17,34 @@ from .models import UserProfile
 from .preferences import preferences_for, profile_for
 
 
+def landing_menu():
+    """Halal recipes with a one-serving price, grouped per meal for the landing preview."""
+    from apps.catalog.models import Recipe
+    from apps.recipe_book.services import recipe_costs
+
+    recipes = Recipe.objects.filter(
+        is_active=True, is_plannable=True, recipetag__tag="halal"
+    ).distinct()
+    names = {recipe.pk: (recipe.meal_type, recipe.name) for recipe in recipes}
+    menu = {}
+    for code, cost in recipe_costs(1, set(names)).items():
+        meal, name = names[code]
+        menu.setdefault(meal, []).append([round(cost), name])
+    for items in menu.values():
+        items.sort()
+    return menu
+
+
 def landing_view(request):
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
-    return render(request, "landing.html")
+    from apps.catalog.models import Recipe
+
+    return render(request, "landing.html", {
+        # Pricing every recipe takes ~1 s, so share one result across visitors.
+        "landing_menu": cache.get_or_set("landing-menu", landing_menu, 3600),
+        "recipe_count": Recipe.objects.filter(is_active=True, is_plannable=True).count(),
+    })
 
 
 @require_http_methods(["GET", "POST"])

@@ -37,6 +37,13 @@ def planner_page(request):
         "meal_types": MEALS,
         "targets": ["seimbang"],
     }
+    # Prefill from the landing calculator; the form still validates on submit.
+    for key in ("budget", "days", "servings"):
+        if request.GET.get(key, "").isdigit():
+            initial[key] = int(request.GET[key])
+    meals = [meal for meal in request.GET.getlist("meal_types") if meal in MEALS]
+    if meals:
+        initial["meal_types"] = meals
     form = PlannerForm(request.POST if request.method == "POST" else None, initial=initial)
     result = None
     error = None
