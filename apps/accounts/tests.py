@@ -4,6 +4,26 @@ from django.urls import reverse
 
 
 class AccountFlowTests(TestCase):
+    def test_error_popup_only_appears_for_invalid_auth_submissions(self):
+        for name in ("login", "signup"):
+            self.assertNotContains(self.client.get(reverse(name)), "data-auth-error-popup")
+            response = self.client.post(reverse(name), {})
+            self.assertContains(response, "data-auth-error-popup", count=1)
+            self.assertContains(response, "Periksa kolom yang ditandai.")
+
+    def test_signup_popup_identifies_invalid_fields_and_duplicate_email(self):
+        response = self.client.post(reverse("signup"), self.signup_data(
+            email="not-an-email", password2="Different!827"
+        ))
+        self.assertContains(response, 'id="id_email_error"')
+        self.assertContains(response, 'id="id_password2_error"')
+        self.assertContains(response, "Konfirmasi kata sandi")
+        self.client.post(reverse("signup"), self.signup_data())
+        self.client.post(reverse("logout"))
+        response = self.client.post(reverse("signup"), self.signup_data(username="another"))
+        self.assertContains(response, "data-auth-error-popup")
+        self.assertContains(response, "Email ini sudah terdaftar")
+
     def test_planner_alias_requires_login_and_opens_for_authenticated_accounts(self):
         self.assertRedirects(
             self.client.get(reverse("planner")), f"{reverse('login')}?next={reverse('planner')}"

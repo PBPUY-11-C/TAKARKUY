@@ -26,7 +26,7 @@ def landing_view(request):
 def signup_view(request):
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
-    form = SignUpForm(request.POST or None)
+    form = SignUpForm(request.POST if request.method == "POST" else None)
     if request.method == "POST" and form.is_valid():
         try:
             with transaction.atomic():

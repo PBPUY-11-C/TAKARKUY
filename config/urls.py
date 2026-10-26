@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import path
+from django.views.generic import RedirectView
 
 from apps.accounts.forms import EmailOrUsernameAuthenticationForm
 from apps.accounts.views import AccountLoginView, landing_view, profile_view, signup_view
@@ -59,7 +60,8 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", LogoutView.as_view(next_page="landing"), name="logout"),
-    path("modul3/", profile_view, name="modul3"),
+    path("profil/", profile_view, name="modul3"),
+    path("modul3/", RedirectView.as_view(pattern_name="modul3", query_string=True)),
     path("planner/", planner_page, name="modul1"),
     path("planner/", planner_page, name="planner"),
     path("modul1/", planner_page),

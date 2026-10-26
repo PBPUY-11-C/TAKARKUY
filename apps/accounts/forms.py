@@ -41,6 +41,8 @@ def clean_email(value, *, user=None):
 
 
 class SignUpForm(forms.Form):
+    field_order = ["full_name", "username", "email", "password1", "password2"]
+
     username = forms.CharField(
         max_length=30,
         label="Username",
@@ -50,6 +52,7 @@ class SignUpForm(forms.Form):
     )
     full_name = forms.CharField(
         max_length=150,
+        label="Nama lengkap",
         widget=forms.TextInput(
             attrs={
                 "autocomplete": "name",
@@ -59,6 +62,7 @@ class SignUpForm(forms.Form):
     )
     email = forms.EmailField(
         max_length=150,
+        label="Alamat email",
         widget=forms.EmailInput(
             attrs={
                 "autocomplete": "email",
@@ -68,6 +72,7 @@ class SignUpForm(forms.Form):
     )
     password1 = forms.CharField(
         strip=False,
+        label="Kata sandi",
         widget=forms.PasswordInput(
             attrs={
                 "autocomplete": "new-password",
@@ -78,6 +83,7 @@ class SignUpForm(forms.Form):
     )
     password2 = forms.CharField(
         strip=False,
+        label="Konfirmasi kata sandi",
         widget=forms.PasswordInput(
             attrs={
                 "autocomplete": "new-password",
@@ -133,6 +139,7 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
         "inactive": "Akun ini dinonaktifkan.",
     }
     username = forms.CharField(
+        label="Email atau username",
         widget=forms.TextInput(
             attrs={
                 "autocomplete": "username",
@@ -142,6 +149,7 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
     )
     password = forms.CharField(
         strip=False,
+        label="Kata sandi",
         widget=forms.PasswordInput(
             attrs={
                 "autocomplete": "current-password",
