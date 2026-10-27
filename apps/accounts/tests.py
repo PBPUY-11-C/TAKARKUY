@@ -219,7 +219,7 @@ class AccountFlowTests(TestCase):
         self.assertEqual(response.content.lower().count(b"<title>"), 1)
         self.assertContains(response, "TAKARKUY")
         self.assertContains(response, "Meal Planner")
-        self.assertContains(response, f'href="{reverse("landing")}"')
+        self.assertContains(response, f'href="{reverse("modul5")}"')
         self.assertContains(response, "Resep favorit")
         self.assertContains(response, "Riwayat masak")
 
@@ -228,7 +228,7 @@ class AccountFlowTests(TestCase):
             self.assertTemplateUsed(response, f"{name}.html")
             self.assertContains(response, 'aria-label="Profil dan preferensi"')
             self.assertEqual(response.content.lower().count(b"<title>"), 1)
-            self.assertContains(response, f'href="{reverse("landing")}"')
+            self.assertContains(response, f'href="{reverse("modul5")}"')
 
         dashboard = self.client.get(reverse("modul5"))
         self.assertEqual(dashboard.status_code, 200)

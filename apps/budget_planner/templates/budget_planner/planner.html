@@ -120,6 +120,8 @@
               {% endfor %}
             </div>
             {% if result.protein_floor or result.calorie_cap %}<p class="muted">Target {% if result.protein_floor %}≥ {{ result.protein_floor }} g protein{% endif %}{% if result.protein_floor and result.calorie_cap %} · {% endif %}{% if result.calorie_cap %}≤ {{ result.calorie_cap }} kkal{% endif %}</p>{% endif %}
+            {% if result.purchase_yield_estimates %}<p class="muted">Biaya dan daftar belanja memakai berat utuh bahan sebelum dibersihkan; nilai gizi dihitung dari bagian yang dapat dimakan.</p>{% endif %}
+            {% if result.nutrition_proxy_names %}<p class="muted">Nilai gizi memakai padanan estimasi untuk: {{ result.nutrition_proxy_names|join:", " }}.</p>{% endif %}
           </div>
           {% if plan %}
           <form class="card summary-card plan-save" data-save-plan data-url="{% url 'modul1-plan-save' plan.pk %}" data-version="{{ plan.version }}">
