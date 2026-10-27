@@ -20,9 +20,9 @@
   </figcaption>
   </figure>
   {% else %}
-  <figure class="recipe-photo-placeholder">
-  <span aria-hidden="true">♨</span>
-  <figcaption>Foto belum tersedia untuk resep ini.</figcaption>
+  <figure class="recipe-photo-placeholder" data-meal="{{ selected.meal_type }}">
+  <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true" focusable="false"><path d="M8 18h32l-2 22H10L8 18Zm6 0a10 10 0 0 1 20 0M16 12c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <figcaption>Foto belum tersedia</figcaption>
   </figure>
   {% endif %}
           {% if slot %}
@@ -128,7 +128,7 @@
   <p class="empty-state">Panduan memasak belum tersedia untuk resep ini. Resep tetap dapat digunakan untuk memeriksa bahan dan membuat estimasi.</p>
   {% endif %}
           <p class="helper">Estimasi gizi, bukan jaminan bebas alergen. Periksa komposisi produk dan kemungkinan kontaminasi silang.</p>
-          <details class="personal-note" open>
+          <details class="personal-note">
   <summary>Catatan pribadi</summary>
   <p class="helper">Hanya terlihat oleh akun Anda. Simpan tingkat pedas, perubahan bahan, atau hasil percobaan.</p>
   <form id="recipe-note-form" data-url="{% url 'modul4-note' %}" data-code="{{ selected.pk }}">

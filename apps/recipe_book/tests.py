@@ -12,13 +12,14 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.preferences import preferences_for
-from apps.budget_planner.models import BudgetPlan, PlannedMeal
+from apps.budget_planner.models import BudgetPlan, PlannedMeal, PlanPreviewQuota
+from apps.budget_planner.services import reserve_preview
 from apps.catalog.aggregation import expected_allergens
 from apps.catalog.models import Ingredient, IngredientAlias, Recipe, RecipeIngredient, RecipeTag
 from apps.pantry.models import PantryItem, PantryMovement, PantryOperation
 from apps.pantry.services import StockError, plan_consumption
 
-from .models import CookingHistory, RecipeFavorite, RecipeNote
+from .models import CookingHistory, RecipeBookPreviewQuota, RecipeFavorite, RecipeNote
 from .services import cook, preview_cooking, recipe_query, stock_matches
 
 
@@ -180,6 +181,23 @@ class CookingTests(TestCase):
                 ).status_code,
                 400,
             )
+
+    @patch("apps.recipe_book.views.estimated_recipe_cost", return_value=12345)
+    def test_recipe_book_previews_do_not_consume_planner_preview_quota(self, estimate):
+        for _ in range(20):
+            reserve_preview(self.user)
+        self.batch()
+
+        cost_response = self.post(
+            "modul4-estimate", {"recipe_code": self.recipe.pk, "servings": 3}
+        )
+        preview_response = self.post("modul4-preview", self.payload)
+
+        self.assertEqual(cost_response.status_code, 200, cost_response.content)
+        self.assertEqual(preview_response.status_code, 200, preview_response.content)
+        self.assertEqual(PlanPreviewQuota.objects.get(user=self.user).attempts, 20)
+        self.assertEqual(RecipeBookPreviewQuota.objects.get(user=self.user).attempts, 2)
+        estimate.assert_called_once_with(self.recipe, 3)
 
     def test_preview_cook_and_replay_use_same_ledger(self):
         early = self.batch(

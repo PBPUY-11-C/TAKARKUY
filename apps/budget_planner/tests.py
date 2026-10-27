@@ -67,6 +67,10 @@ class PlannerCatalogTests(TestCase):
                 "exclude_ingredients": "",
             },
         )
+        self.assertContains(response, "Biaya dan daftar belanja memakai berat utuh")
+        self.assertContains(response, "Daun Salam Segar (Estimasi)")
+        self.assertNotContains(response, "Proksi ikan dori menggunakan patin")
+        self.assertNotContains(response, "Foto belum tersedia untuk resep ini.")
         # The page totals the whole chicken that has to be bought.
         names = {
             item["name"] for group in response.context["shopping_groups"] for item in group["items"]

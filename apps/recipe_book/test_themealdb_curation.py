@@ -80,7 +80,7 @@ class TheMealDBCurationIntegrationTests(TestCase):
         self.assertContains(detail, "Takaran estimasi")
         self.assertContains(detail, "Cara memasak")
         self.assertContains(detail, "https://www.themealdb.com/meal/52998")
-        self.assertContains(detail, "Foto belum tersedia untuk resep ini.")
+        self.assertContains(detail, "Foto belum tersedia")
         self.assertFalse(detail.context["selected"].photo)
         self.assertGreater(detail.context["detail"]["cost"], 0)
         self.assertTrue(

@@ -2,8 +2,8 @@
   {% if recipe.photo %}
   <img class="recipe-card-photo" src="{{ recipe.photo.image_url }}" alt="" loading="lazy">
   {% else %}
-  <div class="recipe-card-photo-placeholder" aria-label="Foto belum tersedia">
-  <span aria-hidden="true">♨</span>
+  <div class="recipe-card-photo-placeholder" role="img" aria-label="Foto {{ recipe.name }} belum tersedia" data-meal="{{ recipe.meal_type }}">
+  <svg viewBox="0 0 48 48" width="38" height="38" aria-hidden="true" focusable="false"><path d="M8 18h32l-2 22H10L8 18Zm6 0a10 10 0 0 1 20 0M16 12c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   <small>Foto belum tersedia</small>
   </div>
   {% endif %}

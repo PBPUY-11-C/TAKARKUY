@@ -3,9 +3,9 @@ from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
 from django.utils.html import format_html
-from django.urls import reverse
 
 from .models import RecipeDataReport, RecipeReview
+from .reviews import review_photo_url
 
 
 @admin.register(RecipeDataReport)
@@ -26,6 +26,7 @@ class RecipeDataReportAdmin(admin.ModelAdmin):
     )
     ordering = ("status", "follow_up_at", "created_at")
     date_hierarchy = "created_at"
+    list_select_related = ("recipe", "reporter", "assigned_to")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "assigned_to":
@@ -54,12 +55,17 @@ class RecipeReviewAdmin(admin.ModelAdmin):
     actions = ("approve_consented_photos", "hide_selected_photos")
     date_hierarchy = "updated_at"
     ordering = ("photo_is_hidden", "updated_at")
+    list_select_related = ("recipe", "user", "photo_moderated_by")
 
     @admin.display(description="Foto")
     def photo_moderation(self, obj):
         if not obj.photo:
             return "—"
-        return format_html('<a href="{}">Lihat foto</a> · {}', reverse("modul4-review-photo", args=[obj.pk]), "Menunggu" if obj.photo_is_hidden else "Tampil")
+        return format_html(
+            '<a href="{}">Lihat foto</a> · {}',
+            review_photo_url(obj),
+            "Menunggu" if obj.photo_is_hidden else "Tampil",
+        )
 
     def has_add_permission(self, request):
         return False

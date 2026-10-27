@@ -1,4 +1,5 @@
-from datetime import date, datetime, timezone as dt_timezone
+from datetime import date, datetime
+from datetime import timezone as dt_timezone
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -100,6 +101,23 @@ class SlotStatusTests(TestCase):
         slot.save()
         response = self.client.get(reverse("modul4") + f"?slot={slot.pk}")
         self.assertContains(response, "Batalkan lewati")
+
+    def test_missing_slot_shows_error_instead_of_first_recipe(self):
+        response = self.client.get(reverse("modul4") + "?slot=999999")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Menu rencana tidak ditemukan.")
+        self.assertIsNone(response.context["selected"])
+
+    def test_unavailable_slot_recipe_shows_error_instead_of_first_recipe(self):
+        slot = self.slot()
+        Recipe.objects.filter(pk=self.recipe.pk).update(is_active=False)
+
+        response = self.client.get(reverse("modul4") + f"?slot={slot.pk}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Resep tidak tersedia atau tidak sesuai preferensi/alergi.")
+        self.assertIsNone(response.context["selected"])
 
     def test_price_filter_hides_recipes_above_limit(self):
         with patch("apps.recipe_book.views.recipe_costs", return_value={"TEST-SUP": 12000}):

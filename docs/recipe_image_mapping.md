@@ -8,8 +8,10 @@
 | --- | --- |
 | `docs/recipe_image_mapping.md` | Panduan mencari, meninjau, dan menambahkan foto kurasi katalog. |
 | `docs/MODUL4.md` | Panduan unggah, moderasi, dan penghapusan foto ulasan komunitas. |
-| `photo_candidates/kandidat_foto.html` | Galeri visual untuk meninjau kandidat foto; pilihan di galeri belum otomatis tampil di aplikasi. |
-| `photo_candidates/kandidat_foto.csv` | Daftar kandidat beserta sumber, kredit, dan lisensi untuk galeri. |
+| `data/photo_candidates/README.md` | Menjelaskan alat kurasi foto, file aktif, dan arsip kandidat. |
+| `data/photo_candidates/kandidat_foto.html` | Galeri visual untuk meninjau kandidat foto; pilihan di galeri belum otomatis tampil di aplikasi. |
+| `data/photo_candidates/kandidat_foto.csv` | Daftar kandidat beserta sumber, kredit, dan lisensi untuk galeri. |
+| `data/photo_candidates/archive/` | Snapshot backup lama; bukan input yang dibaca skrip pencarian. |
 | `data/mapping/recipe_image_mapping.csv` | Pemetaan foto kurasi yang dibaca aplikasi. Admin mengedit file ini untuk menambah atau mengganti foto utama resep. |
 | `data/mapping/themealdb_recipe_curation.csv` | Keputusan kurasi kandidat resep TheMealDB; bukan daftar foto ulasan pengguna. |
 | `data/scratch/themealdb_100_candidates.csv` dan `data/scratch/themealdb_western_100_candidates.csv` | Snapshot kandidat resep TheMealDB untuk ditinjau dan dipromosikan ke katalog; bukan pemetaan foto aktif. |
@@ -19,34 +21,34 @@ Persetujuan foto komunitas dilakukan di **Django Admin → Recipe reviews**, buk
 
 ## Mencari foto untuk resep tanpa foto
 
-`photo_candidates/cari_foto_belum_ditemukan.py` mencari resep aktif yang dapat dijadwalkan tetapi belum ada di mapping. Nama pencarian mengikuti nama tampilan katalog: nama override kurasi dari `mapping/recipe_name_overrides.csv`, lalu aturan ejaan dan kapitalisasi dari `data/recipe_names.py`. Nama TheMealDB yang sudah dikurasi manual dipertahankan. Pencarian menggunakan Openverse, yang mengindeks gambar dari berbagai penyedia seperti Wikimedia Commons dan Flickr. Pencarian mencoba nama Indonesia, kata bahan, dan padanan bahasa Inggris. Hasil harus memiliki kecocokan kata yang cukup pada judul gambar dan lisensi yang mengizinkan penggunaan komersial (CC0, Public Domain Mark, CC BY, atau CC BY-SA). Pencarian versi terbaru hanya menambahkan satu kandidat prioritas per resep.
+`data/photo_candidates/cari_foto_belum_ditemukan.py` adalah alat kurasi yang masih digunakan, bukan skrip sekali pakai. Skrip mencari resep aktif yang dapat dijadwalkan tetapi belum ada di mapping. Nama pencarian mengikuti nama tampilan katalog: nama override kurasi dari `mapping/recipe_name_overrides.csv`, lalu aturan ejaan dan kapitalisasi dari `data/recipe_names.py`. Nama TheMealDB yang sudah dikurasi manual dipertahankan. Pencarian menggunakan Openverse, yang mengindeks gambar dari berbagai penyedia seperti Wikimedia Commons dan Flickr. Pencarian mencoba nama Indonesia, kata bahan, dan padanan bahasa Inggris. Hasil harus memiliki kecocokan kata yang cukup pada judul gambar dan lisensi yang mengizinkan penggunaan komersial (CC0, Public Domain Mark, CC BY, atau CC BY-SA). Pencarian versi terbaru hanya menambahkan satu kandidat prioritas per resep.
 
-Jalankan dari folder `photo_candidates`:
+Jalankan dari root repository:
 
 ```powershell
-python .\cari_foto_belum_ditemukan.py --limit 25
+python .\data\photo_candidates\cari_foto_belum_ditemukan.py --limit 25
 ```
 
 Setelah resep TheMealDB dikurasi, dipromosikan ke katalog aktif, dan fixture katalog diimpor, cari foto khusus untuk resep dari sumber TheMealDB dengan:
 
 ```powershell
-python .\cari_foto_belum_ditemukan.py --source themealdb --limit 100
+python .\data\photo_candidates\cari_foto_belum_ditemukan.py --source themealdb --limit 100
 ```
 
 Opsi `--source themealdb` hanya memilih resep katalog dengan sumber `TheMealDB API` yang aktif, dapat dijadwalkan, dan belum punya foto terpetakan/kandidat Openverse (atau yang diminta untuk dicari ulang). Snapshot kandidat di `data/scratch/themealdb_western_100_candidates.*` belum memenuhi syarat tersebut. Gambar thumbnail dari TheMealDB juga ada di snapshot, tetapi hanya gunakan jika hak pakainya jelas; periksa kredit/lisensi dan tautkan kembali ke halaman TheMealDB.
 
-`--limit 25` membatasi pencarian ke 25 resep setiap sesi. Jalankan lagi untuk mengambil batch berikutnya. Hasil disimpan bertahap ke `kandidat_foto.csv` dan galeri `kandidat_foto.html`, jadi kandidat yang terkumpul sebelumnya tetap ada. Untuk mengulang pencarian pada resep yang sebelumnya belum mendapat hasil, tambahkan `--retry-unfound`.
+`--limit 25` membatasi pencarian ke 25 resep setiap sesi. Jalankan lagi untuk mengambil batch berikutnya. Hasil disimpan bertahap ke `data/photo_candidates/kandidat_foto.csv` dan galeri `data/photo_candidates/kandidat_foto.html`, jadi kandidat yang terkumpul sebelumnya tetap ada. Untuk mengulang pencarian pada resep yang sebelumnya belum mendapat hasil, tambahkan `--retry-unfound`.
 
 Galeri membantu memeriksa banyak hasil sekaligus. Skor kata hanya menilai metadata judul, bukan mengenali isi visual; karena itu foto kandidat tetap perlu dicek apakah benar-benar menampilkan hidangan tersebut, lalu kredit dan lisensinya diperiksa. Menemukan kandidat tidak otomatis mengubah aplikasi: setelah memilih foto yang cocok, tambahkan barisnya ke `data/mapping/recipe_image_mapping.csv` agar foto tampil di produk. Pencarian yang tidak menemukan kandidat kuat membiarkan resep tanpa foto, bukan mengisi dengan gambar generik.
 
 ### Meninjau pilihan di galeri
 
-1. Jalankan pencarian kandidat, lalu buka `photo_candidates/kandidat_foto.html` di browser.
+1. Jalankan pencarian kandidat, lalu buka `data/photo_candidates/kandidat_foto.html` di browser.
 2. Periksa gambar dan buka **halaman sumber** untuk memastikan gambarnya benar-benar hidangan tersebut. Verifikasi pembuat dan lisensi di halaman sumber; skor kecocokan judul saja tidak cukup.
 3. Klik **Pilih foto** untuk paling banyak satu gambar per resep. Pilihan disimpan di `localStorage` browser yang sama; klik **Unduh pilihan (CSV pemetaan)** sebelum membersihkan data browser atau berpindah perangkat.
 4. Buka `foto_resep_dipilih.csv` yang terunduh. Gabungkan baris datanya (tanpa header kedua) ke `data/mapping/recipe_image_mapping.csv`. Pastikan hanya ada satu pemetaan terpilih untuk tiap `recipe_code`, lalu segarkan halaman aplikasi.
 
-Galeri ini menampilkan kandidat dari `kandidat_foto.csv`; ia tidak mengubah file pemetaan utama atau database. Django Admin hanya menampilkan status foto pada resep, belum menyediakan form untuk mengelola pemetaan gambar.
+Galeri ini menampilkan kandidat dari `data/photo_candidates/kandidat_foto.csv`; ia tidak mengubah file pemetaan utama atau database. Django Admin hanya menampilkan status foto pada resep, belum menyediakan form untuk mengelola pemetaan gambar.
 
 ### Dua jalur foto dan urutan tampil
 

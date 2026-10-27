@@ -1,28 +1,34 @@
 import json
+from datetime import timedelta
 from io import BytesIO, StringIO
 from tempfile import TemporaryDirectory
-from datetime import timedelta
+from unittest.mock import patch
 
 from django.contrib import admin
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.auth.models import AnonymousUser
 from django.core.files.base import ContentFile
-from django.core.management import call_command, CommandError
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import CommandError, call_command
 from django.db import IntegrityError, transaction
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
-from unittest.mock import patch
 
-from .admin import RecipeReviewAdmin
+from apps.catalog.recipe_images import recipe_images_for
+
 from . import tests as cooking_tests
+from .admin import RecipeReviewAdmin
 from .models import CookingHistory, RecipePhotoCleanup, RecipeReview, ReviewQuota
-from .reviews import attach_review_photo, public_username, review_context
-
-from .models import CookingHistory, RecipeReview, ReviewQuota
-from .reviews import public_username
+from .reviews import (
+    ReviewLimited,
+    attach_review_photo,
+    normalize_review_photo,
+    public_username,
+    review_context,
+    review_photo_url,
+)
 from .services import cook
 from .views import recipe_review_photo_file
 
@@ -42,9 +48,9 @@ class MemoryPhotoStorage:
         self.files.pop(name, None)
 
 
-def jpeg_upload():
+def jpeg_upload(width=2, height=2):
     output = BytesIO()
-    Image.new("RGB", (2, 2), "red").save(output, format="JPEG")
+    Image.new("RGB", (width, height), "red").save(output, format="JPEG")
     return SimpleUploadedFile("review.jpg", output.getvalue(), content_type="image/jpeg")
 
 
@@ -214,8 +220,9 @@ class ReviewTests(TestCase):
         upload_url = reverse("modul4-review-photo-upload")
         photo_url = reverse("modul4-review-photo", args=[review.pk])
 
-        def photo_response(user):
-            request = RequestFactory().get(photo_url)
+        def photo_response(user, version=None):
+            url = photo_url if version is None else f"{photo_url}?v={version}"
+            request = RequestFactory().get(url)
             request.user = user
             return recipe_review_photo_file(request, review.pk)
 
@@ -239,14 +246,30 @@ class ReviewTests(TestCase):
             self.assertTrue(review.photo_is_hidden)
             self.assertEqual(review.version, 2)
             self.assertTrue(review.photo.storage.exists(review.photo.name))
+            pending_url = review_photo_url(review)
+            self.assertTrue(pending_url.endswith("?v=2"))
             anonymous_response = photo_response(AnonymousUser())
             self.assertEqual(anonymous_response.status_code, 302)
             owner_response = photo_response(self.user)
             self.assertEqual(owner_response.status_code, 200)
+            self.assertEqual(owner_response["Cache-Control"], "private, no-store")
             owner_response.file_to_stream.close()
 
             other_response = photo_response(self.other)
             self.assertEqual(other_response.status_code, 404)
+
+            # An inconsistent visible flag alone must not publish or cache a
+            # photo until the moderator approval timestamp is present.
+            review.photo_is_hidden = False
+            review.save(update_fields=["photo_is_hidden"])
+            inconsistent_owner_response = photo_response(self.user)
+            self.assertEqual(
+                inconsistent_owner_response["Cache-Control"], "private, no-store"
+            )
+            inconsistent_owner_response.file_to_stream.close()
+            self.assertEqual(photo_response(self.other).status_code, 404)
+            review.photo_is_hidden = True
+            review.save(update_fields=["photo_is_hidden"])
 
             staff = get_user_model().objects.create_user("moderator", is_staff=True)
             request = RequestFactory().post("/admin/")
@@ -257,9 +280,22 @@ class ReviewTests(TestCase):
             review.refresh_from_db()
             self.assertFalse(review.photo_is_hidden)
             self.assertEqual(review.version, 3)
+            approved_url = review_photo_url(review)
+            self.assertTrue(approved_url.endswith("?v=3"))
+            self.assertNotEqual(pending_url, approved_url)
+            stale_response = photo_response(self.other, version=2)
+            self.assertEqual(stale_response.status_code, 404)
+            self.assertEqual(stale_response["Cache-Control"], "private, no-store")
             public_response = photo_response(self.other)
             self.assertEqual(public_response.status_code, 200)
+            self.assertEqual(public_response["Cache-Control"], "private, max-age=3600")
             public_response.file_to_stream.close()
+            context = review_context(self.other, self.recipe)
+            self.assertEqual(context["reviews"][0].photo_url, approved_url)
+            self.assertEqual(
+                recipe_images_for([self.recipe.pk])[self.recipe.pk]["image_url"],
+                approved_url,
+            )
 
             self.assertEqual(self.post_review(version=2).status_code, 409)
             model_admin.hide_selected_photos(
@@ -268,6 +304,18 @@ class ReviewTests(TestCase):
             review.refresh_from_db()
             self.assertTrue(review.photo_is_hidden)
             self.assertEqual(review.version, 4)
+            self.assertNotEqual(approved_url, review_photo_url(review))
+            stale_approved_response = photo_response(self.other, version=3)
+            self.assertEqual(stale_approved_response.status_code, 404)
+            self.assertEqual(stale_approved_response["Cache-Control"], "private, no-store")
+            self.assertFalse(
+                hasattr(review_context(self.other, self.recipe)["reviews"][0], "photo_url")
+            )
+            self.assertNotIn(self.recipe.pk, recipe_images_for([self.recipe.pk]))
+            hidden_response = photo_response(self.user)
+            self.assertEqual(hidden_response.status_code, 200)
+            self.assertEqual(hidden_response["Cache-Control"], "private, no-store")
+            hidden_response.file_to_stream.close()
 
             review.photo.storage.delete(review.photo.name)
             with self.assertLogs("apps.recipe_book.views", level="WARNING") as logs:
@@ -352,6 +400,25 @@ class ReviewTests(TestCase):
         review.refresh_from_db()
         self.assertFalse(review.photo)
         self.assertFalse(RecipePhotoCleanup.objects.exists())
+
+    def test_photo_rate_limit_precedes_image_normalization(self):
+        with (
+            patch("apps.recipe_book.reviews.reserve_review", side_effect=ReviewLimited(60)),
+            patch("apps.recipe_book.reviews.normalize_review_photo") as normalize,
+        ):
+            with self.assertRaises(ReviewLimited):
+                attach_review_photo(
+                    self.user,
+                    self.recipe.pk,
+                    1,
+                    jpeg_upload(),
+                    permission_granted=True,
+                )
+        normalize.assert_not_called()
+
+    def test_photo_resolution_over_16_megapixels_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "Resolusi foto terlalu besar"):
+            normalize_review_photo(jpeg_upload(width=4001, height=4000))
 
     def test_photo_audit_reports_missing_references_and_unqueued_orphans(self):
         from django.core.files.storage import default_storage

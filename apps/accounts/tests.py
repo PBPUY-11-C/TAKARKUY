@@ -205,7 +205,7 @@ class AccountFlowTests(TestCase):
         self.assertFalse(self.client.session.get_expire_at_browser_close())
 
     def test_other_module_pages_require_login_and_use_shared_header(self):
-        for name in ("modul2", "modul4"):
+        for name in ("modul2", "modul4", "modul5"):
             url = reverse(name)
             self.assertRedirects(
                 self.client.get(url),
@@ -213,21 +213,29 @@ class AccountFlowTests(TestCase):
             )
 
         self.client.post(reverse("signup"), self.signup_data())
+        response = self.client.get(reverse("modul4"))
+        self.assertTemplateUsed(response, "partials/head.html")
+        self.assertTemplateUsed(response, "partials/app_header.html")
+        self.assertEqual(response.content.lower().count(b"<title>"), 1)
+        self.assertContains(response, "TAKARKUY")
+        self.assertContains(response, "Meal Planner")
+        self.assertContains(response, f'href="{reverse("modul5")}"')
+        self.assertContains(response, "Resep favorit")
+        self.assertContains(response, "Riwayat masak")
 
         for name in ("modul2", "modul4"):
             response = self.client.get(reverse(name))
             self.assertTemplateUsed(response, f"{name}.html")
-            self.assertContains(
-                response,
-                'aria-label="Profil dan preferensi"',
-            )
+            self.assertContains(response, 'aria-label="Profil dan preferensi"')
+            self.assertEqual(response.content.lower().count(b"<title>"), 1)
+            self.assertContains(response, f'href="{reverse("modul5")}"')
 
         dashboard = self.client.get(reverse("modul5"))
         self.assertEqual(dashboard.status_code, 200)
 
     def test_shared_header_links_to_dashboard_and_profile(self):
         self.client.post(reverse("signup"), self.signup_data())
-        for name in ("modul1", "modul3", "modul5"):
+        for name in ("modul1", "modul2", "modul3", "modul4", "modul5"):
             response = self.client.get(reverse(name))
             self.assertContains(response, f'href="{reverse("modul5")}"')
             self.assertContains(response, f'href="{reverse("modul3")}"')

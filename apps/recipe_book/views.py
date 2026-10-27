@@ -8,18 +8,17 @@ from urllib.parse import urlencode
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Case, IntegerField, Q, Value, When
+from django.db.models import Case, Count, IntegerField, Q, Value, When
 from django.http import FileResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.utils.cache import patch_cache_control
+from django.views.decorators.http import require_POST
 
 from apps.accounts.preferences import effective_allergens, preferences_for
 from apps.budget_planner.models import PlannedMeal
-from apps.budget_planner.services import PreviewRateLimit, reserve_preview
 from apps.catalog.models import Ingredient, IngredientAlias, Recipe
-from apps.catalog.recipe_images import recipe_image_for, recipe_images_for
+from apps.catalog.recipe_images import recipe_images_for
 from apps.pantry.services import StockError, plan_consumption
 
 from .models import CookingHistory, RecipeDataReport, RecipeFavorite, RecipeNote, RecipeReview
@@ -31,13 +30,16 @@ from .reviews import (
     write_review,
 )
 from .services import (
+    RecipeBookRateLimit,
     cook,
     estimated_recipe_cost,
     get_recipe,
+    guidance_condition,
     preview_cooking,
     recipe_costs,
     recipe_query,
     recipe_requirements,
+    reserve_recipe_book_preview,
     slot_staple,
     stock_matches,
     with_guidance,
@@ -69,11 +71,14 @@ def api(view):
             if not isinstance(data, dict):
                 raise ValueError("Data harus berupa objek.")
             response = view(request, data)
-        except StockError as exc:
-            response = JsonResponse({"error": str(exc)}, status=exc.status)
-        except PreviewRateLimit as exc:
+        except RecipeBookRateLimit as exc:
             response = JsonResponse({"error": str(exc)}, status=429)
             response["Retry-After"] = str(exc.retry_after)
+        except ReviewLimited as exc:
+            response = JsonResponse({"error": str(exc)}, status=429)
+            response["Retry-After"] = str(exc.retry_after)
+        except StockError as exc:
+            response = JsonResponse({"error": str(exc)}, status=exc.status)
         except (ValueError, TypeError, RecursionError) as exc:
             response = JsonResponse(
                 {"error": str(exc) if isinstance(exc, ValueError) else "Data tidak valid."},
@@ -135,14 +140,14 @@ def estimate_recipe_cost(request, data):
         raise ValueError("Kode resep tidak valid.")
     if type(servings) is not int or not 1 <= servings <= 10:
         raise ValueError("Porsi harus bilangan bulat antara 1 dan 10.")
-    reserve_preview(request.user)
+    reserve_recipe_book_preview(request.user)
     recipe = get_recipe(request.user, code)
     return JsonResponse({"servings": servings, "cost": estimated_recipe_cost(recipe, servings)})
 
 
 @api
 def cooking_preview(request, data):
-    reserve_preview(request.user)
+    reserve_recipe_book_preview(request.user)
     return JsonResponse(preview_cooking(request.user, data))
 
 
@@ -233,18 +238,21 @@ def recipe_review_photo(request):
 @login_required
 def recipe_review_photo_file(request, review_id):
     review = get_object_or_404(RecipeReview, pk=review_id)
+    requested_version = request.GET.get("v")
+    if requested_version is not None and requested_version != str(review.version):
+        response = JsonResponse({"error": "Foto sudah berubah. Muat ulang halaman."}, status=404)
+        patch_cache_control(response, private=True, no_store=True)
+        return response
     if not review.photo:
         return JsonResponse({"error": "Foto tidak tersedia."}, status=404)
-    if (
-        (
-            not review.photo_permission_granted
-            or review.photo_consent_at is None
-            or review.is_hidden
-            or review.photo_is_hidden
-        )
-        and review.user_id != request.user.pk
-        and not request.user.is_staff
-    ):
+    public_photo = (
+        review.photo_permission_granted
+        and review.photo_consent_at is not None
+        and review.photo_moderated_at is not None
+        and not review.is_hidden
+        and not review.photo_is_hidden
+    )
+    if not public_photo and review.user_id != request.user.pk and not request.user.is_staff:
         return JsonResponse({"error": "Foto belum tersedia untuk publik."}, status=404)
     try:
         response = FileResponse(review.photo.open("rb"), content_type="image/jpeg")
@@ -257,28 +265,43 @@ def recipe_review_photo_file(request, review_id):
         )
         return JsonResponse({"error": "Berkas foto tidak ditemukan."}, status=404)
     response["X-Content-Type-Options"] = "nosniff"
-    response["Cache-Control"] = "private, no-store"
+    response["Cache-Control"] = (
+        "private, max-age=3600" if public_photo else "private, no-store"
+    )
     return response
 
 
 @login_required
 def book_page(request):
     profile = preferences_for(request.user)
-    groups = effective_allergens(request.user)
+    groups = effective_allergens(request.user, preference=profile)
+    avoided_ingredient_ids = list(
+        profile.avoided_ingredients.values_list("pk", flat=True)
+    )
     baseline = Recipe.objects.filter(
         is_active=True, is_plannable=True
     ).distinct()
     if profile.halal_only:
         baseline = baseline.filter(recipetag__tag="halal")
-    unknown_count = baseline.filter(allergen_reviewed=False).count() if groups else 0
-    allergen_count = (
-        baseline.filter(allergen_reviewed=True, allergen_groups__group__in=groups)
-        .distinct()
-        .count()
-        if groups
-        else 0
+    if groups:
+        allergen_counts = baseline.aggregate(
+            unknown=Count("pk", filter=Q(allergen_reviewed=False), distinct=True),
+            blocked=Count(
+                "pk",
+                filter=Q(allergen_reviewed=True, allergen_groups__group__in=groups),
+                distinct=True,
+            ),
+        )
+        unknown_count = allergen_counts["unknown"]
+        allergen_count = allergen_counts["blocked"]
+    else:
+        unknown_count = allergen_count = 0
+    query = recipe_query(
+        request.user,
+        allergens=groups,
+        preference=profile,
+        avoided_ingredient_ids=avoided_ingredient_ids,
     )
-    query = recipe_query(request.user)
     available_recipe_count = query.count()
     term = request.GET.get("q", "").strip()[:100]
     if term:
@@ -296,7 +319,11 @@ def book_page(request):
         query = query.filter(meal_type=meal)
     if request.GET.get("favorites") == "1":
         query = query.filter(recipefavorite__user=request.user)
-    held_count = query.count() - with_guidance(query).count()
+    guidance_counts = query.aggregate(
+        total=Count("pk", distinct=True),
+        guided=Count("pk", filter=guidance_condition(), distinct=True),
+    )
+    held_count = guidance_counts["total"] - guidance_counts["guided"]
     if request.GET.get("guidance") == "1":
         query = with_guidance(query)
     try:
@@ -305,19 +332,22 @@ def book_page(request):
         max_price = None
     price_unavailable_count = 0
     price_candidate_count = 0
+    price_filtered_candidate_count = None
     if max_price in PRICE_LIMITS:
         started = perf_counter()
         codes = set(query.values_list("pk", flat=True))
         costs = recipe_costs(profile.servings, codes)
         price_candidate_count = len(codes)
         price_unavailable_count = len(codes) - len(costs)
-        query = query.filter(pk__in=[code for code, cost in costs.items() if cost <= max_price])
+        matched_codes = [code for code, cost in costs.items() if cost <= max_price]
+        price_filtered_candidate_count = len(matched_codes)
+        query = query.filter(pk__in=matched_codes)
         duration_ms = (perf_counter() - started) * 1000
         logger.log(
             logging.WARNING if duration_ms >= FILTER_SLOW_MS else logging.INFO,
             "recipe_filter_completed filter=price candidate_count=%d matched_count=%d duration_ms=%.1f",
             len(codes),
-            sum(cost <= max_price for cost in costs.values()),
+            price_filtered_candidate_count,
             duration_ms,
         )
     else:
@@ -325,7 +355,11 @@ def book_page(request):
     stock_filter = request.GET.get("stock", "")
     stock_rows = {}
     if stock_filter in {"complete", "soon", "best"}:
-        candidate_count = query.count()
+        candidate_count = (
+            price_filtered_candidate_count
+            if price_filtered_candidate_count is not None
+            else query.count()
+        )
         started = perf_counter()
         rows = stock_matches(request.user, profile.servings, query=query)
         duration_ms = (perf_counter() - started) * 1000
@@ -372,7 +406,7 @@ def book_page(request):
         active_filters.append("Favorit saja")
     if request.GET.get("guidance") == "1":
         active_filters.append("Hanya resep dengan panduan")
-    if groups or profile.avoided_ingredients.exists():
+    if groups or avoided_ingredient_ids:
         active_filters.append("Preferensi profil (alergi/pantangan)")
     ordered_query = query if stock_filter == "best" else query.order_by("name")
     page = Paginator(
@@ -414,7 +448,10 @@ def book_page(request):
         except (ValueError, OverflowError):
             slot = None
         if slot:
-            code = slot.recipe_id
+            if slot.recipe_id:
+                code = slot.recipe_id
+            else:
+                selection_error = "Menu di rencana ini tidak memiliki resep yang tersedia."
         else:
             selection_error = "Menu rencana tidak ditemukan."
     if not code and page.object_list and not selection_error:

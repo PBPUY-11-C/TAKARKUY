@@ -1,9 +1,11 @@
 """Recipe Book queries and transactional cooking. No stock reservations."""
 
 from datetime import date, timedelta
-from decimal import Decimal, InvalidOperation, ROUND_FLOOR
+from decimal import ROUND_FLOOR, Decimal, InvalidOperation
+from math import ceil
 from zoneinfo import ZoneInfo
 
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
@@ -22,10 +24,38 @@ from apps.pantry.services import (
     plan_consumption,
 )
 
-from .models import CookingHistory
+from .models import CookingHistory, RecipeBookPreviewQuota
 from .staples import ALL_STAPLE_CODES, tracked_staple_codes
 
 JAKARTA = ZoneInfo("Asia/Jakarta")
+
+
+class RecipeBookRateLimit(StockError):
+    def __init__(self, retry_after):
+        self.retry_after = max(1, retry_after)
+        super().__init__(
+            f"Batas 60 pemeriksaan resep per 10 menit tercapai. Coba lagi dalam {self.retry_after} detik.",
+            429,
+        )
+
+
+@transaction.atomic
+def reserve_recipe_book_preview(user, *, now=None):
+    """Throttle Recipe Book work independently from Planner preview requests."""
+    now = now or timezone.now()
+    get_user_model().objects.select_for_update().get(pk=user.pk)
+    quota, _ = RecipeBookPreviewQuota.objects.get_or_create(
+        user=user, defaults={"window_started_at": now}
+    )
+    end = quota.window_started_at + timedelta(minutes=10)
+    if now >= end:
+        quota.window_started_at, quota.attempts = now, 0
+        end = now + timedelta(minutes=10)
+    if quota.attempts >= 60:
+        raise RecipeBookRateLimit(ceil((end - now).total_seconds()))
+    quota.attempts += 1
+    quota.save(update_fields=["window_started_at", "attempts"])
+
 
 def estimated_recipe_cost(recipe, servings):
     """Use the planner's basket quote, including whole-fruit rounding."""
@@ -65,28 +95,38 @@ def recipe_costs(servings, codes):
     return costs
 
 
-def recipe_query(user, *, allergens=None):
+def recipe_query(user, *, allergens=None, preference=None, avoided_ingredient_ids=None):
+    preference = preference or preferences_for(user)
     query = Recipe.objects.filter(
         is_active=True, is_plannable=True
     ).distinct()
-    if preferences_for(user).halal_only:
+    if preference.halal_only:
         query = query.filter(recipetag__tag="halal")
-    groups = effective_allergens(user) if allergens is None else allergens
+    groups = (
+        effective_allergens(user, preference=preference) if allergens is None else allergens
+    )
     if not set(groups) <= ALLERGEN_KEYS:
         raise ValueError("Kelompok alergi tidak valid.")
     if groups:
         query = query.filter(allergen_reviewed=True).exclude(allergen_groups__group__in=groups)
-    avoided = preferences_for(user).avoided_ingredients.values_list("pk", flat=True)
-    return query.exclude(recipeingredient__ingredient_id__in=avoided)
+    if avoided_ingredient_ids is None:
+        avoided_ingredient_ids = preference.avoided_ingredients.values_list("pk", flat=True)
+    if avoided_ingredient_ids:
+        query = query.exclude(recipeingredient__ingredient_id__in=avoided_ingredient_ids)
+    return query
 
 
 def with_guidance(query):
+    return query.filter(guidance_condition())
+
+
+def guidance_condition():
     return (
-        query.filter(instruction_status__in=["source_ok", "authored_reviewed"])
-        .exclude(instructions="")
-        .exclude(Q(recipe_code__startswith="RCP-MDL-") & Q(instruction_review_note=""))
-        .exclude(Q(instruction_status="authored_reviewed", instruction_reviewed_on__isnull=True))
-        .exclude(Q(recipe_code__startswith="RCP-MDL-", instruction_reviewed_on__isnull=True))
+        Q(instruction_status__in=["source_ok", "authored_reviewed"])
+        & ~Q(instructions="")
+        & ~Q(recipe_code__startswith="RCP-MDL-", instruction_review_note="")
+        & ~Q(instruction_status="authored_reviewed", instruction_reviewed_on__isnull=True)
+        & ~Q(recipe_code__startswith="RCP-MDL-", instruction_reviewed_on__isnull=True)
     )
 
 
