@@ -40,7 +40,7 @@ from .services import (
     recipe_query,
     recipe_requirements,
     reserve_recipe_book_preview,
-    slot_has_rice,
+    slot_staple,
     stock_matches,
     with_guidance,
 )
@@ -458,7 +458,7 @@ def book_page(request):
                 selected,
                 servings,
                 tracked_staples=tracked_staple_codes(request.user),
-                with_rice=slot_has_rice(slot),
+                staple=slot_staple(slot),
             )
             # Same stock rule as stock_matches: undated stock counts, but is flagged.
             stock = plan_consumption(request.user, needs, allow_unknown_expiry=True)
@@ -545,7 +545,7 @@ def book_page(request):
             "meal": meal,
             "max_price": max_price,
             "price_limits": PRICE_LIMITS,
-            "with_rice": slot_has_rice(slot),
+            "staple": slot_staple(slot),
             "filters": request.GET,
             "query_params": urlencode(params, doseq=True),
             "history_params": urlencode(history_params, doseq=True),

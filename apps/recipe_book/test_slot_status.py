@@ -87,7 +87,7 @@ class SlotStatusTests(TestCase):
         response = self.client.get(reverse("modul4") + f"?slot={slot.pk}")
         self.assertContains(response, "dengan nasi dari rencana")
         self.assertEqual(response.context["detail"]["servings"], slot.servings)
-        self.assertTrue(response.context["with_rice"])
+        self.assertEqual(response.context["staple"]["label"], "Nasi")
         self.assertContains(
             response,
             'name="servings" type="number" min="1" max="10" value="2" required readonly',

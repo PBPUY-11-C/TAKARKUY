@@ -1,6 +1,5 @@
 """Account-owned plans, immutable saved snapshots, and explicit preview approval."""
 
-import json
 import secrets
 from collections import defaultdict
 from collections.abc import Mapping
@@ -18,12 +17,11 @@ from django.utils import timezone
 from apps.accounts.preferences import effective_preferences, non_halal_schedule
 from apps.catalog.allergens import unsafe_schedule
 from apps.catalog.content_policy import protect_recipe_instructions
-from apps.catalog.models import Ingredient, Recipe
 
 from .forms import PlannerForm
 from .models import BudgetPlan, PlannedMeal, PlanPreview, PlanPreviewQuota, ShoppingListItem
 from .planner import budget_preference_notes, build_plan, meal_cost_cap, spend_floor
-from .snapshots import decode_value, freeze, net_total, thaw
+from .snapshots import freeze, net_total, thaw
 from .templatetags.planner_format import rupiah
 
 
@@ -708,53 +706,6 @@ def save_plan(user, plan_id, version, title, *, replace_original=False):
     elif date_changed:
         reschedule_meals(plan)
     return saved
-
-
-@transaction.atomic
-def adopt_guest_result(request):
-    """Called only after successful login/signup; never auto-saves a permanent plan."""
-    saved = request.session.get("guest_last_plan")
-    if not saved:
-        return
-    get_user_model().objects.select_for_update().get(pk=request.user.pk)
-    if not saved or BudgetPlan.objects.filter(user=request.user, status="draft").exists():
-        return
-    try:
-        form = clean_inputs(saved["inputs"])
-        form.cleaned_data.update(effective_preferences(request.user, form.cleaned_data))
-        result = json.loads(saved["result"], object_hook=decode_value)
-        if not isinstance(result, dict) or not isinstance(result.get("schedule"), list):
-            return
-    except (ValueError, TypeError, KeyError):
-        # A stale/invalid guest snapshot must never prevent successful login.
-        return
-    if any(
-        "ingredient_code" not in item
-        for group in result.get("shopping_groups", [])
-        for item in group["items"]
-    ):
-        # Upgrade older session snapshots without guessing ingredient identities.
-        try:
-            result = build_plan(**form.cleaned_data, fixed_schedule=schedule_codes(result))
-        except ValueError:
-            return
-    if unsafe_schedule(schedule_codes(result), form.cleaned_data["allergens"]):
-        return
-    if form.cleaned_data["halal_only"] and non_halal_schedule(schedule_codes(result)):
-        return
-    if result.get("within_budget"):
-        recipe_codes = {code for slots in schedule_codes(result) for code in slots.values()}
-        ingredient_codes = {
-            item["ingredient_code"]
-            for group in result["shopping_groups"]
-            for item in group["items"]
-        }
-        if Recipe.objects.filter(pk__in=recipe_codes).count() != len(
-            recipe_codes
-        ) or Ingredient.objects.filter(pk__in=ingredient_codes).count() != len(ingredient_codes):
-            return
-        write_draft(request.user, stored_inputs(form), result)
-    request.session.pop("guest_last_plan", None)
 
 
 MAX_PURCHASE_GRAMS = Decimal("100000")

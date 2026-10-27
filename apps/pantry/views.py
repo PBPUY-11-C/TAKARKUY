@@ -3,6 +3,7 @@ from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Prefetch
@@ -12,6 +13,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.accounts.access import api_login_required
+from apps.accounts.models import UserProfile
 from apps.accounts.preferences import preferences_for, profile_for
 from apps.catalog.models import Ingredient
 
@@ -163,9 +165,9 @@ def save_staple_preferences(request):
         return redirect("modul2")
     try:
         with transaction.atomic():
-            request.user.__class__.objects.select_for_update().get(pk=request.user.pk)
+            get_user_model().objects.select_for_update().get(pk=request.user.pk)
             profile = profile_for(request.user)
-            profile = profile.__class__.objects.select_for_update().get(pk=profile.pk)
+            profile = UserProfile.objects.select_for_update().get(pk=profile.pk)
             if profile.version != form.cleaned_data["version"]:
                 messages.error(
                     request,

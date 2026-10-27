@@ -9,12 +9,19 @@ from django.db.models.functions import RowNumber
 from django.utils import timezone
 
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
+from apps.budget_planner.planner import meal_staple
 from apps.budget_planner.services import draft_is_clean
 from apps.pantry.models import PantryItem
 from apps.recipe_book.models import CookingHistory
 
 JAKARTA = ZoneInfo("Asia/Jakarta")
 MEALS = {"sarapan": "Sarapan", "makan_siang": "Makan siang", "makan_malam": "Makan malam"}
+
+
+def staple_suffix(snapshot):
+    """Name suffix such as " + Nasi" when the planner added a staple to this meal."""
+    staple = meal_staple(snapshot)
+    return f" + {staple['label']}" if staple else ""
 
 
 def parse_money(value):
@@ -56,8 +63,8 @@ def dashboard_data(user):
             plan.remaining = -plan.remaining
         for meal in plan.today_meals:
             snapshot = meal.snapshot if isinstance(meal.snapshot, dict) else {}
-            meal.display_name = (snapshot.get("name") or meal.recipe.name) + (
-                " + Nasi" if snapshot.get("with_rice") else ""
+            meal.display_name = (snapshot.get("name") or meal.recipe.name) + staple_suffix(
+                snapshot
             )
             meal.display_time = MEALS.get(meal.meal_type, meal.meal_type)
         plan.today_meals.sort(
@@ -125,8 +132,7 @@ def dashboard_data(user):
                 "plan_title": meal.plan.title,
                 "label": MEALS.get(meal.meal_type, meal.meal_type),
                 "order": list(MEALS).index(meal.meal_type) if meal.meal_type in MEALS else 99,
-                "name": (snapshot.get("name") or meal.recipe.name)
-                + (" + Nasi" if snapshot.get("with_rice") else ""),
+                "name": (snapshot.get("name") or meal.recipe.name) + staple_suffix(snapshot),
                 "status": meal.status,
             }
         )

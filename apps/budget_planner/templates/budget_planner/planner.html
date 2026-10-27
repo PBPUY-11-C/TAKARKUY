@@ -4,144 +4,233 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Coba perencana anggaran makan TAKARKUY dengan katalog resep dan harga bahan.">
+  <meta name="description" content="Rencana makan TAKARKUY dari budget, katalog resep, dan harga bahan.">
   <title>TAKARKUY</title>
   {% include "partials/head.html" %}
-  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}?v=20261023-layout">
+  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}?v=20261026-clean5">
 </head>
 <body class="has-app-nav planner-page">
   {% include "partials/app_header.html" %}
 
   <main id="main" class="page">
-    <div class="page-heading"><div><p class="kicker">PLANNER</p><h1>Rencana Makan</h1></div></div>
-    {% if user.is_authenticated %}<nav class="plan-nav" aria-label="Navigasi rencana"><a href="{% url 'modul1' %}?new=1">+ Rencana Baru</a><a href="#rencana-saya">Rencana Saya</a>{% if active_draft %}<a href="{% url 'modul1' %}?plan={{ active_draft.pk }}#hasil">Draft Terakhir</a>{% endif %}</nav>{% endif %}
+    <div class="page-heading">
+      <h1>Meal Planner</h1>
+      <nav class="plan-nav" aria-label="Navigasi rencana">
+        {% if active_draft and active_draft.pk != plan.pk %}<a class="pill-link" href="{% url 'modul1' %}?plan={{ active_draft.pk }}#hasil">Draft terakhir</a>{% endif %}
+        <button type="button" class="pill-link" data-open-dialog="rencana-saya">Rencana Saya · {{ saved_plans|length }}</button>
+        <a class="pill-link pill-dark" href="{% url 'modul1' %}?new=1">+ Rencana baru</a>
+      </nav>
+    </div>
     <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite"></p>
 
-    {% if trial %}
-    <aside class="trial-banner" aria-label="Kuota percobaan gratis">
-      <div><strong>Sisa percobaan: {{ trial.remaining }} dari {{ trial.limit }}</strong>
-        {% if trial.reset_at %}<small>Kuota diperbarui {{ trial.reset_label }} WIB.</small>{% endif %}
-      </div>
-    </aside>
-    {% endif %}
-
-    <div class="planner-layout">
-    <section class="input-card" aria-labelledby="input-title">
-      <div class="section-heading"><div><h2 id="input-title">Atur rencana</h2></div></div>
-      <form method="post" action="{% url 'modul1' %}#hasil" novalidate>
-        {% csrf_token %}
-        {{ form.allergens }}
-        {% if user.is_authenticated %}<p class="field-note">Preferensi halal: {% if halal_only %}Halal saja{% else %}Tidak membatasi{% endif %}. <a href="{% url 'modul3' %}">Ubah di Profil &amp; Preferensi</a>.</p>{% endif %}
-        {% if halal_warning %}<div class="notice error-notice">Rencana lama tidak sesuai pilihan halal terbaru. Gunakan Cari Menu Lain atau buat rencana baru.</div>{% endif %}
-        {% if allergy_active %}<p class="field-note">Alergi profil/rencana tetap diterapkan pada menu baru. Filter bukan jaminan bebas alergen; periksa label dan kontaminasi silang.</p>{% endif %}
-        {% if allergy_warning %}<div class="notice error-notice">Rencana lama memiliki bahan yang tidak sesuai alergi terbaru atau belum ditinjau. Snapshot tidak diubah. Gunakan Cari Menu Lain atau buat rencana baru.</div>{% endif %}
-        {% if plan %}<input type="hidden" name="plan_id" value="{{ plan.pk }}"><input type="hidden" name="version" value="{{ plan.version }}">{% elif user.is_authenticated %}<input type="hidden" name="new_plan" value="1">{% endif %}
-        {% if user.is_authenticated and not plan and active_draft %}
-        <input type="hidden" name="replace_draft_id" value="{{ active_draft.pk }}">
-        <input type="hidden" name="replace_draft_version" value="{{ active_draft.version }}">
-        <div class="notice error-notice"><label><input type="checkbox" name="replace_draft" value="1"> Saya setuju mengganti draft terakhir dengan rencana baru.</label><p>Simpan draft terlebih dahulu jika ingin mempertahankannya. Rencana yang sudah tersimpan tidak dihapus.</p></div>
-        {% endif %}
-        {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
-        <div class="form-rows">
-          <div class="form-row">
-            <div class="field budget-field"><label for="{{ form.budget.id_for_label }}">Budget</label><div class="currency-input"><span>Rp</span>{{ form.budget }}</div>{{ form.budget.errors }}</div>
-            <div class="field"><label for="{{ form.days.id_for_label }}">Hari</label><div class="number-input">{{ form.days }}<span>hari</span></div>{{ form.days.errors }}</div>
-            <div class="field"><label for="{{ form.servings.id_for_label }}">Orang</label><div class="number-input">{{ form.servings }}<span>orang</span></div>{{ form.servings.errors }}</div>
-            <fieldset class="field meal-field"><legend>Waktu makan</legend><div class="choice-row meal-options">{{ form.meal_types }}</div>{{ form.meal_types.errors }}</fieldset>
-          </div>
-          <div class="form-row form-row-second">
-            <fieldset class="field"><legend>Target gizi</legend><div class="choice-row target-row">{{ form.targets }}</div>{{ form.targets.errors }}</fieldset>
-            <div class="field"><label for="{{ form.rice.id_for_label }}">Nasi untuk lauk</label><div class="excluded-input">{{ form.rice }}</div>{{ form.rice.errors }}</div>
-            <div class="field"><label for="{{ form.exclude_ingredients.id_for_label }}">Bahan dihindari <span class="optional">(opsional)</span></label><div class="excluded-input">{{ form.exclude_ingredients }}</div>{{ form.exclude_ingredients.errors }}</div>
-            <button type="submit" class="calculate-button"{% if trial and trial.remaining == 0 %} disabled{% endif %}>{% if plan.status == 'saved' %}Pratinjau Perubahan{% else %}Buat Rencana Makan{% endif %} <span aria-hidden="true">→</span></button>
-          </div>
-          <p class="field-note form-hint">Rendah kalori dibatasi 1.150 kkal/orang/hari · nasi otomatis untuk 1–2 orang · bahan dihindari bukan filter alergi.</p>
+    <form class="planner-form card" method="post" action="{% url 'modul1' %}#hasil" novalidate>
+      {% csrf_token %}
+      {{ form.allergens }}
+      {% if plan %}<input type="hidden" name="plan_id" value="{{ plan.pk }}"><input type="hidden" name="version" value="{{ plan.version }}">{% else %}<input type="hidden" name="new_plan" value="1">{% endif %}
+      <div class="form-row">
+        <div class="field field-budget">
+          <label for="{{ form.budget.id_for_label }}">Budget</label>
+          <div class="input-box"><span aria-hidden="true">Rp</span>{{ form.budget }}</div>
         </div>
-      </form>
-    </section>
+        <div class="field">
+          <label for="{{ form.days.id_for_label }}">Hari</label>
+          <div class="stepper" data-stepper><button type="button" data-step="-1" aria-label="Kurangi hari" hidden>−</button>{{ form.days }}<button type="button" data-step="1" aria-label="Tambah hari" hidden>+</button></div>
+        </div>
+        <div class="field">
+          <label for="{{ form.servings.id_for_label }}">Orang</label>
+          <div class="stepper" data-stepper><button type="button" data-step="-1" aria-label="Kurangi orang" hidden>−</button>{{ form.servings }}<button type="button" data-step="1" aria-label="Tambah orang" hidden>+</button></div>
+        </div>
+        <fieldset class="field">
+          <legend>Waktu makan</legend>
+          <div class="chips">{% for choice in form.meal_types %}<label class="choice-chip">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>{% endfor %}</div>
+        </fieldset>
+      </div>
+      <div class="form-row">
+        <fieldset class="field">
+          <legend>Target gizi</legend>
+          <div class="segmented">{% for choice in form.targets %}<label>{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>{% endfor %}</div>
+        </fieldset>
+        <div class="field">
+          <label for="id_rice">Karbohidrat</label>
+          <select id="id_rice" name="rice" class="select-box">{% for value, label in staple_options %}<option value="{{ value }}"{% if value == rice_value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+        </div>
+        <div class="form-spacer"></div>
+        <details class="avoid" data-avoid{% if form.exclude_ingredients.errors %} open{% endif %}>
+          <summary><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>Hindari<span class="count" data-avoid-count{% if not avoid_count %} hidden{% endif %}>{{ avoid_count }}</span></summary>
+          <div class="avoid-panel">
+            <label for="{{ form.exclude_ingredients.id_for_label }}">Bahan yang dihindari</label>
+            <div class="avoid-chips" data-avoid-chips></div>
+            {{ form.exclude_ingredients }}
+          </div>
+        </details>
+        <button type="submit" class="primary-button">{% if plan.status == 'saved' %}Pratinjau perubahan{% else %}Buat rencana{% endif %}</button>
+      </div>
+      {% if not plan and active_draft %}
+      <input type="hidden" name="replace_draft_id" value="{{ active_draft.pk }}">
+      <input type="hidden" name="replace_draft_version" value="{{ active_draft.version }}">
+      <label class="form-note"><input type="checkbox" name="replace_draft" value="1"> Ganti draft terakhir dengan rencana baru</label>
+      {% endif %}
+      {% if form.errors %}<ul class="form-errors" role="alert">{% for field in form %}{% for message in field.errors %}<li>{{ field.label }}: {{ message }}</li>{% endfor %}{% endfor %}{% for message in form.non_field_errors %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+    </form>
 
     <section id="hasil" class="results" aria-live="polite">
-      {% if trial_blocked or trial and trial.remaining == 0 %}<div class="notice error-notice"><strong>Kuota percobaan sudah habis.</strong><p>Masuk atau daftar untuk melanjutkan tanpa batas trial. Hasil terakhir tetap tersedia; kamu juga bisa menunggu kuota diperbarui.</p></div>{% endif %}
+      {% if halal_warning %}<p class="notice notice-warn">Rencana ini memuat menu yang tidak sesuai preferensi halal terbaru. Ganti menunya atau buat rencana baru.</p>{% endif %}
+      {% if allergy_warning %}<p class="notice notice-warn">Rencana lama memiliki bahan yang tidak sesuai alergi terbaru atau belum ditinjau. Ganti menunya atau buat rencana baru.</p>{% endif %}
       {% if error %}
-        <div class="notice error-notice"><strong>Rencana belum bisa dihitung.</strong><p>{{ error }}</p></div>
-      {% elif form.errors %}
-        <div class="notice error-notice"><strong>Input belum valid.</strong><p>Periksa kembali kolom di atas, termasuk pilihan waktu makan.</p></div>
+        <p class="notice notice-warn"><strong>Rencana belum bisa dihitung.</strong> {{ error }}</p>
       {% elif result %}
-        {% if plan and result.within_budget %}{% include 'budget_planner/plan_controls.html' %}{% elif not user.is_authenticated and result.within_budget %}<p class="selection-note">Ingin menyimpan pilihan ini? <a class="text-link" href="{% url 'login' %}?next={% url 'modul1' %}">Masuk</a> atau <a class="text-link" href="{% url 'signup' %}">daftar</a>. Hasil terakhir akan dibawa menjadi draft setelah masuk.</p>{% endif %}
-        <div class="results-heading"><div><p class="kicker">HASIL SIMULASI</p><h2>Rencana makan {{ form.cleaned_data.days }} hari</h2></div></div>
-        {% if result.missing_meal_labels %}<div class="notice error-notice"><strong>Rencana parsial:</strong><span>Belum ada resep yang cocok untuk {{ result.missing_meal_labels|join:", " }} dengan bahan/pantangan saat ini. Menu waktu makan lain tetap ditampilkan; katalog untuk bagian yang kosong perlu ditambah.</span></div>{% endif %}
-        {% if result.unmatched_exclusions %}<div class="notice error-notice"><strong>Istilah belum ditemukan:</strong><span>{{ result.unmatched_exclusions|join:", " }}. Tidak ada nama bahan resep yang cocok; filter tersebut belum mengubah pilihan menu.</span></div>{% endif %}
-        <details class="result-notes"><summary>Catatan perhitungan</summary>
-          <p class="selection-note">Waktu makan: {{ result.meal_labels|join:", " }} ({{ result.meal_count }} menu per hari).{% if result.excluded_ingredients %} Dikecualikan: {{ result.excluded_ingredients|join:", " }}.{% endif %}</p>
-          {% if result.protein_floor or result.calorie_cap %}<p class="selection-note">Target per orang untuk waktu makan terpilih setiap hari: {% if result.protein_floor %}minimal {{ result.protein_floor }} g protein{% endif %}{% if result.protein_floor and result.calorie_cap %} · {% endif %}{% if result.calorie_cap %}maksimal {{ result.calorie_cap }} kkal{% endif %}. Angka ini adalah ambang simulasi, bukan kebutuhan gizi pribadi.</p>{% endif %}
-          {% if result.calorie_cap %}<p class="selection-note">Perhatian: jika tiga waktu makan dipilih, batas 1.150 kkal/hari berada di bawah 1.200 kkal. Jangan gunakan hasil ini sebagai resep diet pribadi tanpa konsultasi tenaga kesehatan.</p>{% endif %}
-          {% if result.repeated_recipes %}<p class="selection-note">Beberapa menu diulang karena variasi resep yang memenuhi target saat ini terbatas.</p>{% endif %}
-          {% for note in result.preference_notes %}<p class="selection-note">{{ note }}</p>{% endfor %}
-          {% if result.estimated_quantities %}<p class="selection-note">Sebagian menu memakai estimasi takaran dan jumlah porsi. Nilai gizi dan biaya belum merupakan hasil timbang atau uji hidangan jadi.</p>{% endif %}
-          {% if result.instructions_pending_review %}<p class="selection-note">Sebagian menu menggunakan data bahan dari <a href="{{ result.recipe_source_url }}" target="_blank" rel="noopener noreferrer">Purwanto, Wibawa &amp; Devi — Mendeley Data v3</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>). Takaran dan klasifikasi diadaptasi TAKARKUY; teks cara memasak ditahan sampai asal dan izin teksnya selesai ditinjau.</p>{% endif %}
-          {% if result.purchase_yield_estimates %}<p class="selection-note">Ayam utuh memakai asumsi 60% bagian termakan. Biaya dan daftar belanja memakai berat utuh, sedangkan gizi memakai berat daging.</p>{% endif %}
-          {% if result.nutrition_proxies %}<p class="selection-note">Sebagian gizi memakai estimasi/proksi untuk {{ result.nutrition_proxy_names|join:", " }}. Nilai sebenarnya dapat berbeda menurut bahan dan merek.{% if "Ikan Dori" in result.nutrition_proxy_names %} Proksi ikan dori menggunakan patin.{% endif %}</p>{% endif %}
-          {% if result.retail_price_references %}<p class="selection-note">Harga Garut dilengkapi referensi toko daring untuk bahan yang belum tersedia. Referensi tersebut bukan harga Garut, bukan harga real-time, dan belum menghitung pembelian kemasan utuh.</p>{% endif %}
-          {% if result.fruit_purchase_estimates %}<p class="selection-note">Buah dihitung sebagai pembelian buah utuh dan sisanya bisa digunakan pada hari lain. Total belanja menggabungkan kebutuhan semua hari; harga per menu adalah perkiraan jika dibeli terpisah. Harga buah diturunkan dari harga per kg Kabupaten Garut {{ result.snapshot|date:"d M Y" }}; berat dan bagian termakan per buah memakai acuan USDA, bukan ukuran atau harga pasti di kasir.</p>{% endif %}
-        </details>
-        {% if result.within_budget %}
-          <div class="notice success-notice"><strong>Masih dalam budget</strong><span>Uang belanja {{ result.net_total|rupiah }} dari batas {{ form.cleaned_data.budget|rupiah }}. Sisa {{ result.difference|rupiah }}.</span></div>
-        {% else %}
-          <div class="infeasible-panel"><p class="kicker">BELUM FEASIBLE</p><h3>Budget belum cukup untuk {{ form.cleaned_data.days }} hari × {{ form.cleaned_data.servings }} orang.</h3><p>Untuk {{ result.meal_count }} waktu makan per hari yang dipilih, biaya bahan paling rendah diperkirakan <strong>{{ result.minimum_budget|rupiah }}</strong>. Perlu tambahan sekitar <strong>{{ result.difference|rupiah }}</strong>.</p><div class="suggestion-list"><div><strong>Tambah budget</strong><span>Naikkan menjadi minimal {{ result.minimum_budget|rupiah }}.</span></div><div><strong>Kurangi hari</strong><span>{% if result.feasible_days %}Dengan budget saat ini, coba {{ result.feasible_days }} hari.{% elif form.cleaned_data.days == 1 %}Durasi sudah minimum 1 hari.{% else %}Mengurangi ke 1 hari saja belum cukup.{% endif %}</span></div><div><strong>Kurangi porsi</strong><span>{% if result.feasible_servings %}Dengan budget saat ini, coba {{ result.feasible_servings }} orang.{% elif form.cleaned_data.servings == 1 %}Porsi sudah minimum 1 orang.{% else %}Mengurangi ke 1 orang saja belum cukup.{% endif %}</span></div></div>{% if not result.feasible_days and not result.feasible_servings %}<p class="minimum-note">Sebagai pembanding, 1 hari untuk 1 orang dengan pilihan waktu makan yang sama perlu sekitar {{ result.smallest_scenario_budget|rupiah }}.</p>{% endif %}</div>
-        {% endif %}
-
-        {% if result.within_budget %}
-        <div class="result-grid">
-          <div class="result-main">
-            <section class="panel nutrition-panel"><p class="kicker">ESTIMASI GIZI WAKTU MAKAN TERPILIH (PER ORANG / HARI)</p><h3>Estimasi Gizi</h3><div class="nutrition-grid"><div><strong>{{ result.nutrition.calories }} kkal</strong><span>Kalori</span></div><div><strong>{{ result.nutrition.protein }} g</strong><span>Protein</span></div><div><strong>{{ result.nutrition.carbs }} g</strong><span>Karbohidrat</span></div><div><strong>{{ result.nutrition.fat }} g</strong><span>Lemak</span></div></div><p>Perhitungan berdasarkan waktu makan yang dipilih. Belum memperhitungkan bumbu dapur dasar (air, garam), penyusutan saat dimasak, serta biaya kemasan dan ongkir.</p></section>
-            <section class="panel"><div class="panel-heading"><div><p class="kicker">HASIL REKOMENDASI</p><h3>Daftar Belanja Terhitung</h3></div><span class="verified">● Katalog terkurasi</span></div><div class="total-box"><span>Uang belanja (setelah stok Pantry)</span><strong>{{ result.net_total|rupiah }}</strong><div class="budget-track"><span style="width:{% widthratio result.net_total form.cleaned_data.budget 100 %}%;max-width:100%"></span></div>{% if result.stock_used %}<small>Nilai menu {{ result.total|rupiah }}, sebagian dari stok Pantry.</small>{% endif %}<small>Budget {{ form.cleaned_data.budget|rupiah }} · {{ form.cleaned_data.servings }} porsi per menu</small>{% if pantry_saving and not result.stock_used %}<small class="pantry-note">Stok Pantry sudah menutup sebagian bahan: belanja bisa berkurang sekitar {{ pantry_saving|rupiah }}.</small>{% endif %}</div><div class="shopping-groups">{% for group in shopping_groups|default:result.shopping_groups %}<div class="shopping-group"><h4>{{ group.name }}</h4>{% for item in group.items %}<div class="shopping-item">{% if plan.status == 'saved' %}{% if item.added_to_pantry %}<span class="pantry-done" title="Sudah masuk Pantry">✓</span>{% elif item.to_buy == 0 %}<span class="pantry-done" title="Stok Pantry sudah cukup">✓</span>{% else %}<input class="pantry-pick" type="checkbox" aria-label="Pilih {{ item.name }} untuk dimasukkan ke Pantry" data-ingredient="{{ item.ingredient_code }}" data-grams="{% if item.to_buy %}{{ item.to_buy }}{% else %}{{ item.quantity }}{% endif %}">{% endif %}{% endif %}<div><strong>{{ item.name }}</strong><small>{{ item.quantity }} g dipakai · total {{ form.cleaned_data.days }} hari{% if item.purchase_units %}<br>Perkiraan beli {{ item.purchase_units }} {{ item.purchase_unit }} (±{{ item.purchase_gross_grams }} g utuh) · sisa bagian termakan ±{{ item.leftover_edible_grams }} g{% endif %}{% if item.in_pantry %}<br>Sudah ada di Pantry {{ item.in_pantry }} g · perlu beli {{ item.to_buy }} g{% if item.unknown_expiry %} · tanggal stok belum diketahui{% endif %}{% endif %}{% if item.added_to_pantry %}<br>Sudah dimasukkan ke Pantry{% endif %}</small></div><span>{{ item.cost|rupiah }}</span></div>{% endfor %}</div>{% endfor %}{% if result.rounding_adjustment %}<div class="shopping-item rounding-item"><div><strong>Pembulatan total</strong><small>Ke atas sampai kelipatan Rp 500</small></div><span>{{ result.rounding_adjustment|rupiah }}</span></div>{% endif %}</div>{% if plan.status == 'saved' %}<div class="pantry-actions"><p class="field-note">Sudah belanja? Centang bahan yang dibeli lalu masukkan ke Pantry. Jumlah memakai kebutuhan rencana dikurangi stok yang sudah ada; ubah di Pantry bila berbeda.</p><button type="button" class="small-button" id="add-to-pantry" data-url="{% url 'modul1-plan-pantry' plan.pk %}" data-version="{{ plan.version }}">Masukkan ke Pantry</button></div>{% elif plan %}<p class="field-note">Simpan rencana untuk memindahkan belanjaan ke Pantry.</p>{% endif %}</section>
-          </div>
-          <div class="result-side">
-            <section class="panel schedule-panel"><div class="panel-heading"><div><p class="kicker">MENU HARIAN</p><h3>Jadwal Masak</h3></div><span class="day-count">{{ form.cleaned_data.days }} hari</span></div>
-            {% for day in display_schedule|default:result.schedule %}<div class="schedule-day"><h4>Hari ke-{{ day.number }}</h4>{% if result.protein_floor or result.calorie_cap %}<small>{{ day.protein }} g protein · {{ day.calories }} kkal / orang (waktu makan terpilih)</small>{% endif %}
-            {% for meal in day.meals %}<div class="meal-row"><span class="meal-label">{{ meal.label }}</span>{% if meal.photo %}<img class="meal-photo" src="{{ meal.photo.image_url }}" alt="Foto {{ meal.name }}" loading="lazy">{% else %}<div class="meal-photo-placeholder" role="img" aria-label="Foto {{ meal.name }} belum tersedia"><svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true" focusable="false"><path d="M8 18h32l-2 22H10L8 18Zm6 0a10 10 0 0 1 20 0M16 12c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>{% endif %}<div class="meal-content"><strong>{{ meal.name|title }}{% if meal.with_rice %} + Nasi{% endif %}{% if meal.cooked %} · Sudah Masak{% elif meal.skipped %} · Dilewati{% endif %}</strong>{% if meal.photo %}<small>Foto: <a href="{{ meal.photo.source_url }}" target="_blank" rel="noopener noreferrer">{{ meal.photo.creator }} · {{ meal.photo.license_name }}</a></small>{% endif %}{% if meal.expiring_stock %}<small class="pantry-note">Pakai stok Pantry yang segera kedaluwarsa: {{ meal.expiring_stock|join:", " }}</small>{% endif %}<small>{{ meal.cost|rupiah }} / {{ form.cleaned_data.servings }} porsi · {{ meal.calories }} kkal / porsi</small>
-            {% if user.is_authenticated %}<a class="small-button" href="{% url 'modul4' %}?{% if meal.planned_meal_id %}slot={{ meal.planned_meal_id }}{% else %}recipe={{ meal.recipe_code|urlencode }}{% endif %}">Lihat Resep</a>{% endif %}
-            {% if meal.instructions %}<details class="recipe-steps"><summary>Cara memasak</summary><p>{{ meal.instructions|linebreaksbr }}</p></details>{% endif %}</div>
-            {% if plan and not meal.cooked %}<button class="small-button" type="button" data-replace-menu data-day="{{ day.number }}" data-meal="{{ meal.type }}" data-alternatives-url="{% url 'modul1-plan-alternatives' plan.pk %}" data-preview-url="{% url 'modul1-plan-preview' plan.pk %}" data-version="{{ plan.version }}">Ganti Menu</button>{% endif %}</div>{% endfor %}</div>{% endfor %}</section>
-          </div>
+        {% if result.missing_meal_labels %}<p class="notice notice-warn">Belum ada menu yang cocok untuk {{ result.missing_meal_labels|join:", " }}.</p>{% endif %}
+        {% if result.unmatched_exclusions %}<p class="notice notice-warn">Tidak ditemukan di resep: {{ result.unmatched_exclusions|join:", " }}.</p>{% endif %}
+        {% if not result.within_budget %}
+        <div class="card infeasible">
+          <h2>Budget belum cukup</h2>
+          <p>Paling hemat {{ result.minimum_budget|rupiah }} untuk {{ form.cleaned_data.days }} hari × {{ form.cleaned_data.servings }} orang (kurang {{ result.difference|rupiah }}).</p>
+          <ul class="suggestions">
+            <li>Naikkan budget ke {{ result.minimum_budget|rupiah }}</li>
+            {% if result.feasible_days %}<li>Atau kurangi jadi {{ result.feasible_days }} hari</li>{% endif %}
+            {% if result.feasible_servings %}<li>Atau kurangi jadi {{ result.feasible_servings }} orang</li>{% endif %}
+          </ul>
         </div>
+        {% else %}
+        <div class="summary">
+          <div class="card summary-card">
+            <div class="summary-top"><span class="label">Belanja</span><span class="badge">Dalam budget</span></div>
+            <p class="big">{{ result.net_total|rupiah }} <span>/ {{ form.cleaned_data.budget|rupiah }}</span></p>
+            <div class="bar"><span style="width:{% widthratio result.net_total form.cleaned_data.budget 100 %}%"></span></div>
+            <p class="muted">Sisa {{ result.difference|rupiah }}{% if result.stock_used %} · Nilai menu {{ result.total|rupiah }}, sebagian dari Pantry{% elif pantry_saving %} · Stok Pantry bisa menghemat ±{{ pantry_saving|rupiah }}{% endif %}</p>
+          </div>
+          <div class="card summary-card">
+            <span class="label">Gizi per hari</span>
+            <div class="nutrition">
+              {% for ring in nutrition_rings %}
+              <div class="nutrient nutrient-{{ ring.key }}">
+                <svg class="ring" viewBox="0 0 56 56" role="img" aria-label="{{ ring.value }} {{ ring.label }}, {{ ring.percent }}% dari acuan label gizi {{ ring.reference }}">
+                  <circle class="ring-track" cx="28" cy="28" r="24" pathLength="100"/>
+                  <circle class="ring-fill" cx="28" cy="28" r="24" pathLength="100" stroke-dasharray="{{ ring.percent }} 100"/>
+                  <g class="ring-icon" transform="translate(18 18)">
+                    {% if ring.key == "energy" %}<path d="M10 2c1 3 4 4.5 4 8.5a4 4 0 0 1-8 0c0-2 1-3 2-4 0 1.5.8 2.5 2 2.5 0-2.5-1.5-4.5 0-7Z"/>
+                    {% elif ring.key == "protein" %}<path d="M13.5 3.5a3.5 3.5 0 0 1 0 5l-4 4-3-3 4-4a3.5 3.5 0 0 1 3-2Z"/><path d="M6.5 9.5 3 13a1.5 1.5 0 1 0 2 2l.5-.5a1.5 1.5 0 1 0 2-2L10.5 9"/>
+                    {% elif ring.key == "carbs" %}<path d="M10 18V6"/><path d="M10 6c-2-1-3-3-3-5 2 0 3 1.5 3 3.5 0-2 1-3.5 3-3.5 0 2-1 4-3 5Z"/><path d="M10 11c-2-.5-3.5-2-3.5-4 2 0 3.5 1.5 3.5 3.5 0-2 1.5-3.5 3.5-3.5 0 2-1.5 3.5-3.5 4Z"/>
+                    {% else %}<path d="M10 2.5S4.5 8.5 4.5 12a5.5 5.5 0 0 0 11 0C15.5 8.5 10 2.5 10 2.5Z"/>{% endif %}
+                  </g>
+                </svg>
+                <strong>{{ ring.value }}</strong>
+                <span>{{ ring.label }}</span>
+              </div>
+              {% endfor %}
+            </div>
+            {% if result.protein_floor or result.calorie_cap %}<p class="muted">Target {% if result.protein_floor %}≥ {{ result.protein_floor }} g protein{% endif %}{% if result.protein_floor and result.calorie_cap %} · {% endif %}{% if result.calorie_cap %}≤ {{ result.calorie_cap }} kkal{% endif %}</p>{% endif %}
+          </div>
+          {% if plan %}
+          <form class="card summary-card plan-save" data-save-plan data-url="{% url 'modul1-plan-save' plan.pk %}" data-version="{{ plan.version }}">
+            <label for="plan-title" class="label">Judul rencana <span class="status">· {% if plan.status == 'draft' %}Draft{% else %}Tersimpan{% endif %}</span></label>
+            <input id="plan-title" name="title" maxlength="100" required value="{{ plan.title }}">
+            <button class="primary-button" type="submit">{% if plan.status == 'draft' %}Simpan Rencana{% else %}Simpan Judul{% endif %}</button>
+            {% if plan.status == 'draft' and plan.source_plan_id %}<button class="link-button" type="submit" name="replace_original" value="yes">Simpan ke rencana asal</button>{% endif %}
+          </form>
+          {% endif %}
+        </div>
+
+        <div class="result-grid">
+          <section class="card" aria-labelledby="jadwal-title">
+            <div class="card-head">
+              <h2 id="jadwal-title">Jadwal masak</h2>
+              <div class="day-tabs" data-day-tabs hidden>{% for day in display_schedule %}<button type="button" data-day-tab="{{ day.number }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">Hari {{ day.number }}</button>{% endfor %}</div>
+            </div>
+            {% for day in display_schedule %}
+            <div class="day" data-day-panel="{{ day.number }}">
+              <h3 class="day-title"><span class="day-name">Hari {{ day.number }}</span>{% if result.protein_floor or result.calorie_cap %} <span class="day-nutrition">{{ day.protein }} g protein · {{ day.calories }} kkal / orang</span>{% endif %}</h3>
+              {% for meal in day.meals %}
+              <article class="meal">
+                {% if meal.photo %}<img class="meal-photo" src="{{ meal.photo.image_url }}" alt="" title="Foto: {{ meal.photo.creator }} ({{ meal.photo.license_name }})" loading="lazy">{% else %}<div class="meal-photo meal-photo-empty" aria-hidden="true">♨</div>{% endif %}
+                <div class="meal-body">
+                  <span class="meal-label">{{ meal.label }}</span>
+                  <h4>{{ meal.name }}{% if meal.with_rice %} + Nasi{% elif meal.staple %} + {{ meal.staple.label }}{% endif %}{% if meal.cooked %} <span class="meal-status">Sudah masak</span>{% elif meal.skipped %} <span class="meal-status">Dilewati</span>{% endif %}</h4>
+                  <p>{{ meal.cost|rupiah }} · {{ meal.calories }} kkal/porsi{% if meal.expiring_stock %} · <span class="pantry-note">Pakai stok: {{ meal.expiring_stock|join:", " }}</span>{% endif %}</p>
+                </div>
+                <div class="meal-actions">
+                  <a class="link-button" href="{% url 'modul4' %}?{% if meal.planned_meal_id %}slot={{ meal.planned_meal_id }}{% else %}recipe={{ meal.recipe_code|urlencode }}{% endif %}">Resep</a>
+                  {% if plan and not meal.cooked %}<button class="secondary-button" type="button" data-replace-menu data-day="{{ day.number }}" data-meal="{{ meal.type }}" data-label="{{ meal.label }}" data-name="{{ meal.name }}" data-total="{{ result.net_total }}" data-budget="{{ form.cleaned_data.budget }}" data-alternatives-url="{% url 'modul1-plan-alternatives' plan.pk %}" data-preview-url="{% url 'modul1-plan-preview' plan.pk %}" data-version="{{ plan.version }}">Ganti</button>{% endif %}
+                </div>
+              </article>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </section>
+
+          <section class="card shopping-card" aria-labelledby="belanja-title">
+            <h2 id="belanja-title">Daftar belanja</h2>
+            <p class="muted">{{ item_count }} bahan · {{ form.cleaned_data.days }} hari</p>
+            <ul class="shop-summary">
+              {% for row in shopping_summary %}
+              <li>
+                <span class="shop-icon shop-icon-{{ row.key }}" aria-hidden="true"><svg viewBox="0 0 24 24">{% if row.key == "protein" %}<path d="M15.5 4.5a4 4 0 0 1 0 5.7l-5 5-4.2-4.2 5-5a4 4 0 0 1 4.2-1.5Z"/><path d="M8.3 13.3 4.5 17a1.8 1.8 0 1 0 2.5 2.5l3.8-3.7"/>{% elif row.key == "karbohidrat" %}<path d="M12 21V8"/><path d="M12 8c-2.5-1-4-3.4-4-6 2.6 0 4 2 4 4.5C12 4 13.4 2 16 2c0 2.6-1.5 5-4 6Z"/><path d="M12 14c-2.5-.6-4.5-2.6-4.5-5 2.5 0 4.5 2 4.5 4.5 0-2.5 2-4.5 4.5-4.5 0 2.4-2 4.4-4.5 5Z"/>{% elif row.key == "sayur" %}<path d="M5 19c0-8 5-14 15-15-1 10-7 15-15 15Z"/><path d="M5 19 14 10"/>{% elif row.key == "buah" %}<path d="M12 8c-4-2-8 1-7 6s4 8 7 6c3 2 6-1 7-6s-3-8-7-6Z"/><path d="M12 8c0-2 1-4 3-5"/>{% else %}<path d="M4 12h16a8 8 0 0 1-16 0Z"/><path d="M9 8c0-2 2-2 2-4M14 8c0-2 2-2 2-4"/>{% endif %}</svg></span>
+                <span class="shop-name">{{ row.label }}<span class="muted">{{ row.count }} bahan</span></span>
+                <strong>{{ row.subtotal|rupiah }}</strong>
+              </li>
+              {% endfor %}
+            </ul>
+            <p class="shop-total"><span>Total</span><span>{{ result.total|rupiah }}</span></p>
+            <p class="muted">Total belanja sudah melewati pembulatan.</p>
+            <div class="shop-actions">
+              {% if plan %}<a class="secondary-button download-button" href="{% url 'modul1-plan-pdf' plan.pk %}" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download detail (PDF)</a>{% endif %}
+              {% if plan.status == 'saved' and pantry_items %}<button type="button" class="link-button" data-open-dialog="pantry-dialog">Sudah belanja? Masukkan ke Pantry</button>{% endif %}
+            </div>
+          </section>
+        </div>
+
         {% endif %}
-      {% else %}
-        <div class="empty-state"><span aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/></svg></span><h2>Rencanamu akan muncul di sini</h2><p>Atur budget dan jadwal makan, lalu tekan Buat Rencana Makan.</p></div>
+      {% elif not form.errors %}
+        <div class="card empty-state">
+          <h2>Rencanamu akan muncul di sini</h2>
+          <p class="muted">Atur budget dan waktu makan, lalu tekan Buat rencana.</p>
+        </div>
       {% endif %}
     </section>
-    </div>
-    {% if user.is_authenticated %}{% include 'budget_planner/saved_plans.html' %}{% include 'budget_planner/preview_dialog.html' %}{% endif %}
-  </main>
-  {% if user.is_authenticated %}
-    {% if pending_preview %}{{ pending_preview|json_script:'pending-plan-preview' }}{% endif %}
-    <script src="{% static 'budget_planner/plans.js' %}?v=20261023-save-refresh" defer></script>
-  {% endif %}
-  <script src="{% static 'recipe_book/image_fallback.js' %}" defer></script>
-  <script>
-    document.querySelectorAll(".js-rupiah-input").forEach((input) => {
-      const format = () => {
-        const digits = input.value.replace(/\D/g, "");
-        input.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      };
-      input.addEventListener("input", format);
-      format();
-    });
 
-    const targetOptions = document.querySelectorAll('input[name="targets"]');
-    const balancedOption = Array.from(targetOptions).find((input) => input.value === "seimbang");
-    const specialOptions = Array.from(targetOptions).filter((input) => input.value !== "seimbang");
-    if (balancedOption) {
-      const syncTargets = (changedOption) => {
-        if (changedOption === balancedOption && balancedOption.checked) {
-          specialOptions.forEach((input) => { input.checked = false; });
-        } else {
-          balancedOption.checked = !specialOptions.some((input) => input.checked);
-        }
-      };
-      targetOptions.forEach((input) => input.addEventListener("change", () => syncTargets(input)));
-      syncTargets();
-    }
-  </script>
+    <dialog id="rencana-saya" class="plan-dialog" aria-labelledby="saved-plans-title">
+      <div class="dialog-head">
+        <div><h2 id="saved-plans-title">Rencana Saya</h2><p class="muted">{{ saved_plans|length }} rencana tersimpan</p></div>
+        <button type="button" class="icon-button" data-close-dialog aria-label="Tutup">×</button>
+      </div>
+      <div class="dialog-body">
+        <ul class="saved-list">
+          {% for saved in saved_plans %}
+          <li>
+            <a class="saved-open" href="{% url 'modul1' %}?plan={{ saved.pk }}#hasil">
+              <strong>{{ saved.title }}</strong>
+              <span class="muted">{{ saved.starts_on|date:'d M Y' }} · {{ saved.inputs.days }} hari · {{ saved.inputs.servings }} orang · {{ saved.net_total|rupiah }}</span>
+            </a>
+            <button class="danger-button" type="button" data-delete-plan data-url="{% url 'modul1-plan-delete' saved.pk %}" data-version="{{ saved.version }}" data-title="{{ saved.title }}">Hapus</button>
+          </li>
+          {% empty %}
+          <li class="muted">Belum ada rencana tersimpan. Buat rencana, lalu tekan Simpan Rencana.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </dialog>
+    {% if plan.status == 'saved' and pantry_items %}
+    <dialog id="pantry-dialog" class="plan-dialog" aria-labelledby="pantry-title">
+      <div class="dialog-head">
+        <div><h2 id="pantry-title">Masukkan ke Pantry</h2><p class="muted">Centang bahan yang sudah dibeli.</p></div>
+        <button type="button" class="icon-button" data-close-dialog aria-label="Tutup">×</button>
+      </div>
+      <div class="dialog-body">
+        <ul class="pantry-list">
+          {% for item in pantry_items %}
+          <li><label><input class="pantry-pick" type="checkbox" data-ingredient="{{ item.ingredient_code }}" data-grams="{% if item.to_buy %}{{ item.to_buy }}{% else %}{{ item.quantity }}{% endif %}"> <span>{{ item.name }}</span> <span class="muted">{% if item.purchase_units %}{{ item.purchase_units }} {{ item.purchase_unit }}{% elif item.in_pantry %}perlu beli {{ item.to_buy }} g{% else %}{{ item.quantity }} g{% endif %}</span></label></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="dialog-foot">
+        <div class="dialog-actions"><button type="button" class="secondary-button" data-close-dialog>Batal</button><button type="button" class="primary-button" id="add-to-pantry" data-url="{% url 'modul1-plan-pantry' plan.pk %}" data-version="{{ plan.version }}">Masukkan ke Pantry</button></div>
+      </div>
+    </dialog>
+    {% endif %}
+    {% include 'budget_planner/preview_dialog.html' %}
+  </main>
+  {% if pending_preview %}{{ pending_preview|json_script:'pending-plan-preview' }}{% endif %}
+  <script src="{% static 'budget_planner/plans.js' %}?v=20261026-clean5" defer></script>
+  <script src="{% static 'recipe_book/image_fallback.js' %}" defer></script>
 </body>
 </html>
