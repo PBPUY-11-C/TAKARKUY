@@ -274,7 +274,10 @@ def recipe_review_photo_file(request, review_id):
 @login_required
 def book_page(request):
     profile = preferences_for(request.user)
-    groups = effective_allergens(request.user)
+    groups = effective_allergens(request.user, preference=profile)
+    avoided_ingredient_ids = list(
+        profile.avoided_ingredients.values_list("pk", flat=True)
+    )
     baseline = Recipe.objects.filter(
         is_active=True, is_plannable=True
     ).distinct()
@@ -293,7 +296,12 @@ def book_page(request):
         allergen_count = allergen_counts["blocked"]
     else:
         unknown_count = allergen_count = 0
-    query = recipe_query(request.user)
+    query = recipe_query(
+        request.user,
+        allergens=groups,
+        preference=profile,
+        avoided_ingredient_ids=avoided_ingredient_ids,
+    )
     available_recipe_count = query.count()
     term = request.GET.get("q", "").strip()[:100]
     if term:
@@ -324,19 +332,22 @@ def book_page(request):
         max_price = None
     price_unavailable_count = 0
     price_candidate_count = 0
+    price_filtered_candidate_count = None
     if max_price in PRICE_LIMITS:
         started = perf_counter()
         codes = set(query.values_list("pk", flat=True))
         costs = recipe_costs(profile.servings, codes)
         price_candidate_count = len(codes)
         price_unavailable_count = len(codes) - len(costs)
-        query = query.filter(pk__in=[code for code, cost in costs.items() if cost <= max_price])
+        matched_codes = [code for code, cost in costs.items() if cost <= max_price]
+        price_filtered_candidate_count = len(matched_codes)
+        query = query.filter(pk__in=matched_codes)
         duration_ms = (perf_counter() - started) * 1000
         logger.log(
             logging.WARNING if duration_ms >= FILTER_SLOW_MS else logging.INFO,
             "recipe_filter_completed filter=price candidate_count=%d matched_count=%d duration_ms=%.1f",
             len(codes),
-            sum(cost <= max_price for cost in costs.values()),
+            price_filtered_candidate_count,
             duration_ms,
         )
     else:
@@ -344,7 +355,11 @@ def book_page(request):
     stock_filter = request.GET.get("stock", "")
     stock_rows = {}
     if stock_filter in {"complete", "soon", "best"}:
-        candidate_count = query.count()
+        candidate_count = (
+            price_filtered_candidate_count
+            if price_filtered_candidate_count is not None
+            else query.count()
+        )
         started = perf_counter()
         rows = stock_matches(request.user, profile.servings, query=query)
         duration_ms = (perf_counter() - started) * 1000
@@ -391,7 +406,7 @@ def book_page(request):
         active_filters.append("Favorit saja")
     if request.GET.get("guidance") == "1":
         active_filters.append("Hanya resep dengan panduan")
-    if groups or profile.avoided_ingredients.exists():
+    if groups or avoided_ingredient_ids:
         active_filters.append("Preferensi profil (alergi/pantangan)")
     ordered_query = query if stock_filter == "best" else query.order_by("name")
     page = Paginator(

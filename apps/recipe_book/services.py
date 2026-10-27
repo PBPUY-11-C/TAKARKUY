@@ -95,19 +95,25 @@ def recipe_costs(servings, codes):
     return costs
 
 
-def recipe_query(user, *, allergens=None):
+def recipe_query(user, *, allergens=None, preference=None, avoided_ingredient_ids=None):
+    preference = preference or preferences_for(user)
     query = Recipe.objects.filter(
         is_active=True, is_plannable=True
     ).distinct()
-    if preferences_for(user).halal_only:
+    if preference.halal_only:
         query = query.filter(recipetag__tag="halal")
-    groups = effective_allergens(user) if allergens is None else allergens
+    groups = (
+        effective_allergens(user, preference=preference) if allergens is None else allergens
+    )
     if not set(groups) <= ALLERGEN_KEYS:
         raise ValueError("Kelompok alergi tidak valid.")
     if groups:
         query = query.filter(allergen_reviewed=True).exclude(allergen_groups__group__in=groups)
-    avoided = preferences_for(user).avoided_ingredients.values_list("pk", flat=True)
-    return query.exclude(recipeingredient__ingredient_id__in=avoided)
+    if avoided_ingredient_ids is None:
+        avoided_ingredient_ids = preference.avoided_ingredients.values_list("pk", flat=True)
+    if avoided_ingredient_ids:
+        query = query.exclude(recipeingredient__ingredient_id__in=avoided_ingredient_ids)
+    return query
 
 
 def with_guidance(query):

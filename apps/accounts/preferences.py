@@ -44,9 +44,10 @@ def planner_defaults(user):
     }
 
 
-def effective_allergens(user, *inputs):
+def effective_allergens(user, *inputs, preference=None):
     groups = set()
-    for values in [preferences_for(user).allergens, *(data.get("allergens", []) for data in inputs)]:
+    saved_allergens = (preference or preferences_for(user)).allergens
+    for values in [saved_allergens, *(data.get("allergens", []) for data in inputs)]:
         if not isinstance(values, list) or any(
             not isinstance(value, str) or value not in ALLERGEN_KEYS for value in values
         ):
