@@ -1,6 +1,10 @@
 <dialog id="plan-dialog" class="plan-dialog" aria-labelledby="preview-title">
   <div class="dialog-head">
-    <div><h2 id="preview-title">Pratinjau menu</h2><p id="preview-subtitle" class="muted"></p></div>
+    <div>
+      <span id="preview-eyebrow" class="dialog-eyebrow" hidden></span>
+      <h2 id="preview-title">Pratinjau menu</h2>
+      <p id="preview-subtitle" class="muted"></p>
+    </div>
     <button type="button" class="icon-button" data-close-dialog aria-label="Tutup">×</button>
   </div>
   <div class="dialog-body">
@@ -8,13 +12,29 @@
     <div id="replacement-picker" hidden>
       <div id="replacement-recipe" class="option-list" role="radiogroup" aria-label="Menu pengganti"></div>
     </div>
-    <section id="preview-result" hidden>
-      <p id="preview-cost" class="cost-notice"></p>
-      <p id="preview-budget"></p>
-      <p id="preview-parameters" class="muted"></p>
+    <section id="preview-result" class="proposal" hidden>
+      <div id="preview-chips" class="proposal-chips"></div>
+      <div class="proposal-cost">
+        <div class="proposal-cost-row">
+          <div><span class="proposal-label">Sekarang</span><span id="preview-before" class="proposal-before"></span></div>
+          <div><span class="proposal-label">Menu baru</span><strong id="preview-after" class="proposal-after"></strong></div>
+          <span id="preview-cost" class="proposal-delta"></span>
+        </div>
+        <div class="bar"><span id="preview-bar"></span></div>
+        <div class="proposal-cost-foot"><span id="preview-budget"></span><strong id="preview-status"></strong></div>
+      </div>
+      <div id="preview-nutrition" class="proposal-nutrition"></div>
       <p id="preview-notes" class="muted"></p>
-      <div id="preview-schedule" class="preview-schedule"></div>
-      <details><summary>Daftar belanja baru</summary><ul id="preview-shopping"></ul></details>
+      <div class="proposal-section">
+        <div class="proposal-head"><h3>Jadwal baru</h3><div id="preview-day-tabs" class="day-tabs"></div></div>
+        <div id="preview-schedule" class="proposal-meals"></div>
+        <p id="preview-day-note" class="muted"></p>
+      </div>
+      <div class="proposal-section">
+        <div class="proposal-head"><h3>Belanja baru</h3></div>
+        <ul id="preview-summary" class="proposal-shopping"></ul>
+        <details class="proposal-details"><summary id="preview-shopping-toggle">Lihat semua bahan</summary><ul id="preview-shopping"></ul></details>
+      </div>
       <div id="budget-increase" class="budget-increase" hidden>
         <label for="new-budget">Budget baru (Rp)</label>
         <input id="new-budget" type="text" inputmode="numeric">
@@ -30,4 +50,11 @@
       <button id="apply-preview" type="button" class="primary-button" hidden>Pakai menu ini</button>
     </div>
   </div>
+  <template id="shop-icons">
+    <svg data-icon="protein" viewBox="0 0 24 24"><path d="M15.5 4.5a4 4 0 0 1 0 5.7l-5 5-4.2-4.2 5-5a4 4 0 0 1 4.2-1.5Z"/><path d="M8.3 13.3 4.5 17a1.8 1.8 0 1 0 2.5 2.5l3.8-3.7"/></svg>
+    <svg data-icon="karbohidrat" viewBox="0 0 24 24"><path d="M12 21V8"/><path d="M12 8c-2.5-1-4-3.4-4-6 2.6 0 4 2 4 4.5C12 4 13.4 2 16 2c0 2.6-1.5 5-4 6Z"/><path d="M12 14c-2.5-.6-4.5-2.6-4.5-5 2.5 0 4.5 2 4.5 4.5 0-2.5 2-4.5 4.5-4.5 0 2.4-2 4.4-4.5 5Z"/></svg>
+    <svg data-icon="sayur" viewBox="0 0 24 24"><path d="M5 19c0-8 5-14 15-15-1 10-7 15-15 15Z"/><path d="M5 19 14 10"/></svg>
+    <svg data-icon="buah" viewBox="0 0 24 24"><path d="M12 8c-4-2-8 1-7 6s4 8 7 6c3 2 6-1 7-6s-3-8-7-6Z"/><path d="M12 8c0-2 1-4 3-5"/></svg>
+    <svg data-icon="lainnya" viewBox="0 0 24 24"><path d="M4 12h16a8 8 0 0 1-16 0Z"/><path d="M9 8c0-2 2-2 2-4M14 8c0-2 2-2 2-4"/></svg>
+  </template>
 </dialog>

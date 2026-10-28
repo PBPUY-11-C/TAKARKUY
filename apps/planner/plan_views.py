@@ -133,9 +133,19 @@ def preview_data(preview):
         "delta": int(net_total(result) - result.get("previous_net_total", net_total(previous))),
         "budget": budget,
         "over_budget": max(0, int(net_total(result)) - budget),
+        "title": preview.plan.title,
         "days": preview.inputs["days"],
         "servings": preview.inputs["servings"],
+        "previous_days": preview.plan.inputs.get("days"),
+        "previous_servings": preview.plan.inputs.get("servings"),
         "schedule": result["schedule"],
+        "summary": [
+            {"key": row["key"], "label": row["label"], "count": row["count"]}
+            for row in shopping_summary(
+                {**group, "subtotal": sum(Decimal(str(item["cost"])) for item in group["items"])}
+                for group in result["shopping_groups"]
+            )
+        ],
         "shopping_groups": result["shopping_groups"],
         "nutrition": result["nutrition"],
         "nutrition_targets_set": bool(result.get("protein_floor") or result.get("calorie_cap")),
