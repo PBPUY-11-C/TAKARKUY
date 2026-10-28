@@ -176,3 +176,6 @@ textarea:focus-visible, summary:focus-visible, label:focus-within > input[type="
   .toast-stack { bottom: calc(var(--bottom-nav-h) + 12px + env(safe-area-inset-bottom)); left: 16px; right: 16px; width: auto; }
   .page-shell { padding-top: 22px; }
 }
+
+.avatar { overflow: hidden; flex-shrink: 0; }
+.avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }

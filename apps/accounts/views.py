@@ -87,8 +87,9 @@ def profile_view(request):
                         locked.first_name, locked.last_name = first, last
                         locked.username, locked.email = data["username"], data["email"]
                         locked.save(update_fields=["first_name", "last_name", "username", "email"])
+                        current.avatar = data["avatar"]
                         current.version += 1
-                        current.save(update_fields=["version"])
+                        current.save(update_fields=["version", "avatar"])
                     messages.success(request, "Perubahan berhasil disimpan.")
                     return redirect("modul3")
                 except IntegrityError:

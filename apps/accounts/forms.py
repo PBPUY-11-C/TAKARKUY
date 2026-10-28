@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from apps.budget_planner.forms import PlannerForm
 from apps.catalog.models import Ingredient
 
+from .avatars import AVATAR_CHOICES
 from .choices import ALLERGEN_CHOICES
 
 
@@ -164,6 +165,9 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
 
 
 class AccountDetailsForm(forms.Form):
+    avatar = forms.ChoiceField(
+        choices=AVATAR_CHOICES, required=False, label="Avatar", widget=forms.RadioSelect
+    )
     full_name = forms.CharField(max_length=150, label="Nama lengkap")
     username = forms.CharField(max_length=150, label="Username")
     email = forms.EmailField(max_length=150, label="Email")
@@ -179,6 +183,11 @@ class AccountDetailsForm(forms.Form):
         self.user = user
         super().__init__(*args, **kwargs)
         self.fields["version"].widget.attrs["id"] = "account-version"
+        self.current_avatar = getattr(getattr(user, "userprofile", None), "avatar", "initials")
+        self.fields["avatar"].initial = self.current_avatar
+
+    def clean_avatar(self):
+        return self.cleaned_data["avatar"] or self.current_avatar
 
     def clean_username(self):
         return clean_username(self.cleaned_data["username"], user=self.user)

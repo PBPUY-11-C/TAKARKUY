@@ -90,6 +90,38 @@ class IdentityTests(TestCase):
 
 
 class ProfileTests(TestCase):
+    def test_avatar_selection_is_owned_versioned_and_visible_in_header(self):
+        other = UserProfile.objects.create(user=self.other, avatar="leaf")
+        payload = self.details(avatar="rice", user_id=self.other.pk)
+        self.assertRedirects(self.client.post(reverse("modul3"), payload), reverse("modul3"))
+        self.assertEqual(UserProfile.objects.get(user=self.user).avatar, "rice")
+        other.refresh_from_db()
+        self.assertEqual(other.avatar, "leaf")
+        self.assertEqual(self.client.post(reverse("modul3"), payload).status_code, 409)
+        page = self.client.get(reverse("modul3"))
+        self.assertEqual(page.context["account_form"]["avatar"].value(), "rice")
+        self.assertContains(page, "accounts/avatars/rice.svg")
+        self.assertRedirects(
+            self.client.post(reverse("modul3"), self.details(avatar="initials")), reverse("modul3")
+        )
+        self.assertEqual(UserProfile.objects.get(user=self.user).avatar, "initials")
+
+    def test_avatar_rejects_unknown_values_and_preserves_selection_for_old_forms(self):
+        profile = UserProfile.objects.create(user=self.user, avatar="chef")
+        for value in ("unknown", "../../outside.svg", "https://example.com/avatar.svg"):
+            response = self.client.post(reverse("modul3"), self.details(avatar=value))
+            self.assertEqual(response.status_code, 400)
+            self.assertIn("avatar", response.context["account_form"].errors)
+        profile.refresh_from_db()
+        self.assertEqual(profile.avatar, "chef")
+        self.assertRedirects(
+            self.client.post(reverse("modul3"), self.details()), reverse("modul3")
+        )
+        profile.refresh_from_db()
+        self.assertEqual(profile.avatar, "chef")
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            UserProfile.objects.filter(pk=profile.pk).update(avatar="invalid")
+
     def test_settings_pages_share_navigation_with_the_current_page_marked(self):
         for route, label in (
             ("modul3", "Akun"), ("password-change", "Keamanan akun"),

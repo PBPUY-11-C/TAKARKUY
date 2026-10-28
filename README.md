@@ -89,7 +89,7 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 
 - **Landing page:** hero, cara kerja, fitur, dan FAQ untuk guest.
 - **Autentikasi:** daftar, masuk (username atau email), dan keluar.
-- **Profil & Preferensi:** nama, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
+- **Profil & Preferensi:** nama, pilihan avatar bergaya logo, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
 - **Data yang dipegang:** `User`, `UserProfile`, `FoodPreference`.
 - **Halaman:** Landing, Daftar, Masuk, Profil (`/profil/`), Preferensi Makanan (`/profil/preferensi/`), serta Ganti Kata Sandi (`/profil/ganti-kata-sandi/`).
 
@@ -189,3 +189,5 @@ Seluruh modul memakai view aslinya dan wajib login. Landing, daftar/masuk, dan k
 Jalankan `python manage.py migrate --noinput` untuk menerapkan pemisahan `FoodPreference` tanpa menghapus data preferensi lama, lalu `python manage.py collectstatic --noinput` saat deployment.
 
 Planner wajib login, termasuk alias `/modul1/`. Guest hanya dapat membuka landing, daftar/masuk, serta kalkulator pembagian budget di landing; akses planner diarahkan ke `/login/?next=...`.
+
+Avatar akun disimpan di `UserProfile.avatar`. Terapkan migrasi `accounts.0004` melalui `python manage.py migrate --noinput` sebelum menjalankan versi ini; akun lama menggunakan inisial secara otomatis. Pilihan avatar berupa SVG statis dan tidak memerlukan upload berkas.

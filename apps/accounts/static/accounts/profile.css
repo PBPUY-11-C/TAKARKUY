@@ -114,3 +114,20 @@ body.profile-page { display: block; padding: 0; place-items: normal; }
   .pref-shortcuts a { padding: 9px 10px; font-size: 11px; }
   .pref-savebar .submit { width: 100%; }
 }
+
+/* Logo-inspired avatar gallery. */
+.profile-section .avatar-settings { grid-column: 1 / -1; margin: 0 0 28px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+.avatar-intro { display: flex; align-items: center; gap: 16px; margin: 0 0 20px; }
+.avatar-intro p { margin: 0; color: var(--green); font-size: 14px; font-weight: 700; }
+.avatar-intro small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; font-weight: 400; line-height: 1.6; }
+.avatar-preview { display: grid; place-items: center; width: 72px; height: 72px; flex: none; overflow: hidden; border-radius: 20px; background: var(--green-soft); color: var(--green); font-size: 28px; font-weight: 800; }
+.avatar-preview img { width: 100%; height: 100%; display: block; }
+.avatar-preview [hidden] { display: none !important; }
+.avatar-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 10px; }
+.profile-section .avatar-option { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; margin: 0; padding: 12px 6px 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; font-size: 11px; font-weight: 600; }
+.avatar-option img, .avatar-initial { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; }
+.avatar-initial { background: var(--green-soft); color: var(--green); font-size: 23px; font-weight: 800; }
+.profile-section .avatar-option input { position: absolute; left: 7px; top: 7px; margin: 0; width: 14px; height: 14px; accent-color: var(--green); }
+.avatar-option:has(input:checked) { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); background: var(--green-soft); }
+.avatar-option:has(input:focus-visible) { outline: 2px solid var(--green); outline-offset: 3px; }
+.avatar-option:hover { border-color: var(--green); }
