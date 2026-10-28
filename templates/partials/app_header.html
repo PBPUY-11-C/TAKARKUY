@@ -9,7 +9,7 @@
   </nav>
   {% if user.is_authenticated %}
   <div class="app-account">
-    <a class="profile-link" href="{% url 'modul3' %}"{% if current == 'modul3' %} aria-current="page"{% endif %} aria-label="Profil dan preferensi"><span class="avatar" aria-hidden="true">{{ user.first_name|default:user.username|slice:":1" }}</span><span class="profile-name">Hai, {{ user.first_name|default:user.username }}!</span></a>
+    <a class="profile-link" href="{% url 'modul3' %}"{% if current == 'modul3' or current == 'password-change' %} aria-current="page"{% endif %} aria-label="Profil dan preferensi"><span class="avatar" aria-hidden="true">{{ user.first_name|default:user.username|slice:":1" }}</span><span class="profile-name">Hai, {{ user.first_name|default:user.username }}!</span></a>
     <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="btn btn-ghost" type="submit">Keluar</button></form>
   </div>
   {% else %}

@@ -21,7 +21,13 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 from apps.accounts.forms import EmailOrUsernameAuthenticationForm
-from apps.accounts.views import AccountLoginView, landing_view, profile_view, signup_view
+from apps.accounts.views import (
+    AccountLoginView,
+    landing_view,
+    password_change_view,
+    profile_view,
+    signup_view,
+)
 from apps.budget_planner.plan_views import (
     add_plan_purchases,
     apply_plan_preview,
@@ -61,6 +67,7 @@ urlpatterns = [
     ),
     path("logout/", LogoutView.as_view(next_page="landing"), name="logout"),
     path("profil/", profile_view, name="modul3"),
+    path("profil/ganti-kata-sandi/", password_change_view, name="password-change"),
     path("modul3/", RedirectView.as_view(pattern_name="modul3", query_string=True)),
     path("planner/", planner_page, name="modul1"),
     path("planner/", planner_page, name="planner"),

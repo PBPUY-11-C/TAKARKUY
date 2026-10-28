@@ -76,14 +76,12 @@ def profile_view(request):
             "version": profile.version,
         }
     )
-    password = PasswordChangeForm(request.user)
     status = 200
     if request.method == "POST":
         action = request.POST.get("action")
         active = {
             "account": AccountDetailsForm,
             "preferences": PreferenceForm,
-            "password": PasswordChangeForm,
         }
         if action not in active:
             response = render(
@@ -92,7 +90,6 @@ def profile_view(request):
                 {
                     "account_form": account,
                     "preference_form": preferences,
-                    "password_form": password,
                     "error": "Aksi tidak valid.",
                 },
                 status=400,
@@ -103,15 +100,13 @@ def profile_view(request):
             account = form = AccountDetailsForm(request.POST, user=request.user)
         elif action == "preferences":
             preferences = form = PreferenceForm(request.POST)
-        else:
-            password = form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             try:
                 with transaction.atomic():
                     # User -> profile is the common lock order with planner operations.
                     locked = get_user_model().objects.select_for_update().get(pk=request.user.pk)
                     current = UserProfile.objects.select_for_update().get(pk=profile.pk)
-                    if action != "password" and current.version != form.cleaned_data["version"]:
+                    if current.version != form.cleaned_data["version"]:
                         raise ValueError(
                             "Profil berubah di tab lain. Muat ulang sebelum menyimpan."
                         )
@@ -132,15 +127,8 @@ def profile_view(request):
                         food.halal_only = True
                         food.save()
                         food.avoided_ingredients.set(form.cleaned_data["avoided_ingredients"])
-                    else:
-                        password = PasswordChangeForm(locked, request.POST)
-                        if not password.is_valid():
-                            raise ValueError("Kata sandi berubah. Muat ulang dan coba kembali.")
-                        locked = password.save()
                     current.version += 1
                     current.save()
-                if action == "password":
-                    update_session_auth_hash(request, locked)
                 messages.success(request, "Perubahan berhasil disimpan.")
                 return redirect("modul3")
             except IntegrityError:
@@ -154,8 +142,34 @@ def profile_view(request):
     response = render(
         request,
         "accounts/profile.html",
-        {"account_form": account, "preference_form": preferences, "password_form": password},
+        {"account_form": account, "preference_form": preferences},
         status=status,
     )
+    patch_cache_control(response, private=True, no_store=True)
+    return response
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def password_change_view(request):
+    form = PasswordChangeForm(request.user)
+    status = 200
+    if request.method == "POST":
+        with transaction.atomic():
+            # Validate the current password against the locked account, not a stale request user.
+            locked = get_user_model().objects.select_for_update().get(pk=request.user.pk)
+            form = PasswordChangeForm(locked, request.POST)
+            if form.is_valid():
+                user = form.save()
+                profile, _ = UserProfile.objects.select_for_update().get_or_create(user=locked)
+                profile.version += 1
+                profile.save(update_fields=["version"])
+            else:
+                status = 400
+        if status == 200:
+            update_session_auth_hash(request, user)
+            messages.success(request, "Kata sandi berhasil diperbarui.")
+            return redirect("modul3")
+    response = render(request, "accounts/password_change.html", {"password_form": form}, status=status)
     patch_cache_control(response, private=True, no_store=True)
     return response

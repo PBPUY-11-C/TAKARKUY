@@ -90,6 +90,28 @@ class IdentityTests(TestCase):
 
 
 class ProfileTests(TestCase):
+    def test_password_form_is_separate_from_profile_and_requires_login(self):
+        url = reverse("password-change")
+        response = self.client.get(reverse("modul3"))
+        self.assertContains(response, f'href="{url}"')
+        self.assertNotContains(response, 'name="old_password"')
+        self.assertNotContains(response, 'name="new_password1"')
+        page = self.client.get(url)
+        self.assertTemplateUsed(page, "accounts/password_change.html")
+        self.assertContains(page, 'name="old_password"')
+        self.assertIn("no-store", page["Cache-Control"])
+        self.assertRedirects(Client().get(url), f"{reverse('login')}?next={url}")
+        self.assertRedirects(Client().post(url, {}), f"{reverse('login')}?next={url}")
+
+    def test_profile_rejects_old_password_action(self):
+        response = self.client.post(reverse("modul3"), {
+            "action": "password", "old_password": "Password!827",
+            "new_password1": "NewPassword!938", "new_password2": "NewPassword!938",
+        })
+        self.assertEqual(response.status_code, 400)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Password!827"))
+
     def setUp(self):
         self.user = get_user_model().objects.create_user(
             "penakar", "dina@example.com", "Password!827"
@@ -181,12 +203,11 @@ class ProfileTests(TestCase):
         other_device = Client()
         other_device.force_login(self.user)
         data = {
-            "action": "password",
             "old_password": "Password!827",
             "new_password1": "NewPassword!938",
             "new_password2": "NewPassword!938",
         }
-        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
+        self.assertRedirects(self.client.post(reverse("password-change"), data), reverse("modul3"))
         self.assertEqual(self.client.get(reverse("modul3")).status_code, 200)
         self.assertEqual(other_device.get(reverse("modul3")).status_code, 302)
         self.user.refresh_from_db()
@@ -243,13 +264,12 @@ class ProfileTests(TestCase):
             {"new_password1": "weak", "new_password2": "weak"},
         ):
             data = {
-                "action": "password",
-                "old_password": "Password!827",
+                    "old_password": "Password!827",
                 "new_password1": "NewPassword!938",
                 "new_password2": "NewPassword!938",
                 **changes,
             }
-            self.assertEqual(self.client.post(reverse("modul3"), data).status_code, 400)
+            self.assertEqual(self.client.post(reverse("password-change"), data).status_code, 400)
 
     def test_profile_write_requires_csrf(self):
         client = Client(enforce_csrf_checks=True)
@@ -259,13 +279,13 @@ class ProfileTests(TestCase):
     def test_password_attempts_share_account_quota_across_devices(self):
         other_device = Client()
         other_device.force_login(self.user)
-        payload = {"action": "password", "old_password": "wrong"}
+        payload = {"old_password": "wrong"}
         with patch("apps.accounts.rate_limits.datetime", wraps=datetime) as clock:
             clock.now.return_value = datetime(2026, 10, 26, 9, 1, tzinfo=UTC)
             for _ in range(5):
-                self.assertEqual(self.client.post(reverse("modul3"), payload).status_code, 400)
+                self.assertEqual(self.client.post(reverse("password-change"), payload).status_code, 400)
             with patch("apps.accounts.views.PasswordChangeForm") as validator:
-                response = other_device.post(reverse("modul3"), payload)
+                response = other_device.post(reverse("password-change"), payload)
             self.assertEqual(response.status_code, 429)
             self.assertGreater(int(response["Retry-After"]), 0)
             self.assertIn("no-store", response["Cache-Control"])
@@ -278,13 +298,13 @@ class ProfileTests(TestCase):
                 self.client.post(reverse("modul3"), self.details()), reverse("modul3")
             )
             clock.now.return_value = datetime(2026, 10, 26, 9, 16, tzinfo=UTC)
-            self.assertEqual(self.client.post(reverse("modul3"), payload).status_code, 400)
+            self.assertEqual(self.client.post(reverse("password-change"), payload).status_code, 400)
 
     def test_password_csrf_rejection_does_not_consume_attempt(self):
         device = Client(enforce_csrf_checks=True)
         device.force_login(self.user)
         self.assertEqual(
-            device.post(reverse("modul3"), {"action": "password"}).status_code, 403
+            device.post(reverse("password-change"), {}).status_code, 403
         )
         self.assertFalse(AuthRateBucket.objects.exists())
 

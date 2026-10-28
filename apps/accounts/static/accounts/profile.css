@@ -36,3 +36,6 @@ body.profile-page { display: block; padding: 0; place-items: normal; }
 @media (max-width: 520px) {
   .profile-card { padding: 24px 18px 40px; }
 }
+
+.password-page-card { max-width: 660px; }
+.password-page-card .back-home { margin-bottom: 20px; }

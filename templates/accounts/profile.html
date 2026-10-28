@@ -20,11 +20,9 @@
         </form>
       </section>
       <section class="profile-section">
-        <h2>Ganti kata sandi</h2>
-        <form method="post">{% csrf_token %}<input type="hidden" name="action" value="password">
-          {{ password_form.as_div }}
-          <button class="submit" type="submit">Ganti kata sandi</button>
-        </form>
+        <h2>Keamanan akun</h2>
+        <p class="profile-note">Perbarui kata sandi akunmu melalui halaman khusus.</p>
+        <a class="btn btn-primary" href="{% url 'password-change' %}">Ganti kata sandi</a>
       </section>
     </div>
     <section class="profile-section">

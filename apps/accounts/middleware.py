@@ -69,11 +69,7 @@ class AuthRateLimitMiddleware:
         if request.method != "POST":
             return None
         action = request.resolver_match.url_name
-        if (
-            action == "modul3"
-            and request.user.is_authenticated
-            and request.POST.get("action") == "password"
-        ):
+        if action == "password-change" and request.user.is_authenticated:
             action = "password"
             identity = f"account:{request.user.pk}"
         elif action in {"login", "signup"}:
