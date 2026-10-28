@@ -222,8 +222,9 @@ class SavedPlanTests(TestCase):
                 data["version"] = value
             with self.subTest(version=value):
                 self.assertEqual(self.client.post(reverse("modul1"), data).status_code, 400)
-        # Omitting both ID and version must not opt into the current draft's version.
-        self.assertEqual(self.client.post(reverse("modul1"), self.inputs).status_code, 400)
+        # Without an ID the form is a new plan: it never touches the draft unless the
+        # page also sends the draft's identity and the replacement flag.
+        self.assertEqual(self.client.post(reverse("modul1"), self.inputs).status_code, 409)
         self.draft.refresh_from_db()
         self.assertEqual(self.draft.version, 1)
         self.assertEqual(self.draft.snapshot, before)
@@ -241,6 +242,44 @@ class SavedPlanTests(TestCase):
         page = self.client.get(reverse("modul1") + "?new=1")
         self.assertContains(page, 'name="replace_draft"')
         self.assertContains(page, 'name="replace_draft_id"')
+
+    def test_planner_opens_empty_and_a_new_plan_replaces_the_scratch_draft(self):
+        page = self.client.get(reverse("modul1"))
+        self.assertIsNone(page.context["plan"])
+        self.assertNotContains(page, "Draft terakhir")
+        self.assertContains(page, '<input type="hidden" name="replace_draft" value="1">')
+        response = self.client.post(
+            reverse("modul1"),
+            {
+                **self.inputs,
+                "new_plan": "1",
+                "replace_draft": "1",
+                "replace_draft_id": str(self.draft.pk),
+                "replace_draft_version": str(self.draft.version),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(BudgetPlan.objects.filter(user=self.user, status="draft").count(), 1)
+
+    def test_last_plan_survives_navigation_until_browser_close_or_logout(self):
+        planner = reverse("modul1")
+        opened = planner + f"?plan={self.draft.pk}#hasil"
+        self.client.get(planner, {"plan": str(self.draft.pk)})
+        # Refreshing or coming back from another page reopens the plan.
+        self.client.get(reverse("modul5"))
+        self.assertRedirects(self.client.get(planner), opened, fetch_redirect_response=False)
+        # Closing the browser drops the browser-session cookie.
+        self.client.cookies.pop("planner_plan")
+        self.assertIsNone(self.client.get(planner).context["plan"])
+        # Logging out flushes the login session even if the cookie is still there.
+        self.client.get(planner, {"plan": str(self.draft.pk)})
+        self.client.post(reverse("logout"))
+        self.client.force_login(self.user)
+        self.assertIsNone(self.client.get(planner).context["plan"])
+        # "+ Rencana baru" starts empty and forgets the plan.
+        self.client.get(planner, {"plan": str(self.draft.pk)})
+        self.assertIsNone(self.client.get(planner, {"new": "1"}).context["plan"])
+        self.assertIsNone(self.client.get(planner).context["plan"])
 
     def test_first_draft_can_be_created_without_version_when_none_exists(self):
         self.client.force_login(self.other)
@@ -534,7 +573,9 @@ class SavedPlanTests(TestCase):
     def test_draft_is_available_in_second_browser_only_to_owner(self):
         second = Client()
         second.force_login(self.user)
-        response = second.get(reverse("modul1"))
+        # Opening the planner starts empty; the draft still opens by its link.
+        self.assertIsNone(second.get(reverse("modul1")).context["plan"])
+        response = second.get(reverse("modul1") + f"?plan={self.draft.pk}")
         self.assertEqual(response.context["plan"].pk, self.draft.pk)
         second.force_login(self.other)
         # Someone else's plan looks exactly like a missing one: nothing is revealed.

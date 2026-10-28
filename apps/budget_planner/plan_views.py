@@ -6,6 +6,7 @@ from decimal import ROUND_CEILING, Decimal
 from functools import wraps
 from uuid import UUID
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -222,21 +223,51 @@ def landing_prefill(query):
     return values
 
 
+# The last plan shown is reopened on /planner/ until the browser closes or the user logs
+# out: it is kept both in the login session (flushed on logout) and in a browser-session
+# cookie (dropped when the browser closes), and both must agree.
+REMEMBERED_PLAN = "planner_plan"
+
+
+def remembered_plan(request):
+    plan_id = request.session.get(REMEMBERED_PLAN)
+    if not plan_id or request.COOKIES.get(REMEMBERED_PLAN) != plan_id:
+        return None
+    return BudgetPlan.objects.filter(pk=plan_id, user=request.user).first()
+
+
+def remember_plan(request, response, plan):
+    if plan is None:
+        request.session.pop(REMEMBERED_PLAN, None)
+        response.delete_cookie(REMEMBERED_PLAN)
+        return
+    request.session[REMEMBERED_PLAN] = str(plan.pk)
+    response.set_cookie(
+        REMEMBERED_PLAN,
+        str(plan.pk),
+        secure=settings.SESSION_COOKIE_SECURE,
+        httponly=True,
+        samesite="Lax",
+    )
+
+
 def account_page(request, builder):
     plan = None
-    # Values from the landing calculator start a new plan; the form still validates on submit.
+    # Landing calculator values prefill a new plan; the form still validates on submit.
     prefill = landing_prefill(request.GET) if request.method == "GET" else {}
     requested = request.POST.get("plan_id") if request.method == "POST" else request.GET.get("plan")
+    # "+ Rencana baru", the landing calculator and a missing-plan notice start empty.
+    starts_fresh = request.GET.get("new") == "1" or prefill or request.GET.get("hilang") == "1"
+    if request.method == "GET" and not requested and not starts_fresh:
+        remembered = remembered_plan(request)
+        if remembered is not None:
+            return redirect(reverse("modul1") + f"?plan={remembered.pk}#hasil")
     if requested:
         try:
             plan = owned_plan(request, UUID(requested))
         except (ValueError, TypeError, Http404):
             # Deleted in another tab or an outdated link: start over with a notice.
             return redirect(reverse("modul1") + "?hilang=1")
-    elif request.GET.get("new") != "1" and not prefill and not (
-        request.method == "POST" and request.POST.get("new_plan") == "1"
-    ):
-        plan = BudgetPlan.objects.filter(user=request.user, status="draft").first()
     # Plans saved before the rice option existed were made without rice.
     plan_inputs = {"rice": "no", **plan.inputs} if plan else None
     initial = (
@@ -439,6 +470,8 @@ def account_page(request, builder):
     patch_cache_control(response, private=True, no_store=True)
     if retry_after is not None:
         response["Retry-After"] = str(retry_after)
+    if request.method == "GET":
+        remember_plan(request, response, plan)
     return response
 
 

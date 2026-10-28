@@ -71,8 +71,9 @@
 .choice-chip input, .segmented input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
 .choice-chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--pl-field); border-radius: 10px; color: #3d4a5c; font-weight: 600; }
 .choice-chip input:checked + span { border-color: var(--pl-green); background: var(--pl-green-soft); color: var(--pl-green-text); }
-.segmented span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 9px; color: var(--pl-muted); font-weight: 600; }
-.segmented input:checked + span { background: #fff; color: var(--pl-ink); box-shadow: 0 1px 3px rgba(23, 34, 53, .15); }
+.segmented span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border: 1px solid transparent; border-radius: 9px; color: var(--pl-muted); font-weight: 600; }
+/* Same selected look as the meal-time chips. */
+.segmented input:checked + span { border-color: var(--pl-green); background: var(--pl-green-soft); color: var(--pl-green-text); }
 .choice-chip input:focus-visible + span, .segmented input:focus-visible + span { outline: 2px solid var(--pl-green); outline-offset: 2px; }
 .form-spacer { flex: 1 1 0; }
 
@@ -100,7 +101,6 @@
 .avoid-add input { flex: 1; min-width: 0; }
 .avoid-add .secondary-button { min-height: 40px; padding: 0 14px; }
 
-.form-note { display: flex; align-items: center; gap: 8px; margin-top: 14px; color: var(--pl-warn); font-size: 14px; }
 .form-errors { margin: 14px 0 0; padding: 12px 16px 12px 32px; border-radius: 12px; background: var(--pl-warn-soft); color: var(--pl-warn); font-size: 14px; }
 
 /* Results */
