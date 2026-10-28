@@ -46,7 +46,7 @@
     <main class="dashboard-shell">
       <div class="dashboard-heading"><div><p class="muted">{{ today|date:'l, d F Y' }}</p><h1>Hai, {{ user.first_name|default:user.username }} <span aria-hidden="true">👋</span></h1></div><button id="open-market" type="button" class="secondary">Cari pasar &amp; bank sampah ↗</button></div>
       <section class="summary-cards" aria-label="Ringkasan dapur">
-        <a class="summary-card" href="{% url 'modul1' %}#rencana-saya"><span>Rencana aktif</span><strong>{{ plans|length }}</strong></a>
+        <a class="summary-card" href="{% url 'modul1' %}#rencana-saya"><span>Rencana aktif hari ini</span><strong>{{ plans|length }}</strong></a>
         <a class="summary-card" href="{% url 'modul2' %}"><span>Segera digunakan</span><strong>{{ stock_counts.soon }} <small>batch</small></strong></a>
         <a class="summary-card" href="{% url 'modul4' %}#cooking-history"><span>Total masak</span><strong>{{ cooking_count }} <small>kali</small></strong></a>
         </section>
