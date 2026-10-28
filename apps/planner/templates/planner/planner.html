@@ -4,7 +4,7 @@
 {% block body_class %}has-app-nav planner-page{% endblock %}
 {% block extra_head %}
   <meta name="description" content="Rencana makan TAKARKUY dari budget, katalog resep, dan harga bahan.">
-  <link rel="stylesheet" href="{% static 'planner/planner.css' %}?v=20261028-tab">
+  <link rel="stylesheet" href="{% static 'planner/planner.css' %}?v=20261029-swap">
   {% if remembered_url %}
   <script>
     // Reopen the last plan only in a tab that already showed it (sessionStorage ends with the tab).
@@ -17,8 +17,8 @@
     <div class="page-heading">
       <h1>Meal Planner</h1>
       <nav class="plan-nav" aria-label="Navigasi rencana">
-        <button type="button" class="pill-link" data-open-dialog="rencana-saya">Rencana Saya · {{ saved_plans|length }}</button>
-        <a class="pill-link pill-dark" href="{% url 'modul1' %}?new=1">+ Rencana baru</a>
+        <button type="button" class="pill-link" data-open-dialog="rencana-saya">Rencana Saya · <span data-saved-count>{{ saved_plans|length }}</span></button>
+        <a class="pill-link pill-dark" href="{% url 'modul1' %}?new=1" data-swap>+ Rencana baru</a>
       </nav>
     </div>
     <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite">{% if plan_missing %}Rencana itu sudah dihapus atau tidak ditemukan.{% endif %}</p>
@@ -132,6 +132,7 @@
               </div>
               <button class="primary-button" type="submit">{% if plan.status == 'draft' %}Simpan Rencana{% else %}Simpan Perubahan{% endif %}</button>
             </div>
+            <p class="save-error" role="alert" data-save-error hidden></p>
             {% if plan.status == 'draft' and plan.source_plan_id %}<button class="link-button" type="submit" name="replace_original" value="yes">Simpan ke rencana asal</button>{% endif %}
           </form>
           {% endif %}
@@ -198,18 +199,18 @@
 
     <dialog id="rencana-saya" class="plan-dialog" aria-labelledby="saved-plans-title">
       <div class="dialog-head">
-        <div><h2 id="saved-plans-title">Rencana Saya</h2><p class="muted">{{ saved_plans|length }} rencana tersimpan</p></div>
+        <div><h2 id="saved-plans-title">Rencana Saya</h2><p class="muted"><span data-saved-count>{{ saved_plans|length }}</span> rencana tersimpan</p></div>
         <button type="button" class="icon-button" data-close-dialog aria-label="Tutup">×</button>
       </div>
       <div class="dialog-body">
         <ul class="saved-list">
           {% for saved in saved_plans %}
           <li>
-            <a class="saved-open" href="{% url 'modul1' %}?plan={{ saved.pk }}#hasil">
+            <a class="saved-open" href="{% url 'modul1' %}?plan={{ saved.pk }}#hasil" data-swap>
               <strong>{{ saved.title }}</strong>
               <span class="muted">{{ saved.starts_on|date:'d M Y' }} · {{ saved.inputs.days }} hari · {{ saved.inputs.servings }} orang · {{ saved.net_total|rupiah }}</span>
             </a>
-            <button class="danger-button" type="button" data-delete-plan data-url="{% url 'modul1-plan-delete' saved.pk %}" data-version="{{ saved.version }}" data-title="{{ saved.title }}">Hapus</button>
+            <button class="danger-button" type="button" data-delete-plan data-plan-id="{{ saved.pk }}" data-url="{% url 'modul1-plan-delete' saved.pk %}" data-version="{{ saved.version }}" data-title="{{ saved.title }}">Hapus</button>
           </li>
           {% empty %}
           <li class="muted">Belum ada rencana tersimpan. Buat rencana, lalu tekan Simpan Rencana.</li>
@@ -236,10 +237,10 @@
     </dialog>
     {% endif %}
     {% include 'planner/preview_dialog.html' %}
+    {% if pending_preview %}{{ pending_preview|json_script:'pending-plan-preview' }}{% endif %}
   </main>
 {% endblock %}
 {% block scripts %}
-  {% if pending_preview %}{{ pending_preview|json_script:'pending-plan-preview' }}{% endif %}
-  <script src="{% static 'planner/plans.js' %}?v=20261028-tab" defer></script>
+  <script src="{% static 'planner/plans.js' %}?v=20261029-swap" defer></script>
   <script src="{% static 'recipe/image_fallback.js' %}" defer></script>
 {% endblock %}
