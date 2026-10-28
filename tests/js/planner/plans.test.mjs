@@ -16,10 +16,13 @@ class Element {
     this.open = false;
     this.textContent = "";
   }
+  get textContent() { return this.text || this.children.map((child) => child.textContent ?? "").join(" "); }
+  set textContent(value) { this.text = value; }
   addEventListener(name, callback) { this.listeners[name] = callback; }
   async trigger(name = "click", event = {}) { return this.listeners[name]?.(event); }
-  replaceChildren() { this.children = []; this.value = ""; }
-  append(child) { this.children.push(child); if (!this.value && child.value) this.value = child.value; }
+  replaceChildren(...rows) { this.children = rows; this.value = ""; }
+  append(...rows) { for (const child of rows) { this.children.push(child); if (!this.value && child.value) this.value = child.value; } }
+  setAttribute(name, value) { this[name] = value; }
   showModal() { this.open = true; }
   close() { this.open = false; this.listeners.close?.(); }
 }
@@ -36,9 +39,12 @@ function setup(overBudget = 5000, { pending = false, notes = [], targetsSet = fa
   const requests = [];
   const redirects = [];
   const proposal = { id: "server-preview", apply_url: "/apply/", before: 10000, after: 15000,
-    delta: 5000, budget: overBudget ? 10000 : 20000, over_budget: overBudget,
-    days: 1, servings: 1, schedule: [{ number: 1, meals: [{ label: "Pagi", name: "Menu B" }],
-      protein: 10, calories: 100 }], nutrition: {},
+    delta: 5000, budget: overBudget ? 10000 : 20000, over_budget: overBudget, title: "Menu minggu ini",
+    days: 2, servings: 1, previous_days: 1, previous_servings: 1,
+    schedule: [{ number: 1, meals: [{ label: "Pagi", name: "Menu B", cost: 7000 }], protein: 10, calories: 100 },
+      { number: 2, meals: [{ label: "Pagi", name: "Menu C", cost: 8000 }], protein: 12, calories: 120 }],
+    summary: [{ key: "protein", label: "Protein", count: 1 }],
+    nutrition: { calories: 1174, protein: 62, carbs: 182, fat: 29 },
     shopping_groups: [{ items: [{ name: "<script>test</script>", quantity: "100", cost: 15000 }] }],
     preference_notes: notes, nutrition_targets_set: targetsSet };
   const pendingPreview = pending ? { textContent: JSON.stringify(proposal) } : null;
@@ -93,9 +99,24 @@ test("within-budget saved-plan preview applies without changing the budget", asy
 test("preview explains relaxed preferences and only shows targeted daily nutrition", () => {
   const plain = setup(0, { pending: true, notes: ["Preferensi 60% dilonggarkan."] });
   assert.match(plain.get("preview-notes").textContent, /60%/);
-  assert.doesNotMatch(plain.get("preview-schedule").children[0].textContent, /protein/);
+  assert.doesNotMatch(plain.get("preview-day-note").textContent, /protein/);
   const targeted = setup(0, { pending: true, targetsSet: true });
-  assert.match(targeted.get("preview-schedule").children[0].textContent, /10 g protein/);
+  assert.match(targeted.get("preview-day-note").textContent, /10 g protein/);
+});
+
+test("whole-plan proposal is titled, shows what changed, and pages through days", async () => {
+  const app = setup(0, { pending: true });
+  assert.equal(app.get("preview-title").textContent, "Ganti semua menu");
+  assert.equal(app.get("preview-eyebrow").textContent, "Menu minggu ini");
+  assert.match(app.get("preview-chips").children[0].textContent, /1 → 2 hari/);
+  assert.match(app.get("preview-schedule").children[0].textContent, /Menu B/);
+  const tabs = app.get("preview-day-tabs").children;
+  assert.equal(tabs.length, 2);
+  await tabs[1].trigger();
+  assert.match(app.get("preview-schedule").children[0].textContent, /Menu C/);
+  assert.equal(tabs[1]["aria-pressed"], "true");
+  assert.match(app.get("preview-summary").children[0].textContent, /Protein/);
+  assert.match(app.get("picker-total").textContent, /2 hari · 2 menu/);
 });
 
 test("changing selected replacement invalidates the previous proposal", async () => {

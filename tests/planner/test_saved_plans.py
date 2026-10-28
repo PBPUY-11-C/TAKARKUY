@@ -989,6 +989,14 @@ class SavedPlanTests(TestCase):
         saved.refresh_from_db()
         self.assertEqual(saved.inputs["days"], 1)
         self.assertContains(response, 'id="pending-plan-preview"')
+        self.assertContains(response, "Ganti semua menu")
+        self.assertNotContains(response, "Pratinjau perubahan")
+        preview = response.context["pending_preview"]
+        self.assertEqual((preview["previous_days"], preview["days"]), (1, 2))
+        self.assertEqual(preview["title"], saved.title)
+        items = sum(len(group["items"]) for group in preview["shopping_groups"])
+        self.assertEqual(sum(row["count"] for row in preview["summary"]), items)
+        self.assertTrue({"key", "label", "count"} <= set(preview["summary"][0]))
 
     def test_cooked_slots_cannot_be_replaced_but_plan_can_be_deleted(self):
         self.draft.meals.update(status="cooked")
