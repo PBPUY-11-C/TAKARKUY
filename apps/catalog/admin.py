@@ -56,7 +56,7 @@ class RecipeAdmin(admin.ModelAdmin):
         if obj.recipe_code in recipe_image_index():
             return "Foto kurasi tersedia"
 
-        from apps.recipe_book.models import RecipeReview
+        from apps.recipe.models import RecipeReview
 
         has_community_photo = RecipeReview.objects.filter(
             recipe=obj,

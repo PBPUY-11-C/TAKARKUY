@@ -26,7 +26,7 @@ class Ingredient(models.Model):
     allergen_note = models.TextField(blank=True)
 
     def clean(self):
-        from apps.accounts.choices import ALLERGEN_KEYS
+        from apps.login.choices import ALLERGEN_KEYS
 
         if not isinstance(self.allergens, list) or any(
             not isinstance(value, str) or value not in ALLERGEN_KEYS for value in self.allergens

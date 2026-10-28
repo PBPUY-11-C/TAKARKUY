@@ -1,0 +1,574 @@
+import json
+import logging
+from datetime import timedelta
+from functools import wraps
+from time import perf_counter
+from urllib.parse import urlencode
+
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db import transaction
+from django.db.models import Case, Count, IntegerField, Q, Value, When
+from django.http import FileResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
+from django.utils.cache import patch_cache_control
+from django.views.decorators.http import require_POST
+
+from apps.catalog.models import Ingredient, IngredientAlias, Recipe
+from apps.catalog.recipe_images import recipe_images_for
+from apps.login.preferences import effective_allergens, preferences_for
+from apps.pantry.services import StockError, plan_consumption
+from apps.planner.models import PlannedMeal
+
+from .models import CookingHistory, RecipeDataReport, RecipeFavorite, RecipeNote, RecipeReview
+from .reviews import (
+    ReviewLimited,
+    attach_review_photo,
+    delete_review_photo,
+    review_context,
+    write_review,
+)
+from .services import (
+    RecipeBookRateLimit,
+    cook,
+    estimated_recipe_cost,
+    get_recipe,
+    guidance_condition,
+    preview_cooking,
+    recipe_costs,
+    recipe_query,
+    recipe_requirements,
+    reserve_recipe_book_preview,
+    slot_staple,
+    stock_matches,
+    with_guidance,
+)
+from .services import set_slot_status as change_slot_status
+from .staples import tracked_staple_codes
+
+PRICE_LIMITS = (10000, 15000, 25000, 50000)
+logger = logging.getLogger(__name__)
+FILTER_SLOW_MS = 500
+
+
+def api(view):
+    @wraps(view)
+    def wrapped(request):
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Silakan masuk kembali."}, status=403)
+        if request.method != "POST":
+            response = JsonResponse({"error": "Gunakan POST."}, status=405)
+            response["Allow"] = "POST"
+            return response
+        if len(request.body) > 40000:
+            return JsonResponse({"error": "Data terlalu besar."}, status=413)
+        try:
+            if request.content_type != "application/json":
+                raise ValueError("Kirim data dalam format JSON.")
+            data = json.loads(request.body)
+            if not isinstance(data, dict):
+                raise ValueError("Data harus berupa objek.")
+            response = view(request, data)
+        except RecipeBookRateLimit as exc:
+            response = JsonResponse({"error": str(exc)}, status=429)
+            response["Retry-After"] = str(exc.retry_after)
+        except ReviewLimited as exc:
+            response = JsonResponse({"error": str(exc)}, status=429)
+            response["Retry-After"] = str(exc.retry_after)
+        except StockError as exc:
+            response = JsonResponse({"error": str(exc)}, status=exc.status)
+        except (ValueError, TypeError, RecursionError) as exc:
+            response = JsonResponse(
+                {"error": str(exc) if isinstance(exc, ValueError) else "Data tidak valid."},
+                status=400,
+            )
+        patch_cache_control(response, private=True, no_store=True)
+        return response
+
+    return wrapped
+
+
+@api
+@transaction.atomic
+def set_favorite(request, data):
+    from django.contrib.auth import get_user_model
+
+    if not isinstance(data.get("recipe_code"), str) or type(data.get("favorite")) is not bool:
+        raise ValueError("Kode resep dan pilihan favorit wajib diisi.")
+    get_user_model().objects.select_for_update().get(pk=request.user.pk)
+    recipe = Recipe.objects.filter(pk=data["recipe_code"]).first()
+    if recipe is None:
+        raise StockError("Resep tidak ditemukan.", 404)
+    if data["favorite"]:
+        get_recipe(request.user, recipe.pk)
+        RecipeFavorite.objects.get_or_create(user=request.user, recipe=recipe)
+    else:
+        RecipeFavorite.objects.filter(user=request.user, recipe=recipe).delete()
+    return JsonResponse({"favorite": data["favorite"]})
+
+
+@api
+@transaction.atomic
+def save_recipe_note(request, data):
+    from django.contrib.auth import get_user_model
+
+    code = data.get("recipe_code")
+    content = data.get("content")
+    if not isinstance(code, str) or not 1 <= len(code) <= 100:
+        raise ValueError("Kode resep tidak valid.")
+    if not isinstance(content, str) or len(content) > 2000:
+        raise ValueError("Catatan maksimal 2000 karakter.")
+    get_user_model().objects.select_for_update().get(pk=request.user.pk)
+    recipe = get_recipe(request.user, code)
+    content = content.strip()
+    if content:
+        note, _ = RecipeNote.objects.update_or_create(
+            user=request.user, recipe=recipe, defaults={"content": content}
+        )
+        return JsonResponse({"saved": True, "updated_at": note.updated_at.isoformat()})
+    RecipeNote.objects.filter(user=request.user, recipe=recipe).delete()
+    return JsonResponse({"saved": False})
+
+
+@api
+def estimate_recipe_cost(request, data):
+    code = data.get("recipe_code")
+    servings = data.get("servings")
+    if not isinstance(code, str) or not 1 <= len(code) <= 100:
+        raise ValueError("Kode resep tidak valid.")
+    if type(servings) is not int or not 1 <= servings <= 10:
+        raise ValueError("Porsi harus bilangan bulat antara 1 dan 10.")
+    reserve_recipe_book_preview(request.user)
+    recipe = get_recipe(request.user, code)
+    return JsonResponse({"servings": servings, "cost": estimated_recipe_cost(recipe, servings)})
+
+
+@api
+def cooking_preview(request, data):
+    reserve_recipe_book_preview(request.user)
+    return JsonResponse(preview_cooking(request.user, data))
+
+
+@api
+def record_cooking(request, data):
+    return JsonResponse(cook(request.user, data), status=201)
+
+
+@api
+def set_slot_status(request, data):
+    return JsonResponse(change_slot_status(request.user, data))
+
+
+@api
+@transaction.atomic
+def report_recipe_data(request, data):
+    from django.contrib.auth import get_user_model
+
+    get_user_model().objects.select_for_update().get(pk=request.user.pk)
+    code = data.get("recipe_code")
+    category = data.get("category")
+    details = data.get("details", "")
+    allowed_categories = {choice[0] for choice in RecipeDataReport.CATEGORY_CHOICES}
+    if not isinstance(code, str) or not 1 <= len(code) <= 100:
+        raise ValueError("Resep yang dilaporkan tidak valid.")
+    if category not in allowed_categories:
+        raise ValueError("Pilih bagian resep yang perlu diperiksa.")
+    if not isinstance(details, str) or len(details.strip()) < 5 or len(details) > 1000:
+        raise ValueError("Jelaskan masalah dalam 5 sampai 1000 karakter.")
+    recipe = get_recipe(request.user, code)
+    recent_reports = RecipeDataReport.objects.filter(
+        reporter=request.user, created_at__gte=timezone.now() - timedelta(hours=1)
+    ).count()
+    if recent_reports >= 5:
+        raise StockError("Batas 5 laporan per jam tercapai. Coba lagi nanti.", 429)
+    report = RecipeDataReport.objects.create(
+        recipe=recipe, reporter=request.user, category=category, details=details.strip()
+    )
+    return JsonResponse({"submitted": True, "report_id": report.pk}, status=201)
+
+
+@api
+def recipe_review(request, data):
+    return JsonResponse(write_review(request.user, data))
+
+
+@api
+def recipe_review_photo_delete(request, data):
+    return JsonResponse(
+        delete_review_photo(request.user, data.get("recipe_code"), data.get("version"))
+    )
+
+
+@login_required
+@require_POST
+def recipe_review_photo(request):
+    try:
+        request_size = int(request.META.get("CONTENT_LENGTH") or 0)
+    except ValueError:
+        return JsonResponse({"error": "Ukuran unggahan tidak valid."}, status=400)
+    if request_size > 7 * 1024 * 1024:
+        return JsonResponse({"error": "Ukuran foto maksimal 6 MB."}, status=413)
+    upload = request.FILES.get("photo")
+    if upload is None:
+        return JsonResponse({"error": "Pilih foto sebelum mengunggah."}, status=400)
+    try:
+        version = int(request.POST.get("version", ""))
+        result = attach_review_photo(
+            request.user,
+            request.POST.get("recipe_code", ""),
+            version,
+            upload,
+            permission_granted=request.POST.get("photo_permission") == "on",
+        )
+    except StockError as exc:
+        return JsonResponse({"error": str(exc)}, status=exc.status)
+    except ReviewLimited as exc:
+        response = JsonResponse({"error": str(exc)}, status=429)
+        response["Retry-After"] = str(exc.retry_after)
+        return response
+    except (ValueError, TypeError) as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    response = JsonResponse(result)
+    patch_cache_control(response, private=True, no_store=True)
+    return response
+
+
+@login_required
+def recipe_review_photo_file(request, review_id):
+    review = get_object_or_404(RecipeReview, pk=review_id)
+    requested_version = request.GET.get("v")
+    if requested_version is not None and requested_version != str(review.version):
+        response = JsonResponse({"error": "Foto sudah berubah. Muat ulang halaman."}, status=404)
+        patch_cache_control(response, private=True, no_store=True)
+        return response
+    if not review.photo:
+        return JsonResponse({"error": "Foto tidak tersedia."}, status=404)
+    public_photo = (
+        review.photo_permission_granted
+        and review.photo_consent_at is not None
+        and review.photo_moderated_at is not None
+        and not review.is_hidden
+        and not review.photo_is_hidden
+    )
+    if not public_photo and review.user_id != request.user.pk and not request.user.is_staff:
+        return JsonResponse({"error": "Foto belum tersedia untuk publik."}, status=404)
+    try:
+        response = FileResponse(review.photo.open("rb"), content_type="image/jpeg")
+    except Exception as exc:
+        logger.warning(
+            "Recipe review photo unavailable review_id=%s storage_name=%s error=%s",
+            review.pk,
+            review.photo.name,
+            type(exc).__name__,
+        )
+        return JsonResponse({"error": "Berkas foto tidak ditemukan."}, status=404)
+    response["X-Content-Type-Options"] = "nosniff"
+    response["Cache-Control"] = (
+        "private, max-age=3600" if public_photo else "private, no-store"
+    )
+    return response
+
+
+@login_required
+def book_page(request):
+    profile = preferences_for(request.user)
+    groups = effective_allergens(request.user, preference=profile)
+    avoided_ingredient_ids = list(
+        profile.avoided_ingredients.values_list("pk", flat=True)
+    )
+    baseline = Recipe.objects.filter(
+        is_active=True, is_plannable=True
+    ).distinct()
+    if profile.halal_only:
+        baseline = baseline.filter(recipetag__tag="halal")
+    if groups:
+        allergen_counts = baseline.aggregate(
+            unknown=Count("pk", filter=Q(allergen_reviewed=False), distinct=True),
+            blocked=Count(
+                "pk",
+                filter=Q(allergen_reviewed=True, allergen_groups__group__in=groups),
+                distinct=True,
+            ),
+        )
+        unknown_count = allergen_counts["unknown"]
+        allergen_count = allergen_counts["blocked"]
+    else:
+        unknown_count = allergen_count = 0
+    query = recipe_query(
+        request.user,
+        allergens=groups,
+        preference=profile,
+        avoided_ingredient_ids=avoided_ingredient_ids,
+    )
+    available_recipe_count = query.count()
+    term = request.GET.get("q", "").strip()[:100]
+    if term:
+        alias_ingredients = IngredientAlias.objects.filter(
+            raw_name__icontains=term,
+            mapping_status__in=["reviewed", "manual_curated"],
+        ).values("ingredient_id")
+        query = query.filter(
+            Q(name__icontains=term)
+            | Q(recipeingredient__ingredient__name__icontains=term)
+            | Q(recipeingredient__ingredient_id__in=alias_ingredients)
+        ).distinct()
+    meal = request.GET.get("meal", "")
+    if meal in {"sarapan", "makan_siang", "makan_malam"}:
+        query = query.filter(meal_type=meal)
+    if request.GET.get("favorites") == "1":
+        query = query.filter(recipefavorite__user=request.user)
+    guidance_counts = query.aggregate(
+        total=Count("pk", distinct=True),
+        guided=Count("pk", filter=guidance_condition(), distinct=True),
+    )
+    held_count = guidance_counts["total"] - guidance_counts["guided"]
+    if request.GET.get("guidance") == "1":
+        query = with_guidance(query)
+    try:
+        max_price = int(request.GET.get("max_price", ""))
+    except ValueError:
+        max_price = None
+    price_unavailable_count = 0
+    price_candidate_count = 0
+    price_filtered_candidate_count = None
+    if max_price in PRICE_LIMITS:
+        started = perf_counter()
+        codes = set(query.values_list("pk", flat=True))
+        costs = recipe_costs(profile.servings, codes)
+        price_candidate_count = len(codes)
+        price_unavailable_count = len(codes) - len(costs)
+        matched_codes = [code for code, cost in costs.items() if cost <= max_price]
+        price_filtered_candidate_count = len(matched_codes)
+        query = query.filter(pk__in=matched_codes)
+        duration_ms = (perf_counter() - started) * 1000
+        logger.log(
+            logging.WARNING if duration_ms >= FILTER_SLOW_MS else logging.INFO,
+            "recipe_filter_completed filter=price candidate_count=%d matched_count=%d duration_ms=%.1f",
+            len(codes),
+            price_filtered_candidate_count,
+            duration_ms,
+        )
+    else:
+        max_price = None
+    stock_filter = request.GET.get("stock", "")
+    stock_rows = {}
+    if stock_filter in {"complete", "soon", "best"}:
+        candidate_count = (
+            price_filtered_candidate_count
+            if price_filtered_candidate_count is not None
+            else query.count()
+        )
+        started = perf_counter()
+        rows = stock_matches(request.user, profile.servings, query=query)
+        duration_ms = (perf_counter() - started) * 1000
+        logger.log(
+            logging.WARNING if duration_ms >= FILTER_SLOW_MS else logging.INFO,
+            "recipe_filter_completed filter=stock_%s candidate_count=%d matched_count=%d duration_ms=%.1f",
+            stock_filter,
+            candidate_count,
+            len(rows),
+            duration_ms,
+        )
+        if stock_filter == "best":
+            stock_rows = {row["recipe_code"]: row for row in rows}
+            ranked_codes = list(stock_rows)
+            query = query.filter(pk__in=ranked_codes).order_by(
+                Case(
+                    *[When(pk=code, then=Value(rank)) for rank, code in enumerate(ranked_codes)],
+                    default=Value(len(ranked_codes)),
+                    output_field=IntegerField(),
+                )
+            )
+        else:
+            query = query.filter(pk__in=[row["recipe_code"] for row in rows if row[stock_filter]])
+    active_filters = []
+    if term:
+        active_filters.append(f"Pencarian: {term}")
+    meal_labels = {
+        "sarapan": "Sarapan",
+        "makan_siang": "Makan siang",
+        "makan_malam": "Makan malam",
+    }
+    if meal in meal_labels:
+        active_filters.append(f"Waktu makan: {meal_labels[meal]}")
+    stock_labels = {
+        "best": "Paling cocok dengan stok",
+        "complete": "Bahan utama lengkap",
+        "soon": "Gunakan segera",
+    }
+    if stock_filter in stock_labels:
+        active_filters.append(f"Stok: {stock_labels[stock_filter]}")
+    if max_price is not None:
+        active_filters.append(f"Harga maksimal: Rp{max_price:,}".replace(",", "."))
+    if request.GET.get("favorites") == "1":
+        active_filters.append("Favorit saja")
+    if request.GET.get("guidance") == "1":
+        active_filters.append("Hanya resep dengan panduan")
+    if groups or avoided_ingredient_ids:
+        active_filters.append("Preferensi profil (alergi/pantangan)")
+    ordered_query = query if stock_filter == "best" else query.order_by("name")
+    page = Paginator(
+        ordered_query.prefetch_related("recipeingredient_set__ingredient"), 12
+    ).get_page(request.GET.get("page"))
+    photos = recipe_images_for([recipe.pk for recipe in page.object_list])
+    page_codes = [recipe.pk for recipe in page.object_list]
+    missing_codes = {
+        item["ingredient_code"]
+        for code in page_codes
+        for item in stock_rows.get(code, {}).get("missing", [])
+    }
+    missing_names = {
+        code: ingredient.name for code, ingredient in Ingredient.objects.in_bulk(missing_codes).items()
+    }
+    for recipe in page.object_list:
+        recipe.photo = photos.get(recipe.pk)
+        match = stock_rows.get(recipe.pk)
+        if match:
+            recipe.stock_match = {
+                **match,
+                "coverage_percent": round(match["coverage"] * 100),
+                "missing_names": [
+                    missing_names.get(item["ingredient_code"], item["ingredient_code"])
+                    for item in match["missing"]
+                ],
+            }
+    selection_error = None
+    selected = None
+    slot = None
+    code = request.GET.get("recipe")
+    if request.GET.get("slot"):
+        try:
+            slot = (
+                PlannedMeal.objects.select_related("plan")
+                .filter(pk=int(request.GET["slot"]), plan__user=request.user, plan__status="saved")
+                .first()
+            )
+        except (ValueError, OverflowError):
+            slot = None
+        if slot:
+            if slot.recipe_id:
+                code = slot.recipe_id
+            else:
+                selection_error = "Menu di rencana ini tidak memiliki resep yang tersedia."
+        else:
+            selection_error = "Menu rencana tidak ditemukan."
+    if not code and page.object_list and not selection_error:
+        code = page.object_list[0].pk
+    detail, stock = None, None
+    if code and not selection_error:
+        try:
+            selected = get_recipe(request.user, code, inputs=slot.plan.inputs if slot else None)
+            selected.photo = recipe_images_for([selected.pk]).get(selected.pk)
+            servings = slot.servings if slot else profile.servings
+            if not slot and "servings" in request.GET:
+                try:
+                    requested_servings = int(request.GET["servings"])
+                    if 1 <= requested_servings <= 10:
+                        servings = requested_servings
+                except (ValueError, TypeError):
+                    pass
+            needs, ingredients, nutrition = recipe_requirements(
+                selected,
+                servings,
+                tracked_staples=tracked_staple_codes(request.user),
+                staple=slot_staple(slot),
+            )
+            stock = plan_consumption(request.user, needs, allow_unknown_expiry=True)
+            detail = {
+                "unknown_expiry": any(
+                    row["batch"].estimated_expires_on is None
+                    or row["batch"].expiry_source == "unknown"
+                    for row in stock["allocations"]
+                ),
+                "ingredients": ingredients,
+                "nutrition": nutrition,
+                "servings": servings,
+                "cost": estimated_recipe_cost(selected, servings),
+                "source_url": selected.source_url
+                if selected.source_url.startswith(("https://", "http://"))
+                else "",
+                "guidance": with_guidance(Recipe.objects.filter(pk=selected.pk)).exists(),
+                "complete": not stock["missing"],
+                "favorite": RecipeFavorite.objects.filter(
+                    user=request.user, recipe=selected
+                ).exists(),
+                "steps": [
+                    line.strip() for line in selected.instructions.splitlines() if line.strip()
+                ],
+            }
+            for row in ingredients:
+                row["missing"] = str(stock["missing"].get(row["ingredient_code"], 0))
+        except StockError as exc:
+            selection_error = str(exc)
+    personal_note = (
+        RecipeNote.objects.filter(user=request.user, recipe=selected).first() if selected else None
+    )
+    favorites = list(
+        RecipeFavorite.objects.filter(user=request.user)
+        .select_related("recipe")
+        .order_by("-created_at")[:20]
+    )
+    available_favorites = set(
+        recipe_query(request.user)
+        .filter(pk__in=[favorite.recipe_id for favorite in favorites])
+        .values_list("pk", flat=True)
+    )
+    for favorite in favorites:
+        favorite.available = favorite.recipe_id in available_favorites
+    history = Paginator(
+        CookingHistory.objects.filter(user=request.user).prefetch_related(
+            "operation__pantrymovement_set"
+        ),
+        7,
+    ).get_page(request.GET.get("history_page"))
+    params = request.GET.copy()
+    params.pop("page", None)
+    params.pop("slot", None)
+    params.pop("recipe", None)
+    params.pop("held", None)
+    history_params = request.GET.copy()
+    history_params.pop("history_page", None)
+    review_params = request.GET.copy()
+    review_params.pop("review_page", None)
+    response = render(
+        request,
+        "recipe/recipe.html",
+        {
+            "recipes": page,
+            "selected": selected,
+            "detail": detail,
+            "personal_note": personal_note,
+            "slot": slot,
+            "selection_error": selection_error,
+            "favorites": favorites,
+            "history": history,
+            "week_count": CookingHistory.objects.filter(
+                user=request.user, cooked_at__gte=timezone.now() - timedelta(days=7)
+            ).count(),
+            "unknown_count": unknown_count,
+            "allergen_count": allergen_count,
+            "held_count": held_count,
+            "available_recipe_count": available_recipe_count,
+            "active_filters": active_filters,
+            "price_unavailable_count": price_unavailable_count,
+            "price_candidate_count": price_candidate_count,
+            "guidance_only": request.GET.get("guidance") == "1",
+            "q": term,
+            "meal": meal,
+            "max_price": max_price,
+            "price_limits": PRICE_LIMITS,
+            "staple": slot_staple(slot),
+            "filters": request.GET,
+            "query_params": urlencode(params, doseq=True),
+            "history_params": urlencode(history_params, doseq=True),
+            "review_params": urlencode(review_params, doseq=True),
+            **(
+                review_context(request.user, selected, request.GET.get("review_page"))
+                if selected and not selection_error
+                else {}
+            ),
+        },
+    )
+    patch_cache_control(response, private=True, no_store=True)
+    return response
