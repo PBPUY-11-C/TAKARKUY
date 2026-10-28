@@ -463,12 +463,11 @@ def make_preview(plan, version, payload):
         result = build_plan(
             **form.cleaned_data, fixed_schedule=slots, **stock_context(plan.user, plan)
         )
-    elif action in {"regenerate", "parameters"}:
+    elif action == "parameters":
         assert_editable(plan)
-        if action == "parameters":
-            form = clean_inputs(payload.get("inputs", {}))
-            form.cleaned_data.update(effective_preferences(plan.user, plan.inputs, form.cleaned_data))
-            inputs = stored_inputs(form)
+        form = clean_inputs(payload.get("inputs", {}))
+        form.cleaned_data.update(effective_preferences(plan.user, plan.inputs, form.cleaned_data))
+        inputs = stored_inputs(form)
         prior = {
             meal: [slots.get(meal) for slots in schedule_codes(old)]
             for meal in form.cleaned_data["meal_types"]
@@ -486,10 +485,6 @@ def make_preview(plan, version, payload):
         if not result["within_budget"]:
             raise ValueError(
                 "Belum ada susunan baru yang sesuai budget. Ubah parameter atau pilih menu lain."
-            )
-        if action == "regenerate" and schedule_codes(result) == schedule_codes(old):
-            raise ValueError(
-                "Belum ada susunan alternatif yang memenuhi syarat. Menu lama tetap dipertahankan."
             )
     else:
         raise ValueError("Aksi pratinjau tidak dikenal.")
@@ -630,13 +625,33 @@ def _requote_with_stock(user, plan, starts_on, saved=None):
     plan.snapshot = freeze(result)
 
 
-@transaction.atomic
-def save_plan(user, plan_id, version, title, *, replace_original=False):
-    """Save a draft as a plan, or rename a saved plan.
+MAX_START_DAYS = 60
 
-    A new plan always starts today (Jakarta) and a saved plan keeps its date.
-    Before a draft is saved its bill is re-quoted with the current pantry, so stock that was used
-    up or went off since generating cannot push a saved plan over budget.
+
+def chosen_start(starts_on, current, cooked):
+    """The start date to store: `current` unless a different, allowed date was chosen.
+
+    A new date lies between today and MAX_START_DAYS ahead (Jakarta), and a plan with
+    cooked meals keeps its date so its cooking history stays on the right days.
+    """
+    if starts_on is None or starts_on == current:
+        return current
+    if cooked:
+        raise PlanConflict("Tanggal mulai tidak bisa diubah karena sudah ada menu yang dimasak.")
+    today = timezone.localdate(timezone=JAKARTA)
+    if not today <= starts_on <= today + timedelta(days=MAX_START_DAYS):
+        raise ValueError(f"Tanggal mulai harus antara hari ini dan {MAX_START_DAYS} hari ke depan.")
+    return starts_on
+
+
+@transaction.atomic
+def save_plan(user, plan_id, version, title, starts_on=None, *, replace_original=False):
+    """Save a draft as a plan, or rename and re-date a saved plan.
+
+    A new plan starts on the chosen date (default today, Jakarta); a saved plan keeps its
+    date unless another is chosen. Before a draft is saved its bill is re-quoted with the
+    current pantry for that start date, so stock that was used up or will have gone off
+    cannot push a saved plan over budget.
     """
     get_user_model().objects.select_for_update().get(pk=user.pk)
     plan = BudgetPlan.objects.select_for_update().get(pk=plan_id, user=user)
@@ -648,15 +663,20 @@ def save_plan(user, plan_id, version, title, *, replace_original=False):
         and plan.version == version + 1
         and plan.last_saved_plan_id
         and plan.title == title
+        and starts_on in (None, plan.starts_on)
     ):
         return plan.last_saved_plan
     check_version(plan, version)
     if not thaw(plan.snapshot)["within_budget"]:
         raise ValueError("Rencana belum memenuhi budget.")
     if plan.status == "saved":
-        plan.title = title
+        new_start = chosen_start(starts_on, plan.starts_on, cooked_slots(plan))
+        date_changed = new_start != plan.starts_on
+        plan.title, plan.starts_on = title, new_start
         plan.version += 1
         plan.save()
+        if date_changed:
+            reschedule_meals(plan)
         return plan
     if effective_preferences(user)["halal_only"] and non_halal_schedule(
         schedule_codes(thaw(plan.snapshot))
@@ -670,21 +690,27 @@ def save_plan(user, plan_id, version, title, *, replace_original=False):
             pk=plan.source_plan_id, user=user, status="saved"
         )
         check_version(saved, plan.source_version)
-        starts_on = saved.starts_on
+        starts_on = chosen_start(starts_on, saved.starts_on, cooked_slots(saved))
     else:
         assert_editable(plan)
-        starts_on = timezone.localdate(timezone=JAKARTA)
+        today = timezone.localdate(timezone=JAKARTA)
+        if starts_on is not None and starts_on == plan.starts_on and starts_on < today:
+            starts_on = None  # the draft's creation date, shown before the user picked one
+        starts_on = chosen_start(starts_on, today, ())
     before = plan.snapshot
     _requote_with_stock(user, plan, starts_on, saved)
     if saved is not None:
         assert_cooked_preserved(saved, plan.inputs, thaw(plan.snapshot))
         snapshot_changed = saved.snapshot != plan.snapshot or saved.inputs != plan.inputs
+        saved_date_changed = saved.starts_on != starts_on
         saved.inputs, saved.snapshot = plan.inputs, plan.snapshot
-        saved.title = title
+        saved.title, saved.starts_on = title, starts_on
         saved.version += 1
         saved.save()
         if snapshot_changed:
             sync_children(saved)
+        elif saved_date_changed:
+            reschedule_meals(saved)
     else:
         saved = BudgetPlan.objects.create(
             user=user,

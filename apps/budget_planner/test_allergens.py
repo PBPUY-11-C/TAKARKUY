@@ -183,11 +183,13 @@ class AllergenPlannerTests(TestCase):
         )
         self.assertEqual(preview.inputs["allergens"], ["kedelai", "telur"])
 
-    def test_regeneration_uses_current_profile_allergies(self):
+    def test_parameter_preview_uses_current_profile_allergies(self):
         draft = self.draft("SOY")
         self.profile.allergens = ["kedelai", "telur"]
         self.profile.save()
-        preview = make_preview(draft, draft.version, {"action": "regenerate"})
+        preview = make_preview(
+            draft, draft.version, {"action": "parameters", "inputs": draft.inputs}
+        )
         self.assertEqual(preview.inputs["allergens"], ["kedelai", "telur"])
         self.assertEqual(schedule_codes(preview.snapshot), [{"sarapan": "BASE"}])
 

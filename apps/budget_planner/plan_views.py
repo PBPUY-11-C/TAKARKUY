@@ -1,6 +1,7 @@
 import json
 import secrets
 from copy import deepcopy
+from datetime import timedelta
 from decimal import ROUND_CEILING, Decimal
 from functools import wraps
 from uuid import UUID
@@ -11,6 +12,7 @@ from django.db import transaction
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.cache import patch_cache_control
 from django.utils.text import slugify
 from django.views.decorators.http import require_GET
@@ -28,6 +30,8 @@ from .forms import PlanMetadataForm, PlannerForm
 from .models import BudgetPlan, PlanPreview
 from .planner import MEALS, build_plan, replacement_options
 from .services import (
+    JAKARTA,
+    MAX_START_DAYS,
     PlanConflict,
     PreviewRateLimit,
     account_recent_recipe_codes,
@@ -225,8 +229,9 @@ def account_page(request, builder):
     if requested:
         try:
             plan = owned_plan(request, UUID(requested))
-        except (ValueError, TypeError):
-            raise Http404("Rencana tidak ditemukan.") from None
+        except (ValueError, TypeError, Http404):
+            # Deleted in another tab or an outdated link: start over with a notice.
+            return redirect(reverse("modul1") + "?hilang=1")
     elif request.GET.get("new") != "1" and not prefill and not (
         request.method == "POST" and request.POST.get("new_plan") == "1"
     ):
@@ -347,6 +352,8 @@ def account_page(request, builder):
         for meal in day["meals"]:
             meal["photo"] = display_photos.get(meal["recipe_code"])
     if result and plan:
+        for day in display_schedule:
+            day["date"] = plan.starts_on + timedelta(days=day["number"] - 1)
         slots = {(item.day, item.meal_type): item for item in plan.meals.all()}
         cooked = {(item.day, item.meal_type) for item in cooked_slots(plan)}
         for day in display_schedule:
@@ -371,6 +378,7 @@ def account_page(request, builder):
     avoid_terms = [
         term.strip() for term in str(form["exclude_ingredients"].value() or "").split(",")
     ]
+    today = timezone.localdate(timezone=JAKARTA)
     response = render(
         request,
         "budget_planner/planner.html",
@@ -384,6 +392,16 @@ def account_page(request, builder):
             "rice_value": rice_value,
             "avoid_count": len([term for term in avoid_terms if term]),
             "item_count": sum(len(group["items"]) for group in shopping_groups or ()),
+            # A changed start date lies within today .. MAX_START_DAYS; an older saved
+            # date may stay as it is, and cooked meals pin the date.
+            # A new draft's stored date can lie in the past; it is saved as today at the earliest.
+            "start_value": plan.starts_on
+            if plan and (plan.status == "saved" or plan.source_plan_id)
+            else max(today, plan.starts_on if plan else today),
+            "start_min": min(today, plan.starts_on) if plan else today,
+            "plan_missing": request.GET.get("hilang") == "1",
+            "start_max": today + timedelta(days=MAX_START_DAYS),
+            "date_locked": bool(plan and cooked_slots(plan)),
             "shopping_summary": shopping_summary(shopping_groups or ()),
             "pantry_items": [
                 item
@@ -493,7 +511,7 @@ def save_account_plan(request, payload, plan_id):
     if not form.is_valid():
         return JsonResponse(
             {
-                "error": "Isi judul maksimal 100 karakter.",
+                "error": next(iter(form.errors.values()))[0],
                 "fields": form.errors.get_json_data(),
             },
             status=400,

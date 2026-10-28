@@ -27,6 +27,18 @@
     return `Request belum berhasil (kode ${status}). Muat ulang halaman.`;
   }
 
+  // Assigning a URL that differs only in its #fragment does not reload the page,
+  // which would leave a deleted or renamed plan on screen.
+  function navigate(url) {
+    const destination = new URL(url, window.location.origin);
+    if (destination.pathname === window.location.pathname && destination.search === window.location.search) {
+      window.location.hash = destination.hash;
+      window.location.reload();
+    } else {
+      window.location.assign(url);
+    }
+  }
+
   async function request(url, data) {
     const options = { credentials: "same-origin", headers: { Accept: "application/json" } };
     if (data !== undefined) {
@@ -169,7 +181,7 @@
   async function applyProposal(data, body) {
     const result = await request(data.apply_url, body);
     globalThis.TakarKuy?.flash("Menu diganti di draft. Simpan untuk memakainya.");
-    window.location.assign(result.url);
+    navigate(result.url);
   }
   previewButton.addEventListener("click", async () => {
     if (!replacement || !selector.value) return;
@@ -210,16 +222,9 @@
     try {
       const values = new FormData(form);
       const data = await request(form.dataset.url, { version: Number(form.dataset.version),
-        title: values.get("title"), replace_original: replaceOriginal });
+        title: values.get("title"), starts_on: values.get("starts_on") || null, replace_original: replaceOriginal });
       globalThis.TakarKuy?.flash("Rencana tersimpan.");
-      // Renaming a saved plan returns its current URL. Assigning that URL only
-      // changes the fragment, leaving the old title and version in the DOM.
-      const destination = new URL(data.url, window.location.origin);
-      if (destination.pathname === window.location.pathname && destination.search === window.location.search) {
-        window.location.reload();
-      } else {
-        window.location.assign(data.url);
-      }
+      navigate(data.url);
     } catch (error) { feedback.textContent = error.message; globalThis.TakarKuy?.toast(error.message, "error"); feedback.scrollIntoView({ block: "center" }); }
     finally { buttons.forEach((button) => { button.disabled = false; }); }
   }));
@@ -227,7 +232,7 @@
   document.querySelectorAll("[data-delete-plan]").forEach((button) => button.addEventListener("click", async () => {
     if (!window.confirm(`Hapus rencana “${button.dataset.title}”? Stok pantry tidak berubah.`)) return;
     button.disabled = true;
-    try { const data = await request(button.dataset.url, { version: Number(button.dataset.version) }); globalThis.TakarKuy?.flash(`Rencana “${button.dataset.title}” dihapus.`); window.location.assign(data.url); }
+    try { const data = await request(button.dataset.url, { version: Number(button.dataset.version) }); globalThis.TakarKuy?.flash(`Rencana “${button.dataset.title}” dihapus.`); navigate(data.url); }
     catch (error) { feedback.textContent = error.message; globalThis.TakarKuy?.toast(error.message, "error"); feedback.scrollIntoView({ block: "center" }); }
     finally { button.disabled = false; }
   }));

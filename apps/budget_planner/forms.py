@@ -132,9 +132,21 @@ class PlannerForm(forms.Form):
 
 
 class PlanMetadataForm(forms.Form):
-    """Only the title is chosen; a plan starts on the day it is saved."""
+    """Title and start date chosen when saving; a missing date keeps the current one."""
 
-    title = forms.CharField(max_length=100)
+    title = forms.CharField(
+        label="Judul",
+        max_length=100,
+        error_messages={
+            "required": "Isi judul rencana.",
+            "max_length": "Judul maksimal 100 karakter.",
+        },
+    )
+    starts_on = forms.DateField(
+        label="Tanggal mulai",
+        required=False,
+        error_messages={"invalid": "Format tanggal mulai tidak valid."},
+    )
 
     def clean_title(self):
         return " ".join(self.cleaned_data["title"].split())

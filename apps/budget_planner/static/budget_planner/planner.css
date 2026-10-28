@@ -141,6 +141,11 @@
 .plan-save .status { color: var(--pl-warn); font-weight: 600; }
 .plan-save input { height: 48px; padding: 0 12px; border: 1px solid var(--pl-field); border-radius: 10px; color: var(--pl-ink); font: 16px var(--font); }
 .plan-save .primary-button { min-height: 48px; font-size: 16px; }
+.plan-save-row { display: flex; flex-direction: column; gap: 12px; }
+.plan-date { display: flex; align-items: center; gap: 12px; }
+.plan-date .label { flex: none; min-width: 44px; }
+.plan-save .plan-date input { flex: 1; min-width: 0; box-sizing: border-box; }
+.day-date { color: var(--pl-muted); font-weight: 500; }
 .plan-save .link-button { align-self: flex-start; min-height: 32px; padding: 0; }
 
 .result-grid { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; margin-top: 16px; }

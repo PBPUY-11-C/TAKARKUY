@@ -51,7 +51,8 @@ function setup(overBudget = 5000, { pending = false, notes = [], targetsSet = fa
       querySelectorAll: (selector) => selector === "[data-replace-menu]" ? [replace]
         : selector === "[data-close-dialog]" ? [close] : [],
     },
-    window: { location: { origin: "http://localhost", assign: (url) => redirects.push(url) } },
+    window: { location: { origin: "http://localhost", pathname: "/elsewhere/", search: "",
+      assign: (url) => redirects.push(url), reload: () => redirects.push("reload") } },
     fetch: async (url, options) => {
       requests.push({ url: String(url), options });
       return { ok: true, json: async () => options.method
@@ -138,4 +139,13 @@ test("within-budget replacement applies the server quote straight away", async (
     day: 1, meal: "sarapan", recipe: "B" });
   assert.deepEqual(JSON.parse(app.requests[2].options.body), {});
   assert.deepEqual(app.redirects, ["/modul1/?plan=draft"]);
+});
+
+test("a destination differing only by #fragment reloads instead of silently staying", async () => {
+  const app = setup(0, { pending: true });
+  app.context.window.location.pathname = "/modul1/";
+  app.context.window.location.search = "?plan=draft";
+  await app.get("apply-preview").trigger();
+  assert.deepEqual(app.redirects, ["reload"]);
+  assert.equal(app.context.window.location.hash, "");
 });

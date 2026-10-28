@@ -17,6 +17,8 @@ from .models import BudgetPlan, PlannedMeal, PlanPreview, PlanPreviewQuota, Shop
 from .plan_views import preview_data
 from .planner import build_plan
 from .services import (
+    JAKARTA,
+    MAX_START_DAYS,
     PlanConflict,
     apply_preview,
     clean_inputs,
@@ -101,6 +103,87 @@ class SavedPlanTests(TestCase):
         )
         return self.draft
 
+    def test_start_date_is_chosen_on_save_and_moves_the_schedule(self):
+        today = timezone.localdate(timezone=JAKARTA)
+        later = today + timedelta(days=3)
+        response = self.api(
+            "modul1-plan-save",
+            self.draft.pk,
+            {"version": self.draft.version, "title": "Minggu Depan", "starts_on": later.isoformat()},
+        )
+        self.assertEqual(response.status_code, 200)
+        saved = BudgetPlan.objects.get(user=self.user, status="saved")
+        self.assertEqual(saved.starts_on, later)
+        self.assertEqual(saved.meals.get().scheduled_on, later)
+        # Re-dating a saved plan moves its meals; leaving the date out keeps it.
+        moved = today + timedelta(days=5)
+        save_plan(self.user, saved.pk, saved.version, "Minggu Depan", moved)
+        saved.refresh_from_db()
+        self.assertEqual(saved.meals.get().scheduled_on, moved)
+        save_plan(self.user, saved.pk, saved.version, "Judul Baru")
+        saved.refresh_from_db()
+        self.assertEqual((saved.title, saved.starts_on), ("Judul Baru", moved))
+
+    def test_old_draft_date_saves_as_today(self):
+        today = timezone.localdate(timezone=JAKARTA)
+        stale = today - timedelta(days=2)
+        BudgetPlan.objects.filter(pk=self.draft.pk).update(starts_on=stale)
+        page = self.client.get(reverse("modul1") + f"?plan={self.draft.pk}")
+        self.assertContains(page, f'value="{today:%Y-%m-%d}"')
+        response = self.api(
+            "modul1-plan-save",
+            self.draft.pk,
+            {"version": self.draft.version, "title": "Lama", "starts_on": stale.isoformat()},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(BudgetPlan.objects.get(status="saved").starts_on, today)
+
+    def test_deleted_plan_link_returns_to_planner_with_notice(self):
+        saved = self.saved()
+        url = reverse("modul1")
+        self.api("modul1-plan-delete", saved.pk, {"version": saved.version})
+        for response in (
+            self.client.get(url, {"plan": str(saved.pk)}),
+            self.client.post(url, {**self.inputs, "plan_id": str(saved.pk), "version": 1}),
+            self.client.get(url, {"plan": "bukan-uuid"}),
+        ):
+            self.assertRedirects(response, url + "?hilang=1")
+        self.assertContains(self.client.get(url + "?hilang=1"), "sudah dihapus atau tidak ditemukan")
+
+    def test_start_date_must_be_today_to_sixty_days_unless_unchanged(self):
+        today = timezone.localdate(timezone=JAKARTA)
+        for bad in (today - timedelta(days=1), today + timedelta(days=MAX_START_DAYS + 1)):
+            with self.subTest(day=bad):
+                response = self.api(
+                    "modul1-plan-save",
+                    self.draft.pk,
+                    {"version": self.draft.version, "title": "X", "starts_on": bad.isoformat()},
+                )
+                self.assertEqual(response.status_code, 400)
+                self.assertIn("Tanggal mulai harus", response.json()["error"])
+        response = self.api(
+            "modul1-plan-save",
+            self.draft.pk,
+            {"version": self.draft.version, "title": "X", "starts_on": "besok"},
+        )
+        self.assertEqual(response.json()["error"], "Format tanggal mulai tidak valid.")
+        saved = self.saved()
+        BudgetPlan.objects.filter(pk=saved.pk).update(starts_on=today - timedelta(days=10))
+        saved.refresh_from_db()
+        # An older saved plan can still be renamed while keeping its past date.
+        save_plan(self.user, saved.pk, saved.version, "Lama", saved.starts_on)
+        saved.refresh_from_db()
+        self.assertEqual(saved.title, "Lama")
+
+    def test_cooked_meals_pin_the_start_date(self):
+        saved = self.saved()
+        saved.meals.update(status="cooked")
+        later = timezone.localdate(timezone=JAKARTA) + timedelta(days=2)
+        with self.assertRaises(PlanConflict):
+            save_plan(self.user, saved.pk, saved.version, saved.title, later)
+        page = self.client.get(reverse("modul1") + f"?plan={saved.pk}")
+        self.assertContains(page, 'title="Sudah ada menu yang dimasak"')
+
     def test_generate_auto_persists_one_draft_and_no_saved_plan(self):
         response = self.client.post(reverse("modul1"), self.generation_data(), follow=True)
         self.assertEqual(response.status_code, 200)
@@ -177,10 +260,12 @@ class SavedPlanTests(TestCase):
         # Make an independent, unsaved draft while retaining the saved plan.
         self.update_draft(result=self.quotes[0][2])
         original = deepcopy(self.draft.snapshot)
-        for action in ("replace", "regenerate"):
+        for action in ("replace", "parameters"):
             payload = {"action": action, "version": saved.version}
             if action == "replace":
                 payload.update(day=1, meal="sarapan", recipe=self.quotes[-1][1])
+            else:
+                payload.update(inputs=self.inputs)
             response = self.api("modul1-plan-preview", saved.pk, payload)
             self.assertEqual(response.status_code, 200)
             preview = PlanPreview.objects.get(pk=response.json()["id"])
@@ -215,18 +300,16 @@ class SavedPlanTests(TestCase):
             draft = write_draft(self.other, self.inputs, self.quotes[0][2])
         self.assertEqual(draft.starts_on, date(2026, 10, 15))
 
-    def test_save_always_starts_today(self):
+    def test_save_without_date_starts_today(self):
         response = self.api(
-            "modul1-plan-save",
-            self.draft.pk,
-            {"version": self.draft.version, "title": "Plan", "starts_on": "2026-01-01"},
+            "modul1-plan-save", self.draft.pk, {"version": self.draft.version, "title": "Plan"}
         )
         self.assertEqual(response.status_code, 200)
         saved = BudgetPlan.objects.get(status="saved")
-        self.assertEqual(saved.starts_on, timezone.localdate())
-        self.assertEqual(saved.meals.get().scheduled_on, timezone.localdate())
+        today = timezone.localdate(timezone=JAKARTA)
+        self.assertEqual((saved.starts_on, saved.meals.get().scheduled_on), (today, today))
 
-    def test_saved_plan_date_cannot_be_changed(self):
+    def test_renaming_without_date_keeps_saved_date(self):
         saved = self.saved()
         start = saved.starts_on
         saved = save_plan(self.user, saved.pk, saved.version, "Baru")
@@ -381,7 +464,7 @@ class SavedPlanTests(TestCase):
 
     def test_missing_versions_rejected_for_all_plan_mutation_apis(self):
         requests = (
-            ("modul1-plan-preview", {"action": "regenerate"}),
+            ("modul1-plan-preview", {"action": "parameters", "inputs": self.inputs}),
             ("modul1-plan-save", {"title": "Judul", "starts_on": "2026-10-05"}),
             ("modul1-plan-delete", {}),
         )
@@ -454,7 +537,11 @@ class SavedPlanTests(TestCase):
         response = second.get(reverse("modul1"))
         self.assertEqual(response.context["plan"].pk, self.draft.pk)
         second.force_login(self.other)
-        self.assertEqual(second.get(reverse("modul1") + f"?plan={self.draft.pk}").status_code, 404)
+        # Someone else's plan looks exactly like a missing one: nothing is revealed.
+        self.assertRedirects(
+            second.get(reverse("modul1") + f"?plan={self.draft.pk}"),
+            reverse("modul1") + "?hilang=1",
+        )
         self.assertIsNone(second.get(reverse("modul1")).context["plan"])
         self.assertIn("no-store", response["Cache-Control"])
 
@@ -507,13 +594,12 @@ class SavedPlanTests(TestCase):
         response = self.api(
             "modul1-plan-save",
             saved.pk,
-            {"version": 1, "title": "  Bekal   Kantor ", "starts_on": "2026-10-06"},
+            {"version": 1, "title": "  Bekal   Kantor "},
         )
         self.assertEqual(response.status_code, 200)
         saved.refresh_from_db()
         self.assertEqual(saved.title, "Bekal Kantor")
-        # The date in the payload is ignored: a saved plan never moves.
-        self.assertEqual(saved.meals.get().scheduled_on, timezone.localdate())
+        self.assertEqual(saved.meals.get().scheduled_on, timezone.localdate(timezone=JAKARTA))
         self.assertEqual(self.api("modul1-plan-delete", saved.pk, {"version": 1}).status_code, 409)
         self.assertEqual(self.api("modul1-plan-delete", saved.pk, {"version": 2}).status_code, 200)
         self.assertFalse(PlannedMeal.objects.filter(plan_id=saved.pk).exists())
@@ -561,7 +647,7 @@ class SavedPlanTests(TestCase):
             self.client.post(url, " " * 8001, content_type="application/json").status_code, 413
         )
         for payload in (
-            {"version": True, "action": "regenerate"},
+            {"version": True, "action": "parameters", "inputs": self.inputs},
             {"version": 1, "action": []},
             {"version": 1, "action": "parameters", "inputs": []},
             {"version": 1, "action": "replace", "day": 1, "meal": [], "recipe": "fake"},
@@ -612,7 +698,11 @@ class SavedPlanTests(TestCase):
         alternatives = self.client.get(
             reverse("modul1-plan-alternatives", args=[missing]), {"day": 1, "meal": "sarapan"}
         )
-        preview = self.api("modul1-plan-preview", missing, {"action": "regenerate", "version": 1})
+        preview = self.api(
+            "modul1-plan-preview",
+            missing,
+            {"action": "parameters", "inputs": self.inputs, "version": 1},
+        )
         for response in (alternatives, preview):
             self.assertEqual(response.status_code, 404)
             self.assertIn("tidak ditemukan", response.json()["error"])
@@ -822,7 +912,7 @@ class SavedPlanTests(TestCase):
         saved.refresh_from_db()
         self.assertEqual(saved.meals.get().recipe_id, self.quotes[0][1])
 
-    def test_original_changed_rejects_overwrite_and_preserves_source_version_on_regeneration(self):
+    def test_original_changed_rejects_overwrite_and_preserves_source_version_on_new_draft(self):
         saved = self.saved()
         draft = apply_preview(self.user, self.replacement(saved).pk)
         save_plan(self.user, saved.pk, 1, "Renamed")
@@ -851,12 +941,14 @@ class SavedPlanTests(TestCase):
         with self.assertRaises(PlanConflict):
             apply_preview(self.user, preview.pk)
 
-    def test_regenerate_is_previewed_before_apply(self):
+    def test_parameter_change_is_previewed_before_apply(self):
         old = deepcopy(self.draft.snapshot)
-        preview = make_preview(self.draft, 1, {"action": "regenerate"})
+        preview = make_preview(
+            self.draft, 1, {"action": "parameters", "inputs": {**self.inputs, "servings": 2}}
+        )
         self.draft.refresh_from_db()
         self.assertEqual(self.draft.snapshot, old)
-        self.assertNotEqual(schedule_codes(thaw(preview.snapshot)), schedule_codes(thaw(old)))
+        self.assertEqual(preview.inputs["servings"], 2)
         self.assertTrue(thaw(preview.snapshot)["within_budget"])
 
     def test_saved_parameter_post_only_previews_changes(self):
@@ -900,9 +992,8 @@ class SavedPlanTests(TestCase):
             {"action": "replace", "day": 2, "meal": "sarapan", "recipe": self.quotes[-1][1]},
         )
         edited = apply_preview(self.user, preview.pk)
-        for action in ("regenerate", "parameters"):
-            with self.assertRaises(PlanConflict):
-                make_preview(edited, edited.version, {"action": action})
+        with self.assertRaises(PlanConflict):
+            make_preview(edited, edited.version, {"action": "parameters", "inputs": self.inputs})
         saved = save_plan(
             self.user,
             edited.pk,
