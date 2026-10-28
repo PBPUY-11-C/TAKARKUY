@@ -32,7 +32,7 @@
   function syncThemeButtons() {
     const dark = document.documentElement.dataset.theme === "dark";
     document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
-      button.setAttribute("aria-pressed", String(dark));
+      button.setAttribute("aria-checked", String(dark));
     });
   }
 

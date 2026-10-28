@@ -10,7 +10,7 @@ button,input,select{font:inherit}button,a,input,select{touch-action:manipulation
 .photo-credit { line-height:1.5; }
 .recipe-card-photo-placeholder { display:flex; width:calc(100% + 34px); height:150px; margin:-17px -17px 6px; flex-direction:column; align-items:center; justify-content:center; gap:6px; border-radius:15px 15px 0 0; background:linear-gradient(135deg,#e9f4ef,#edf2fc); color:#61766e; }
 .recipe-card-photo-placeholder span,.recipe-photo-placeholder span { font-size:30px; color:#27866a; }
-.recipe-card-photo-placeholder small,.recipe-photo-placeholder figcaption { font-size:10px; color:#61766e; }
+.recipe-card-photo-placeholder small,.recipe-photo-placeholder figcaption { font-size:10px; color:#53675f; }
 .recipe-photo-placeholder { display:flex; min-height:180px; margin:18px 0; flex-direction:column; align-items:center; justify-content:center; gap:8px; border:1px dashed #bfd5cc; border-radius:12px; background:linear-gradient(135deg,#e9f4ef,#edf2fc); }
 @media(max-width:520px) { .recipe-card-photo { width:calc(100% + 26px); height:125px; margin:-13px -13px 5px; } }
 @media(max-width:520px) { .recipe-card-photo-placeholder { width:calc(100% + 26px); height:125px; margin:-13px -13px 5px; } }

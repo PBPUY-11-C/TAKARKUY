@@ -46,7 +46,7 @@ function setup(overBudget = 5000, { pending = false, notes = [], targetsSet = fa
     URL, document: {
       getElementById: (id) => id === "pending-plan-preview" ? pendingPreview : get(id),
       createElement: () => new Element(),
-      querySelector: () => ({ value: "test-csrf" }),
+      querySelector: (selector) => selector.includes("csrfmiddlewaretoken") ? { value: "test-csrf" } : null,
       querySelectorAll: (selector) => selector === "[data-replace-menu]" ? [replace]
         : selector === "[data-close-dialog]" ? [close] : [],
     },

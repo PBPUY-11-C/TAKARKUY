@@ -35,6 +35,8 @@ class SharedBaseTemplateTests(TestCase):
             with self.subTest(page=name):
                 html = response.content.decode()
                 self.assertIn("data-theme-toggle", html)
+                self.assertIn('role="switch"', html)
+                self.assertIn('aria-checked="false"', html)
                 self.assertIn("takarkuy/theme.css", html)
                 self.assertLess(html.index("takarkuy-theme"), html.index("takarkuy/base.css"))
 

@@ -24,10 +24,15 @@
     image.replaceWith(placeholder);
   }
 
-  for (const config of configs) {
-    for (const image of document.querySelectorAll(config.selector)) {
-      image.addEventListener('error', () => replaceWithPlaceholder(image, config.placeholder, config.label(image)), { once: true });
-      if (image.complete && image.naturalWidth === 0) replaceWithPlaceholder(image, config.placeholder, config.label(image));
+  function bind(root = document) {
+    for (const config of configs) {
+      for (const image of root.querySelectorAll(config.selector)) {
+        image.addEventListener('error', () => replaceWithPlaceholder(image, config.placeholder, config.label(image)), { once: true });
+        if (image.complete && image.naturalWidth === 0) replaceWithPlaceholder(image, config.placeholder, config.label(image));
+      }
     }
   }
+
+  globalThis.TakarKuyImages = { bind };
+  bind();
 })();

@@ -1,6 +1,7 @@
 """Opt-in Chromium checks: no horizontal overflow and a working dark theme on every page."""
 
 import os
+from pathlib import Path
 from unittest import skipUnless
 
 from django.contrib.auth import get_user_model
@@ -10,6 +11,7 @@ from django.urls import reverse
 from tests.test_design_system import GUEST_PAGES, USER_PAGES
 
 WIDTHS = (360, 768, 1280)
+CONTRAST_AUDIT = (Path(__file__).parent / "contrast_audit.js").read_text(encoding="utf-8")
 
 
 @skipUnless(os.getenv("TAKARKUY_BROWSER_VERIFY") == "1", "Opt-in local Chromium verification")
@@ -57,6 +59,11 @@ class DesignBrowserTests(StaticLiveServerTestCase):
                             )
                             channels = [int(v) for v in state["body"][4:-1].split(",")[:3]]
                             dark = sum(channels) / 3 < 80
+                            if theme == "dark" and width == 1280:
+                                for row in page.evaluate(CONTRAST_AUDIT):
+                                    problems.append(
+                                        f"{path} kontras {row['ratio']} pada {row['el']} '{row['text']}'"
+                                    )
                             if state["overflow"] > 0:
                                 problems.append(f"{path} {width}px melebar {state['overflow']}px")
                             if state["theme"] != theme or dark != (theme == "dark"):
@@ -81,7 +88,7 @@ class DesignBrowserTests(StaticLiveServerTestCase):
             self.assertEqual(page.evaluate("document.documentElement.dataset.theme"), "dark")
             page.reload()
             self.assertEqual(page.evaluate("document.documentElement.dataset.theme"), "dark")
-            self.assertEqual(
-                page.get_attribute("[data-theme-toggle]", "aria-pressed"), "true"
-            )
+            self.assertEqual(page.get_attribute("[data-theme-toggle]", "aria-checked"), "true")
+            page.evaluate("TakarKuy.toast('Rencana tersimpan.'); TakarKuy.toast('Gagal.', 'error')")
+            self.assertEqual(page.evaluate(CONTRAST_AUDIT), [])
             browser.close()
