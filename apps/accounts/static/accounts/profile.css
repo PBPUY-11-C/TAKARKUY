@@ -42,3 +42,36 @@ body.profile-page { display: block; padding: 0; place-items: normal; }
 
 .preferences-page-card { max-width: 850px; }
 .preferences-page-card .back-home { margin-bottom: 20px; }
+
+/* Shared settings shell: one menu, three independent pages. */
+.settings-shell { max-width: 1160px; padding-top: 44px; }
+.settings-shell h1 { margin-bottom: 28px; font-size: clamp(26px, 4vw, 32px); }
+.settings-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; align-items: start; }
+.settings-nav { display: grid; gap: 6px; position: sticky; top: 92px; padding-top: 12px; }
+.settings-nav a { display: flex; align-items: center; min-height: 44px; padding: 11px 16px; border-radius: 12px; color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; }
+.settings-nav a:hover { background: var(--green-soft); color: var(--green); text-decoration: none; }
+.settings-nav a[aria-current="page"] { background: var(--green-soft); color: var(--green); font-weight: 800; box-shadow: inset 3px 0 var(--green); }
+.settings-panel { padding: 32px; border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+.settings-panel h2 { margin-bottom: 10px; font-size: 24px; font-weight: 800; letter-spacing: -.025em; }
+.settings-description { margin: 0 0 28px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.account-settings-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 22px; }
+.account-settings-form > div { min-width: 0; }
+.account-settings-form > div:has(> .errorlist), .account-settings-form > .errorlist { grid-column: 1 / -1; }
+.account-settings-form label { min-height: 32px; }
+.profile-section .settings-actions { display: flex; justify-content: flex-end; grid-column: 1 / -1; margin: 12px 0 0; padding-top: 20px; border-top: 1px solid var(--line); }
+.settings-actions .submit { width: auto; min-width: 180px; padding: 12px 20px; }
+@media (max-width: 760px) {
+  .settings-shell { padding-top: 28px; }
+  .settings-layout { grid-template-columns: 1fr; gap: 20px; }
+  .settings-nav { position: static; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  .settings-nav a { justify-content: center; padding: 10px 6px; text-align: center; font-size: 12px; }
+  .settings-nav a[aria-current="page"] { box-shadow: none; }
+  .settings-panel { padding: 24px; }
+}
+@media (max-width: 520px) {
+  .settings-shell h1 { margin-bottom: 20px; }
+  .settings-panel { padding: 22px 18px; border-radius: 18px; }
+  .account-settings-form { grid-template-columns: 1fr; }
+  .account-settings-form label { min-height: auto; }
+  .settings-actions .submit { width: 100%; min-width: 0; }
+}

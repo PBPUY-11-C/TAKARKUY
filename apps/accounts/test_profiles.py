@@ -90,6 +90,19 @@ class IdentityTests(TestCase):
 
 
 class ProfileTests(TestCase):
+    def test_settings_pages_share_navigation_with_the_current_page_marked(self):
+        for route, label in (
+            ("modul3", "Akun"), ("password-change", "Keamanan akun"),
+            ("food-preferences", "Preferensi makanan"),
+        ):
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route))
+                self.assertContains(response, "<h1>Pengaturan profil</h1>", html=True)
+                self.assertContains(response, 'aria-label="Pengaturan profil"')
+                self.assertContains(
+                    response, f'<a href="{reverse(route)}" aria-current="page">{label}</a>', html=True
+                )
+
     def test_preferences_have_a_separate_protected_page(self):
         url = reverse("food-preferences")
         response = self.client.get(reverse("modul3"))
