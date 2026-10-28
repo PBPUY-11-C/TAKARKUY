@@ -15,8 +15,9 @@ class ErrorPageTests(TestCase):
     def test_404_links_signed_in_users_to_their_pages(self):
         self.client.force_login(get_user_model().objects.create_user("tersesat"))
         response = self.client.get("/halaman-yang-tidak-ada/")
-        self.assertContains(response, f'href="{reverse("modul5")}"', status_code=404)
-        self.assertContains(response, f'href="{reverse("modul1")}"', status_code=404)
+        self.assertContains(response, "Kembali ke Dashboard", status_code=404)
+        self.assertNotContains(response, f'href="{reverse("modul1")}"', status_code=404)
+        self.assertNotContains(response, f'href="{reverse("login")}"', status_code=404)
 
     def test_expired_form_uses_csrf_page(self):
         response = Client(enforce_csrf_checks=True).post(reverse("login"), {})
