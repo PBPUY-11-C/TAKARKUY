@@ -1,0 +1,56 @@
+{% load static %}<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Terjadi kesalahan{% endblock %} · TAKARKUY</title>
+  <link rel="icon" href="{% static 'takarkuy/logo.svg' %}" type="image/svg+xml">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh; min-height: 100svh; margin: 0; padding: 24px;
+      display: grid; place-items: center;
+      background: radial-gradient(circle at 50% 0%, #15503c 0%, #0b3522 55%, #072316 100%);
+      color: #fff; font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    main { width: min(100%, 560px); text-align: center; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 36px; color: #fff; font-weight: 800; letter-spacing: .04em; text-decoration: none; }
+    .brand img { width: 30px; height: 36px; }
+    .code { max-width: none; margin: 0; color: #d4f45a; font-size: clamp(84px, 22vw, 140px); font-weight: 800; line-height: 1; letter-spacing: -.04em; }
+    .plate { display: grid; place-items: center; width: 76px; height: 76px; margin: 18px auto 22px; border-radius: 50%; background: rgba(212, 244, 90, .12); color: #d4f45a; }
+    .plate svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .plate-large { width: 132px; height: 132px; margin-top: 0; }
+    .plate-large svg { width: 68px; height: 68px; }
+    h1 { margin: 0 0 12px; font-size: clamp(24px, 5.5vw, 32px); line-height: 1.2; letter-spacing: -.02em; }
+    p { margin: 0 auto 28px; max-width: 420px; color: #cfe3d8; font-size: 16px; line-height: 1.65; }
+    .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .actions a { display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 999px; font-weight: 700; text-decoration: none; }
+    .primary { background: #d4f45a; color: #0b3522; }
+    .primary:hover { background: #e2fa83; }
+    .secondary { border: 1px solid rgba(212, 244, 90, .45); color: #fff; }
+    .secondary:hover { background: rgba(255, 255, 255, .08); }
+    a:focus-visible { outline: 3px solid #d4f45a; outline-offset: 4px; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="brand" href="{% url 'landing' %}" aria-label="TAKARKUY, ke beranda"><img src="{% static 'takarkuy/logo-light.svg' %}" alt="">TAKARKUY</a>
+    {% block hero %}
+    <p class="code" aria-hidden="true">{% block code %}{% endblock %}</p>
+    <div class="plate" aria-hidden="true">{% block icon %}{% endblock %}</div>
+    {% endblock %}
+    <h1>{% block heading %}{% endblock %}</h1>
+    <p>{% block message %}{% endblock %}</p>
+    <div class="actions">{% block actions %}
+      {% if user.is_authenticated %}
+      <a class="primary" href="{% url 'modul5' %}">Ke Dashboard</a>
+      <a class="secondary" href="{% url 'modul1' %}">Buka Meal Planner</a>
+      {% else %}
+      <a class="primary" href="{% url 'landing' %}">Kembali ke beranda</a>
+      <a class="secondary" href="{% url 'login' %}">Masuk</a>
+      {% endif %}
+    {% endblock %}</div>
+  </main>
+</body>
+</html>
