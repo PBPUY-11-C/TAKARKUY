@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'takarkuy/base.css' %}?v=20261028-integrated">
-  <link rel="stylesheet" href="{% static 'accounts/landing.css' %}?v=20261026">
+  <link rel="stylesheet" href="{% static 'accounts/landing.css' %}?v=20261028-steps">
 </head>
 <body class="landing">
   <a class="skip-link" href="#main">Langsung ke konten</a>
@@ -57,7 +57,7 @@
                   <button type="button" class="chip press" data-budget="350000">350rb</button>
                 </div>
               </div>
-              <div class="money"><span>Rp</span><input class="num" id="trial-budget" name="budget" type="number" inputmode="numeric" min="20000" max="500000" step="1" value="150000" required></div>
+              <div class="money"><span>Rp</span><input class="num" id="trial-budget" name="budget" type="text" inputmode="numeric" autocomplete="off" data-min="20000" data-max="500000" value="150.000" required></div>
               <input class="range" id="trial-range" type="range" min="20000" max="500000" step="5000" value="150000" aria-label="Geser budget">
             </div>
             <div class="two">
@@ -125,8 +125,8 @@
           <p>Simpan stok dari struk belanja, tahu mana yang harus dimasak duluan.</p>
           <div class="mini">
             <span class="mini-head"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg>Dari struk belanja</span>
-            <div class="mini-row" id="bayam-row"><div><b id="bayam-name">Bayam · 1 ikat</b><span id="bayam-note">Beli 2 hari lalu · Cepat layu</span></div><span class="badge badge-soon pulse" id="bayam-badge">Segera masak</span></div>
-            <div class="mini-row"><div><b>Telur · <span class="pop-target" id="egg-count">6</span> butir</b><span>Masih tahan 9 hari</span></div><span class="badge badge-ok">Aman</span></div>
+            <div class="mini-row" id="bayam-row"><div><b id="bayam-name">Bayam · 1 ikat</b></div><span class="badge badge-soon pulse" id="bayam-badge">Segera masak</span></div>
+            <div class="mini-row"><div><b>Telur · <span class="pop-target" id="egg-count">6</span> butir</b></div><span class="badge badge-ok">Aman</span></div>
           </div>
         </article>
 
@@ -134,7 +134,7 @@
           <div class="tool-head"><span class="icon-box" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM4 17h14M8 7h6"/></svg></span><h3>Resep</h3></div>
           <p>Rekomendasi resep dari isi kulkasmu. Selesai masak, stok otomatis terpotong.</p>
           <div class="mini">
-            <div class="mini-row"><div><b>Tumis bayam telur</b><span id="cook-note">Pakai 1 ikat bayam, 2 telur</span></div><button type="button" class="cook press" id="cook-btn" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span>Masak sekarang</span></button></div>
+            <div class="mini-row"><div><b>Tumis bayam telur</b></div><button type="button" class="cook press" id="cook-btn" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span>Masak sekarang</span></button></div>
           </div>
         </article>
       </div>
@@ -149,6 +149,6 @@
   </main>
 
   {{ landing_menu|json_script:"landing-menu" }}
-  <script src="{% static 'accounts/landing.js' %}?v=20261026" defer></script>
+  <script src="{% static 'accounts/landing.js' %}?v=20261028-rupiah" defer></script>
 </body>
 </html>

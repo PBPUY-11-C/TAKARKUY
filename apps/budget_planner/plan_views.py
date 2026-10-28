@@ -209,12 +209,13 @@ def pantry_annotations(user, plan, result, display_schedule):
 
 
 def landing_prefill(query):
-    """Budget, days, servings and meals carried from the landing calculator."""
-    values = {
-        key: int(query[key])
-        for key in ("budget", "days", "servings")
-        if query.get(key, "").isdigit()
-    }
+    """Budget, days, servings and meals carried from the landing calculator.
+
+    The calculator shows the budget with thousands dots ("150.000").
+    """
+    raw = {key: query.get(key, "") for key in ("budget", "days", "servings")}
+    raw["budget"] = raw["budget"].replace(".", "")
+    values = {key: int(text) for key, text in raw.items() if text.isascii() and text.isdigit()}
     meals = [meal for meal in query.getlist("meal_types") if meal in MEALS]
     if meals:
         values["meal_types"] = meals
