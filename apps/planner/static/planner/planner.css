@@ -208,7 +208,7 @@
 .pantry-list label span:first-of-type { flex: 1; font-weight: 600; }
 .pantry-pick { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--pl-green); }
 
-.plan-dialog { width: min(94vw, 560px); max-height: 88vh; padding: 0; border: 0; border-radius: 20px; color: var(--pl-ink); box-shadow: 0 18px 60px rgba(23, 34, 53, .25); }
+.plan-dialog { width: min(94vw, 600px); max-height: 88vh; padding: 0; border: 0; border-radius: 20px; color: var(--pl-ink); box-shadow: 0 18px 60px rgba(23, 34, 53, .25); }
 .plan-dialog[open] { display: flex; flex-direction: column; }
 .plan-dialog::backdrop { background: rgba(15, 30, 25, .45); }
 .dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 24px 10px; }
@@ -225,10 +225,48 @@
 .option-delta { flex: none; color: var(--pl-muted); font-size: 14px; font-weight: 700; }
 .option-delta.cheaper { color: #0f6b4c; }
 .option-delta.pricier { color: #8a4b0f; }
-.cost-notice { margin: 0 0 6px; padding: 12px; border-radius: 10px; background: var(--pl-soft); font-weight: 700; }
-#preview-result p { font-size: 14px; }
-.preview-schedule { margin: 12px 0; padding: 10px 14px; border-radius: 10px; background: var(--pl-soft); font-size: 13px; }
-.preview-schedule p { margin: 4px 0; }
+.dialog-eyebrow { display: block; margin-bottom: 4px; color: var(--pl-green); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.dialog-eyebrow[hidden] { display: none; }
+.proposal { display: flex; flex-direction: column; gap: 16px; }
+.proposal[hidden] { display: none; }
+.proposal p { margin: 0; font-size: 13px; }
+.proposal p:empty { display: none; }
+.proposal-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.proposal-chip { padding: 6px 12px; border-radius: 999px; background: var(--pl-soft); font-size: 13px; font-weight: 600; }
+.proposal-chip.changed { background: var(--pl-green-soft); color: var(--pl-green-text); font-weight: 700; }
+.proposal-cost { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--pl-line); border-radius: 16px; }
+.proposal-cost-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) auto; align-items: end; gap: 8px; }
+.proposal-cost-row > div { display: flex; flex-direction: column; gap: 2px; }
+.proposal-label { color: var(--pl-muted); font-size: 12px; }
+.proposal-before { color: var(--pl-muted); font-size: 18px; font-weight: 700; text-decoration: line-through; white-space: nowrap; }
+.proposal-after { font-size: 24px; font-weight: 800; white-space: nowrap; }
+.proposal-delta { padding: 6px 10px; border-radius: 999px; background: var(--pl-soft); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.proposal-delta.up { background: var(--pl-warn-soft); color: var(--pl-warn); }
+.proposal-delta.down { background: var(--pl-green-soft); color: var(--pl-green-text); }
+.proposal-cost .bar { height: 8px; }
+.proposal-cost .bar .over { background: #b42318; }
+.proposal-cost-foot { display: flex; justify-content: space-between; gap: 12px; color: var(--pl-muted); font-size: 13px; }
+.proposal-cost-foot strong { flex: none; color: var(--pl-green-text); }
+.proposal-cost-foot strong.over { color: #b42318; }
+.proposal-nutrition { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.proposal-nutrient { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: var(--pl-soft); }
+.proposal-nutrient strong { font-size: 16px; }
+.proposal-nutrient span { color: var(--pl-muted); font-size: 12px; }
+.proposal-section { display: flex; flex-direction: column; gap: 10px; }
+.proposal-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.proposal-head h3 { margin: 0; font-size: 15px; font-weight: 800; }
+.proposal-head .day-tabs button { min-height: 36px; padding: 0 12px; font-size: 13px; }
+.proposal-meals { display: flex; flex-direction: column; gap: 8px; }
+.proposal-meal { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--pl-line); border-radius: 14px; font-size: 13px; }
+.proposal-meal .meal-label { flex: none; min-width: 52px; text-align: center; }
+.proposal-meal-name { flex: 1; min-width: 0; font-size: 14px; font-weight: 700; }
+.proposal-shopping { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.proposal-shopping li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--pl-line); border-radius: 12px; }
+.proposal-shopping .shop-icon { width: 32px; height: 32px; }
+.proposal-shopping .shop-icon svg { width: 17px; height: 17px; }
+.proposal-shopping .shop-name { font-size: 14px; }
+.proposal-details summary { color: var(--pl-green); font-size: 13px; font-weight: 700; cursor: pointer; }
+.proposal-details ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.7; }
 .budget-increase label { display: block; margin: 12px 0 6px; font-size: 13px; font-weight: 700; }
 .budget-increase input { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--pl-field); border-radius: 10px; box-sizing: border-box; font: inherit; }
 .dialog-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px; border-top: 1px solid var(--pl-line); background: #fafbfd; }
@@ -237,6 +275,11 @@
 .dialog-actions [hidden] { display: none; }
 
 @media (max-width: 760px) {
+  .proposal-nutrition, .proposal-shopping { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .proposal-cost-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .proposal-delta { grid-column: 1 / -1; justify-self: start; }
+  .proposal-before { font-size: 16px; }
+  .proposal-after { font-size: 20px; }
   .planner-page .page { padding-top: 20px; }
   .planner-form { padding: 16px; }
   .field-budget { flex-basis: 100%; }

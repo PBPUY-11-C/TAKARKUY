@@ -134,8 +134,23 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body.page-modul1 .option-delta { color: #b7bec5; }
 :root[data-theme="dark"] body.page-modul1 .option-delta.cheaper { color: #88ddc0; }
 :root[data-theme="dark"] body.page-modul1 .option-delta.pricier { color: #ddb188; }
-:root[data-theme="dark"] body.page-modul1 .cost-notice { background: #121519; }
-:root[data-theme="dark"] body.page-modul1 .preview-schedule { background: #121519; }
+:root[data-theme="dark"] body.page-modul1 .dialog-eyebrow { color: #88ddc5; }
+:root[data-theme="dark"] body.page-modul1 .proposal-chip { background: #121519; }
+:root[data-theme="dark"] body.page-modul1 .proposal-chip.changed { background: #24352b; color: #88ddc1; }
+:root[data-theme="dark"] body.page-modul1 .proposal-cost { border: 1px solid #383e44; }
+:root[data-theme="dark"] body.page-modul1 .proposal-label { color: #b7bec5; }
+:root[data-theme="dark"] body.page-modul1 .proposal-before { color: #b7bec5; }
+:root[data-theme="dark"] body.page-modul1 .proposal-delta { background: #121519; }
+:root[data-theme="dark"] body.page-modul1 .proposal-delta.up { background: #3b2f1c; color: #ddb088; }
+:root[data-theme="dark"] body.page-modul1 .proposal-delta.down { background: #24352b; color: #88ddc1; }
+:root[data-theme="dark"] body.page-modul1 .proposal-cost-foot { color: #b7bec5; }
+:root[data-theme="dark"] body.page-modul1 .proposal-cost-foot strong { color: #88ddc1; }
+:root[data-theme="dark"] body.page-modul1 .proposal-cost-foot strong.over { color: #dd8e88; }
+:root[data-theme="dark"] body.page-modul1 .proposal-nutrient { background: #121519; }
+:root[data-theme="dark"] body.page-modul1 .proposal-nutrient span { color: #b7bec5; }
+:root[data-theme="dark"] body.page-modul1 .proposal-meal { border: 1px solid #383e44; }
+:root[data-theme="dark"] body.page-modul1 .proposal-shopping li { border: 1px solid #383e44; }
+:root[data-theme="dark"] body.page-modul1 .proposal-details summary { color: #88ddc5; }
 :root[data-theme="dark"] body.page-modul1 .budget-increase input { border: 1px solid #3c4248; }
 :root[data-theme="dark"] body.page-modul1 .dialog-foot { border-top: 1px solid #383e44; background: #1e2723; }
 

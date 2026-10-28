@@ -4,7 +4,7 @@
 {% block body_class %}has-app-nav planner-page{% endblock %}
 {% block extra_head %}
   <meta name="description" content="Rencana makan TAKARKUY dari budget, katalog resep, dan harga bahan.">
-  <link rel="stylesheet" href="{% static 'planner/planner.css' %}?v=20261029-swap">
+  <link rel="stylesheet" href="{% static 'planner/planner.css' %}?v=20261029-ganti">
   {% if remembered_url %}
   <script>
     // Reopen the last plan only in a tab that already showed it (sessionStorage ends with the tab).
@@ -63,7 +63,7 @@
             {{ form.exclude_ingredients }}
           </div>
         </details>
-        <button type="submit" class="primary-button">{% if plan.status == 'saved' %}Pratinjau perubahan{% else %}Buat rencana{% endif %}</button>
+        <button type="submit" class="primary-button">{% if plan.status == 'saved' %}Ganti semua menu{% else %}Buat rencana{% endif %}</button>
       </div>
       {% if not plan and active_draft %}
       <input type="hidden" name="replace_draft_id" value="{{ active_draft.pk }}">
@@ -241,6 +241,6 @@
   </main>
 {% endblock %}
 {% block scripts %}
-  <script src="{% static 'planner/plans.js' %}?v=20261029-swap" defer></script>
+  <script src="{% static 'planner/plans.js' %}?v=20261029-ganti" defer></script>
   <script src="{% static 'recipe/image_fallback.js' %}" defer></script>
 {% endblock %}
