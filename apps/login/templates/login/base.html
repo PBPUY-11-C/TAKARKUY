@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  {% include "partials/head.html" %}
-  <title>{% block title %}Akun{% endblock %} — TAKARKUY</title>
+{% extends "base.html" %}
+{% block title %}{% block page_title %}Akun{% endblock %} — TAKARKUY{% endblock %}
+{% block extra_head %}
   <style>
     :root { --field: var(--green-soft); }
     *, *::before, *::after { box-sizing: border-box; }
@@ -41,11 +39,10 @@
     .switch-page { margin: 24px 0 0; color: #485854; font-size: 13px; text-align: center; }
     @media (max-width: 480px) { .auth-card { padding: 28px 20px; } }
   </style>
-  {% block extra_head %}{% endblock %}
-</head>
-<body class="{% block body_class %}{% endblock %}">
-  {% block header %}{% endblock %}
-  {% block content %}{% endblock %}
+  {% block page_head %}{% endblock %}
+{% endblock %}
+{% block header %}{% include "partials/theme_toggle.html" with floating=True %}{% endblock %}
+{% block scripts %}
   <script>
     document.querySelectorAll("[data-password-toggle]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -57,6 +54,5 @@
       });
     });
   </script>
-  {% block scripts %}{% endblock %}
-</body>
-</html>
+  {% block page_scripts %}{% endblock %}
+{% endblock %}

@@ -1,15 +1,9 @@
+{% extends "base.html" %}
 {% load static planner_format %}
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  {% include "partials/head.html" %}
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TAKARKUY</title>
+{% block title %}TAKARKUY{% endblock %}
+{% block extra_head %}
   <link rel="stylesheet" href="{% static 'home/dashboard.css' %}">
   <script type="module" src="{% static 'home/dashboard.js' %}?v=20261028-pasar"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
     button { font: inherit; }
     .site-header {
@@ -40,9 +34,8 @@
       .nav-links { font-size: 12px; gap: 7px; }
     }
   </style>
-</head>
-<body>
-    {% include "partials/app_header.html" %}
+{% endblock %}
+{% block content %}
     <main class="dashboard-shell">
       <div class="dashboard-heading"><div><p class="muted">{{ today|date:'l, d F Y' }}</p><h1>Hai, {{ user.first_name|default:user.username }} <span aria-hidden="true">👋</span></h1></div><button id="open-market" type="button" class="secondary">Cari pasar terdekat ↗</button></div>
       <section class="summary-cards" aria-label="Ringkasan dapur">
@@ -70,8 +63,7 @@
         <section class="dashboard-panel history-panel"><div class="section-title"><h2>Terakhir dimasak</h2><a href="{% url 'modul4' %}#cooking-history">Semua →</a></div><ul class="dashboard-list">{% for entry in recent_cooking %}<li><div><strong>{{ entry.recipe_name }}</strong><small>{{ entry.display_time|date:'d M Y, H:i' }} WIB · {{ entry.servings }} porsi</small></div>{% if entry.recipe and entry.recipe.is_active %}<a href="{% url 'modul4' %}?recipe={{ entry.recipe_id|urlencode }}#recipe-reviews">Ulas resep →</a>{% else %}<span class="muted">Resep tidak tersedia</span>{% endif %}</li>{% empty %}<li class="empty">Masakan yang dicatat di Recipe Book akan tampil di sini.</li>{% endfor %}</ul></section>
       </div>
     </main>
-    {{ map_places|json_script:'map-places' }}
-    {{ map_config|json_script:'map-config' }}
+
     <dialog id="market-dialog" aria-labelledby="market-title" data-url="{% url 'modul5-places' %}">
       <div class="section-title"><h2 id="market-title">Pasar terdekat</h2><button id="close-market" class="text-button" type="button" aria-label="Tutup peta">✕</button></div>
       <div class="map-toolbar"><button id="locate-market" type="button" class="primary">📍 Gunakan lokasi saya</button><small>Lokasi dibulatkan ±1 km sebelum dikirim dan tidak disimpan di akun.</small></div>
@@ -80,5 +72,8 @@
       <p class="small-note">Data OpenStreetMap, dengan daftar kurasi pasar Garut sebagai cadangan. Konfirmasi jam buka sebelum datang.</p>
       <details class="small-note"><summary>Sumber &amp; privasi peta</summary><p>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. Tile peta dikirim oleh pihak ketiga yang dapat melihat IP/area peta yang dibuka. Pencarian lokasi hanya mengirim titik yang dibulatkan ±1 km ke server; titik tersebut dipakai mencari pasar lewat OpenStreetMap dan tidak dikaitkan dengan akun. Hasil komunitas belum tentu lengkap atau terbaru.</p></details>
     </dialog>
-</body>
-</html>
+{% endblock %}
+{% block scripts %}
+    {{ map_places|json_script:'map-places' }}
+    {{ map_config|json_script:'map-config' }}
+{% endblock %}
