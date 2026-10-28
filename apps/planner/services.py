@@ -1,0 +1,770 @@
+"""Account-owned plans, immutable saved snapshots, and explicit preview approval."""
+
+import secrets
+from collections import defaultdict
+from collections.abc import Mapping
+from datetime import timedelta
+from decimal import Decimal
+from math import ceil
+from uuid import NAMESPACE_URL, uuid5
+from zoneinfo import ZoneInfo
+
+from django.contrib.auth import get_user_model
+from django.db import transaction
+from django.db.models import Q
+from django.utils import timezone
+
+from apps.catalog.allergens import unsafe_schedule
+from apps.catalog.content_policy import protect_recipe_instructions
+from apps.login.preferences import effective_preferences, non_halal_schedule
+
+from .forms import PlannerForm
+from .models import BudgetPlan, PlannedMeal, PlanPreview, PlanPreviewQuota, ShoppingListItem
+from .planner import budget_preference_notes, build_plan, meal_cost_cap, spend_floor
+from .snapshots import freeze, net_total, thaw
+from .templatetags.planner_format import rupiah
+
+
+class PlanConflict(ValueError):
+    pass
+
+
+class PreviewRateLimit(ValueError):
+    def __init__(self, retry_after):
+        self.retry_after = max(1, retry_after)
+        super().__init__(
+            f"Batas 20 pratinjau per 10 menit tercapai. Coba lagi dalam {self.retry_after} detik."
+        )
+
+
+def account_recent_recipe_codes(user, *, today=None):
+    today = today or timezone.localdate(timezone=JAKARTA)
+    return set(
+        PlannedMeal.objects.filter(
+            plan__user=user,
+            scheduled_on__gte=today - timedelta(days=6),
+            scheduled_on__lte=today,
+        )
+        .exclude(status="skipped")
+        .values_list("recipe_id", flat=True)
+        .distinct()
+    )
+
+
+JAKARTA = ZoneInfo("Asia/Jakarta")
+PANTRY_PRIORITY_DAYS = 3
+
+
+def stock_context(user, plan=None):
+    """Planner arguments that make a quote use the account's pantry stock first."""
+    from apps.pantry.services import stock_for_planning
+
+    today = timezone.localdate(timezone=JAKARTA)
+    dated = plan is not None and (plan.status == "saved" or plan.source_plan_id)
+    starts_on = plan.starts_on if dated else today
+    frozen = set()
+    if plan is not None:
+        frozen = {item.day for item in cooked_slots(plan)}
+        days = len(thaw(plan.snapshot).get("schedule", []))
+        frozen |= {day for day in range(1, days + 1) if starts_on + timedelta(days=day - 1) < today}
+    return {
+        "stock": _without_reserved(stock_for_planning(user), reserved_stock(user, plan, today)),
+        "starts_on": starts_on,
+        "frozen_days": frozenset(frozen),
+    }
+
+
+def reserved_stock(user, plan, today):
+    """Grams per ingredient other saved plans still take on days not yet past or cooked."""
+    exclude = [
+        pk for pk in (getattr(plan, "pk", None), getattr(plan, "source_plan_id", None)) if pk
+    ]
+    open_days = defaultdict(set)
+    for plan_id, day in (
+        PlannedMeal.objects.filter(
+            plan__user=user, plan__status="saved", scheduled_on__gte=today, status="planned"
+        )
+        .exclude(plan_id__in=exclude)
+        .values_list("plan_id", "day")
+    ):
+        open_days[plan_id].add(day)
+    reserved = defaultdict(Decimal)
+    for other in BudgetPlan.objects.filter(pk__in=open_days).only("pk", "snapshot"):
+        snapshot = thaw(other.snapshot)
+        by_day = snapshot.get("stock_used_by_day")
+        rows = (
+            [snapshot.get("stock_used", {})]
+            if by_day is None
+            else [by_day.get(str(day), {}) for day in open_days[other.pk]]
+        )
+        for row in rows:
+            for code, grams in row.items():
+                reserved[code] += Decimal(grams)
+    return reserved
+
+
+def _without_reserved(stock, reserved):
+    """Remove reserved grams from the earliest-expiring batches first, like FEFO use."""
+    reserved = dict(reserved)
+    left = []
+    for code, grams, expires in stock:
+        take = min(grams, reserved.get(code, 0))
+        if take:
+            reserved[code] -= take
+        if grams - take > 0:
+            left.append((code, grams - take, expires))
+    return left
+
+
+def expiring_stock_codes(user, *, today=None):
+    """Catalog ingredients in the user's pantry that expire within a few days."""
+    from apps.pantry.services import eligible_stock
+
+    today = today or timezone.localdate(timezone=JAKARTA)
+    return frozenset(
+        eligible_stock(user)
+        .filter(estimated_expires_on__lte=today + timedelta(days=PANTRY_PRIORITY_DAYS))
+        .values_list("ingredient_id", flat=True)
+    )
+
+
+def cleanup_previews(*, user=None, now=None):
+    previews = PlanPreview.objects.filter(
+        Q(used_at__isnull=False) | Q(expires_at__lte=now or timezone.now())
+    )
+    if user is not None:
+        previews = previews.filter(plan__user=user)
+    deleted, _ = previews.delete()
+    return deleted
+
+
+@transaction.atomic
+def reserve_preview(user, *, now=None):
+    """Reserve before expensive work; even failed searches consume the attempt."""
+    now = now or timezone.now()
+    get_user_model().objects.select_for_update().get(pk=user.pk)
+    quota, _ = PlanPreviewQuota.objects.get_or_create(
+        user=user, defaults={"window_started_at": now}
+    )
+    end = quota.window_started_at + timedelta(minutes=10)
+    if now >= end:
+        quota.window_started_at, quota.attempts = now, 0
+        end = now + timedelta(minutes=10)
+    if quota.attempts >= 20:
+        raise PreviewRateLimit(ceil((end - now).total_seconds()))
+    quota.attempts += 1
+    quota.save(update_fields=["window_started_at", "attempts"])
+
+
+def clean_inputs(data):
+    if not isinstance(data, Mapping):
+        raise ValueError("Parameter rencana harus berupa objek.")
+    form = PlannerForm(data)
+    if not form.is_valid():
+        raise ValueError("Periksa budget, durasi, porsi, waktu makan, target gizi, dan pantangan.")
+    return form
+
+
+def stored_inputs(form):
+    values = form.cleaned_data
+    return {
+        "budget": str(int(values["budget"])),
+        "days": values["days"],
+        "servings": values["servings"],
+        "meal_types": values["meal_types"],
+        "targets": values["targets"],
+        "exclude_ingredients": ", ".join(values["exclude_ingredients"]),
+        "allergens": values.get("allergens", []),
+        "halal_only": values.get("halal_only", True),
+        "rice": values.get("rice") or "no",
+    }
+
+
+def schedule_codes(result):
+    return [
+        {meal["type"]: meal["recipe_code"] for meal in day["meals"]} for day in result["schedule"]
+    ]
+
+
+def check_version(plan, version):
+    if isinstance(version, bool) or not isinstance(version, int) or version != plan.version:
+        raise PlanConflict(
+            "Rencana sudah berubah di tab/perangkat lain. Muat ulang sebelum melanjutkan."
+        )
+
+
+def check_draft_state(draft, expected_id, expected_version):
+    """An ID as well as a version prevents delete/recreate (ABA) races."""
+    if (
+        (
+            draft is not None
+            and (isinstance(expected_version, bool) or not isinstance(expected_version, int))
+        )
+        or (draft.pk if draft else None) != expected_id
+        or (draft.version if draft else None) != expected_version
+    ):
+        raise PlanConflict("Draft sudah berubah. Muat ulang halaman sebelum melanjutkan.")
+
+
+def sync_children(plan):
+    """Synchronize changed snapshots in batches, keeping stable row identities."""
+    result = thaw(plan.snapshot)
+    assert_cooked_preserved(plan, plan.inputs, result)
+    existing = {(item.day, item.meal_type): item for item in plan.meals.all()}
+    created, updated = [], []
+    slots = set()
+    for day in result["schedule"]:
+        for meal in day["meals"]:
+            key = (day["number"], meal["type"])
+            slots.add(key)
+            values = {
+                "scheduled_on": plan.starts_on + timedelta(days=key[0] - 1),
+                "recipe_id": meal["recipe_code"],
+                "servings": plan.inputs["servings"],
+                "snapshot": freeze(meal),
+            }
+            item = existing.get(key)
+            if item is not None and item.status == "cooked":
+                values["snapshot"] = item.snapshot
+            if item is None:
+                created.append(PlannedMeal(plan=plan, day=key[0], meal_type=key[1], **values))
+            elif any(getattr(item, field) != value for field, value in values.items()):
+                if item.recipe_id != values["recipe_id"]:
+                    item.status = "planned"
+                for field, value in values.items():
+                    setattr(item, field, value)
+                updated.append(item)
+    plan.meals.filter(
+        pk__in=[item.pk for key, item in existing.items() if key not in slots]
+    ).delete()
+    PlannedMeal.objects.bulk_create(created, batch_size=100)
+    PlannedMeal.objects.bulk_update(
+        updated, ["scheduled_on", "recipe", "servings", "snapshot", "status"], batch_size=100
+    )
+    existing = {item.ingredient_id: item for item in plan.shopping_items.all()}
+    created, updated, ingredients = [], [], set()
+    for group in result["shopping_groups"]:
+        for row in group["items"]:
+            code = row["ingredient_code"]
+            ingredients.add(code)
+            values = {
+                "quantity_grams": Decimal(str(row["quantity"])),
+                "estimated_cost": Decimal(str(row["cost"])),
+                "snapshot": freeze(row),
+            }
+            item = existing.get(code)
+            if item is None:
+                created.append(ShoppingListItem(plan=plan, ingredient_id=code, **values))
+            elif any(getattr(item, field) != value for field, value in values.items()):
+                if values["quantity_grams"] > item.quantity_grams:
+                    item.added_to_pantry_at = None
+                for field, value in values.items():
+                    setattr(item, field, value)
+                updated.append(item)
+    plan.shopping_items.filter(
+        pk__in=[item.pk for code, item in existing.items() if code not in ingredients]
+    ).delete()
+    ShoppingListItem.objects.bulk_create(created, batch_size=100)
+    ShoppingListItem.objects.bulk_update(
+        updated,
+        ["quantity_grams", "estimated_cost", "snapshot", "added_to_pantry_at"],
+        batch_size=100,
+    )
+
+
+def reschedule_meals(plan):
+    changed = []
+    for item in plan.meals.all():
+        scheduled_on = plan.starts_on + timedelta(days=item.day - 1)
+        if item.scheduled_on != scheduled_on:
+            item.scheduled_on = scheduled_on
+            changed.append(item)
+    PlannedMeal.objects.bulk_update(changed, ["scheduled_on"], batch_size=100)
+
+
+def cooked_slots(plan, *, include_source=True):
+    slots = list(plan.meals.filter(status="cooked"))
+    if include_source and plan.status == "draft" and plan.source_plan_id:
+        slots.extend(plan.source_plan.meals.filter(status="cooked"))
+    return slots
+
+
+def assert_editable(plan, *, include_source=True):
+    if cooked_slots(plan, include_source=include_source):
+        raise PlanConflict(
+            "Rencana ini sudah memiliki menu yang dimasak. Buat rencana baru agar riwayatnya tetap utuh."
+        )
+
+
+def assert_cooked_preserved(plan, inputs, result, *, include_source=True):
+    """Only an uncooked slot may change; cooked content is immutable, dates are not."""
+    slots = {
+        (day["number"], meal["type"]): meal for day in result["schedule"] for meal in day["meals"]
+    }
+    for item in cooked_slots(plan, include_source=include_source):
+        meal = slots.get((item.day, item.meal_type))
+        if (
+            meal is None
+            or item.recipe_id != meal["recipe_code"]
+            or item.servings != inputs["servings"]
+            or freeze(protect_recipe_instructions(thaw(item.snapshot))) != freeze(meal)
+        ):
+            raise PlanConflict(
+                "Menu yang sudah dimasak tidak boleh diubah/dihapus. Ganti slot lain."
+            )
+
+
+def draft_is_clean(draft):
+    """True when the draft is an unchanged copy of the saved plan it came from."""
+    source = draft.source_plan
+    return (
+        source is not None
+        and source.status == "saved"
+        and draft.source_version == source.version
+        and draft.snapshot == source.snapshot
+        and draft.inputs == source.inputs
+    )
+
+
+@transaction.atomic
+def write_draft(
+    user,
+    inputs,
+    result,
+    *,
+    previous=None,
+    expected_version=None,
+    source=None,
+    replace_draft=False,
+    expected_draft_id=None,
+    expected_draft_version=None,
+):
+    get_user_model().objects.select_for_update().get(pk=user.pk)
+    inputs = {
+        **inputs,
+        **effective_preferences(user, inputs, previous.inputs if previous else {}),
+    }
+    if inputs["halal_only"] and non_halal_schedule(schedule_codes(result)):
+        raise PlanConflict("Menu tidak sesuai preferensi halal terbaru. Buat rencana atau pratinjau baru.")
+    if unsafe_schedule(schedule_codes(result), inputs["allergens"]):
+        raise PlanConflict(
+            "Menu tidak sesuai alergi terbaru atau mengandung bahan belum ditinjau. Buat rencana baru."
+        )
+    draft = BudgetPlan.objects.select_for_update().filter(user=user, status="draft").first()
+    if previous is not None:
+        try:
+            current = BudgetPlan.objects.select_for_update().get(pk=previous.pk, user=user)
+        except BudgetPlan.DoesNotExist as exc:
+            raise PlanConflict("Rencana sudah dihapus. Muat ulang halaman.") from exc
+        check_version(current, expected_version)
+        previous = current
+        assert_cooked_preserved(previous, inputs, result)
+    if previous is None:
+        check_draft_state(draft, expected_draft_id, expected_draft_version)
+        if draft and replace_draft is not True:
+            raise PlanConflict(
+                "Masih ada draft. Simpan draft atau setujui penggantian melalui Rencana Baru."
+            )
+    snapshot_changed = draft is None or draft.snapshot != freeze(result) or draft.inputs != inputs
+    previous_date = draft.starts_on if draft else None
+    if draft:
+        if previous is not None and previous.status == "draft" and draft.pk != previous.pk:
+            raise PlanConflict("Draft sudah diganti. Muat ulang halaman.")
+        if previous is not None and previous.status == "saved" and not draft_is_clean(draft):
+            raise PlanConflict(
+                "Masih ada perubahan draft yang belum disimpan. Simpan atau hapus draft itu sebelum mengubah rencana tersimpan."
+            )
+        assert_cooked_preserved(draft, inputs, result, include_source=previous is not None)
+        draft.version += 1
+        draft.inputs, draft.snapshot = inputs, freeze(result)
+        draft.source_plan = source
+        draft.source_version = (
+            previous.source_version
+            if previous is not None
+            and previous.status == "draft"
+            and previous.source_plan_id == (source.pk if source else None)
+            else source.version
+            if source
+            else None
+        )
+        if source:
+            draft.title, draft.starts_on = source.title, source.starts_on
+        elif previous is None:
+            draft.title, draft.starts_on = (
+                "Rencana Makan Saya",
+                timezone.localdate(timezone=JAKARTA),
+            )
+        draft.save()
+    else:
+        draft = BudgetPlan.objects.create(
+            user=user,
+            inputs=inputs,
+            snapshot=freeze(result),
+            starts_on=source.starts_on if source else timezone.localdate(timezone=JAKARTA),
+            title=source.title if source else "Rencana Makan Saya",
+            source_plan=source,
+            source_version=source.version if source else None,
+        )
+    if snapshot_changed:
+        sync_children(draft)
+    elif previous_date != draft.starts_on:
+        reschedule_meals(draft)
+    return draft
+
+
+def make_preview(plan, version, payload):
+    check_version(plan, version)
+    action = payload.get("action")
+    if not isinstance(action, str):
+        raise ValueError("Aksi pratinjau tidak valid.")
+    old = thaw(plan.snapshot)
+    inputs = {**plan.inputs, **effective_preferences(plan.user, plan.inputs)}
+    form = clean_inputs(inputs)
+    if action == "replace":
+        day, meal_type, recipe = payload.get("day"), payload.get("meal"), payload.get("recipe")
+        if (
+            isinstance(day, bool)
+            or not isinstance(day, int)
+            or not 1 <= day <= len(old["schedule"])
+        ):
+            raise ValueError("Hari tidak valid.")
+        slots = schedule_codes(old)
+        if (
+            not isinstance(meal_type, str)
+            or meal_type not in slots[day - 1]
+            or not isinstance(recipe, str)
+        ):
+            raise ValueError("Waktu makan atau resep tidak valid.")
+        if recipe == slots[day - 1][meal_type]:
+            raise ValueError("Pilih menu yang berbeda.")
+        if any(item.day == day and item.meal_type == meal_type for item in cooked_slots(plan)):
+            raise PlanConflict("Menu yang sudah dimasak tidak dapat diganti.")
+        slots[day - 1][meal_type] = recipe
+        reserve_preview(plan.user)
+        cleanup_previews(user=plan.user)
+        result = build_plan(
+            **form.cleaned_data, fixed_schedule=slots, **stock_context(plan.user, plan)
+        )
+    elif action == "parameters":
+        assert_editable(plan)
+        form = clean_inputs(payload.get("inputs", {}))
+        form.cleaned_data.update(effective_preferences(plan.user, plan.inputs, form.cleaned_data))
+        inputs = stored_inputs(form)
+        prior = {
+            meal: [slots.get(meal) for slots in schedule_codes(old)]
+            for meal in form.cleaned_data["meal_types"]
+        }
+        reserve_preview(plan.user)
+        cleanup_previews(user=plan.user)
+        result = build_plan(
+            **form.cleaned_data,
+            recent_recipe_codes=account_recent_recipe_codes(plan.user)
+            | set(old["planned_recipe_codes"]),
+            prior_slot_recipes=prior,
+            seed=secrets.randbits(32),
+            **stock_context(plan.user, plan),
+        )
+        if not result["within_budget"]:
+            raise ValueError(
+                "Belum ada susunan baru yang sesuai budget. Ubah parameter atau pilih menu lain."
+            )
+    else:
+        raise ValueError("Aksi pratinjau tidak dikenal.")
+    context = stock_context(plan.user, plan)
+    if context["stock"]:
+        try:
+            result["previous_net_total"] = build_plan(
+                **clean_inputs(inputs).cleaned_data,
+                fixed_schedule=schedule_codes(old),
+                **context,
+            )["net_total"]
+        except ValueError:
+            pass
+    if action == "replace":
+        cooked = {(item.day, item.meal_type): item for item in cooked_slots(plan)}
+        for day in result["schedule"]:
+            for index, meal in enumerate(day["meals"]):
+                item = cooked.get((day["number"], meal["type"]))
+                if item:
+                    day["meals"][index] = protect_recipe_instructions(thaw(item.snapshot))
+    draft = BudgetPlan.objects.filter(user=plan.user, status="draft").first()
+    return PlanPreview.objects.create(
+        plan=plan,
+        version=version,
+        inputs=inputs,
+        snapshot=freeze(result),
+        draft_id=draft.pk if draft else None,
+        draft_version=draft.version if draft else None,
+        expires_at=timezone.now() + timedelta(minutes=15),
+    )
+
+
+@transaction.atomic
+def apply_preview(user, preview_id, *, new_budget=None):
+    get_user_model().objects.select_for_update().get(pk=user.pk)
+    stub = PlanPreview.objects.get(pk=preview_id, plan__user=user)
+    plan = BudgetPlan.objects.select_for_update().get(pk=stub.plan_id, user=user)
+    preview = PlanPreview.objects.select_for_update().get(pk=preview_id)
+    check_version(plan, preview.version)
+    current_draft = BudgetPlan.objects.filter(user=user, status="draft").first()
+    if plan.status == "saved":
+        check_draft_state(current_draft, preview.draft_id, preview.draft_version)
+    if preview.used_at or preview.expires_at <= timezone.now():
+        raise PlanConflict("Pratinjau sudah digunakan atau kedaluwarsa. Buat pratinjau baru.")
+    result = thaw(preview.snapshot)
+    assert_cooked_preserved(plan, preview.inputs, result)
+    inputs = preview.inputs.copy()
+    inputs.update(effective_preferences(user, plan.inputs, inputs))
+    if inputs["halal_only"] and non_halal_schedule(schedule_codes(result)):
+        raise PlanConflict("Menu tidak sesuai preferensi halal terbaru. Buat rencana atau pratinjau baru.")
+    if unsafe_schedule(schedule_codes(result), inputs["allergens"]):
+        raise PlanConflict(
+            "Pratinjau tidak sesuai alergi terbaru atau ada bahan belum ditinjau. Buat pratinjau baru; rencana lama tidak diubah."
+        )
+    if net_total(result) > Decimal(inputs["budget"]):
+        if new_budget is None:
+            raise ValueError(
+                "Estimasi melewati budget. Setujui kenaikan budget atau pilih menu lain."
+            )
+        form = clean_inputs({**inputs, "budget": str(new_budget)})
+        if form.cleaned_data["budget"] < net_total(result):
+            raise ValueError("Budget baru masih di bawah estimasi belanja.")
+        inputs = stored_inputs(form)
+        budget = form.cleaned_data["budget"]
+        result.update(within_budget=True, difference=int(budget) - net_total(result))
+        cap = meal_cost_cap(budget, len(result["schedule"]), result["meal_count"])
+        result.update(
+            spend_floor=spend_floor(budget),
+            spend_floor_relaxed=result["total"] < spend_floor(budget),
+            meal_cost_cap=cap,
+            meal_cost_cap_relaxed=any(
+                meal["cost"] > cap for day in result["schedule"] for meal in day["meals"]
+            ),
+        )
+        result["preference_notes"] = budget_preference_notes(
+            result["schedule"], result["total"], budget
+        )
+    elif new_budget is not None:
+        raise ValueError("Kenaikan budget tidak diperlukan untuk pratinjau ini.")
+    draft = write_draft(
+        user,
+        inputs,
+        result,
+        previous=plan,
+        expected_version=preview.version,
+        source=plan if plan.status == "saved" else plan.source_plan,
+    )
+    preview.used_at = timezone.now()
+    preview.save(update_fields=["used_at"])
+    return draft
+
+
+def _requote_with_stock(user, plan, starts_on, saved=None):
+    """Re-check a draft's shopping bill against the pantry as it is now."""
+    from apps.pantry.services import stock_for_planning
+
+    result = thaw(plan.snapshot)
+    if not result.get("stock_used") and not stock_for_planning(user):
+        return
+    form = clean_inputs({**plan.inputs, **effective_preferences(user, plan.inputs)})
+    context = {**stock_context(user, saved), "starts_on": starts_on}
+    try:
+        quote = build_plan(**form.cleaned_data, fixed_schedule=schedule_codes(result), **context)
+    except ValueError as exc:
+        raise PlanConflict(
+            "Menu atau data katalog berubah. Cari susunan baru sebelum menyimpan."
+        ) from exc
+    budget = int(form.cleaned_data["budget"])
+    net = quote["net_total"]
+    if net > budget:
+        raise PlanConflict(
+            f"Stok Pantry atau harga katalog berubah: belanja sekarang {rupiah(net)} "
+            f"(lewat {rupiah(net - budget)}). Ganti menu atau cari susunan baru."
+        )
+    fresh = {
+        row["ingredient_code"]: row for group in quote["shopping_groups"] for row in group["items"]
+    }
+    for group in result["shopping_groups"]:
+        for row in group["items"]:
+            match = fresh.get(row["ingredient_code"], {})
+            row["from_stock"] = match.get("from_stock", 0)
+            row["net_cost"] = match.get("net_cost", row["cost"])
+    result.update(
+        net_total=net,
+        stock_used=quote["stock_used"],
+        within_budget=True,
+        difference=max(0, (budget - net) // 100 * 100),
+    )
+    plan.snapshot = freeze(result)
+
+
+MAX_START_DAYS = 60
+
+
+def chosen_start(starts_on, current, cooked):
+    """The start date to store: `current` unless a different, allowed date was chosen."""
+    if starts_on is None or starts_on == current:
+        return current
+    if cooked:
+        raise PlanConflict("Tanggal mulai tidak bisa diubah karena sudah ada menu yang dimasak.")
+    today = timezone.localdate(timezone=JAKARTA)
+    if not today <= starts_on <= today + timedelta(days=MAX_START_DAYS):
+        raise ValueError(f"Tanggal mulai harus antara hari ini dan {MAX_START_DAYS} hari ke depan.")
+    return starts_on
+
+
+@transaction.atomic
+def save_plan(user, plan_id, version, title, starts_on=None, *, replace_original=False):
+    """Save a draft as a plan, or rename and re-date a saved plan."""
+    get_user_model().objects.select_for_update().get(pk=user.pk)
+    plan = BudgetPlan.objects.select_for_update().get(pk=plan_id, user=user)
+    if (
+        plan.status == "draft"
+        and not isinstance(version, bool)
+        and isinstance(version, int)
+        and plan.last_saved_version == version
+        and plan.version == version + 1
+        and plan.last_saved_plan_id
+        and plan.title == title
+        and starts_on in (None, plan.starts_on)
+    ):
+        return plan.last_saved_plan
+    check_version(plan, version)
+    if not thaw(plan.snapshot)["within_budget"]:
+        raise ValueError("Rencana belum memenuhi budget.")
+    if plan.status == "saved":
+        new_start = chosen_start(starts_on, plan.starts_on, cooked_slots(plan))
+        date_changed = new_start != plan.starts_on
+        plan.title, plan.starts_on = title, new_start
+        plan.version += 1
+        plan.save()
+        if date_changed:
+            reschedule_meals(plan)
+        return plan
+    if effective_preferences(user)["halal_only"] and non_halal_schedule(
+        schedule_codes(thaw(plan.snapshot))
+    ):
+        raise PlanConflict("Menu tidak sesuai preferensi halal terbaru. Cari susunan baru sebelum menyimpan.")
+    saved = None
+    if replace_original:
+        if not plan.source_plan_id:
+            raise ValueError("Draft ini tidak berasal dari rencana tersimpan.")
+        saved = BudgetPlan.objects.select_for_update().get(
+            pk=plan.source_plan_id, user=user, status="saved"
+        )
+        check_version(saved, plan.source_version)
+        starts_on = chosen_start(starts_on, saved.starts_on, cooked_slots(saved))
+    else:
+        assert_editable(plan)
+        today = timezone.localdate(timezone=JAKARTA)
+        if starts_on is not None and starts_on == plan.starts_on and starts_on < today:
+            starts_on = None
+        starts_on = chosen_start(starts_on, today, ())
+    before = plan.snapshot
+    _requote_with_stock(user, plan, starts_on, saved)
+    if saved is not None:
+        assert_cooked_preserved(saved, plan.inputs, thaw(plan.snapshot))
+        snapshot_changed = saved.snapshot != plan.snapshot or saved.inputs != plan.inputs
+        saved_date_changed = saved.starts_on != starts_on
+        saved.inputs, saved.snapshot = plan.inputs, plan.snapshot
+        saved.title, saved.starts_on = title, starts_on
+        saved.version += 1
+        saved.save()
+        if snapshot_changed:
+            sync_children(saved)
+        elif saved_date_changed:
+            reschedule_meals(saved)
+    else:
+        saved = BudgetPlan.objects.create(
+            user=user,
+            status="saved",
+            title=title,
+            starts_on=starts_on,
+            inputs=plan.inputs,
+            snapshot=plan.snapshot,
+        )
+        sync_children(saved)
+    date_changed = plan.starts_on != starts_on
+    plan.title, plan.starts_on = title, starts_on
+    plan.last_saved_plan, plan.last_saved_version = saved, plan.version
+    plan.version += 1
+    plan.source_plan, plan.source_version = saved, saved.version
+    plan.save()
+    if plan.snapshot != before:
+        sync_children(plan)
+    elif date_changed:
+        reschedule_meals(plan)
+    return saved
+
+
+MAX_PURCHASE_GRAMS = Decimal("100000")
+
+
+def purchase_rows(rows):
+    """Validate [{ingredient_code, grams}] from the browser into {code: grams}."""
+    if not isinstance(rows, list) or not 1 <= len(rows) <= 60:
+        raise ValueError("Pilih 1–60 bahan belanja.")
+    wanted = {}
+    for row in rows:
+        code = row.get("ingredient_code") if isinstance(row, Mapping) else None
+        grams = row.get("grams") if isinstance(row, Mapping) else None
+        if (
+            not isinstance(code, str)
+            or isinstance(grams, bool)
+            or not isinstance(grams, (int, float, str))
+        ):
+            raise ValueError("Data bahan belanja tidak valid.")
+        try:
+            grams = Decimal(str(grams)).quantize(Decimal("0.001"))
+        except (ArithmeticError, ValueError) as exc:
+            raise ValueError("Jumlah gram tidak valid.") from exc
+        if not grams.is_finite() or not 0 < grams <= MAX_PURCHASE_GRAMS:
+            raise ValueError("Jumlah gram harus lebih dari 0 dan maksimal 100.000 g.")
+        if code in wanted:
+            raise ValueError("Bahan yang sama dikirim dua kali.")
+        wanted[code] = grams
+    return wanted
+
+
+@transaction.atomic
+def purchases_to_pantry(user, plan_id, version, rows):
+    """Move bought shopping-list items of a saved plan into the user's pantry."""
+    from apps.pantry.services import StockError, add_purchases, operation
+
+    wanted = purchase_rows(rows)
+    key = uuid5(
+        NAMESPACE_URL,
+        f"takarkuy:plan-pantry:{plan_id}:{version}:"
+        + "|".join(f"{code}={grams}" for code, grams in sorted(wanted.items())),
+    )
+    payload = {"plan": str(plan_id), "items": {code: str(g) for code, g in wanted.items()}}
+    try:
+        event, replay = operation(user, key, "create", payload)
+        if replay:
+            return event.response
+        plan = BudgetPlan.objects.select_for_update().get(pk=plan_id, user=user)
+        check_version(plan, version)
+        if plan.status != "saved":
+            raise PlanConflict("Simpan rencana sebelum memasukkan belanja ke Pantry.")
+        items = {
+            item.ingredient_id: item
+            for item in plan.shopping_items.select_for_update()
+            .select_related("ingredient")
+            .filter(ingredient_id__in=wanted)
+        }
+        if set(items) != set(wanted):
+            raise ValueError("Bahan tidak ada di daftar belanja rencana ini.")
+        if any(item.added_to_pantry_at for item in items.values()):
+            raise PlanConflict("Sebagian bahan sudah dimasukkan ke Pantry. Muat ulang halaman.")
+        created = add_purchases(
+            user, [(items[code].ingredient, grams) for code, grams in sorted(wanted.items())], event
+        )
+    except StockError as exc:
+        raise (PlanConflict if exc.status == 409 else ValueError)(str(exc)) from exc
+    now = timezone.now()
+    for item in items.values():
+        item.added_to_pantry_at = now
+    ShoppingListItem.objects.bulk_update(items.values(), ["added_to_pantry_at"])
+    event.response = {"saved": len(created), "ids": [item.pk for item in created]}
+    event.save(update_fields=["response"])
+    return event.response

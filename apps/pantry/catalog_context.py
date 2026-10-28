@@ -43,7 +43,6 @@ def catalog_snapshot():
     )
     version = hashlib.sha256(json.dumps(rows, ensure_ascii=False).encode()).hexdigest()
     counts = Counter(everyday_ingredient_name(name) for _, name in rows)
-    # Do not send indistinguishable labels for distinct catalogue IDs.
     prompt = "\n".join(
         f"{code}|{everyday_ingredient_name(name) if counts[everyday_ingredient_name(name)] == 1 else name}"
         for code, name in rows

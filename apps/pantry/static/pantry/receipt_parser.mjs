@@ -6,8 +6,6 @@ const UNIT_ALIASES = {
   bks: "pack", botol: "botol", pack: "pack", pak: "pack",
 };
 
-// Tesseract reports page confidence on a 0–100 scale. An absent score is
-// treated as uncertain, and a confident page may still contain no parsed items.
 export function needsGeminiFallback(confidence, itemCount) {
   return !Number.isFinite(confidence) || confidence < 80 || itemCount === 0;
 }
@@ -27,7 +25,6 @@ export function parseReceiptText(text) {
     }
     const hasExplicitUnit = UNIT_ALIASES[tokens.at(-1)?.toLowerCase().replace(/[^a-z]/g, "") || ""]
       && /^\d+(?:[.,]\d+)?$/.test(tokens.at(-2) || "");
-    // When OCR misses the price, keep an apparent item with a small quantity as an editable draft.
     const hasQuantityOnly = tokens.length >= 3 && /^\d{1,3}(?:[.,]\d{1,2})?$/.test(tokens.at(-1) || "");
     if (!priceTokens && !hasExplicitUnit && !hasQuantityOnly) continue;
     if (tokens.at(-1)?.toLowerCase() === "rp") tokens.pop();

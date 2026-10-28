@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Collect and rank 100 Western home-style TheMealDB recipe candidates.
-
-This writes a review snapshot only. It never promotes candidates into the
-active catalog: localized ingredients, halal/source-use review, quantities,
-prices, and nutrition must still pass data/build_final.py's curation gate.
-"""
+"""Collect and rank 100 Western home-style TheMealDB recipe candidates."""
 
 import argparse
 import csv
@@ -36,8 +31,6 @@ CSV_FIELDS = [
     "unmapped_ingredients_json", "localization_review_notes", "review_status",
 ]
 
-# Areas with recognizable Western cuisines; keep this list explicit so that
-# unrelated areas do not leak into a “Western” collection.
 WESTERN_AREAS = {
     "american", "australian", "british", "canadian", "croatian", "dutch",
     "french", "greek", "irish", "italian", "polish", "spanish",
@@ -167,8 +160,6 @@ def main():
     if not supported_areas:
         raise RuntimeError("TheMealDB tidak mengembalikan area Barat yang didukung.")
 
-    # Keep this expansion additive: do not select IDs already present in the
-    # broad snapshot or already under review in the curation table.
     excluded_source_ids = set()
     broad_snapshot = SCRATCH / "themealdb_100_candidates.json"
     if broad_snapshot.exists():
@@ -184,8 +175,6 @@ def main():
             )
     excluded_source_ids.discard("")
 
-    # Candidate IDs are collected from selected Western areas and common home
-    # meal categories, then deduplicated before detail lookups.
     ids = {}
     for area in supported_areas:
         print(f"Mencari resep area {area}...", flush=True)
@@ -195,7 +184,6 @@ def main():
                 ids.setdefault(source_id, {"area": area, "name": result.get("strMeal", "")})
         time.sleep(DELAY_SECONDS)
 
-    # Category filters add western staples whose area metadata may be absent.
     print(f"{len(ids)} ID ditemukan dari area. Mengambil daftar kategori...", flush=True)
     categories = get_json("list.php", {"c": "list"}).get("meals") or []
     western_categories = [
@@ -210,9 +198,6 @@ def main():
                 ids.setdefault(source_id, {"area": "", "name": result.get("strMeal", "")})
         time.sleep(DELAY_SECONDS)
 
-    # Area-filtered IDs come first (215 in the current free API snapshot).
-    # Inspect all of them, plus a bounded category-filter fallback, because
-    # some area results are desserts/other categories excluded from this set.
     details = []
     detail_ids = list(ids.items())[:MAX_DETAIL_LOOKUPS]
     print(f"Memeriksa detail maksimal {len(detail_ids)} resep (dengan jeda API)...", flush=True)
@@ -224,8 +209,6 @@ def main():
             meal = found[0]
             source_area = (meal.get("strArea") or listing["area"]).strip()
             source_category = (meal.get("strCategory") or "").strip()
-            # Do not classify an unknown-area meal as Western solely because it
-            # happened to appear in a broad category filter.
             if area_key(source_area) not in WESTERN_AREAS:
                 time.sleep(DELAY_SECONDS)
                 continue

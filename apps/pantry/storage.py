@@ -56,7 +56,6 @@ def storage_options(ingredient_code, name=None):
                     "status": record.shelf_life_status,
                 },
             )
-    # Official references always win; the AI guess only fills a gap.
     return options or _ai_options(ingredient_code, name)
 
 
@@ -114,8 +113,6 @@ def transfer_estimate(item, options, location, starting_on):
             "message": "Tanggal label/manual/lama dipertahankan; pindah lokasi tidak mereset umur.",
         }
     result = expiry_estimate(options, location, starting_on)
-    # Items enter as room temperature; a move on the day storage started is the real
-    # first placement, so it is not capped. Later moves can shorten but never extend.
     placed_today = starting_on and starting_on >= timezone.localdate(timezone=JAKARTA)
     if result["estimated_expires_on"] and item.estimated_expires_on and not placed_today:
         result["estimated_expires_on"] = min(

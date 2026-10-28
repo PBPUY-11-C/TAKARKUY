@@ -1,7 +1,4 @@
-"""Shelf-life guesses from Gemini for food without an official reference.
-
-Saved once per catalog ingredient or normalized name and reused by every account.
-"""
+"""Shelf-life guesses from Gemini for food without an official reference."""
 
 import json
 import os
@@ -31,7 +28,7 @@ def _days(value):
 
 
 def estimate_shelf_life(user, entries):
-    """entries: [(key, name, ingredient_code)]. Returns {key: ShelfLifeEstimate} that exist."""
+    """entries: [(key, name, ingredient_code)]."""
     entries = list({key: (key, name, code) for key, name, code in entries if key}.values())
     found = {e.pk: e for e in ShelfLifeEstimate.objects.filter(pk__in=[k for k, _, _ in entries])}
     missing = [entry for entry in entries if entry[0] not in found][:30]
@@ -41,8 +38,6 @@ def estimate_shelf_life(user, entries):
         reserve_llm(user, "shelf")
     except StockError:
         return found
-    # A catalog key is shared by every account, so ask with the catalog's own name,
-    # never with text a user typed.
     catalog_names = dict(
         Ingredient.objects.filter(pk__in=[code for _, _, code in missing if code]).values_list(
             "pk", "name"
@@ -54,7 +49,7 @@ def estimate_shelf_life(user, entries):
     try:
         result = generate_json(
             [{"text": PROMPT + json.dumps(pending, ensure_ascii=False)}],
-            timeout=8,  # real calls take ~5 s; a slower answer still beats "unknown"
+            timeout=8,
             generation_config={
                 "maxOutputTokens": 40 * len(pending) + 250,
                 "responseSchema": {
@@ -85,7 +80,6 @@ def estimate_shelf_life(user, entries):
         index = row.get("i") if isinstance(row, dict) else None
         if type(index) is not int or not 0 <= index < len(missing):
             continue
-        # All-null answers (not food, unsure) are stored too, so they are not asked again.
         days = {f"{location}_days": _days(row.get(location)) for location in AI_LOCATIONS}
         key, name, code = missing[index]
         try:
@@ -98,6 +92,6 @@ def estimate_shelf_life(user, entries):
                     **days,
                 },
             )
-        except IntegrityError:  # another account saved the same key first
+        except IntegrityError:
             found[key] = ShelfLifeEstimate.objects.get(pk=key)
     return found

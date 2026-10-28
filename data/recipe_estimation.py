@@ -1,9 +1,4 @@
-"""Auditable, offline estimates. Unknown foods/units are never silently discarded.
-
-These are authored demonstration variants, not measurements of the source dishes.
-NIST mass conversions are exact; USDA household portions and all recipe servings
-are approximations. The generated audit retains every source ingredient.
-"""
+"""Auditable, offline estimates."""
 
 import csv
 import io
@@ -28,8 +23,6 @@ def normalize(text):
     return re.sub(r"\s+", " ", text).strip()
 
 
-# code, estimated unit/household mass, gram amount for an unspecified batch.
-# Defaults apply to the authored variant only, not pantry/OCR package conversion.
 PROFILES = {
     "DAGING-AYAM-BROILER": (150, 140, 300),
     "DAGING-AYAM-KAMPUNG": (150, 140, 300),
@@ -230,7 +223,6 @@ ENGLISH = {
     "teriyaki sauce": "SAUS-TERIYAKI",
     "sesame seeds": "WIJEN",
 }
-# Longest/specific matches first; no fuzzy matching for nutrient-bearing data.
 INDONESIAN = (
     (r"minyak wijen", "MINYAK-WIJEN"),
     (r"tepung roti(?:\s*/\s*tepung panir)?|tepung panir", "TEPUNG-PANIR"),
@@ -315,12 +307,9 @@ def resolve_ingredient(raw, language):
     if re.fullmatch(
         r"(?:royco(?: ayam)?|penyedap(?: rasa)?(?: ayam)?|kaldu(?: ayam)? bubuk)", single
     ):
-        # Authored variant chooses chicken bouillon, explicitly marked nutrition proxy.
         return "ING-KALDU-AYAM-BUBUK"
     if single == "kecap":
         return "ING-KECAP-MANIS"
-    # Form, mixed seasoning and prepared food must not be mapped to raw meat/flour.
-    # Removing bones from citrus leaves is preparation, not an animal-bone SKU.
     text = re.sub(r"buang tulangnya|buang tulang daun", "", text)
     if re.search(
         r"kulit ayam|ceker|\btulang\b|kepala ayam|ayam suwir.*sudah|ayam.*(?:rebus/goreng|sudah di\s?rebus|sudah direbus)|"
@@ -336,7 +325,6 @@ def resolve_ingredient(raw, language):
     for pattern, short in INDONESIAN:
         match = re.search(r"(?<!\w)(?:" + pattern + r")(?!\w)", text)
         if match:
-            # "ayam kampung" and generic "ayam" are overlapping, not two foods.
             if not any(match.start() < end and start < match.end() for start, end, _ in matches):
                 matches.append((match.start(), match.end(), short))
     codes = {short for _, _, short in matches}
@@ -366,7 +354,6 @@ def estimate_quantity(raw_measure, code, language="en", instructions=""):
     except (ValueError, ZeroDivisionError):
         return None, "angka/pecahan tidak valid; perlu koreksi sumber", ""
     note = range_note
-    # Never interpret unknown units (tin/pack/handful/etc.) as a known count.
     if amount is not None and amount > 0:
         mass = re.match(
             r"^(kg|kilograms?|kilogram|g|gr|grm|grams?|gram|oz|ounces?|lb|lbs|pounds?|ons)\b", rest
@@ -411,7 +398,6 @@ def estimate_quantity(raw_measure, code, language="en", instructions=""):
             elif unit.startswith("cup"):
                 grams = cup
             else:
-                # 1 US cup ≈ 240 ml; Indonesian glass is authored 200 ml.
                 volume = (
                     200
                     if unit == "gelas"
@@ -494,7 +480,6 @@ def estimate_quantity(raw_measure, code, language="en", instructions=""):
         or text in ("sprinkling", "drizzle", "drizzling")
         or language == "id"
     ):
-        # Deep frying: retained-oil estimate is not the whole pan's oil purchase.
         if short == "MINYAK-GORENG-CURAH" and re.search(
             r"untuk menggoreng|deep.?fry|goreng.*tiriskan", text
         ):
@@ -580,7 +565,6 @@ def ingredient_components(raw, measure, language):
     if language != "id" or is_section_heading(raw):
         return [(raw, measure, "")]
     text = normalize(raw)
-    # Select one of alternatives explicitly offered by the source, not both.
     for pattern, selected in (
         (r"butter\s*/\s*margarin", "margarin"),
         (r"paprika merah\s*/\s*hijau", "paprika merah"),
@@ -598,15 +582,12 @@ def ingredient_components(raw, measure, language):
     if re.match(r"^(?:secukupnya\s+)?lalapan\s*\(", text):
         match = re.search(r"\(([^)]+)\)", text)
         text = "secukupnya " + match[1] if match else text
-    # Parenthetical preparation often contains commas; keep it out of splitting.
     text = re.sub(r"\([^)]*\)", "", text).strip()
-    # Slash alternatives require a choice and cannot both be charged as ingredients.
     if "/" in re.sub(r"\d+/\d+", "", text):
         return [(raw, measure, "")]
     parts = [p.strip() for p in re.split(r"\s+(?:dan|and)\s+|\s*&\s*|,", text) if p.strip()]
     if len(parts) < 2:
         return [(raw, measure, "")]
-    # Only decompose a food list, not phrases such as "cuci bersih, tiriskan".
     food_parts = [resolve_ingredient(part, "id") for part in parts]
     if sum(code is not None for code in food_parts) < 2:
         return [(raw, measure, "")]
@@ -702,14 +683,10 @@ def estimate_candidates(root, items, prices):
                         errors.append(f"gizi belum lengkap: {ic}")
                     if ic not in prices:
                         errors.append(f"harga gram belum tersedia: {ic}")
-                    # Whole/bone-in and deep-fry purchasing yield needs a separate
-                    # quote; do not understate budget just because macros are estimable.
                     if "penggorengan utuh" in note:
                         errors.append(f"biaya massa beli belum lengkap: {raw}")
                 else:
                     note = "bahan/bentuk/komposisi belum dipetakan; tidak dibuang dari perhitungan"
-                    # Explicit mass can still be normalized before the food is
-                    # identified. It must NOT become a planner ingredient yet.
                     mass, mass_note, mass_url = estimate_quantity(measure, "ING-UNMAPPED", lang)
                     if mass is not None:
                         grams, url = mass, mass_url
@@ -735,7 +712,6 @@ def estimate_candidates(root, items, prices):
             )
         if not quantities:
             errors.append("belum ada bahan dengan takaran gram")
-        # A deliberate serving estimate, not an invented source serving count.
         meat = sum(
             g
             for ic, g in quantities.items()
@@ -756,8 +732,6 @@ def estimate_candidates(root, items, prices):
             meal = "makan_siang"
         if not candidate["instructions"].strip():
             errors.append("langkah memasak belum tersedia")
-        # Kaggle variants keep attribution but use brief authored instructions,
-        # not a verbatim republication of the scraped Cookpad steps.
         instructions = (
             candidate["instructions"] if lang == "en" else authored_steps(candidate["name"])
         )

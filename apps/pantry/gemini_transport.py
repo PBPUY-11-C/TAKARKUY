@@ -75,7 +75,6 @@ def generate_json(parts, *, timeout, generation_config=None):
         TypeError,
         OSError,
     ) as exc:
-        # Do not expose HTTP response bodies, receipt text, or credentials.
         raise GeminiUnavailable("Gemini JSON request failed") from exc
 
 
@@ -91,5 +90,4 @@ if __name__ == "__main__":
             json.dumps({"_pantry_transport_v": 1, "payload": result, "usage": result.usage})
         )
     except Exception:
-        # Never print upstream bodies, keys, or receipt data.
         sys.exit(1)

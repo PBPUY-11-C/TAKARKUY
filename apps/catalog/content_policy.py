@@ -1,9 +1,4 @@
-"""Publication guard, including snapshots made before a catalog refresh.
-
-Mendeley's dataset license is recorded, but the origin/permission for the
-embedded cooking prose has not been independently reviewed. Do not publish it
-until a per-recipe review workflow exists. This is not a nutritional approval.
-"""
+"""Publication guard, including snapshots made before a catalog refresh."""
 
 MENDELEY_URL = "https://data.mendeley.com/datasets/8b4ztns76h/3"
 

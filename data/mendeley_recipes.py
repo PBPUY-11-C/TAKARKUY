@@ -1,11 +1,4 @@
-"""Promote Mendeley Indonesian recipes that can be fully priced and costed.
-
-Source: Purwanto et al., "Indonesian recipe nutrition" v3, Mendeley Data,
-CC BY 4.0 (attribution required). Only recipes whose every ingredient maps to a
-priced catalog food with four macros, with a halal ingredient list, a main-meal
-title and plausible per-serving nutrition, become plannable. Everything else
-is kept in the audit with its blocker instead of being guessed.
-"""
+"""Promote Mendeley Indonesian recipes that can be fully priced and costed."""
 
 import csv
 import hashlib
@@ -27,8 +20,6 @@ SOURCE = "Mendeley Data, Purwanto et al. v3 (CC BY 4.0); estimasi takaran TAKARK
 RULES_VERSION = "takarkuy-mendeley-2026-10-08-v3"
 MACROS = ("calories", "protein", "carbs", "fat")
 
-# Unit mass (g), mass per 240 ml cup, default batch amount (g) for foods the
-# shared estimator has no profile for yet. Same meaning as estimation.PROFILES.
 EXTRA_PROFILES = {
     "KACANG-PANJANG": (10, 110, 100),
     "TAUGE": (0, 104, 100),
@@ -59,7 +50,6 @@ EXTRA_PROFILES = {
     "PAKCOY": (100, 0, 150),
     "SAWI-PUTIH": (500, 0, 200),
 }
-# Whole fish bought "per ekor" without a source weight: gross mass per fish.
 FISH_PER_EKOR = {
     "IKAN-PATIN": 500,
     "IKAN-TENGGIRI": 500,
@@ -69,7 +59,6 @@ FISH_PER_EKOR = {
     "IKAN-MAS": 400,
 }
 FISH_EDIBLE_SHARE = 0.6
-# Household measures the shared estimator does not know, rewritten to grams.
 MEASURE_REWRITES = (
     (r"^(\d+(?:[.,]\d+)?)\s*(?:jempol|ibu jari)\b", r"\1 ruas", ""),
     (r"^(?:1\s*)?sejumput\b", "secukupnya", ""),
@@ -88,16 +77,10 @@ MEASURE_REWRITES = (
     (r"^(\d+(?:[.,]\d+)?)\s*(?:ruas|cm)\b", None, "KENCUR:5|KAYU-MANIS:0.5"),
     (r"^(\d+(?:[.,]\d+)?)\s*(?:blok|bh|buah|biji)\b", None, "TERASI:5"),
 )
-# Indonesian sources abbreviate "lembar" as lb/lbr; it is never a pound here.
 LEAF_UNIT = re.compile(r"^(\d+(?:[.,]\d+)?)\s*(?:lb|lbr|lmbr)\b")
-# A source weight this far from its household measure is a source error, e.g.
-# "6 butir" telur listed as 50 g, "5 btr" kemiri as 500 g or "1 sdm" gula as 81 g.
 SOURCE_WEIGHT_RATIO = (0.5, 2.0)
-# "kaldu sapi 500 ml" is liquid stock (water for cooking), not bouillon powder.
 LIQUID_STOCK = re.compile(r"^\d+(?:[.,]\d+)?\s*(?:ml|cc|l|liter|gelas)\b")
 STOCK_POWDER = ("ING-KALDU-AYAM-BUBUK", "ING-KALDU-JAMUR")
-# Frying oil mostly stays in the pan ("600 ml" for balado); count what a dish
-# plausibly absorbs per serving instead of the whole pan.
 FRYING_OIL = "ING-MINYAK-GORENG-CURAH"
 OIL_PER_SERVING = 15
 NOT_MAIN = re.compile(
@@ -130,8 +113,6 @@ ALLERGENS = (
     (("SUSU", "KEJU"), "mengandung_susu"),
     (("TEPUNG-TERIGU", "ROTI", "TEPUNG-PANIR"), "mengandung_gluten"),
 )
-# A title food must appear in the ingredient list; some source records list only
-# the seasoning of a dish, which would otherwise be priced as a full meal.
 TITLE_REQUIRES = (
     (r"\b(?:mie|mi|bakmi|kwetiau|kwetiaw)\b", ("ING-MIE-",)),
     (r"\b(?:bakso|baso|pentol)\b", ("ING-BAKSO",)),
@@ -224,11 +205,7 @@ def clean_instructions(text):
 
 
 def meal_type(title, source_id):
-    """Breakfast/dinner by title words; other main dishes alternate lunch/dinner.
-
-    Most Indonesian main dishes suit either slot, so the split keeps both pools
-    comparable instead of claiming a slot the source never stated.
-    """
+    """Breakfast/dinner by title words; other main dishes alternate lunch/dinner."""
     text = normalize(title)
     if BREAKFAST.search(text):
         return "sarapan"
@@ -269,10 +246,7 @@ def measure_text(row):
 
 
 def reference_grams(measure, code):
-    """Grams implied by a stated household measure; None for vague amounts.
-
-    "ekor" is skipped: sources also write it for pieces ("8 ekor" ayam gulai).
-    """
+    """Grams implied by a stated household measure; None for vague amounts."""
     if re.match(r"^\S+\s*(?:ekor|ekr)\b", measure):
         return None
     grams, note, _ = estimation.estimate_quantity(measure, code, "id")
@@ -463,7 +437,6 @@ def build_mendeley(root, items, price_by_code, existing_names):
             )
             if reason:
                 continue
-            # A curated rename must not free the source title for its duplicates.
             seen.update({title_key(name), title_key(standard_name(source_name))})
             meal = meal_type(name, source["id"])
             cost = sum(
@@ -479,7 +452,6 @@ def build_mendeley(root, items, price_by_code, existing_names):
                     name=name,
                     base_servings=str(portions),
                     meal_type=meal,
-                    # Source prose stays in the raw snapshot, not the published fixture.
                     instructions="",
                     is_plannable="true",
                     missing_data_reason="",

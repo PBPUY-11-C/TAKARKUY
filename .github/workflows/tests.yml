@@ -43,4 +43,4 @@ jobs:
       - run: python data/validate_catalog.py && python data/validate_candidates.py && python data/validate_docs.py
       - run: python manage.py makemigrations --check --dry-run --settings=config.test_postgres
       - run: python manage.py test --settings=config.test_postgres --noinput
-      - run: node --test apps/*/tests_js/*.mjs
+      - run: node --test tests/js/*/*.mjs

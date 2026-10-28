@@ -1,11 +1,11 @@
-"""Derived allergen index. Bulk writers must rebuild explicitly before commit."""
+"""Derived allergen index."""
 
 from contextlib import contextmanager
 from contextvars import ContextVar
 
 from django.db import transaction
 
-from apps.accounts.choices import ALLERGEN_KEYS
+from apps.login.choices import ALLERGEN_KEYS
 
 from .models import Recipe, RecipeAllergen
 
@@ -44,7 +44,6 @@ def rebuild_allergens(codes=None):
     query = Recipe.objects.order_by("pk")
     if codes is not None:
         query = query.filter(pk__in=codes)
-    # Serializes index refreshes for the same recipe, including Admin edits.
     recipes = list(
         query.select_for_update().prefetch_related(
             "recipeingredient_set__ingredient", "recipetag_set"

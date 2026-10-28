@@ -1,0 +1,38 @@
+name: Deploy ke PWS
+
+on:
+  workflow_run:
+    workflows: ["Tests (PostgreSQL)"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pws-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+      - name: Push ke PWS
+        env:
+          PWS_URL: ${{ secrets.PWS_URL }}
+          PWS_USERNAME: ${{ secrets.PWS_USERNAME }}
+          PWS_PASSWORD: ${{ secrets.PWS_PASSWORD }}
+        run: |
+          if [ -z "$PWS_URL" ] || [ -z "$PWS_USERNAME" ] || [ -z "$PWS_PASSWORD" ]; then
+            echo "Secrets PWS_URL, PWS_USERNAME, dan PWS_PASSWORD belum diatur." >&2
+            exit 1
+          fi
+          AUTH=$(printf '%s:%s' "$PWS_USERNAME" "$PWS_PASSWORD" | base64 -w0)
+          git -c http.extraHeader="Authorization: Basic $AUTH" \
+            push --force "$PWS_URL" "${{ github.event.workflow_run.head_sha }}:refs/heads/master"

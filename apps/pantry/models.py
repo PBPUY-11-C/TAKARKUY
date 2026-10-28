@@ -3,7 +3,7 @@ from django.db import models
 
 
 class PantryItem(models.Model):
-    """One purchase batch. Archive rather than delete to preserve its stock ledger."""
+    """One purchase batch."""
 
     EXPIRY_CHOICES = [
         ("legacy", "Tanggal lama (periksa label)"),
@@ -60,7 +60,6 @@ class PantryItem(models.Model):
     ]
     SOURCE_CHOICES = [("ocr", "Struk"), ("manual", "Manual")]
 
-    # Null is reserved for preserved legacy stock whose owner cannot be established.
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE
     )

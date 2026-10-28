@@ -1,6 +1,6 @@
 """Conservative ingredient-based screening, not an allergen-free guarantee."""
 
-from apps.accounts.choices import ALLERGEN_KEYS
+from apps.login.choices import ALLERGEN_KEYS
 
 
 def recipe_allowed(recipe, links, allergens):

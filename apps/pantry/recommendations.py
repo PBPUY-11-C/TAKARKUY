@@ -231,8 +231,6 @@ def resolve_names(names, session_id, *, user=None, allow_llm=True):
                             record, code if code in pending[index] else None, failed=not llm_choices
                         )
         finally:
-            # Release only leases still owned by this call; completed entries
-            # have lease=None, so positive/negative cache results stay intact.
             for record in claims.values():
                 release(record)
         for index, candidates in pending.items():

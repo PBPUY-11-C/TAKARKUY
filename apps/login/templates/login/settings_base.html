@@ -1,0 +1,34 @@
+{% extends "login/base.html" %}
+{% load static %}
+{% block title %}Pengaturan profil{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'login/profile.css' %}?v=20261028-unsaved">{% endblock %}
+{% block body_class %}has-app-nav profile-page{% endblock %}
+{% block header %}{% include "partials/app_header.html" %}{% endblock %}
+{% block content %}
+<main id="main" class="profile-card settings-shell">
+  <h1>Pengaturan profil</h1>
+  <div class="settings-layout">
+    <nav class="settings-nav" aria-label="Pengaturan profil">
+      {% with current=request.resolver_match.url_name %}
+      <a href="{% url 'modul3' %}"{% if current == 'modul3' %} aria-current="page"{% endif %}>Akun</a>
+      <a href="{% url 'password-change' %}"{% if current == 'password-change' %} aria-current="page"{% endif %}>Keamanan akun</a>
+      <a href="{% url 'food-preferences' %}"{% if current == 'food-preferences' %} aria-current="page"{% endif %}>Preferensi makanan</a>
+      {% endwith %}
+    </nav>
+    <section class="profile-section settings-panel" aria-labelledby="settings-panel-title">
+      {% for message in messages %}<p class="success-message" role="status">{{ message }}</p>{% endfor %}
+      {% if error %}<p class="form-errors" role="alert">{{ error }}</p>{% endif %}
+      {% block settings_content %}{% endblock %}
+    </section>
+  </div>
+</main>
+<dialog class="unsaved-popup" data-unsaved-popup aria-labelledby="unsaved-title"
+        data-initial-dirty="{% if account_form.errors or preference_form.errors or password_form.errors or error %}true{% else %}false{% endif %}">
+  <h2 id="unsaved-title">Perubahan belum disimpan</h2>
+  <div class="unsaved-actions">
+    <button type="button" class="btn btn-primary" data-unsaved-stay autofocus>Tetap di sini</button>
+    <button type="button" class="btn btn-secondary" data-unsaved-leave>Tinggalkan</button>
+  </div>
+</dialog>
+<script src="{% static 'login/unsaved_changes.js' %}?v=20261028" defer></script>
+{% endblock %}

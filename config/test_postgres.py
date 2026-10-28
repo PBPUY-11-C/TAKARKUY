@@ -1,13 +1,7 @@
-"""Isolated PostgreSQL test settings; never reads PWS DB_* credentials.
-
-Use only with `manage.py test --settings=config.test_postgres --noinput`.
-The runner creates/drops TEST.NAME, not the development/production database.
-"""
+"""Isolated PostgreSQL test settings; never reads PWS DB_* credentials."""
 
 import os
 
-# Set before importing the base settings: dotenv does not override this value.
-# This test-only module must never activate the production database branch.
 os.environ["PRODUCTION"] = "false"
 
 from .settings import *  # noqa: F403

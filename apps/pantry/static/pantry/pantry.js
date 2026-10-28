@@ -144,7 +144,6 @@ async function suggestRows(rows, version, allowLLM = true) {
       const row = draft[index];
       if (!row || !row.isConnected || !result.suggested_name || row.dataset.originalName !== result.raw_name) return;
       const nameInput = row.querySelector('[data-field="name"]');
-      // A late response must not overwrite a correction the user has already typed.
       if (row.dataset.userEdited || nameInput.value !== result.raw_name) return;
       const box = row.querySelector(".name-suggestion");
       const details = result.storage
@@ -161,7 +160,6 @@ async function suggestRows(rows, version, allowLLM = true) {
       row.querySelector(".confirm-name").parentElement.hidden = false;
     });
   } catch (_) {
-    // OCR and manual correction still work when recommendation service is unavailable.
   }
 }
 
@@ -212,7 +210,6 @@ async function prepareReceiptImage(file, enhance = false) {
     const enlarged = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
     return { image: enlarged || file, width: widthBefore };
   } catch (_) {
-    // Canvas conversion is optional; do not block OCR if a browser cannot do it.
     return { image: file, width: bitmap?.width || null };
   } finally {
     bitmap?.close();
@@ -284,7 +281,6 @@ fileInput.addEventListener("change", async () => {
               confidence = retryConfidence;
             }
           } catch (_) {
-            // Keep the first OCR result when an optional second pass fails.
           }
         }
       }
@@ -454,7 +450,6 @@ function selectedText(select) {
   return select.selectedOptions?.[0]?.textContent?.trim() || "";
 }
 
-// Ringkasan baris dibaca dari kontrol di panel edit, sehingga selalu sama dengan data tersimpan.
 function refreshSummary(row) {
   const get = (selector) => row.querySelector(selector);
   const name = get("[data-edit-name]").value.trim();
@@ -548,7 +543,6 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
     renamed = true;
     row.querySelector("[data-edit-ingredient]").value = "";
   });
-  // Any explicit catalog choice, including "Belum terhubung", is sent as-is.
   row.querySelector("[data-edit-ingredient]").addEventListener("change", () => {
     renamed = false;
   });
@@ -572,8 +566,6 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
       ingredient_code: row.querySelector("[data-edit-ingredient]").value,
       pack_weight_g: row.querySelector("[data-edit-weight]").value,
     };
-    // After a rename with no catalog pick, omit the code so the server re-matches by name;
-    // an explicit "Belum terhubung" choice still sends "" and unlinks.
     if (renamed && !changes.ingredient_code) delete changes.ingredient_code;
     try {
       const response = await fetch(`/pantry/items/${row.dataset.pantryItem}/`, {
