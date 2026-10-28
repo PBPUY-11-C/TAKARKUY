@@ -25,7 +25,7 @@
   grid-template-columns: auto 1fr;
   align-items: start;
   gap: 9px;
-  color: var(--muted);
+  color: var(--recipe-muted);
   font-size: 12px;
   font-weight: 400;
   line-height: 1.55;
@@ -39,10 +39,10 @@
   box-sizing: border-box;
   width: 100%;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--recipe-line);
   border-radius: 8px;
   background: #f4f6ff;
-  color: var(--ink);
+  color: var(--recipe-ink);
   font: inherit;
   font-weight: 400;
   resize: vertical;
@@ -79,7 +79,7 @@
 
 .review-photo figcaption {
   margin-top: 5px;
-  color: var(--muted);
+  color: var(--recipe-muted);
   font-size: 11px;
 }
 
