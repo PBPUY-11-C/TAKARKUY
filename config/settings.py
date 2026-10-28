@@ -51,7 +51,7 @@ DEBUG = not PRODUCTION
 SESSION_COOKIE_SECURE = PRODUCTION
 CSRF_COOKIE_SECURE = PRODUCTION
 LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "modul1"
+LOGIN_REDIRECT_URL = "modul5"
 AUTHENTICATION_BACKENDS = ["apps.accounts.backends.UsernameOrEmailBackend"]
 # Empty by default. Set only to the actual, verified PWS reverse-proxy CIDRs.
 AUTH_TRUSTED_PROXY_CIDRS = [
@@ -183,13 +183,21 @@ LANGUAGE_CODE = "id"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"pantry_ai_console": {"class": "logging.StreamHandler"}},
+    "handlers": {
+        "pantry_ai_console": {"class": "logging.StreamHandler"},
+        "recipe_book_console": {"class": "logging.StreamHandler"},
+    },
     "loggers": {
         "apps.pantry.ai_usage": {
             "handlers": ["pantry_ai_console"],
             "level": "INFO",
             "propagate": False,
-        }
+        },
+        "apps.recipe_book": {
+            "handlers": ["recipe_book_console"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
 
@@ -206,6 +214,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_ROOT = BASE_DIR / "media"
 WHITENOISE_USE_FINDERS = True
 
 # Default primary key field type

@@ -60,33 +60,63 @@ CALORIE_LIMITS_BY_MEAL = {
 # serving, priced and counted like any other ingredient.
 RICE_CODE = "ING-BERAS-MEDIUM"
 RICE_GRAMS_PER_SERVING = 80  # raw rice, about one plate of cooked rice
+# Staples the user can pick to go with a lauk. Each portion gives about the energy
+# of one plate of rice (~275 kkal); grams are the edible raw weight per serving.
+STAPLES = {
+    "nasi": {"label": "Nasi", "ingredient_code": RICE_CODE, "grams": RICE_GRAMS_PER_SERVING},
+    "kentang": {"label": "Kentang", "ingredient_code": "ING-KENTANG", "grams": 390},
+    "ubi": {"label": "Ubi", "ingredient_code": "ING-UBI-JALAR-PUTIH", "grams": 285},
+    "singkong": {"label": "Singkong", "ingredient_code": "ING-SINGKONG", "grams": 170},
+    "jagung": {"label": "Jagung", "ingredient_code": "ING-JAGUNG-MANIS", "grams": 350},
+}
 RICE_MEALS = ("makan_siang", "makan_malam")
 # Recipes using pantry stock that expires soon are guaranteed a place in the
 # search pool, up to this many per meal.
 PANTRY_POOL_SLOTS = 8
 
 
-def rice_included(rice, servings, targets):
-    """'auto' adds rice for 1-2 people, except under a low-calorie target."""
+def staple_choice(rice, servings, targets):
+    """Key in STAPLES added to lunch/dinner lauk, or None.
+
+    The `rice` input holds a STAPLES key or "no". "yes" and "auto" come from plans
+    saved before the staple could be chosen: "auto" added rice for 1-2 people,
+    except under a low-calorie target.
+    """
     if rice == "yes":
-        return True
-    return rice == "auto" and servings <= 2 and "rendah_kalori" not in targets
+        return "nasi"
+    if rice == "auto":
+        return "nasi" if servings <= 2 and "rendah_kalori" not in targets else None
+    return rice if rice in STAPLES else None
 
 
-class RiceLink:
-    """A recipe-ingredient row for the added rice; never stored in the catalog."""
+def meal_staple(snapshot):
+    """The staple stored on a planned meal snapshot, or None.
+
+    Rice keeps the older {"with_rice": true} form so earlier snapshots stay identical.
+    """
+    if not isinstance(snapshot, dict):
+        return None
+    if snapshot.get("with_rice"):
+        return STAPLES["nasi"]
+    staple = snapshot.get("staple")
+    return staple if isinstance(staple, dict) and staple.get("ingredient_code") else None
+
+
+class StapleLink:
+    """A recipe-ingredient row for the added staple; never stored in the catalog."""
 
     unit = "g"
     quantity_status = "curated"
     raw_text = ""
     is_optional = False
 
-    def __init__(self, recipe, ingredient):
-        self.recipe_ingredient_code = f"NASI-{recipe.pk}"
+    def __init__(self, recipe, ingredient, grams):
+        prefix = "NASI" if ingredient.pk == RICE_CODE else "POKOK"
+        self.recipe_ingredient_code = f"{prefix}-{recipe.pk}"
         self.ingredient = ingredient
         self.ingredient_id = ingredient.pk
         # Scaled by servings / base_servings like catalog rows.
-        self.quantity = RICE_GRAMS_PER_SERVING * recipe.base_servings
+        self.quantity = grams * recipe.base_servings
 
 
 def needs_rice(meal_type, ingredients):
@@ -308,6 +338,11 @@ def _target_fit(items, targets):
         for position, item in enumerate(sorted(items, key=key)):
             fit[id(item)] += 1 - position / len(items)
     return {code: value / len(keys) for code, value in fit.items()}
+
+
+def fruit_only(item):
+    """A recipe made only of fruit is a light snack, not a full meal."""
+    return all(link.ingredient.category == "buah" for link in item["ingredients"])
 
 
 def _candidate_pool(items, size, days, rng, recent_codes, targets):
@@ -727,14 +762,14 @@ def _load_candidates(
     exclude_ingredients,
     allergens=(),
     *,
-    with_rice=False,
+    staple=None,
     stock=(),
     halal_only=True,
 ):
     """Price and nutrition-complete recipes, optionally restricted to halal labels.
 
-    With rice, a lunch/dinner lauk gets RICE_GRAMS_PER_SERVING of rice per serving
-    unless the user avoids rice. With pantry `stock`, each recipe gets a
+    With a `staple` (a STAPLES key), a lunch/dinner lauk without carbohydrate gets
+    that staple's portion per serving unless the user avoids it. With pantry `stock`, each recipe gets a
     "pantry_hits" score: grams of stock it would use, weighted by how soon that
     stock expires (see stock_weights).
     """
@@ -775,11 +810,14 @@ def _load_candidates(
             Decimal(str(edible_grams)) * prices[ingredient_code] / Decimal("1000"), 100
         )
 
-    rice = None
-    if with_rice and RICE_CODE in prices:
-        rice = Ingredient.objects.filter(pk=RICE_CODE).first()
-        if rice is not None and any(term in rice.name.casefold() for term in exclude_ingredients):
-            rice = None
+    staple_rule = STAPLES.get(staple)
+    staple_ingredient = None
+    if staple_rule and staple_rule["ingredient_code"] in prices:
+        staple_ingredient = Ingredient.objects.filter(pk=staple_rule["ingredient_code"]).first()
+        if staple_ingredient is not None and any(
+            term in staple_ingredient.name.casefold() for term in exclude_ingredients
+        ):
+            staple_ingredient = None
     candidates = defaultdict(list)
     matched_terms, excluded_names = set(), set()
     recipes = Recipe.objects.filter(is_active=True, is_plannable=True).prefetch_related(
@@ -817,9 +855,12 @@ def _load_candidates(
             for link in ingredients
         ):
             continue
-        added_rice = rice is not None and needs_rice(recipe.meal_type, ingredients)
-        if added_rice:
-            ingredients = [*ingredients, RiceLink(recipe, rice)]
+        added_staple = staple_ingredient is not None and needs_rice(recipe.meal_type, ingredients)
+        if added_staple:
+            ingredients = [
+                *ingredients,
+                StapleLink(recipe, staple_ingredient, staple_rule["grams"]),
+            ]
 
         scale = Decimal(servings) / Decimal(recipe.base_servings)
         ingredient_costs = {
@@ -851,7 +892,8 @@ def _load_candidates(
                 "cost": sum(ingredient_costs.values()),
                 "nutrition": nutrition,
                 "protein_group": main_protein_group(ingredients),
-                "with_rice": added_rice,
+                "with_rice": added_staple and staple_ingredient.pk == RICE_CODE,
+                "staple": staple_rule if added_staple else None,
                 "pantry_hits": int(
                     sum(
                         min(available.get(link.ingredient_id, 0), purchase_grams(link) * scale)
@@ -1003,6 +1045,11 @@ def quote_schedule(
                     "calories": money(item["nutrition"]["calories"] / Decimal(servings)),
                     # Only present when true, so snapshots of older plans stay identical.
                     **({"with_rice": True} if item.get("with_rice") else {}),
+                    **(
+                        {"staple": item["staple"]}
+                        if item.get("staple") and not item.get("with_rice")
+                        else {}
+                    ),
                 }
             )
         output_schedule.append(
@@ -1140,7 +1187,7 @@ def build_plan(*, stock=(), starts_on=None, frozen_days=frozenset(), **inputs):
         inputs["exclude_ingredients"],
         inputs.get("allergens", ()),
         halal_only=inputs.get("halal_only", True),
-        with_rice=rice_included(inputs.get("rice", "no"), inputs["servings"], inputs["targets"]),
+        staple=staple_choice(inputs.get("rice", "no"), inputs["servings"], inputs["targets"]),
         stock=stock,
     )
     budget = int(inputs["budget"])
@@ -1216,7 +1263,7 @@ def _build_plan(
         servings,
         exclude_ingredients,
         allergens,
-        with_rice=rice_included(rice, servings, targets),
+        staple=staple_choice(rice, servings, targets),
         halal_only=halal_only,
         stock=stock,
     )
@@ -1243,6 +1290,13 @@ def _build_plan(
 
     for meal in available_meals:
         candidates[meal].sort(key=lambda item: item["recipe"].pk)
+        if fixed_schedule is None:
+            # Fruit-only recipes are the priciest breakfasts yet the least filling, so
+            # the 60% spending target would pick them. Generate full meals when any
+            # exist; the user can still choose fruit through Ganti Menu.
+            meals_only = [item for item in candidates[meal] if not fruit_only(item)]
+            if meals_only:
+                candidates[meal] = meals_only
         prior_codes = prior_slot_recipes.get(meal, [])
         if fixed_schedule is None and days == 1 and prior_codes and prior_codes[0]:
             alternatives = [
@@ -1577,7 +1631,7 @@ def replacement_options(
         servings,
         exclude_ingredients,
         allergens,
-        with_rice=rice_included(rice, servings, targets),
+        staple=staple_choice(rice, servings, targets),
         halal_only=halal_only,
         stock=stock,
     )
@@ -1595,6 +1649,7 @@ def replacement_options(
             frozen_days=frozen_days,
         )["net_total"]
     options = []
+    fit = _target_fit(candidates.get(meal, []), targets)
     for item in candidates.get(meal, []):
         if item["recipe"].pk == current_code:
             continue
@@ -1619,6 +1674,16 @@ def replacement_options(
                 "recipe_code": item["recipe"].pk,
                 "name": item["recipe"].name,
                 "delta": int(quote["net_total"] - Decimal(current_total)),
+                "rank": (fruit_only(item), -fit[id(item)]),
             }
         )
-    return sorted(options, key=lambda option: (option["name"].casefold(), option["recipe_code"]))
+    # Full meals that best suit the nutrition target first, then the cheapest change.
+    options.sort(
+        key=lambda option: (
+            option.pop("rank"),
+            option["delta"],
+            option["name"].casefold(),
+            option["recipe_code"],
+        )
+    )
+    return options

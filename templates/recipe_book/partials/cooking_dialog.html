@@ -1,0 +1,22 @@
+<dialog id="cooking-dialog" aria-labelledby="cooking-title" aria-describedby="cooking-dialog-description">
+  <form id="cooking-form">
+  <div class="section-heading">
+  <h2 id="cooking-title">Konfirmasi masak</h2>
+  <button type="button" id="close-cooking" class="text-button" aria-label="Tutup dialog">✕</button>
+  </div>
+  {% csrf_token %}
+  <label class="field">Porsi <input name="servings" type="number" min="1" max="10" value="{{ detail.servings|default:1 }}" required {% if slot %}readonly{% endif %}>
+  </label>
+  <label class="check-field">
+  <input type="checkbox" name="allow_unknown_expiry"> Saya sudah memeriksa kondisi/label stok yang tanggalnya belum diketahui</label>
+  <p class="helper" id="cooking-dialog-description">Hanya bumbu yang Anda atur untuk dilacak yang perlu tersedia di Pantry dan akan dikurangi. Stok kedaluwarsa tidak digunakan. Preview tidak memesan stok.</p>
+  <div id="manual-batches">
+  </div>
+  <button type="submit" class="secondary">Periksa pemakaian stok</button>
+  <div id="cooking-preview" role="status" aria-live="polite" aria-atomic="false">
+  </div>
+  <p id="cooking-error" class="missing" role="alert">
+  </p>
+  <button id="confirm-cooking" type="button" disabled>Konfirmasi Sudah Masak</button>
+  </form>
+  </dialog>

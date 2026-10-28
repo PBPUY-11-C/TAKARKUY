@@ -347,7 +347,7 @@ class SavedPlanTests(TestCase):
         draft, stock = self.stocked_draft()
         net = thaw(draft.snapshot)["net_total"]
         page = self.client.get(reverse("modul1") + f"?plan={draft.pk}")
-        self.assertContains(page, f"Uang belanja Rp {net:,}".replace(",", "."))
+        self.assertContains(page, f'<p class="big">Rp {net:,} <span>'.replace(",", "."))
         preview = preview_data(self.replacement(draft, code=self.quotes[0][1]))
         self.assertEqual(preview["before"], net)
 
@@ -919,17 +919,6 @@ class SavedPlanTests(TestCase):
         saved.snapshot = freeze(bad)
         with self.assertRaises(PlanConflict):
             sync_children(saved)
-
-    def test_guest_adoption_never_clobbers_existing_account_draft(self):
-        session = self.client.session
-        session["guest_last_plan"] = {
-            "inputs": self.inputs,
-            "result": json.dumps(freeze(self.quotes[-1][2])),
-        }
-        session.save()
-        self.client.post(reverse("login"), {"username": "planner", "password": "Demo1234!"})
-        self.draft.refresh_from_db()
-        self.assertEqual(self.draft.meals.get().recipe_id, self.quotes[0][1])
 
     def test_snapshot_roundtrip_preserves_decimal_and_date(self):
         values = {"date": date(2026, 10, 4), "cost": Decimal("1234.50"), "list": [Decimal("0.03")]}

@@ -4,22 +4,46 @@ from django.contrib.auth import get_user_model, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import LoginView
+from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.shortcuts import redirect, render
 from django.utils.cache import patch_cache_control
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
-
-from apps.budget_planner.services import adopt_guest_result
 
 from .forms import AccountDetailsForm, PreferenceForm, SignUpForm
 from .models import UserProfile
 from .preferences import preferences_for, profile_for
 
 
+def landing_menu():
+    """Halal recipes with a one-serving price, grouped per meal for the landing preview."""
+    from apps.catalog.models import Recipe
+    from apps.recipe_book.services import recipe_costs
+
+    recipes = Recipe.objects.filter(
+        is_active=True, is_plannable=True, recipetag__tag="halal"
+    ).distinct()
+    names = {recipe.pk: (recipe.meal_type, recipe.name) for recipe in recipes}
+    menu = {}
+    for code, cost in recipe_costs(1, set(names)).items():
+        meal, name = names[code]
+        menu.setdefault(meal, []).append([round(cost), name])
+    for items in menu.values():
+        items.sort()
+    return menu
+
+
 def landing_view(request):
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
-    return render(request, "landing.html")
+    from apps.catalog.models import Recipe
+
+    return render(request, "landing.html", {
+        # Pricing every recipe takes ~1 s, so share one result across visitors.
+        "landing_menu": cache.get_or_set("landing-menu", landing_menu, 3600),
+        "recipe_count": Recipe.objects.filter(is_active=True, is_plannable=True).count(),
+    })
 
 
 @require_http_methods(["GET", "POST"])
@@ -27,6 +51,12 @@ def signup_view(request):
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
     form = SignUpForm(request.POST if request.method == "POST" else None)
+    # Same-site "next" only, as LoginView does, so signing up can return to the planner.
+    next_url = request.POST.get("next") or request.GET.get("next", "")
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = ""
     if request.method == "POST" and form.is_valid():
         try:
             with transaction.atomic():
@@ -37,9 +67,8 @@ def signup_view(request):
             form.add_error(None, "Username atau email sudah terdaftar. Silakan periksa kembali.")
         else:
             login(request, user)
-            adopt_guest_result(request)
-            return redirect(settings.LOGIN_REDIRECT_URL)
-    return render(request, "accounts/signup.html", {"form": form})
+            return redirect(next_url or settings.LOGIN_REDIRECT_URL)
+    return render(request, "accounts/signup.html", {"form": form, "next": next_url})
 
 
 class AccountLoginView(LoginView):
@@ -47,7 +76,6 @@ class AccountLoginView(LoginView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        adopt_guest_result(self.request)
         self.request.session.set_expiry(None if self.request.POST.get("remember_me") else 0)
         return response
 

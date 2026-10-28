@@ -131,7 +131,7 @@ function addDraftRow(item = {}) {
 async function suggestRows(rows, version, allowLLM = true) {
   const draft = draftElements();
   try {
-    const response = await fetch("/modul2/suggestions/", {
+    const response = await fetch("/pantry/suggestions/", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
       credentials: "same-origin",
@@ -176,7 +176,7 @@ function showDraftItems(rows, {photoAttempted = false, photoSucceeded = false} =
 async function readWithGemini(file) {
   const form = new FormData();
   form.append("image", file);
-  const response = await fetch("/modul2/ocr-fallback/", {
+  const response = await fetch("/pantry/ocr-fallback/", {
     method: "POST",
     headers: { "X-CSRFToken": csrfToken },
     credentials: "same-origin",
@@ -355,7 +355,7 @@ document.getElementById("add-draft-row").addEventListener("click", () => {
 const actionKey = createActionKeyStore();
 
 async function saveItems(items, source) {
-  const response = await fetch("/modul2/items/", {
+  const response = await fetch("/pantry/items/", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
     credentials: "same-origin",
@@ -430,6 +430,62 @@ manualForm.addEventListener("submit", async (event) => {
   }
 });
 
+const MS_PER_DAY = 86400000;
+const dateFormat = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" });
+
+function parseIsoDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  return match ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])) : null;
+}
+
+function expiryBadge(value) {
+  const target = parseIsoDate(value);
+  if (!target) return { tone: "unknown", label: "Tanggal belum diketahui" };
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((target - today) / MS_PER_DAY);
+  if (days < 0) return { tone: "bad", label: "Sudah kedaluwarsa" };
+  if (days === 0) return { tone: "warn", label: "Hari ini" };
+  if (days <= 3) return { tone: "warn", label: `${days} hari lagi` };
+  return { tone: "ok", label: `${days} hari lagi` };
+}
+
+function selectedText(select) {
+  return select.selectedOptions?.[0]?.textContent?.trim() || "";
+}
+
+// Ringkasan baris dibaca dari kontrol di panel edit, sehingga selalu sama dengan data tersimpan.
+function refreshSummary(row) {
+  const get = (selector) => row.querySelector(selector);
+  const name = get("[data-edit-name]").value.trim();
+  get("[data-sum-name]").textContent = name;
+  get(".delete-pantry-item").dataset.itemName = name;
+
+  const category = get("[data-edit-category]");
+  const categoryLabel = category.value ? selectedText(category) : "";
+  const categoryNode = get("[data-sum-category]");
+  categoryNode.textContent = categoryLabel;
+  categoryNode.hidden = !categoryLabel;
+
+  const rawQuantity = get("[data-edit-quantity]").value;
+  const quantity = Number(String(rawQuantity).replace(",", "."));
+  const quantityText = rawQuantity !== "" && Number.isFinite(quantity)
+    ? quantity.toLocaleString("id-ID", { maximumFractionDigits: 3 })
+    : rawQuantity;
+  get("[data-sum-qty]").textContent = `${quantityText} ${selectedText(get("[data-edit-unit]"))}`.trim();
+  get("[data-sum-location]").textContent = selectedText(get("[data-pantry-location]"));
+
+  const expiry = get("[data-pantry-expiry]").value;
+  const badge = expiryBadge(expiry);
+  const badgeNode = get("[data-sum-badge]");
+  badgeNode.className = `exp-badge ${badge.tone}`;
+  badgeNode.textContent = badge.label;
+  const dateNode = get("[data-sum-date]");
+  const date = parseIsoDate(expiry);
+  dateNode.textContent = date ? dateFormat.format(date) : "";
+  dateNode.hidden = !date;
+}
+
 const pantryStorage = JSON.parse(document.getElementById("pantry-storage-data").textContent);
 document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   const button = row.querySelector(".save-pantry-details");
@@ -440,6 +496,37 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   const storageFeedback = row.querySelector("[data-storage-feedback]");
   const sourceInput = row.querySelector("[data-expiry-source]");
   let expiryMode = "";
+  const panel = row.querySelector(".pantry-edit");
+  const toggle = row.querySelector(".pantry-edit-toggle");
+  const cancelButton = row.querySelector(".cancel-pantry-edit");
+  const summaryFeedback = row.querySelector("[data-summary-feedback]");
+  const editControls = () => [...panel.querySelectorAll("input, select")];
+  let snapshot = null;
+  let storageSnapshot = "";
+  refreshSummary(row);
+  function setPanel(open) {
+    panel.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.textContent = open ? "Tutup" : "Ubah";
+  }
+  function openEdit() {
+    snapshot = editControls().map((control) => control.value);
+    storageSnapshot = storageFeedback.textContent;
+    feedback(rowFeedback, "");
+    setPanel(true);
+    row.querySelector("[data-edit-name]").focus();
+  }
+    function cancelEdit() {
+    if (snapshot) editControls().forEach((control, index) => { control.value = snapshot[index]; });
+    expiryMode = "";
+    renamed = false;
+    storageFeedback.textContent = storageSnapshot;
+    feedback(rowFeedback, "");
+    setPanel(false);
+    toggle.focus();
+  }
+  toggle.addEventListener("click", () => (panel.hidden ? openEdit() : cancelEdit()));
+  cancelButton.addEventListener("click", cancelEdit);
   locationInput.addEventListener("change", () => {
     const estimate = storagePreview(pantryStorage[row.dataset.pantryItem], locationInput.value);
     const change = locationExpiry(sourceInput.value, expiryInput.value, estimate);
@@ -489,7 +576,7 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
     // an explicit "Belum terhubung" choice still sends "" and unlinks.
     if (renamed && !changes.ingredient_code) delete changes.ingredient_code;
     try {
-      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/`, {
+      const response = await fetch(`/pantry/items/${row.dataset.pantryItem}/`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
         credentials: "same-origin",
@@ -503,7 +590,12 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
       expiryInput.value = data.estimated_expires_on;
       storageFeedback.textContent = data.message;
       expiryMode = "";
-      feedback(rowFeedback, "Tersimpan");
+      feedback(rowFeedback, "");
+      refreshSummary(row);
+      setPanel(false);
+      toggle.focus();
+      feedback(summaryFeedback, "Tersimpan");
+      setTimeout(() => feedback(summaryFeedback, ""), 4000);
     } catch (error) {
       feedback(rowFeedback, error.message || "Gagal menyimpan perubahan.", true);
     } finally {
@@ -515,7 +607,7 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   row.querySelector(".pantry-history").addEventListener("click", async () => {
     const output = row.querySelector("[data-history-output]");
     try {
-      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/movements/`, {credentials: "same-origin"});
+      const response = await fetch(`/pantry/items/${row.dataset.pantryItem}/movements/`, {credentials: "same-origin"});
       const data = await response.json();
       if (!response.ok) throw new Error("Riwayat tidak tersedia.");
       output.replaceChildren(...data.movements.map((entry) => {
@@ -531,7 +623,7 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
     deleteButton.disabled = true;
     feedback(rowFeedback, "Menghapus…");
     try {
-      const response = await fetch(`/modul2/items/${row.dataset.pantryItem}/delete/`, {
+      const response = await fetch(`/pantry/items/${row.dataset.pantryItem}/delete/`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
         credentials: "same-origin",
@@ -554,16 +646,67 @@ document.getElementById("stock-recipes-button").addEventListener("click", async 
   button.disabled = true;
   try {
     const servings = document.getElementById("stock-recipe-servings").value;
-    const response = await fetch(`/modul2/recipes/?servings=${encodeURIComponent(servings)}`, {credentials: "same-origin"});
+    const response = await fetch(`/pantry/recipes/?servings=${encodeURIComponent(servings)}`, {credentials: "same-origin"});
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Tidak dapat membaca kecocokan stok.");
-    if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Hubungkan bahan ke katalog dan lengkapi berat/tanggal stok jika diketahui.";
+    if (!data.recipes.length) output.textContent = "Belum ada menu cocok. Pastikan bahan terhubung ke katalog dan konversi berat tersedia. Stok tanpa tanggal kedaluwarsa tetap dapat dihitung dan akan ditandai.";
     else output.replaceChildren(...data.recipes.map((recipe) => {
-      const line = document.createElement("p");
+      const line = document.createElement("div");
+      line.className = "stock-recipe-match";
       const link = document.createElement("a");
-      link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`;
+      const requestedServings = Number(data.servings || document.getElementById("stock-recipe-servings").value);
+      const maxServings = Number(recipe.max_servings);
+      const hasServingEstimate = Number.isInteger(maxServings);
+      const targetServings = hasServingEstimate && maxServings > 0
+        ? Math.min(requestedServings, maxServings)
+        : requestedServings;
+      link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`
+        + (hasServingEstimate ? `&servings=${targetServings}` : "");
       link.textContent = `${recipe.name} · ${recipe.complete ? "Bahan cukup" : "Sebagian bahan tersedia"}${recipe.unknown_expiry ? " · tanggal stok belum diketahui" : ""}`;
       line.append(link);
+      if (hasServingEstimate) {
+        const portion = document.createElement("p");
+        portion.className = recipe.max_servings > 0 && recipe.max_servings < requestedServings
+          ? "stock-recipe-portion stock-recipe-portion-limited"
+          : "stock-recipe-portion";
+        if (recipe.max_servings < 1) {
+          portion.textContent = "Stok belum cukup untuk 1 porsi.";
+        } else if (recipe.max_servings < requestedServings) {
+          portion.textContent = `Stok cukup untuk paling banyak ${recipe.max_servings} porsi. Tautan membuka resep dengan porsi tersebut.`;
+        } else {
+          portion.textContent = `Stok cukup untuk ${requestedServings} porsi${recipe.max_servings > requestedServings ? `; dapat dibuat hingga ${recipe.max_servings} porsi` : ""}.`;
+        }
+        line.append(portion);
+      }
+      const appendIngredientGroup = (title, rows, className) => {
+        if (!rows?.length) return;
+        const group = document.createElement("section");
+        group.className = `stock-recipe-ingredients ${className}`;
+        const heading = document.createElement("strong");
+        heading.textContent = title;
+        const list = document.createElement("ul");
+        for (const item of rows) {
+          const entry = document.createElement("li");
+          const grams = Number(item.grams);
+          const amount = Number.isFinite(grams)
+            ? grams.toLocaleString("id-ID", {maximumFractionDigits: 1})
+            : item.grams;
+          if (item.required_grams !== undefined) {
+            const required = Number(item.required_grams);
+            const requiredAmount = Number.isFinite(required)
+              ? required.toLocaleString("id-ID", {maximumFractionDigits: 1})
+              : item.required_grams;
+            entry.textContent = `${item.name}: ${amount} g dari ${requiredAmount} g`;
+          } else {
+            entry.textContent = `${item.name}: kurang ${amount} g`;
+          }
+          list.append(entry);
+        }
+        group.append(heading, list);
+        line.append(group);
+      };
+      appendIngredientGroup("Terpenuhi dari stok untuk porsi ini:", recipe.available, "available");
+      appendIngredientGroup("Masih kurang untuk porsi ini:", recipe.missing_ingredients, "missing");
       return line;
     }));
   } catch (error) { output.textContent = error.message; }

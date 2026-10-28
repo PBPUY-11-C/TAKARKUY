@@ -2,19 +2,23 @@ from datetime import date, timedelta
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Prefetch
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.accounts.access import api_login_required
+from apps.accounts.models import UserProfile
+from apps.accounts.preferences import preferences_for, profile_for
 from apps.catalog.models import Ingredient
 
 from .ai_usage import collect_usage
-from .forms import PantryDetailsForm, PantryItemForm, PantryOCRItemForm
+from .forms import PantryDetailsForm, PantryItemForm, PantryOCRItemForm, StaplePreferenceForm
 from .gemini import gemini_ready
 from .json_input import load_payload
 from .models import PantryItem, PantryMovement, PantryNameCorrection
@@ -73,6 +77,8 @@ def _session_id(request):
 
 @login_required
 def pantry_page(request):
+    profile = profile_for(request.user)
+    preferences = preferences_for(request.user)
     session_id = _session_id(request)
     items = list(
         PantryItem.objects.filter(user=request.user, archived_at__isnull=True, quantity__gt=0)
@@ -140,8 +146,44 @@ def pantry_page(request):
             "ingredients": Ingredient.objects.order_by("name"),
             "today": timezone.localdate(timezone=ZoneInfo("Asia/Jakarta")),
             "gemini_receipt_fallback": gemini_ready(),
+            "staple_preferences_form": StaplePreferenceForm(
+                initial={
+                    "tracked_staples": preferences.tracked_staples,
+                    "version": profile.version,
+                }
+            ),
         },
     )
+
+
+@login_required
+@require_POST
+def save_staple_preferences(request):
+    form = StaplePreferenceForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Pilihan bumbu dapur tidak valid. Muat ulang dan coba lagi.")
+        return redirect("modul2")
+    try:
+        with transaction.atomic():
+            get_user_model().objects.select_for_update().get(pk=request.user.pk)
+            profile = profile_for(request.user)
+            profile = UserProfile.objects.select_for_update().get(pk=profile.pk)
+            if profile.version != form.cleaned_data["version"]:
+                messages.error(
+                    request,
+                    "Preferensi berubah di tab lain. Muat ulang halaman sebelum menyimpan lagi.",
+                )
+                return redirect("modul2")
+            preferences = preferences_for(request.user)
+            preferences.tracked_staples = form.cleaned_data["tracked_staples"]
+            preferences.save(update_fields=["tracked_staples"])
+            profile.version += 1
+            profile.save(update_fields=["version"])
+    except (TypeError, ValueError):
+        messages.error(request, "Pilihan bumbu dapur tidak dapat disimpan.")
+        return redirect("modul2")
+    messages.success(request, "Preferensi stok bumbu dapur berhasil disimpan.")
+    return redirect("modul2")
 
 
 @api_login_required

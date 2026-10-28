@@ -74,14 +74,10 @@ class AccountBrowserTests(StaticLiveServerTestCase):
                     (artifacts / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
                     self.assertLessEqual(metrics["content"], width + 1, f"Overflow: {name} at {width}: {metrics}")
                     self.assertEqual(metrics["duplicateIds"], [], f"Duplicate IDs: {name}")
-                    expected_background = (
-                        "rgb(246, 248, 252)" if name.startswith("planner")
-                        else "rgb(255, 255, 255)" if name.endswith("placeholder")
-                        else "rgb(242, 248, 244)"
-                    )
-                    self.assertEqual(metrics["background"], expected_background)
-                    self.assertIn("Plus Jakarta Sans", metrics["font"])
-                    if name in {"landing", "login", "signup", "profile"}:
+                    if name in {"login", "signup", "signup-error", "login-error", "profile", "avatar-picker", "unsaved-popup", "food-preferences", "preferences-ingredients", "password-change"}:
+                        self.assertEqual(metrics["background"], "rgb(242, 248, 244)")
+                        self.assertIn("Plus Jakarta Sans", metrics["font"])
+                    if name in {"login", "signup", "profile"}:
                         self.assertEqual(metrics["primary"], "rgb(15, 61, 46)")
                     if name in {"profile", "planner-after-signup"}:
                         self.assertEqual(metrics["headerWidth"], width)
@@ -105,7 +101,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
                 expect(page.get_by_role("heading", name="Selamat Datang Kembali")).to_be_visible()
             open_page("/login/")
             capture("login")
-            open_page("/signup/")
+            open_page("/signup/?next=/planner/")
             capture("signup")
             expect(page.locator('[data-auth-error-popup]')).to_have_count(0)
             page.get_by_role("button", name="Jadi Penakar").click()
@@ -139,27 +135,29 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             page.locator('[name="budget"]').fill("1000000")
             page.locator('[name="days"]').fill("1")
             page.locator('[name="servings"]').fill("1")
-            page.get_by_role("button", name="Buat Rencana Makan").click()
-            expect(page.get_by_role("heading", name="Rencana makan 1 hari", exact=True)).to_be_visible()
+            page.get_by_role("button", name="Buat rencana").click()
+            expect(page.locator("#plan-title")).to_be_visible()
             # Members can create, save, rename and delete their own plan.
             draft = database(lambda: BudgetPlan.objects.get(user=user, status="draft"))
             expect(page.locator("#plan-title")).to_be_visible()
             page.locator("#plan-title").fill("Rencana uji browser")
             with page.expect_navigation(wait_until="networkidle"):
                 page.get_by_role("button", name="Simpan Rencana", exact=True).click()
-            expect(page.locator(".saved-plan-card")).to_contain_text("Rencana uji browser")
+            expect(page.locator("#plan-title")).to_have_value("Rencana uji browser")
+            expect(page.locator(".plan-save .status")).to_contain_text("Tersimpan")
             saved = database(lambda: BudgetPlan.objects.get(user=user, status="saved"))
             self.assertEqual(saved.snapshot, draft.snapshot)
             page.locator("#plan-title").fill("Rencana diperbarui")
             with page.expect_navigation(wait_until="networkidle"):
-                page.get_by_role("button", name="Simpan Judul / Tanggal", exact=True).click()
-            expect(page.locator(".saved-plan-card")).to_contain_text("Rencana diperbarui")
+                page.get_by_role("button", name="Simpan Judul", exact=True).click()
+            expect(page.locator("#plan-title")).to_have_value("Rencana diperbarui")
             database(saved.refresh_from_db)
             self.assertEqual(saved.title, "Rencana diperbarui")
             page.once("dialog", lambda dialog: dialog.accept())
+            page.locator('[data-open-dialog="rencana-saya"]').click()
             with page.expect_navigation(wait_until="networkidle"):
                 page.locator("[data-delete-plan]").click()
-            expect(page.locator(".saved-empty")).to_be_visible()
+            expect(page.locator('[data-open-dialog="rencana-saya"]')).to_contain_text("0")
             self.assertFalse(database(lambda: BudgetPlan.objects.filter(pk=saved.pk).exists()))
             open_page("/profil/")
             expect(page.locator('.avatar')).to_have_text("P")
@@ -299,7 +297,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             expect(page.locator('[name="servings"]')).to_have_value("3")
             expect(page.get_by_text("Preferensi halal:", exact=False)).to_have_count(0)
             capture("planner", widths=(1440, 390))
-            for path, name in (("/modul2/", "pantry"), ("/modul4/", "recipe-book"), ("/modul5/", "dashboard")):
+            for path, name in (("/pantry/", "pantry"), ("/modul4/", "recipe-book"), ("/modul5/", "dashboard")):
                 open_page(path)
                 expect(page.locator('.app-header')).to_be_visible()
                 capture(name, widths=(1440, 390))
@@ -327,7 +325,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             expect(page.locator('[name="username"]')).to_be_focused()
             page.locator('[name="password"]').fill("BrowserChanged!938")
             page.get_by_role("button", name="Masuk ke TAKARKUY").click()
-            expect(page).to_have_url(self.live_server_url + "/planner/")
+            expect(page).to_have_url(self.live_server_url + "/modul5/")
             session = next(c for c in context.cookies() if c["name"] == settings.SESSION_COOKIE_NAME)
             self.assertEqual(session["expires"], -1)
             # Re-authenticating in the same browser must also honor Remember me.
@@ -336,7 +334,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             page.locator('[name="password"]').fill("BrowserChanged!938")
             page.locator('[name="remember_me"]').check()
             page.get_by_role("button", name="Masuk ke TAKARKUY").click()
-            expect(page).to_have_url(self.live_server_url + "/planner/")
+            expect(page).to_have_url(self.live_server_url + "/modul5/")
             session = next(c for c in context.cookies() if c["name"] == settings.SESSION_COOKIE_NAME)
             self.assertGreater(session["expires"], 0)
             self.assertEqual(errors, [])

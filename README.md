@@ -106,16 +106,20 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 
 - **Recipe book:** cari resep dengan filter waktu makan, stok di Pantry, harga, dan favorit. Detail berisi bahan, gizi, estimasi harga, dan cara memasak.
 - **Sudah Masak:** pratinjau pemakaian stok lalu konfirmasi; stok dikurangi lewat Modul 2 dan riwayat masak tercatat bersamaan.
+- **Pengalaman memasak:** setelah mencatat **Sudah Masak**, pengguna dapat memberi rating, menulis ulasan atau tips, dan mengunggah foto hasil masak. Pengunggah harus menyatakan bahwa foto miliknya atau sudah mendapat izin, serta memberi izin tampilan yang dapat dicabut. Foto JPG, PNG, atau WebP maksimal 6 MB menunggu moderasi; setelah disetujui, foto juga dapat menjadi foto utama cadangan untuk resep tanpa foto kurasi.
 - **Integrasi rencana:** menu dari jadwal Modul 1 bisa dibuka, dimasak, atau dilewati.
-- **Data yang dipegang:** `RecipeFavorite`, `CookingHistory`.
+- **Endpoint Modul 4:** `GET /modul4/` menampilkan recipe book; endpoint `POST /modul4/favorite/`, `/modul4/preview/`, `/modul4/cook/`, `/modul4/review/`, `/modul4/review/photo/`, dan `/modul4/slot-status/` menangani aksi pengguna. Foto ulasan dilayani melalui `GET /modul4/reviews/<id>/photo/` setelah izin dan moderasi terpenuhi.
+- **Penyimpanan foto ulasan:** secara default, Django menyimpan foto lokal di `MEDIA_ROOT` (`BASE_DIR / "media"`, lihat `config/settings.py`). Penyimpanan lokal cocok untuk pengembangan. Untuk deployment, gunakan disk persisten yang dicadangkan dan tersedia bagi semua instance, atau konfigurasi `STORAGES["default"]` ke object storage S3-compatible. Jangan simpan media hanya di filesystem container sementara: setelah deploy atau pergantian instance, berkas dapat hilang sementara database masih menyimpan referensinya. Jika memakai worker foto di `Procfile`, jalankan worker sebagai proses terpisah di platform hosting.
+- **Panduan implementasi dan daftar tes Modul 4:** lihat [docs/MODUL4.md](docs/MODUL4.md).
+- **Data yang dipegang:** `RecipeFavorite`, `CookingHistory`, dan `RecipeReview`.
 - **Halaman:** 1 halaman berisi daftar resep, detail resep, favorit, dan riwayat masak.
 
 **CRUD Recipe Book & Cooking Tracker:**
 
-- **Create:** menyimpan favorit dan mencatat riwayat lewat **Sudah Masak**. Resep ditambahkan administrator.
-- **Read:** mencari dan melihat resep, favorit, dan riwayat masak.
-- **Update:** administrator mengubah resep; pengguna menandai menu rencana sebagai dilewati atau membatalkannya.
-- **Delete:** menghapus favorit. Administrator menghapus resep tanpa menghapus riwayat masak.
+- **Create:** menyimpan favorit, mencatat riwayat lewat **Sudah Masak**, dan mengirim ulasan/foto setelah memasak. Resep ditambahkan administrator.
+- **Read:** mencari dan melihat resep, favorit, riwayat masak, serta ulasan dan foto yang telah disetujui.
+- **Update:** administrator mengubah resep dan memoderasi foto ulasan; pengguna menandai menu rencana sebagai dilewati atau membatalkannya, serta mengubah ulasan sendiri.
+- **Delete:** menghapus favorit dan ulasan sendiri (termasuk foto). Administrator menghapus resep tanpa menghapus riwayat masak.
 
 ### Modul 5 — Dashboard, Ulasan & Market Locator
 

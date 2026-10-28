@@ -24,7 +24,7 @@
     <label class="remember"><input type="checkbox" name="remember_me" value="1"> Ingat saya di perangkat ini</label>
     <button class="submit" type="submit">Masuk ke TAKARKUY →</button>
   </form>
-  <p class="switch-page">Belum punya akun TAKARKUY? <a href="{% url 'signup' %}">Daftar sekarang</a></p>
+  <p class="switch-page">Belum punya akun TAKARKUY? <a href="{% url 'signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Daftar sekarang</a></p>
 </main>
 {% include "accounts/auth_error_popup.html" with popup_title="Login gagal" %}
 {% endblock %}

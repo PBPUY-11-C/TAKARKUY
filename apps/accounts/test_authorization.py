@@ -195,4 +195,4 @@ class AuthorizationTests(TestCase):
                 "next": "https://example.org/evil",
             },
         )
-        self.assertRedirects(response, reverse("modul1"))
+        self.assertRedirects(response, reverse("modul5"))

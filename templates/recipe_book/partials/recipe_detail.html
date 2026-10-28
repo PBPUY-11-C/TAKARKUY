@@ -1,0 +1,174 @@
+{% load planner_format %}
+<article class="panel recipe-detail" id="recipe-detail" data-code="{{ selected.pk }}" data-servings="{{ detail.servings }}" data-slot="{% if slot %}{{ slot.pk }}{% endif %}" data-version="{% if slot %}{{ slot.plan.version }}{% endif %}" data-preview-url="{% url 'modul4-preview' %}" data-cook-url="{% url 'modul4-cook' %}" data-estimate-url="{% url 'modul4-estimate' %}" data-favorite-url="{% url 'modul4-favorite' %}">
+          <div class="detail-heading">
+  <div>
+  <span class="chip">
+  {% if detail.complete %}Bahan utama lengkap{% else %}Periksa stok bahan{% endif %}
+  </span>
+  {% if detail.unknown_expiry %} <span class="chip">Tanggal stok belum diketahui</span>
+  {% endif %}
+  <h2>{{ selected.name }}</h2>
+  </div>
+  <button class="favorite-button" id="favorite-button" type="button" aria-pressed="{% if detail.favorite %}true{% else %}false{% endif %}" aria-label="Simpan atau hapus favorit">
+  {% if detail.favorite %}♥{% else %}♡{% endif %}
+  </button>
+  </div>
+          {% if selected.photo %}
+  <figure class="recipe-photo">
+  <img class="recipe-photo-image" src="{{ selected.photo.image_url }}" alt="Foto {{ selected.name }}" loading="lazy">
+  <figcaption>Foto: <a href="{{ selected.photo.source_url }}" target="_blank" rel="noopener noreferrer">{{ selected.photo.file_title }}</a> · {{ selected.photo.creator }} · <a href="{{ selected.photo.license_url }}" target="_blank" rel="noopener noreferrer">{{ selected.photo.license_name }}</a>
+  </figcaption>
+  </figure>
+  {% else %}
+  <figure class="recipe-photo-placeholder" data-meal="{{ selected.meal_type }}">
+  <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true" focusable="false"><path d="M8 18h32l-2 22H10L8 18Zm6 0a10 10 0 0 1 20 0M16 12c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <figcaption>Foto belum tersedia</figcaption>
+  </figure>
+  {% endif %}
+          {% if slot %}
+  <p class="helper">{{ slot.plan.title }} - Hari {{ slot.day }} - {{ slot.get_status_display }} - {{ slot.servings }} porsi{% if staple %} - dengan {{ staple.label|lower }} dari rencana{% endif %}
+  </p>
+  {% endif %}
+  {% if not slot %}
+  <div class="serving-control">
+  <label for="recipe-servings">Jumlah porsi</label>
+  <input id="recipe-servings" type="number" aria-describedby="serving-scale-status" min="1" max="10" step="1" value="{{ detail.servings }}">
+  <span class="helper">Takaran, estimasi gizi, dan biaya mengikuti porsi.</span>
+  </div>
+  {% endif %}
+          <div class="metrics">
+  <div>
+  <strong>{{ detail.nutrition.calories|default_if_none:'—' }}</strong>
+  <span>kkal total</span>
+  </div>
+  <div>
+  <strong>{{ detail.nutrition.protein|default_if_none:'—' }} g</strong>
+  <span>Protein total</span>
+  </div>
+  <div>
+  <strong>{{ detail.nutrition.carbs|default_if_none:'—' }} g</strong>
+  <span>Karbohidrat total</span>
+  </div>
+  <div>
+  <strong>{{ detail.nutrition.fat|default_if_none:'—' }} g</strong>
+  <span>Lemak total</span>
+  </div>
+  </div>
+  <p class="helper" id="serving-summary" data-base-cost="{{ detail.cost|default_if_none:'' }}" data-base-servings="{{ detail.servings }}">{{ detail.servings }} porsi - {% if detail.cost is not None %}Estimasi belanja {{ detail.cost|rupiah }} (harga referensi katalog, bukan belanja aktual){% else %}Estimasi harga belum tersedia{% endif %}
+  </p>
+  <p id="serving-scale-status" class="helper" role="status" hidden>
+  </p>
+          <h3>Bahan yang digunakan</h3>
+  <ul class="ingredient-grid">
+  {% for item in detail.ingredients %}
+  <li>
+  <div>{{ item.name }}{% if item.estimated %}
+  <small>Takaran estimasi</small>
+  {% endif %}
+  {% if not item.tracked %}
+  <small>
+  {% if item.optional %}Opsional{% elif item.common_staple %}Bumbu dapur · stok tidak dilacak{% endif %}
+  </small>
+  {% elif item.missing != '0' %}
+  <small class="missing">Kurang {{ item.missing|floatformat:1 }} g</small>
+  {% endif %}
+  </div>
+  <span>{{ item.grams|floatformat:1 }} g</span>
+  </li>
+  {% endfor %}
+  </ul>
+          <h3>Cara memasak</h3>
+          {% if detail.guidance %}
+  <button id="start-cooking-mode" class="secondary" type="button" aria-controls="cooking-mode" aria-expanded="false">Mulai mode memasak</button>
+  <section id="cooking-mode" class="cooking-mode" aria-label="Mode memasak" hidden>
+  <div class="section-heading">
+  <h3 id="cooking-step-count">Langkah 1</h3>
+  <div>
+  <button id="reset-cooking-progress" class="text-button" type="button">Mulai ulang</button>
+  <button id="exit-cooking-mode" class="text-button" type="button">Keluar mode</button>
+  </div>
+  </div>
+  <p id="cooking-current-step" class="cooking-current-step" tabindex="-1">
+  </p>
+  <p id="cooking-mode-status" class="helper" role="status" aria-live="polite" aria-atomic="true">
+  </p>
+  <div class="cooking-mode-controls">
+  <button id="previous-cooking-step" class="secondary" type="button">Sebelumnya</button>
+  <button id="next-cooking-step" type="button">Berikutnya</button>
+  </div>
+  <details class="cooking-checklist">
+  <summary>Checklist bahan</summary>
+  <ul id="cooking-ingredients">
+  </ul>
+  </details>
+  <div class="step-timer">
+  <h4>Timer opsional</h4>
+  <label for="step-timer-minutes">Durasi untuk langkah ini (menit)</label>
+  <div class="timer-controls">
+  <input id="step-timer-minutes" type="number" min="1" max="240" value="5">
+  <button id="start-step-timer" class="secondary" type="button">Mulai timer</button>
+  <button id="reset-step-timer" class="text-button" type="button">Atur ulang</button>
+  </div>
+  <p id="step-timer-display" role="timer" aria-live="off" aria-atomic="true">05:00</p>
+  <p id="step-timer-status" class="helper" role="status" aria-live="polite" aria-atomic="true">
+  </p>
+  </div>
+  </section>
+  <ol class="steps" id="full-cooking-steps">
+  {% for step in detail.steps %}
+  <li>{{ step }}</li>
+  {% endfor %}
+  </ol>
+  {% if detail.source_url %}
+  <p class="helper">
+  <a href="{{ detail.source_url }}" target="_blank" rel="noopener noreferrer">Lihat sumber panduan</a>
+  </p>
+  {% endif %}
+  {% else %}
+  <p class="empty-state">Panduan memasak belum tersedia untuk resep ini. Resep tetap dapat digunakan untuk memeriksa bahan dan membuat estimasi.</p>
+  {% endif %}
+          <p class="helper">Estimasi gizi, bukan jaminan bebas alergen. Periksa komposisi produk dan kemungkinan kontaminasi silang.</p>
+          <details class="personal-note">
+  <summary>Catatan pribadi</summary>
+  <p class="helper">Hanya terlihat oleh akun Anda. Simpan tingkat pedas, perubahan bahan, atau hasil percobaan.</p>
+  <form id="recipe-note-form" data-url="{% url 'modul4-note' %}" data-code="{{ selected.pk }}">
+  <label class="field" for="recipe-note-content">Catatan untuk resep ini<textarea id="recipe-note-content" name="content" maxlength="2000" rows="4" placeholder="Contoh: kurangi cabai menjadi 1 sdt">{{ personal_note.content }}</textarea>
+  </label>
+  <div class="note-actions">
+  <button type="submit">Simpan catatan</button>
+  <button id="clear-recipe-note" type="button" class="secondary">Hapus catatan</button>
+  </div>
+  <p id="recipe-note-status" class="helper" role="status" aria-live="polite">
+  </p>
+  </form>
+  </details>
+          <details class="report-recipe">
+  <summary>Laporkan informasi resep yang keliru</summary>
+  <form id="recipe-data-report" data-url="{% url 'modul4-report-data' %}" data-code="{{ selected.pk }}">
+  <label class="field">Bagian yang perlu diperiksa<select name="category" required>
+  <option value="">Pilih bagian</option>
+  <option value="ingredients">Bahan atau takaran</option>
+  <option value="instructions">Panduan memasak</option>
+  <option value="photo">Foto resep</option>
+  <option value="nutrition">Informasi gizi</option>
+  <option value="other">Lainnya</option>
+  </select>
+  </label>
+  <label class="field">Jelaskan masalahnya<textarea name="details" maxlength="1000" minlength="5" rows="3" required>
+  </textarea>
+  </label>
+  <button type="submit">Kirim laporan</button>
+  <p id="recipe-data-report-status" class="helper" role="status">
+  </p>
+  </form>
+  </details>
+          <div class="cook-bar">
+  <p>Stok baru dikurangi setelah konfirmasi.</p>
+  {% if slot and slot.status == 'planned' %}
+  <button id="slot-status" class="secondary" type="button" data-url="{% url 'modul4-slot-status' %}" data-status="skipped">Lewati menu ini</button>
+  {% elif slot and slot.status == 'skipped' %}
+  <button id="slot-status" class="secondary" type="button" data-url="{% url 'modul4-slot-status' %}" data-status="planned">Batalkan lewati</button>
+  {% endif %}
+  <button id="open-cooking" type="button" aria-haspopup="dialog" aria-controls="cooking-dialog" {% if slot and slot.status != 'planned' %}disabled{% endif %}>Sudah Masak →</button>
+  </div>
+        </article>

@@ -1,5 +1,11 @@
+from uuid import uuid4
+
 from django.conf import settings
 from django.db import models
+
+
+def recipe_review_photo_path(instance, filename):
+    return f"recipe-reviews/{instance.recipe_id}/{uuid4().hex}.jpg"
 
 
 class RecipeFavorite(models.Model):
@@ -10,6 +16,19 @@ class RecipeFavorite(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["user", "recipe"], name="recipe_favorite_unique")
+        ]
+
+
+class RecipeNote(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE)
+    content = models.TextField(max_length=2000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "recipe"], name="recipe_note_unique")
         ]
 
 
@@ -44,6 +63,18 @@ class RecipeReview(models.Model):
     recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE, related_name="reviews")
     rating = models.PositiveSmallIntegerField()
     comment = models.CharField(max_length=500, blank=True)
+    photo = models.FileField(upload_to=recipe_review_photo_path, blank=True)
+    photo_is_hidden = models.BooleanField(default=True, db_index=True)
+    photo_permission_granted = models.BooleanField(default=False)
+    photo_consent_at = models.DateTimeField(null=True, blank=True)
+    photo_moderated_at = models.DateTimeField(null=True, blank=True)
+    photo_moderated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="moderated_recipe_photos",
+    )
     is_hidden = models.BooleanField(default=False, db_index=True)
     version = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -59,6 +90,16 @@ class RecipeReview(models.Model):
         ]
 
 
+class RecipePhotoCleanup(models.Model):
+    storage_name = models.CharField(max_length=255, unique=True)
+    attempts = models.PositiveIntegerField(default=0)
+    last_error = models.CharField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "pk"]
+
+
 class ReviewQuota(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True
@@ -70,3 +111,69 @@ class ReviewQuota(models.Model):
         constraints = [
             models.CheckConstraint(condition=models.Q(attempts__lte=10), name="review_quota_max_10")
         ]
+
+
+class RecipeBookPreviewQuota(models.Model):
+    """Recipe Book estimates/previews use their own account quota, separate from Planner."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True
+    )
+    window_started_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(attempts__lte=60), name="recipe_preview_quota_max_60"
+            )
+        ]
+
+
+class RecipeDataReport(models.Model):
+    CATEGORY_CHOICES = [
+        ("ingredients", "Bahan atau takaran"),
+        ("instructions", "Panduan memasak"),
+        ("photo", "Foto resep"),
+        ("nutrition", "Informasi gizi"),
+        ("other", "Lainnya"),
+    ]
+    STATUS_CHOICES = [
+        ("open", "Belum ditinjau"),
+        ("reviewing", "Sedang ditinjau"),
+        ("resolved", "Selesai diperbaiki"),
+        ("dismissed", "Tidak ditindaklanjuti"),
+    ]
+
+    recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE, related_name="data_reports")
+    reporter = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    assigned_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="assigned_recipe_data_reports",
+    )
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    details = models.CharField(max_length=1000)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open", db_index=True)
+    decision_note = models.TextField(max_length=1000, blank=True)
+    follow_up_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["status", "-created_at"]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        super().clean()
+        if self.status == "reviewing" and not self.assigned_to_id:
+            raise ValidationError({"assigned_to": "Pilih penanggung jawab saat laporan ditinjau."})
+        if self.status == "reviewing" and not self.follow_up_at:
+            raise ValidationError({"follow_up_at": "Tentukan waktu tindak lanjut saat laporan ditinjau."})
+        if self.status in {"resolved", "dismissed"} and not self.decision_note.strip():
+            raise ValidationError({"decision_note": "Catat alasan sebelum menutup laporan."})

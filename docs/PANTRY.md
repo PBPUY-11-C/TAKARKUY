@@ -10,6 +10,14 @@ Lock selalu berurutan: akun → operasi → batch FEFO (expiry lalu ID). Kuota A
 
 Pengurangan stok saat memasak memakai `execute_consumption()` (dipanggil `apps.recipe_book.services.cook()`), dengan alokasi FEFO yang sama seperti pratinjau (`plan_consumption()`). Event unik per akun/UUID, bukan per baris movement; satu event boleh mengonsumsi banyak batch. Stok kurang membatalkan seluruh transaksi, dan `CookingHistory` ditulis di transaksi luar yang sama dengan key yang sama. Tidak ada reservasi stok oleh hasil rekomendasi. Pengurangan count dibulatkan ke atas pada presisi 0,000001 unit; ledger mengembalikan gram aktual.
 
+### Preferensi pelacakan bumbu dapur
+
+Bagian **Bumbu dapur yang dilacak** di Modul 2 menyimpan pilihan per akun pada `UserProfile.tracked_staples` (JSON berisi kunci kelompok yang dikenal server). Form hanya menerima kelompok yang didaftarkan aplikasi; pengguna tidak dapat memasukkan kode bahan bebas. Penyimpanan memeriksa `UserProfile.version` di bawah lock akun/profil, lalu menaikkan versi agar perubahan dari tab lama terdeteksi.
+
+Kelompok yang tersedia: garam, merica, air, gula pasir/gula merah, penyedap/kaldu bubuk, dan minyak goreng. Default untuk akun baru dan profil lama adalah hanya `cooking_oil`: lima kelompok bumbu lain tidak dilacak, sedangkan minyak tetap wajib dikelola di Pantry. Migrasi `accounts.0003_userprofile_tracked_staples` menambahkan field dan mempertahankan perilaku pelacakan minyak untuk profil yang sudah ada.
+
+Keputusan pelacakan diterapkan sama pada `stock_matches()` (ide menu), detail resep, pratinjau, dan `cook()`. Bumbu tak terlacak tetap menjadi baris bahan resep dengan takarannya, tetapi tidak masuk kebutuhan Pantry, alokasi FEFO, daftar kekurangan, atau pengurangan stok. Bumbu yang dicentang menjadi kebutuhan seperti bahan lain. Ini bukan klaim bahwa bumbu tak terlacak tersedia secara fisik. Data bahan juga tetap ikut pemeriksaan alergi dan estimasi nutrisi.
+
 ## Tanggal dan migrasi
 
 `expiry_source`: label, manual, estimate, legacy, unknown. Label/manual/legacy tidak diubah otomatis. `legacy` berarti tanggal lama dengan asal yang tidak dapat dibuktikan, bukan klaim estimasi/label yang terverifikasi. Estimasi perpindahan berdasarkan tanggal awal, dibatasi tanggal estimasi sebelumnya; `shelf_life_days` mengikuti selisih tanggal aktual (nol diperbolehkan), bukan umur freezer yang belum tentu diterapkan. Tidak ada formula proporsional yang belum tervalidasi dan tidak menghidupkan kembali stok lewat tanggal. Tidak ada acuan → tidak mengarang tanggal. Ini estimasi, bukan penilaian keamanan makanan atau sejarah suhu; [FoodSafety.gov](https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety).

@@ -1,9 +1,11 @@
 """Recipe Book queries and transactional cooking. No stock reservations."""
 
 from datetime import date, timedelta
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_FLOOR, Decimal, InvalidOperation
+from math import ceil
 from zoneinfo import ZoneInfo
 
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
@@ -11,7 +13,7 @@ from django.utils import timezone
 from apps.accounts.choices import ALLERGEN_KEYS
 from apps.accounts.preferences import effective_allergens, preferences_for
 from apps.budget_planner.models import BudgetPlan, PlannedMeal
-from apps.budget_planner.planner import RICE_CODE, RICE_GRAMS_PER_SERVING, purchase_grams
+from apps.budget_planner.planner import RICE_CODE, meal_staple, purchase_grams
 from apps.catalog.allergens import recipe_allowed
 from apps.catalog.models import Ingredient, Recipe
 from apps.pantry.services import (
@@ -22,13 +24,37 @@ from apps.pantry.services import (
     plan_consumption,
 )
 
-from .models import CookingHistory
+from .models import CookingHistory, RecipeBookPreviewQuota
+from .staples import ALL_STAPLE_CODES, tracked_staple_codes
 
 JAKARTA = ZoneInfo("Asia/Jakarta")
 
-# Curated by ingredient ID, not name matching. Never omitted from allergy screening.
-# Oil is deliberately NOT a staple: larger amounts are meaningful recipe stock.
-STAPLES = frozenset({"ING-GARAM", "ING-MERICA", "ING-AIR"})
+
+class RecipeBookRateLimit(StockError):
+    def __init__(self, retry_after):
+        self.retry_after = max(1, retry_after)
+        super().__init__(
+            f"Batas 60 pemeriksaan resep per 10 menit tercapai. Coba lagi dalam {self.retry_after} detik.",
+            429,
+        )
+
+
+@transaction.atomic
+def reserve_recipe_book_preview(user, *, now=None):
+    """Throttle Recipe Book work independently from Planner preview requests."""
+    now = now or timezone.now()
+    get_user_model().objects.select_for_update().get(pk=user.pk)
+    quota, _ = RecipeBookPreviewQuota.objects.get_or_create(
+        user=user, defaults={"window_started_at": now}
+    )
+    end = quota.window_started_at + timedelta(minutes=10)
+    if now >= end:
+        quota.window_started_at, quota.attempts = now, 0
+        end = now + timedelta(minutes=10)
+    if quota.attempts >= 60:
+        raise RecipeBookRateLimit(ceil((end - now).total_seconds()))
+    quota.attempts += 1
+    quota.save(update_fields=["window_started_at", "attempts"])
 
 
 def estimated_recipe_cost(recipe, servings):
@@ -55,38 +81,52 @@ def recipe_costs(servings, codes):
         return {}  # no price snapshot imported yet: nothing can be priced
     costs = {}
     for meal, items in catalog[5].items():
+        # quote_schedule requires each schedule row to contain every meal in
+        # its catalog. A recipe price is a single-meal quote, so give it a
+        # catalog whose available candidates contain only that meal.
+        meal_catalog = catalog[:5] + ({meal: items},) + catalog[6:]
         for item in items:
             code = item["recipe"].pk
             if code in codes:
                 quote = quote_schedule(
-                    [{meal: code}], servings=servings, targets=[], catalog=catalog
+                    [{meal: code}], servings=servings, targets=[], catalog=meal_catalog
                 )
                 costs[code] = quote["total"]
     return costs
 
 
-def recipe_query(user, *, allergens=None):
+def recipe_query(user, *, allergens=None, preference=None, avoided_ingredient_ids=None):
+    preference = preference or preferences_for(user)
     query = Recipe.objects.filter(
         is_active=True, is_plannable=True
     ).distinct()
-    if preferences_for(user).halal_only:
+    if preference.halal_only:
         query = query.filter(recipetag__tag="halal")
-    groups = effective_allergens(user) if allergens is None else allergens
+    groups = (
+        effective_allergens(user, preference=preference) if allergens is None else allergens
+    )
     if not set(groups) <= ALLERGEN_KEYS:
         raise ValueError("Kelompok alergi tidak valid.")
     if groups:
         query = query.filter(allergen_reviewed=True).exclude(allergen_groups__group__in=groups)
-    avoided = preferences_for(user).avoided_ingredients.values_list("pk", flat=True)
-    return query.exclude(recipeingredient__ingredient_id__in=avoided)
+    if avoided_ingredient_ids is None:
+        avoided_ingredient_ids = preference.avoided_ingredients.values_list("pk", flat=True)
+    if avoided_ingredient_ids:
+        query = query.exclude(recipeingredient__ingredient_id__in=avoided_ingredient_ids)
+    return query
 
 
 def with_guidance(query):
+    return query.filter(guidance_condition())
+
+
+def guidance_condition():
     return (
-        query.filter(instruction_status__in=["source_ok", "authored_reviewed"])
-        .exclude(instructions="")
-        .exclude(Q(recipe_code__startswith="RCP-MDL-") & Q(instruction_review_note=""))
-        .exclude(Q(instruction_status="authored_reviewed", instruction_reviewed_on__isnull=True))
-        .exclude(Q(recipe_code__startswith="RCP-MDL-", instruction_reviewed_on__isnull=True))
+        Q(instruction_status__in=["source_ok", "authored_reviewed"])
+        & ~Q(instructions="")
+        & ~Q(recipe_code__startswith="RCP-MDL-", instruction_review_note="")
+        & ~Q(instruction_status="authored_reviewed", instruction_reviewed_on__isnull=True)
+        & ~Q(recipe_code__startswith="RCP-MDL-", instruction_reviewed_on__isnull=True)
     )
 
 
@@ -109,6 +149,12 @@ def stock_matches(user, servings, *, query=None):
     )
     if not inventory:
         return []
+    configured_staples = tracked_staple_codes(user)
+    available_grams = {}
+    for batch in inventory:
+        available_grams[batch.ingredient_id] = available_grams.get(
+            batch.ingredient_id, Decimal(0)
+        ) + Decimal(batch.quantity) * Decimal(batch.grams_per_unit)
     query = with_guidance(recipe_query(user)) if query is None else query
     soon = timezone.localdate(timezone=JAKARTA) + timedelta(days=2)
     rows = []
@@ -118,7 +164,9 @@ def stock_matches(user, servings, *, query=None):
         .prefetch_related("recipeingredient_set__ingredient")
     ):
         try:
-            needs, _, _ = recipe_requirements(recipe, servings)
+            needs, ingredients, _ = recipe_requirements(
+                recipe, servings, tracked_staples=configured_staples
+            )
             allocation = plan_consumption(
                 user, needs, allow_unknown_expiry=True, preview_batches=inventory
             )
@@ -130,6 +178,40 @@ def stock_matches(user, servings, *, query=None):
         coverage = sum((grams - missing.get(code, 0)) / grams for code, grams in needs.items())
         if coverage <= 0:
             continue
+        ingredient_names = {
+            item["ingredient_code"]: item["name"]
+            for item in ingredients
+            if item["tracked"]
+        }
+        available = [
+            {
+                "ingredient_code": code,
+                "name": ingredient_names.get(code, code),
+                "grams": format((grams - missing.get(code, Decimal(0))).normalize(), "f"),
+                "required_grams": format(grams.normalize(), "f"),
+            }
+            for code, grams in needs.items()
+            if grams - missing.get(code, Decimal(0)) > 0
+        ]
+        missing_ingredients = [
+            {
+                "ingredient_code": code,
+                "name": ingredient_names.get(code, code),
+                "grams": format(grams.normalize(), "f"),
+            }
+            for code, grams in missing.items()
+        ]
+        max_servings = 10
+        for code, grams in needs.items():
+            per_serving = grams / Decimal(servings)
+            possible = int(
+                (available_grams.get(code, Decimal(0)) / per_serving).to_integral_value(
+                    rounding=ROUND_FLOOR
+                )
+            )
+            max_servings = min(max_servings, possible)
+        if not missing:
+            max_servings = max(max_servings, servings)
         used = [row["batch"] for row in allocation["allocations"]]
         undated = [
             b for b in used if b.estimated_expires_on is None or b.expiry_source == "unknown"
@@ -139,8 +221,11 @@ def stock_matches(user, servings, *, query=None):
                 "recipe_code": recipe.pk,
                 "name": recipe.name,
                 "complete": not missing,
+                "max_servings": max(0, max_servings),
                 "soon": any(b.estimated_expires_on <= soon for b in used if b not in undated),
                 "coverage": float(coverage / len(needs)),
+                "available": available,
+                "missing_ingredients": missing_ingredients,
                 "missing": [
                     {"ingredient_code": code, "grams": format(grams.normalize(), "f")}
                     for code, grams in missing.items()
@@ -167,30 +252,33 @@ def get_recipe(user, code, *, inputs=None):
     return recipe
 
 
-def recipe_requirements(recipe, servings, *, include_staples=False, with_rice=False):
-    """Stock needs per ingredient. with_rice adds the planner's rice for a lauk slot."""
+def recipe_requirements(recipe, servings, *, tracked_staples=(), staple=None):
+    """Stock needs per ingredient; selected staple groups are managed like other stock.
+
+    `staple` is the planner's side staple for this slot (see meal_staple), if any.
+    """
     if type(servings) is not int or not 1 <= servings <= 10:
         raise StockError("Porsi harus bilangan bulat 1–10.", 400)
     if not recipe.base_servings:
         raise StockError("Porsi dasar resep belum tersedia.", 400)
     needs, ingredients = {}, []
     nutrition = {key: Decimal(0) for key in ("calories", "protein", "carbs", "fat")}
-    rice = Ingredient.objects.filter(pk=RICE_CODE).first() if with_rice else None
-    if rice is not None:
-        grams = Decimal(RICE_GRAMS_PER_SERVING * servings)
+    side = Ingredient.objects.filter(pk=staple["ingredient_code"]).first() if staple else None
+    if side is not None:
+        grams = Decimal(staple["grams"] * servings)
         ingredients.append(
             {
-                "ingredient_code": rice.pk,
-                "name": f"{rice.name} (nasi pendamping)",
+                "ingredient_code": side.pk,
+                "name": f"{side.name} ({'nasi ' if side.pk == RICE_CODE else ''}pendamping)",
                 "grams": str(grams),
                 "tracked": True,
                 "optional": False,
                 "estimated": False,
             }
         )
-        needs[rice.pk] = grams
+        needs[side.pk] = grams
         for key in nutrition:
-            value = getattr(rice, f"{key}_per_100g")
+            value = getattr(side, f"{key}_per_100g")
             nutrition[key] = None if value is None else grams * Decimal(str(value)) / 100
     for link in recipe.recipeingredient_set.all():
         try:
@@ -199,13 +287,17 @@ def recipe_requirements(recipe, servings, *, include_staples=False, with_rice=Fa
                 raise ValueError
         except (ValueError, TypeError, InvalidOperation) as exc:
             raise StockError("Takaran resep belum dapat dikonversi ke gram.", 400) from exc
-        tracked = not link.is_optional and (include_staples or link.ingredient_id not in STAPLES)
+        is_common_staple = link.ingredient_id in ALL_STAPLE_CODES
+        tracked = not link.is_optional and (
+            not is_common_staple or link.ingredient_id in tracked_staples
+        )
         ingredients.append(
             {
                 "ingredient_code": link.ingredient_id,
                 "name": link.ingredient.name,
                 "grams": str(grams),
                 "tracked": tracked,
+                "common_staple": is_common_staple,
                 "optional": link.is_optional,
                 "estimated": link.quantity_status == "estimated",
             }
@@ -257,21 +349,66 @@ def cooking_inputs(user, payload, *, lock=False):
     code = payload.get("recipe_code")
     if not isinstance(code, str) or not code or len(code) > 100:
         raise StockError("Kode resep tidak valid.", 400)
-    for field in ("include_staples", "allow_unknown_expiry"):
+    for field in ("allow_unknown_expiry",):
         if type(payload.get(field, False)) is not bool:
             raise StockError("Pilihan konfirmasi tidak valid.", 400)
     recipe = get_recipe(user, code, inputs=plan.inputs if plan else None)
     needs, ingredients, nutrition = recipe_requirements(
         recipe,
         payload.get("servings"),
-        include_staples=payload.get("include_staples", False),
-        with_rice=slot_has_rice(slot),
+        tracked_staples=tracked_staple_codes(user),
+        staple=slot_staple(slot),
     )
     return recipe, slot, needs, ingredients, nutrition
 
 
-def slot_has_rice(slot):
-    return bool(slot and isinstance(slot.snapshot, dict) and slot.snapshot.get("with_rice"))
+def slot_staple(slot):
+    return meal_staple(slot.snapshot) if slot else None
+
+
+def _apply_external_ingredients(payload, needs, ingredients, allocation):
+    """Accept only ingredient amounts that are currently missing from Pantry."""
+    raw = payload.get("external_ingredients", [])
+    if not isinstance(raw, list) or len(raw) > 100:
+        raise StockError("Daftar bahan di luar Pantry tidak valid.", 400)
+    names = {
+        item["ingredient_code"]: item["name"]
+        for item in ingredients
+        if item["tracked"]
+    }
+    external = []
+    seen = set()
+    for row in raw:
+        if not isinstance(row, dict):
+            raise StockError("Daftar bahan di luar Pantry tidak valid.", 400)
+        code, value = row.get("ingredient_code"), row.get("grams")
+        if not isinstance(code, str) or code not in needs or code in seen:
+            raise StockError("Bahan di luar Pantry tidak cocok dengan resep.", 400)
+        try:
+            grams = Decimal(str(value))
+        except (InvalidOperation, TypeError, ValueError) as exc:
+            raise StockError("Jumlah bahan di luar Pantry tidak valid.", 400) from exc
+        if not grams.is_finite() or grams <= 0:
+            raise StockError("Jumlah bahan di luar Pantry tidak valid.", 400)
+        missing = allocation["missing"].get(code, Decimal(0))
+        if grams > missing:
+            raise StockError(
+                "Kekurangan stok sudah berubah. Periksa ulang pemakaian stok.", 409
+            )
+        remainder = missing - grams
+        if remainder:
+            allocation["missing"][code] = remainder
+        else:
+            allocation["missing"].pop(code, None)
+        seen.add(code)
+        external.append(
+            {
+                "ingredient_code": code,
+                "name": names.get(code, code),
+                "grams": format(grams.normalize(), "f"),
+            }
+        )
+    return external
 
 
 def advance_plan_version(user, plan):
@@ -331,11 +468,13 @@ def preview_cooking(user, payload):
         manual=payload.get("manual", []),
         allow_unknown_expiry=payload.get("allow_unknown_expiry", False),
     )
+    external = _apply_external_ingredients(payload, needs, ingredients, allocation)
     return {
         "name": recipe.name,
         "ingredients": ingredients,
         "nutrition": nutrition,
         "complete": not allocation["missing"],
+        "external_ingredients": external,
         "missing": [
             {"ingredient_code": code, "grams": str(grams)}
             for code, grams in allocation["missing"].items()
@@ -376,12 +515,21 @@ def cook(user, payload):
     if replay:
         return event.response
     recipe, slot, needs, ingredients, nutrition = cooking_inputs(user, payload, lock=True)
+    allocation = plan_consumption(
+        user,
+        needs,
+        manual=payload.get("manual", []),
+        allow_unknown_expiry=payload.get("allow_unknown_expiry", False),
+        lock=True,
+    )
+    external = _apply_external_ingredients(payload, needs, ingredients, allocation)
     response = execute_consumption(
         user,
         needs,
         event,
         manual=payload.get("manual", []),
         allow_unknown_expiry=payload.get("allow_unknown_expiry", False),
+        planned=allocation,
     )
     history = CookingHistory.objects.create(
         user=user,
@@ -397,12 +545,18 @@ def cook(user, payload):
             "source_url": recipe.source_url,
             "allergens": effective_allergens(user, slot.plan.inputs if slot else {}),
             "allow_unknown_expiry": payload.get("allow_unknown_expiry", False),
+            "external_ingredients": external,
         },
     )
     if slot:
         slot.status = "cooked"
         slot.save(update_fields=["status"])
         advance_plan_version(user, slot.plan)
-    event.response = {**response, "history_id": history.pk, "name": recipe.name}
+    event.response = {
+        **response,
+        "history_id": history.pk,
+        "name": recipe.name,
+        "external_ingredients": external,
+    }
     event.save(update_fields=["response"])
     return event.response

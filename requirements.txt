@@ -1,5 +1,7 @@
 django~=5.2
+Pillow>=11,<14
 gunicorn
 psycopg2-binary
 python-dotenv
 whitenoise
+reportlab>=4.2,<6

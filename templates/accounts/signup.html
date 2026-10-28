@@ -9,6 +9,7 @@
 
   <form method="post" novalidate>
     {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
     {% if form.non_field_errors %}<ul class="form-errors">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
     <div class="field">
       <div class="field-top"><label for="{{ form.full_name.id_for_label }}">Nama Lengkap</label></div>
@@ -38,7 +39,7 @@
     </div>
     <button class="submit" type="submit">Jadi Penakar →</button>
   </form>
-  <p class="switch-page">Sudah memiliki akun? <a href="{% url 'login' %}">Masuk di sini</a></p>
+  <p class="switch-page">Sudah memiliki akun? <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Masuk di sini</a></p>
 </main>
 {% include "accounts/auth_error_popup.html" with popup_title="Periksa isian" %}
 {% endblock %}

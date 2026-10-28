@@ -5,11 +5,19 @@ from django.test import TransactionTestCase
 
 
 class PreferenceMigrationTests(TransactionTestCase):
+    def rollback_preferences(self):
+        # Build each historical scenario from scratch so sibling branch state
+        # cannot leak into SQLite table reconstruction during rollback.
+        MigrationExecutor(connection).migrate([("accounts", None)])
+
     def test_avatar_upgrade_keeps_existing_profile_and_food_preferences(self):
-        before = [("accounts", "0003_foodpreference_and_more")]
-        after = [("accounts", "0004_userprofile_avatar_userprofile_accounts_avatar_valid")]
+        before = [("accounts", "0004_tracked_staples_on_food_preference")]
+        after = [("accounts", "0005_merge_avatar_and_tracked_staples")]
         executor = MigrationExecutor(connection)
         latest = executor.loader.graph.leaf_nodes()
+        # Roll back both sibling branches before building the pre-avatar state.
+        self.rollback_preferences()
+        executor = MigrationExecutor(connection)
         executor.migrate(before)
         try:
             apps = executor.loader.project_state(before).apps
@@ -33,7 +41,8 @@ class PreferenceMigrationTests(TransactionTestCase):
         after = [("accounts", "0003_foodpreference_and_more")]
         executor = MigrationExecutor(connection)
         latest = executor.loader.graph.leaf_nodes()
-        executor.migrate(before)
+        self.rollback_preferences()
+        MigrationExecutor(connection).migrate(before)
         try:
             old_apps = executor.loader.project_state(before).apps
             User = old_apps.get_model(settings.AUTH_USER_MODEL)
@@ -60,8 +69,7 @@ class PreferenceMigrationTests(TransactionTestCase):
             self.assertTrue(preference.halal_only)
             self.assertEqual(list(preference.avoided_ingredients.values_list("pk", flat=True)), [ingredient.pk])
             self.assertEqual(apps.get_model("accounts", "UserProfile").objects.get(user_id=user.pk).version, 7)
-            executor = MigrationExecutor(connection)
-            executor.migrate(before)
+            MigrationExecutor(connection).migrate(before)
             apps = executor.loader.project_state(before).apps
             restored = apps.get_model("accounts", "UserProfile").objects.get(user_id=user.pk)
             self.assertEqual(restored.targets, ["tinggi_protein"])

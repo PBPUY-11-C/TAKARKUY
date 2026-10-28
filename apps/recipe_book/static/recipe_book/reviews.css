@@ -20,6 +20,21 @@
   font-weight: 700;
 }
 
+.photo-permission {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 9px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.photo-permission input {
+  margin-top: 2px;
+}
+
 #review-form textarea {
   box-sizing: border-box;
   width: 100%;
@@ -45,3 +60,35 @@
 #review-error:empty {
   display: none;
 }
+
+.review-photo,
+.review-photo-preview {
+  max-width: min(100%, 480px);
+  margin: 12px 0;
+}
+
+.review-photo img,
+.review-photo-preview {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  border-radius: 12px;
+  object-fit: contain;
+  background: #f4f6ff;
+}
+
+.review-photo figcaption {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+#review-form input[type="file"] {
+  max-width: 100%;
+  font: inherit;
+  font-size: 12px;
+}
+
+.photo-permission,
+.review-photo figcaption,
+#review-form input[type="file"] { font-size:12px; }

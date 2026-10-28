@@ -11,6 +11,11 @@ def default_meals():
     return ["sarapan", "makan_siang", "makan_malam"]
 
 
+def default_tracked_staples():
+    # Cooking oil remains stock-managed unless the user explicitly opts out.
+    return ["cooking_oil"]
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     version = models.PositiveIntegerField(default=1)
@@ -28,6 +33,7 @@ class FoodPreference(models.Model):
     meal_types = models.JSONField(default=default_meals)
     servings = models.PositiveSmallIntegerField(default=2)
     allergens = models.JSONField(default=list)
+    tracked_staples = models.JSONField(default=default_tracked_staples)
     avoided_ingredients = models.ManyToManyField("catalog.Ingredient", blank=True)
     halal_only = models.BooleanField(default=True)
 

@@ -110,11 +110,11 @@ class PlannerRefinementTests(TestCase):
         preview = self.preview()
         self.assertEqual(nasi["delta"], thaw(preview.snapshot)["total"] - self.result["total"])
 
-    def test_soft_spend_preference_is_explained_in_result_and_preview(self):
+    def test_soft_spend_preference_is_explained_in_preview(self):
+        # The planner page stays short; the preview dialog still explains relaxed preferences.
         self.assertTrue(self.result["within_budget"])
         self.assertTrue(self.result["spend_floor_relaxed"])
         self.assertIn("60%", self.result["preference_notes"][0])
-        self.assertContains(self.client.get(reverse("modul1")), self.result["preference_notes"][0])
         response = self.client.post(
             reverse("modul1-plan-preview", args=[self.draft.pk]),
             json.dumps(

@@ -418,18 +418,19 @@ def build_ingredients_prices():
             if row["code"] not in items:
                 raise ValueError("Harga referensi tanpa bahan: " + row["code"])
             mass = row["grams"] * row.get("edible_yield", 1)
+            recorded_at = row.get("recorded_at", supplements["observed_at"])
             prices.append(
                 dict(
-                    price_code=stable("PRC", row["code"], row["url"], supplements["observed_at"]),
+                    price_code=stable("PRC", row["code"], row["url"], recorded_at),
                     ingredient_code=row["code"],
                     price_rupiah=fmt(row["price"]),
                     quantity=f"{mass / 1000:.6f}".rstrip("0").rstrip("."),
                     unit="kg",
                     region="Referensi toko daring (non-Garut)",
-                    recorded_at=supplements["observed_at"],
+                    recorded_at=recorded_at,
                     source=row["source"],
                     source_url=row["url"],
-                    source_recorded_at="",
+                    source_recorded_at=row.get("source_recorded_at", ""),
                     source_license="Tidak dinyatakan; fakta harga referensi untuk estimasi",
                     source_commodity_name=row["product"]
                     + (" — " + row["note"] if row.get("note") else ""),
@@ -1279,26 +1280,34 @@ def build_recipes(items, prices):
     # Discovery candidates from TheMealDB are retained in the catalog as
     # metadata only. The tentative meal slot is a browsing suggestion, not a
     # claim from the source or a signal that this recipe is safe to plan.
-    candidates_path = ROOT / "scratch" / "themealdb_100_candidates.json"
-    if candidates_path.exists():
+    candidate_paths = (
+        ROOT / "scratch" / "themealdb_100_candidates.json",
+        ROOT / "scratch" / "themealdb_western_100_candidates.json",
+    )
+    seen_candidates = {}
+    for candidates_path in candidate_paths:
+        if not candidates_path.exists():
+            continue
         snapshot = json.loads(candidates_path.read_text(encoding="utf-8"))
-        seen_candidates = {}
         for candidate in snapshot.get("recipes", []):
             source_id = str(candidate.get("source_id", "")).strip()
             code = "RCP-TMDB-" + slug(source_id)
-            if code in seen_candidates and seen_candidates[code] == candidate:
-                continue
-            if (
-                not source_id
-                or code in seen_candidates
-                or code in {r["recipe_code"] for r in recipes}
-            ):
+            if not source_id:
+                raise ValueError(f"Duplikat/id kandidat TheMealDB tidak valid: {source_id!r}")
+            if code in seen_candidates:
+                # The Western-focused snapshot can overlap the earlier broad
+                # discovery snapshot. Keep the first full record by stable ID.
+                if seen_candidates[code].get("name", "").strip() == candidate.get("name", "").strip():
+                    continue
+                raise ValueError(f"Metadata kandidat TheMealDB berbeda untuk id {source_id!r}")
+            if code in {r["recipe_code"] for r in recipes}:
                 raise ValueError(f"Duplikat/id kandidat TheMealDB tidak valid: {source_id!r}")
             seen_candidates[code] = candidate
             meal = candidate.get("suggested_meal_type", "")
             if meal not in ("sarapan", "makan_siang", "makan_malam"):
                 meal = ""
             source_url = candidate.get("source_url") or candidate.get("themealdb_url", "")
+            raw_ingredients = candidate.get("ingredients") or candidate.get("raw_ingredients") or []
             raw = json.dumps(
                 {
                     "api_source": "TheMealDB API",
@@ -1308,7 +1317,12 @@ def build_recipes(items, prices):
                     "suggested_meal_type": meal,
                     "themealdb_url": candidate.get("themealdb_url", ""),
                     "image_url": candidate.get("image_url", ""),
-                    "ingredients": candidate.get("ingredients", []),
+                    "image_credit": candidate.get("image_credit", ""),
+                    "ingredients": raw_ingredients,
+                    "suggested_local_mappings": candidate.get("suggested_local_mappings", []),
+                    "unmapped_ingredients": candidate.get("unmapped_ingredients", []),
+                    "local_mapping_coverage": candidate.get("local_mapping_coverage", ""),
+                    "localization_review_notes": candidate.get("localization_review_notes", ""),
                     "review_status": candidate.get("review_status", "needs_manual_review"),
                 },
                 ensure_ascii=False,
@@ -1391,7 +1405,16 @@ def build_recipes(items, prices):
             for field in required_reviews
         ):
             raise ValueError(f"Review bahan, penggunaan sumber, dan halal harus true untuk {code}")
+        for field in ("source_use_note", "halal_review_note", "photo_review_note"):
+            if field in first and any(row.get(field, "") != first.get(field, "") for row in rows):
+                raise ValueError(f"Catatan {field} berbeda antarbaris resep {code}")
+        if "source_use_note" in first and not first.get("source_use_note", "").strip():
+            raise ValueError(f"Catatan review penggunaan sumber wajib diisi untuk {code}")
+        if "halal_review_note" in first and not first.get("halal_review_note", "").strip():
+            raise ValueError(f"Catatan review halal wajib diisi untuk {code}")
         quantities = defaultdict(float)
+        quantity_statuses = defaultdict(set)
+        quantity_audit = defaultdict(list)
         for row in rows:
             if any(
                 row[field] != first[field]
@@ -1410,6 +1433,31 @@ def build_recipes(items, prices):
                     f"Kode bahan/takaran gram tidak valid pada {code}: {ingredient_code!r}"
                 )
             quantities[ingredient_code] += quantity
+            quantity_status = row.get("quantity_status", "curated").strip().casefold() or "curated"
+            raw_ingredient = row.get("raw_ingredient", "").strip()
+            raw_measure = row.get("raw_measure", "").strip()
+            quantity_note = row.get("quantity_note", "").strip()
+            if quantity_status not in {"curated", "estimated"}:
+                raise ValueError(
+                    f"Status takaran harus curated/estimated pada {code}: {ingredient_code}"
+                )
+            if quantity_status == "estimated" and not all(
+                (raw_ingredient, raw_measure, quantity_note)
+            ):
+                raise ValueError(
+                    "Takaran estimated harus mencatat bahan/ukuran sumber dan alasan estimasi "
+                    f"pada {code}: {ingredient_code}"
+                )
+            quantity_statuses[ingredient_code].add(quantity_status)
+            quantity_audit[ingredient_code].append(
+                {
+                    "raw_ingredient": raw_ingredient,
+                    "raw_measure": raw_measure,
+                    "quantity_g": fmt(quantity),
+                    "estimation_note": quantity_note,
+                    "rules_version": "themealdb-manual-curation-v1",
+                }
+            )
         if not quantities:
             raise ValueError(f"Resep TheMealDB tanpa bahan terkurasi: {code}")
         unavailable = [
@@ -1427,6 +1475,8 @@ def build_recipes(items, prices):
         kcal = protein = carbs = fat = cost = 0.0
         animal = ("DAGING-", "IKAN-", "UDANG", "TELUR-")
         tagset = {"halal", first["meal_type"], "kategori_sumber_themealdb"}
+        if any("estimated" in statuses for statuses in quantity_statuses.values()):
+            tagset.add("takaran_estimasi")
         if not any(ic.startswith("ING-" + prefix) for ic in quantities for prefix in animal):
             tagset.add("vegetarian")
         categories = {items[ic]["category"] for ic in quantities}
@@ -1446,8 +1496,12 @@ def build_recipes(items, prices):
                     quantity=fmt(grams),
                     unit="g",
                     is_optional="false",
-                    quantity_status="curated",
-                    raw_text="",
+                    quantity_status=(
+                        "estimated"
+                        if "estimated" in quantity_statuses[ic]
+                        else "curated"
+                    ),
+                    raw_text=json.dumps(quantity_audit[ic], ensure_ascii=False),
                     source="TheMealDB API; mapping TAKARKUY disetujui",
                 )
             )
@@ -1480,7 +1534,28 @@ def build_recipes(items, prices):
                 source="TheMealDB API; kurasi TAKARKUY",
                 source_url=first["source_url"],
                 raw_ingredients=json.dumps(
-                    [{"ingredient_code": ic, "quantity_g": fmt(g)} for ic, g in quantities.items()],
+                    {
+                        "source_id": source_id,
+                        "ingredient_mapping_reviewed": True,
+                        "source_use_reviewed": True,
+                        "source_use_note": first.get("source_use_note", ""),
+                        "halal_reviewed": True,
+                        "halal_review_note": first.get("halal_review_note", ""),
+                        "photo_review_note": first.get("photo_review_note", ""),
+                        "ingredients": [
+                            {
+                                "ingredient_code": ic,
+                                "quantity_g": fmt(g),
+                                "quantity_status": (
+                                    "estimated"
+                                    if "estimated" in quantity_statuses[ic]
+                                    else "curated"
+                                ),
+                                "source_measurements": quantity_audit[ic],
+                            }
+                            for ic, g in quantities.items()
+                        ],
+                    },
                     ensure_ascii=False,
                 ),
                 is_active="true",
@@ -1584,6 +1659,65 @@ def build_recipes(items, prices):
     mendeley = build_mendeley(ROOT, items, price_by_code, [r["name"] for r in recipes])
     for rows, extra in zip((recipes, links, tags, estimates), mendeley[:4]):
         rows.extend(extra)
+    # Keep a review-audit row for every staged TheMealDB/Kaggle recipe, even
+    # when a newer discovery snapshot is not yet in the estimator's input
+    # index. Approved manual TheMealDB mappings replace generated audit rows
+    # with their explicitly reviewed source measures and quantity status.
+    manually_approved_codes = {
+        "RCP-TMDB-" + slug(source_id) for source_id in approved
+    }
+    audit = [row for row in audit if row["recipe_code"] not in manually_approved_codes]
+    audited_codes = {row["recipe_code"] for row in audit}
+    for recipe in recipes:
+        code = recipe["recipe_code"]
+        if not code.startswith(("RCP-TMDB-", "RCP-KAGGLE-")) or code in audited_codes:
+            continue
+        if code in manually_approved_codes:
+            source_id = code.removeprefix("RCP-TMDB-")
+            for position, row in enumerate(approved[source_id], start=1):
+                quantity = row["quantity_g"].strip()
+                quantity_status = row.get("quantity_status", "curated").strip().casefold() or "curated"
+                audit.append(
+                    dict(
+                        recipe_code=code,
+                        ingredient_position=str(position),
+                        raw_ingredient=row.get("raw_ingredient", ""),
+                        raw_measure=row.get("raw_measure", ""),
+                        ingredient_code=row["ingredient_code"].strip(),
+                        quantity_g=quantity,
+                        purchase_quantity_g=quantity,
+                        status=quantity_status,
+                        estimation_note=row.get("quantity_note", "") or "Takaran ditinjau manual.",
+                        reference_url="",
+                        recipe_source_url=row["source_url"],
+                        rules_version="themealdb-manual-curation-v1",
+                    )
+                )
+            continue
+        try:
+            candidate_data = json.loads(recipe.get("raw_ingredients") or "{}")
+        except (TypeError, json.JSONDecodeError):
+            candidate_data = {}
+        source_items = candidate_data.get("ingredients", []) if isinstance(candidate_data, dict) else []
+        if not source_items:
+            source_items = [{"ingredient": recipe["name"], "measure": ""}]
+        for position, source_item in enumerate(source_items, start=1):
+            audit.append(
+                dict(
+                    recipe_code=code,
+                    ingredient_position=str(position),
+                    raw_ingredient=source_item.get("ingredient", source_item.get("name", "")),
+                    raw_measure=source_item.get("measure", source_item.get("raw_measure", "")),
+                    ingredient_code="",
+                    quantity_g="",
+                    purchase_quantity_g="",
+                    status="blocked",
+                    estimation_note=recipe.get("missing_data_reason", "Kandidat menunggu kurasi."),
+                    reference_url="",
+                    recipe_source_url=recipe.get("source_url", ""),
+                    rules_version="candidate-review-only",
+                )
+            )
     # Users see one clear name per menu: curated renames first, then standard
     # spelling and casing. Mendeley rows already went through the same steps.
     # A "nonaktif" override hides the menu but keeps its code for saved plans.
@@ -1793,15 +1927,27 @@ def build_aliases(items, price_aliases, bpn):
         "beras putih": "ING-BERAS",
         "tauge": "ING-TAUGE",
         "toge": "ING-TAUGE",
+        "pasta kering": "ING-PASTA-KERING",
+        "spaghetti": "ING-PASTA-KERING",
+        "spaghetti kering": "ING-PASTA-KERING",
+        "penne": "ING-PASTA-KERING",
     }
     for raw, code in extra.items():
         rows.append(
-            dict(source="Kaggle - aturan kurasi TAKARKUY", raw_name=raw, ingredient_code=code)
+            dict(
+                source=(
+                    "TheMealDB - aturan kurasi TAKARKUY"
+                    if code == "ING-PASTA-KERING"
+                    else "Kaggle - aturan kurasi TAKARKUY"
+                ),
+                raw_name=raw,
+                ingredient_code=code,
+            )
         )
     for i, r in enumerate(rows):
         r["alias_code"] = stable("ALS", r["source"], r["raw_name"])
         r["mapping_status"] = (
-            "reviewed" if r["source"] != "Kaggle - aturan kurasi TAKARKUY" else "manual_curated"
+            "manual_curated" if "aturan kurasi TAKARKUY" in r["source"] else "reviewed"
         )
     return rows
 
@@ -1970,6 +2116,36 @@ def build_all():
             if "allergens" in data:
                 data["allergens"] = json.loads(data["allergens"])
             fixture.append(dict(model=MODEL[rel], pk=row[pk], fields=data))
+    # Keep approved, team-authored Mendeley guidance separate from source recipe
+    # text, then merge it only into the Django fixture. The processed CSV remains
+    # a faithful snapshot of recipe-source data and does not republish raw steps.
+    authored_path = ROOT / "authored_instructions.json"
+    authored_records = json.loads(authored_path.read_text(encoding="utf-8"))
+    authored_by_pk = {
+        record["pk"]: record["fields"]
+        for record in authored_records
+        if record.get("model") == "catalog.recipe"
+    }
+    for record in fixture:
+        if record["model"] != "catalog.recipe":
+            continue
+        fields = record["fields"]
+        if record["pk"] in authored_by_pk:
+            fields.update(authored_by_pk[record["pk"]])
+        elif fields.get("source") == "TheMealDB API; kurasi TAKARKUY":
+            fields["instruction_status"] = "source_ok"
+            audit = json.loads(fields.get("raw_ingredients") or "{}")
+            fields["instruction_review_note"] = (
+                "Panduan Bahasa Indonesia ditulis ulang untuk adaptasi lokal; sumber API resmi "
+                f"TheMealDB ID {audit.get('source_id', '')} ditautkan pada resep. "
+                "Takaran resep yang tidak berasal dari bobot sumber ditandai estimasi."
+            )
+        elif fields.get("instructions") and not record["pk"].startswith("RCP-MDL-"):
+            fields["instruction_status"] = "source_ok"
+            fields["instruction_review_note"] = (
+                "Panduan yang sebelumnya diterbitkan menurut kebijakan katalog; "
+                "bukan review hak pakai baru."
+            )
     FIX.mkdir(exist_ok=True)
     fixture_text = json.dumps(fixture, ensure_ascii=False, indent=2)
     (FIX / "catalog_seed.json").write_text(fixture_text, encoding="utf-8")

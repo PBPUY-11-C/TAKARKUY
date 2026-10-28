@@ -6,11 +6,14 @@ from functools import wraps
 from uuid import UUID
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.cache import patch_cache_control
+from django.utils.text import slugify
+from django.views.decorators.http import require_GET
 
 from apps.accounts.preferences import (
     effective_allergens,
@@ -19,10 +22,11 @@ from apps.accounts.preferences import (
     planner_defaults,
 )
 from apps.catalog.allergens import unsafe_schedule
+from apps.catalog.recipe_images import recipe_images_for
 
 from .forms import PlanMetadataForm, PlannerForm
 from .models import BudgetPlan, PlanPreview
-from .planner import budget_preference_notes, build_plan, replacement_options
+from .planner import MEALS, build_plan, replacement_options
 from .services import (
     PlanConflict,
     PreviewRateLimit,
@@ -42,7 +46,66 @@ from .services import (
     stored_inputs,
     write_draft,
 )
+from .shopping_pdf import shopping_list_pdf
 from .snapshots import net_total, thaw
+
+# BPOM Acuan Label Gizi (ALG) for the general population: the 100% mark of each
+# ring in the "Gizi per hari" card.
+NUTRITION_RINGS = (
+    ("calories", "kkal", "", Decimal(2150), "energy"),
+    ("protein", "protein", " g", Decimal(60), "protein"),
+    ("carbs", "karbo", " g", Decimal(325), "carbs"),
+    ("fat", "lemak", " g", Decimal(67), "fat"),
+)
+
+
+def nutrition_rings(nutrition):
+    """Per-person daily values with their share of the ALG reference, capped at 100%."""
+    return [
+        {
+            "key": key,
+            "label": label,
+            "value": f"{nutrition[field]}{unit}",
+            "reference": f"{reference}{unit}",
+            "percent": min(100, int(Decimal(str(nutrition[field])) * 100 / reference)),
+        }
+        for field, label, unit, reference, key in NUTRITION_RINGS
+    ]
+
+
+# Shopping categories on the planner card; bumbu, lemak and anything new fold into the last.
+SHOPPING_SUMMARY = (
+    ("protein", "Protein"),
+    ("karbohidrat", "Karbohidrat"),
+    ("sayur", "Sayur"),
+    ("buah", "Buah"),
+    ("lainnya", "Bumbu & Lainnya"),
+)
+
+
+def shopping_summary(groups):
+    """Item count and subtotal per summary category, in SHOPPING_SUMMARY order."""
+    keys = {key for key, _ in SHOPPING_SUMMARY}
+    totals = {}
+    for group in groups:
+        key = group["name"].casefold()
+        key = key if key in keys else "lainnya"
+        count, subtotal = totals.get(key, (0, Decimal(0)))
+        totals[key] = (count + len(group["items"]), subtotal + group["subtotal"])
+    return [
+        {"key": key, "label": label, "count": totals[key][0], "subtotal": totals[key][1]}
+        for key, label in SHOPPING_SUMMARY
+        if key in totals
+    ]
+
+
+def annotated_groups(user, plan, result, display_schedule):
+    """Shopping groups with live pantry facts and a subtotal each."""
+    groups, saving = pantry_annotations(user, plan, result, display_schedule)
+    for group in groups:
+        group["subtotal"] = sum(Decimal(str(item["cost"])) for item in group["items"])
+    return groups, saving
+
 
 NOT_FOUND_MESSAGE = "Rencana tidak ditemukan atau sudah diganti. Muat ulang halaman."
 
@@ -141,15 +204,30 @@ def pantry_annotations(user, plan, result, display_schedule):
     return groups, saving // 100 * 100
 
 
+def landing_prefill(query):
+    """Budget, days, servings and meals carried from the landing calculator."""
+    values = {
+        key: int(query[key])
+        for key in ("budget", "days", "servings")
+        if query.get(key, "").isdigit()
+    }
+    meals = [meal for meal in query.getlist("meal_types") if meal in MEALS]
+    if meals:
+        values["meal_types"] = meals
+    return values
+
+
 def account_page(request, builder):
     plan = None
+    # Values from the landing calculator start a new plan; the form still validates on submit.
+    prefill = landing_prefill(request.GET) if request.method == "GET" else {}
     requested = request.POST.get("plan_id") if request.method == "POST" else request.GET.get("plan")
     if requested:
         try:
             plan = owned_plan(request, UUID(requested))
         except (ValueError, TypeError):
             raise Http404("Rencana tidak ditemukan.") from None
-    elif request.GET.get("new") != "1" and not (
+    elif request.GET.get("new") != "1" and not prefill and not (
         request.method == "POST" and request.POST.get("new_plan") == "1"
     ):
         plan = BudgetPlan.objects.filter(user=request.user, status="draft").first()
@@ -165,6 +243,7 @@ def account_page(request, builder):
             "meal_types": ["sarapan", "makan_siang", "makan_malam"],
             "targets": ["seimbang"],
             **planner_defaults(request.user),
+            **prefill,
         }
     )
     form = PlannerForm(
@@ -174,12 +253,6 @@ def account_page(request, builder):
     result = thaw(plan.snapshot) if plan else None
     if result:
         result.setdefault("net_total", result["total"])  # plans saved before net costs
-    if result:
-        # Explain preferences for older immutable snapshots too, without
-        # rewriting their menu, shopping list, or stored prices.
-        result["preference_notes"] = budget_preference_notes(
-            result["schedule"], result["total"], int(plan.inputs["budget"])
-        )
     if plan and request.method == "GET":
         form.is_valid()
     error, pending = None, None
@@ -264,6 +337,15 @@ def account_page(request, builder):
             error = str(exc)
             status = 400
     display_schedule = deepcopy(result["schedule"]) if result else []
+    display_recipe_codes = [
+        meal["recipe_code"]
+        for day in display_schedule
+        for meal in day["meals"]
+    ]
+    display_photos = recipe_images_for(display_recipe_codes)
+    for day in display_schedule:
+        for meal in day["meals"]:
+            meal["photo"] = display_photos.get(meal["recipe_code"])
     if result and plan:
         slots = {(item.day, item.meal_type): item for item in plan.meals.all()}
         cooked = {(item.day, item.meal_type) for item in cooked_slots(plan)}
@@ -275,10 +357,20 @@ def account_page(request, builder):
                     meal["cooked"] = (item.day, item.meal_type) in cooked
                     meal["skipped"] = item.status == "skipped"
     shopping_groups, pantry_saving = (
-        pantry_annotations(request.user, plan, result, display_schedule)
+        annotated_groups(request.user, plan, result, display_schedule)
         if result and result.get("within_budget")
         else (None, 0)
     )
+    # Plans saved before the staple choice keep their stored value visible.
+    rice_value = form["rice"].value() or "no"
+    legacy_rice = dict(PlannerForm.LEGACY_RICE_CHOICES)
+    staple_options = [
+        *([(rice_value, legacy_rice[rice_value])] if rice_value in legacy_rice else []),
+        *PlannerForm.STAPLE_CHOICES,
+    ]
+    avoid_terms = [
+        term.strip() for term in str(form["exclude_ingredients"].value() or "").split(",")
+    ]
     response = render(
         request,
         "budget_planner/planner.html",
@@ -288,9 +380,22 @@ def account_page(request, builder):
             "display_schedule": display_schedule,
             "shopping_groups": shopping_groups,
             "pantry_saving": pantry_saving,
+            "staple_options": staple_options,
+            "rice_value": rice_value,
+            "avoid_count": len([term for term in avoid_terms if term]),
+            "item_count": sum(len(group["items"]) for group in shopping_groups or ()),
+            "shopping_summary": shopping_summary(shopping_groups or ()),
+            "pantry_items": [
+                item
+                for group in shopping_groups or ()
+                for item in group["items"]
+                if not item["added_to_pantry"] and item["to_buy"] != 0
+            ],
+            "nutrition_rings": nutrition_rings(result["nutrition"])
+            if result and result.get("within_budget")
+            else [],
             "error": error,
             "plan": plan,
-            "trial": None,
             "pending_preview": pending,
             "saved_plans": [
                 setattr(saved, "net_total", net_total(thaw(saved.snapshot))) or saved
@@ -304,13 +409,11 @@ def account_page(request, builder):
                     effective_allergens(request.user, plan.inputs if plan else {}),
                 )
             ),
-            "halal_only": effective_preferences(request.user)["halal_only"],
             "halal_warning": bool(
                 result
                 and effective_preferences(request.user)["halal_only"]
                 and non_halal_schedule(schedule_codes(result))
             ),
-            "allergy_active": effective_allergens(request.user, plan.inputs if plan else {}),
         },
         status=status,
     )
@@ -423,6 +526,24 @@ def delete_account_plan(request, payload, plan_id):
         check_version(plan, payload.get("version"))
         plan.delete()
     return JsonResponse({"url": reverse("modul1") + "#rencana-saya"})
+
+
+@login_required
+@require_GET
+def shopping_list_download(request, plan_id):
+    plan = owned_plan(request, plan_id)
+    result = thaw(plan.snapshot)
+    if not result.get("within_budget"):
+        raise Http404("Rencana belum memenuhi budget.")
+    schedule = deepcopy(result["schedule"])
+    groups, _ = annotated_groups(request.user, plan, result, schedule)
+    response = HttpResponse(
+        shopping_list_pdf(plan, result, groups, schedule), content_type="application/pdf"
+    )
+    filename = f"belanja-{slugify(plan.title) or 'rencana'}.pdf"
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    patch_cache_control(response, private=True, no_store=True)
+    return response
 
 
 def recipe_alternatives(request, plan_id):
