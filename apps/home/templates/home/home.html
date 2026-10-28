@@ -6,8 +6,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TAKARKUY</title>
-  <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
-  <script type="module" src="{% static 'dashboard/dashboard.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'home/dashboard.css' %}">
+  <script type="module" src="{% static 'home/dashboard.js' %}?v=20261028-pasar"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
@@ -44,7 +44,7 @@
 <body>
     {% include "partials/app_header.html" %}
     <main class="dashboard-shell">
-      <div class="dashboard-heading"><div><p class="muted">{{ today|date:'l, d F Y' }}</p><h1>Hai, {{ user.first_name|default:user.username }} <span aria-hidden="true">👋</span></h1></div><button id="open-market" type="button" class="secondary">Cari pasar &amp; bank sampah ↗</button></div>
+      <div class="dashboard-heading"><div><p class="muted">{{ today|date:'l, d F Y' }}</p><h1>Hai, {{ user.first_name|default:user.username }} <span aria-hidden="true">👋</span></h1></div><button id="open-market" type="button" class="secondary">Cari pasar terdekat ↗</button></div>
       <section class="summary-cards" aria-label="Ringkasan dapur">
         <a class="summary-card" href="{% url 'modul1' %}#rencana-saya"><span>Rencana aktif hari ini</span><strong>{{ plans|length }}</strong></a>
         <a class="summary-card" href="{% url 'modul2' %}"><span>Segera digunakan</span><strong>{{ stock_counts.soon }} <small>batch</small></strong></a>
@@ -73,12 +73,12 @@
     {{ map_places|json_script:'map-places' }}
     {{ map_config|json_script:'map-config' }}
     <dialog id="market-dialog" aria-labelledby="market-title" data-url="{% url 'modul5-places' %}">
-      <div class="section-title"><h2 id="market-title">Pasar &amp; bank sampah</h2><button id="close-market" class="text-button" type="button" aria-label="Tutup peta">✕</button></div>
-      <form id="market-form">{% csrf_token %}<div class="market-controls"><label class="sr-only" for="market-region">Kota atau kabupaten</label><input id="market-region" name="region" value="Garut" maxlength="60" placeholder="Kota atau kabupaten" required><label class="sr-only" for="market-kind">Jenis tempat</label><select id="market-kind" name="kind"><option value="all">Semua</option><option value="market">Pasar</option><option value="waste_bank">Bank sampah</option></select><button type="submit" class="primary">Cari</button></div>{% if map_config.online %}<label class="online-choice"><input name="online" type="checkbox"> Sertakan hasil daring OSM</label>{% endif %}</form>
-      <div class="map-toolbar"><button id="locate-market" type="button" class="secondary">Gunakan lokasi saya</button><small>Lokasi hanya dipakai di perangkat, bukan dikirim ke server aplikasi.</small></div>
+      <div class="section-title"><h2 id="market-title">Pasar terdekat</h2><button id="close-market" class="text-button" type="button" aria-label="Tutup peta">✕</button></div>
+      <div class="map-toolbar"><button id="locate-market" type="button" class="primary">📍 Gunakan lokasi saya</button><small>Lokasi dibulatkan ±1 km sebelum dikirim dan tidak disimpan di akun.</small></div>
+      <form id="market-form">{% csrf_token %}<div class="market-controls"><label class="sr-only" for="market-region">Kota atau kabupaten</label><input id="market-region" name="region" maxlength="60" placeholder="Atau ketik kota/kabupaten, mis. Depok" required><button type="submit" class="secondary">Cari</button></div></form>
       <p id="market-message" role="status" class="muted" aria-live="polite"></p><div id="market-map" aria-label="Peta tempat" hidden></div><ul id="market-results" class="dashboard-list"></ul>
-      <p class="small-note">Data kurasi Garut &amp; Depok, bukan daftar lengkap. Konfirmasi lokasi dan jenis sampah yang diterima sebelum datang.</p>
-      <details class="small-note"><summary>Sumber &amp; privasi peta</summary><p>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. Tile peta dikirim oleh pihak ketiga yang dapat melihat IP/area peta yang dibuka. Pencarian daring mengirim nama wilayah publik, bukan GPS. Hasil komunitas belum tentu lengkap atau terbaru.</p></details>
+      <p class="small-note">Data OpenStreetMap, dengan daftar kurasi pasar Garut sebagai cadangan. Konfirmasi jam buka sebelum datang.</p>
+      <details class="small-note"><summary>Sumber &amp; privasi peta</summary><p>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. Tile peta dikirim oleh pihak ketiga yang dapat melihat IP/area peta yang dibuka. Pencarian lokasi hanya mengirim titik yang dibulatkan ±1 km ke server; titik tersebut dipakai mencari pasar lewat OpenStreetMap dan tidak dikaitkan dengan akun. Hasil komunitas belum tentu lengkap atau terbaru.</p></details>
     </dialog>
 </body>
 </html>

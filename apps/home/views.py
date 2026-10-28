@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.cache import patch_cache_control
 
-from apps.recipe_book.views import api
+from apps.recipe.views import api
 
 from .maps import MapLimited, lookup_places, read_places
 from .services import dashboard_data
@@ -14,7 +14,7 @@ from .services import dashboard_data
 def dashboard_page(request):
     response = render(
         request,
-        "modul5.html",
+        "home/home.html",
         {
             **dashboard_data(request.user),
             "map_places": read_places(),
@@ -22,8 +22,6 @@ def dashboard_page(request):
         },
     )
     patch_cache_control(response, private=True, no_store=True)
-    # OSM tile policy requires a Referer. Django's same-origin default suppresses
-    # it on cross-origin tiles; send only the site origin, never private paths.
     response["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
 

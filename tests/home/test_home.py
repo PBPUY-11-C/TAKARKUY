@@ -8,12 +8,11 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.budget_planner.models import BudgetPlan, PlannedMeal
 from apps.catalog.models import Recipe
+from apps.home.services import JAKARTA, dashboard_data
 from apps.pantry.models import PantryItem, PantryOperation
-from apps.recipe_book.models import CookingHistory
-
-from .services import JAKARTA, dashboard_data
+from apps.planner.models import BudgetPlan, PlannedMeal
+from apps.recipe.models import CookingHistory
 
 
 class DashboardTests(TestCase):
@@ -131,7 +130,7 @@ class DashboardWeekTests(TestCase):
         )
         self.assertEqual([len(day["meals"]) for day in week], [0, 1, 1, 1, 0, 0, 0])
         self.assertEqual(week[1]["meals"][0]["name"], "Nama snapshot")
-        baseline = self.week_queries()  # measured before more plans exist
+        baseline = self.week_queries()
         self.plan(title="Rencana B", offset=1)
         self.plan(title="Rencana C", offset=3)
         with self.assertNumQueries(baseline):

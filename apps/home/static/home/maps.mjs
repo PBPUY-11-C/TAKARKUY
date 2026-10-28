@@ -11,9 +11,11 @@ export function rankedPlaces(places, origin) {
   return places.map(place => ({...place, distance: origin && validPoint(place.lat, place.lon)
     ? distanceKm(origin, [place.lat, place.lon]) : null})).sort((a,b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
 }
-export function searchPayload(form) {
-  // GPS is deliberately never part of this payload.
-  return {region: form.region.value.trim(), kind: form.kind.value, online: Boolean(form.online?.checked)};
+export function regionPayload(form) {
+  return {region: form.region.value.trim()};
+}
+export function pointPayload(lat, lon) {
+  return {lat: Math.round(lat * 100) / 100, lon: Math.round(lon * 100) / 100};
 }
 export function safeURL(value) {
   try { const url = new URL(value); return url.protocol === 'https:' ? url.href : null; } catch { return null; }

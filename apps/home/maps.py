@@ -1,4 +1,4 @@
-"""Curated fallback + optional public-region OSM lookup, never user GPS."""
+"""Nearest-market search from a rounded location or a region name, with a curated fallback."""
 
 import hashlib
 import json
@@ -6,6 +6,7 @@ import math
 import re
 import subprocess
 import sys
+import time
 from datetime import timedelta
 from pathlib import Path
 from urllib.parse import urlencode, urlsplit
@@ -17,6 +18,8 @@ from django.db import transaction
 from django.utils import timezone
 
 from .models import MapLookupCache, MapProviderGate, MapQuota
+
+NEAR_KM = 30
 
 
 class MapUnavailable(ValueError):
@@ -58,20 +61,47 @@ def normalized_region(value):
     return region
 
 
-def curated(region, kind):
+def distance_km(a, b):
+    lat1, lon1, lat2, lon2 = map(math.radians, (*a, *b))
+    h = (
+        math.sin((lat2 - lat1) / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2
+    )
+    return 6371 * 2 * math.asin(min(1, math.sqrt(h)))
+
+
+def nearest(places, center, limit=20):
+    for place in places:
+        place["distance_km"] = round(distance_km(center, (place["lat"], place["lon"])), 2)
+    unique, seen = [], set()
+    for place in sorted(places, key=lambda place: place["distance_km"]):
+        name = " ".join(place["name"].casefold().split())
+        if name not in seen:
+            seen.add(name)
+            unique.append(place)
+    return unique[:limit]
+
+
+def curated(region=None, point=None):
     data = read_places()
-    query = normalized_region(region)
-    places = [
-        place
-        for place in data["places"]
-        if (query in place["region"].casefold() or query in place["address"].casefold())
-        and (kind == "all" or place["kind"] == kind)
-    ]
+    markets = [place for place in data["places"] if place["kind"] == "market"]
+    if point:
+        places = nearest(
+            [dict(place) for place in markets if coordinates(place["lat"], place["lon"])], point
+        )
+        places = [place for place in places if place["distance_km"] <= NEAR_KM]
+    else:
+        query = normalized_region(region)
+        places = [
+            place
+            for place in markets
+            if query in place["region"].casefold() or query in place["address"].casefold()
+        ]
     return {
         "places": places,
         "source": "curated",
         "reviewed_on": data["reviewed_on"],
-        "message": "" if places else "Data belum tersedia di wilayah ini.",
+        "message": "" if places else "Belum ada data pasar di sekitar sini.",
     }
 
 
@@ -88,24 +118,33 @@ def reserve_map(user):
     quota.save()
 
 
-def _http(provider, url, body=""):
+def _http(provider, url, body="", max_wait=0):
     identity = settings.MAP_USER_AGENT
     if not identity or "TAKARKUY" not in identity or not re.search(r"https://|@", identity):
         raise MapUnavailable("Identitas aplikasi peta belum diatur.")
     url = endpoint(url)
     key = hashlib.sha256(provider.encode()).hexdigest()
-    now, token = timezone.now(), uuid4()
-    with transaction.atomic():
-        gate, _ = MapProviderGate.objects.get_or_create(
-            key=key, defaults={"next_at": now, "lease_until": now}
-        )
-        gate = MapProviderGate.objects.select_for_update().get(pk=gate.pk)
-        wait = max((gate.next_at - now).total_seconds(), (gate.lease_until - now).total_seconds())
-        if wait > 0:
+    token = uuid4()
+    for _attempt in range(2):
+        now = timezone.now()
+        with transaction.atomic():
+            gate, _ = MapProviderGate.objects.get_or_create(
+                key=key, defaults={"next_at": now, "lease_until": now}
+            )
+            gate = MapProviderGate.objects.select_for_update().get(pk=gate.pk)
+            wait = max(
+                (gate.next_at - now).total_seconds(), (gate.lease_until - now).total_seconds()
+            )
+            if wait <= 0:
+                gate.next_at = now + timedelta(seconds=1.1)
+                gate.lease_until, gate.lease = now + timedelta(seconds=12), token
+                gate.save()
+                break
+        if wait > max_wait:
             raise MapLimited(wait)
-        gate.next_at = now + timedelta(seconds=1.1)
-        gate.lease_until, gate.lease = now + timedelta(seconds=12), token
-        gate.save()
+        time.sleep(wait)
+    else:
+        raise MapLimited(1.1)
     try:
         request = {
             "url": url,
@@ -117,7 +156,7 @@ def _http(provider, url, body=""):
             },
         }
         process = subprocess.run(
-            [sys.executable, "-m", "apps.dashboard.map_transport"],
+            [sys.executable, "-m", "apps.home.map_transport"],
             input=json.dumps(request).encode(),
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
@@ -151,7 +190,6 @@ def coordinates(lat, lon):
 
 
 def geocode_region(region):
-    # Same geocoding query across all filters/accounts must share one cache.
     key = hashlib.sha256(
         json.dumps(["region-v1", region, settings.MAP_GEOCODER_URL]).encode()
     ).hexdigest()
@@ -201,34 +239,75 @@ def geocode_region(region):
     return center
 
 
-def osm_places(region, kind):
-    center = geocode_region(region)
-    if center is None:
-        return {"places": [], "source": "osm", "message": "Wilayah tidak ditemukan."}
+def rounded_point(lat, lon):
+    point = coordinates(lat, lon)
+    if point is None:
+        raise ValueError("Lokasi di luar Indonesia atau tidak valid.")
+    return round(point[0], 2), round(point[1], 2)
+
+
+def osm_markets(center, label, radius=0.05):
+    """Markets around a point from Overpass, or Nominatim when Overpass fails, nearest first."""
     lat, lon = center
-    bbox = (
-        f"{max(-11, lat - 0.08)},{max(95, lon - 0.08)},{min(6, lat + 0.08)},{min(141, lon + 0.08)}"
+    box = (
+        max(-11, lat - radius),
+        max(95, lon - radius),
+        min(6, lat + radius),
+        min(141, lon + radius),
     )
-    queries = []
-    if kind in {"all", "market"}:
-        queries.append(f'nwr["amenity"="marketplace"]({bbox});')
-    if kind in {"all", "waste_bank"}:
-        queries.append(f'nwr["name"~"bank sampah",i]({bbox});')
+    try:
+        places, provider = overpass_markets(label, box), "overpass"
+    except (MapUnavailable, MapLimited):
+        places, provider = nominatim_markets(label, box), "nominatim"
+    places = nearest(places, center)
+    return {
+        "places": places,
+        "center": list(center),
+        "source": "osm",
+        "provider": provider,
+        "message": "" if places else "Belum ada pasar tercatat di OpenStreetMap sekitar sini.",
+    }
+
+
+def osm_place(label, osm_type, osm_id, name, point, address):
+    if osm_type not in {"node", "way", "relation"} or type(osm_id) is not int or osm_id < 1:
+        return None
+    return {
+        "id": f"osm-{osm_type}-{osm_id}",
+        "name": name[:150],
+        "kind": "market",
+        "region": label,
+        "address": address[:200],
+        "lat": point[0],
+        "lon": point[1],
+        "source_url": f"https://www.openstreetmap.org/{osm_type}/{osm_id}",
+        "note": "Data komunitas OSM; konfirmasi jam buka sebelum datang.",
+    }
+
+
+def overpass_markets(label, box):
+    bbox = ",".join(str(value) for value in box)
     result = _http(
         "overpass",
         endpoint(settings.MAP_OVERPASS_URL),
-        urlencode({"data": "[out:json][timeout:5];(" + "".join(queries) + ");out center 30;"}),
+        urlencode(
+            {"data": f'[out:json][timeout:5];nwr["amenity"="marketplace"]({bbox});out center 40;'}
+        ),
     )
     if not isinstance(result, dict) or not isinstance(result.get("elements"), list):
         raise MapUnavailable("Hasil peta tidak valid.")
     if result.get("remark"):
         raise MapUnavailable("Pencarian peta belum lengkap.")
     places = []
-    for element in result["elements"][:30]:
+    for element in result["elements"][:40]:
         if not isinstance(element, dict):
             continue
         tags = element.get("tags", {})
-        if not isinstance(tags, dict) or not isinstance(tags.get("name"), str):
+        if (
+            not isinstance(tags, dict)
+            or not isinstance(tags.get("name"), str)
+            or tags.get("amenity") != "marketplace"
+        ):
             continue
         position = element.get("center", element)
         point = (
@@ -236,76 +315,93 @@ def osm_places(region, kind):
             if isinstance(position, dict)
             else None
         )
-        name = tags["name"][:150]
-        group = "waste_bank" if "bank sampah" in name.casefold() else "market"
-        if point is None or (group == "market" and tags.get("amenity") != "marketplace"):
+        if point is None:
             continue
-        if kind != "all" and kind != group:
-            continue
-        if (
-            element.get("type") not in {"node", "way", "relation"}
-            or type(element.get("id")) is not int
-            or element["id"] < 1
-        ):
-            continue
-        places.append(
-            {
-                "id": f"osm-{element['type']}-{element['id']}",
-                "name": name,
-                "kind": group,
-                "region": region,
-                "address": str(tags.get("addr:street", ""))[:200],
-                "lat": point[0],
-                "lon": point[1],
-                "source_url": f"https://www.openstreetmap.org/{element['type']}/{element['id']}",
-                "note": "Data komunitas OSM; konfirmasi lokasi dan layanan sebelum datang.",
-            }
+        place = osm_place(
+            label,
+            element.get("type"),
+            element.get("id"),
+            tags["name"],
+            point,
+            str(tags.get("addr:street", "")),
         )
-    return {
-        "places": places,
-        "center": list(center),
-        "source": "osm",
-        "message": "" if places else "Data belum tersedia di wilayah ini.",
-    }
+        if place:
+            places.append(place)
+    return places
+
+
+def nominatim_markets(label, box):
+    south, west, north, east = box
+    params = urlencode(
+        {
+            "q": "[marketplace]",
+            "viewbox": f"{west},{north},{east},{south}",
+            "bounded": 1,
+            "format": "jsonv2",
+            "countrycodes": "id",
+            "limit": 40,
+        }
+    )
+    rows = _http("nominatim", endpoint(settings.MAP_GEOCODER_URL) + "?" + params, max_wait=1.5)
+    if not isinstance(rows, list):
+        raise MapUnavailable("Hasil peta tidak valid.")
+    places = []
+    for row in rows[:40]:
+        if not isinstance(row, dict) or not isinstance(row.get("name"), str) or not row["name"]:
+            continue
+        if (row.get("category"), row.get("type")) != ("amenity", "marketplace"):
+            continue
+        point = coordinates(row.get("lat"), row.get("lon"))
+        if point is None:
+            continue
+        address = ", ".join(str(row.get("display_name", "")).split(", ")[1:3])
+        place = osm_place(
+            label, row.get("osm_type"), row.get("osm_id"), row["name"], point, address
+        )
+        if place:
+            places.append(place)
+    return places
+
+
+def search_request(data):
+    if not isinstance(data, dict) or set(data) - {"region", "lat", "lon"}:
+        raise ValueError("Kirim lokasi atau nama wilayah saja.")
+    if "lat" in data or "lon" in data:
+        if "region" in data:
+            raise ValueError("Pilih salah satu: lokasi atau nama wilayah.")
+        return None, rounded_point(data.get("lat"), data.get("lon"))
+    return normalized_region(data.get("region")), None
 
 
 def lookup_places(user, data):
-    if set(data) - {"region", "kind", "online"}:
-        raise ValueError("Kirim wilayah saja; koordinat pribadi tidak diterima.")
-    region, kind, online = (
-        normalized_region(data.get("region")),
-        data.get("kind", "all"),
-        data.get("online", False),
-    )
-    if (
-        not isinstance(kind, str)
-        or kind not in {"all", "market", "waste_bank"}
-        or type(online) is not bool
-    ):
-        raise ValueError("Pilihan pencarian tidak valid.")
-    fallback = curated(region, kind)
-    if not online:
-        return fallback
-    # Public Nominatim is opt-in by the operator, not an automatic generic
-    # geocoder. No autocomplete, background lookup or coordinate requests.
+    region, point = search_request(data)
+    fallback = curated(region, point)
     if not settings.MAP_LOOKUP_ENABLED:
         return {
             **fallback,
-            "message": "Pencarian daring belum diaktifkan. Menampilkan data kurasi.",
+            "message": "Pencarian daring belum diaktifkan. "
+            + ("Menampilkan data kurasi." if fallback["places"] else fallback["message"]),
         }
-    # Account quota stays outside the provider fallback: quota exhaustion must
-    # remain 429, but offline/disabled lookups never spend online quota.
     reserve_map(user)
+    target = ["point", *point] if point else ["region", region]
     key = hashlib.sha256(
         json.dumps(
-            ["maps-v1", region, kind, settings.MAP_GEOCODER_URL, settings.MAP_OVERPASS_URL]
+            ["maps-v2", *target, settings.MAP_GEOCODER_URL, settings.MAP_OVERPASS_URL]
         ).encode()
     ).hexdigest()
     cached = MapLookupCache.objects.filter(pk=key, expires_at__gt=timezone.now()).first()
     if cached:
         return {**cached.payload, "cached": True}
     try:
-        result = osm_places(region, kind)
+        if point:
+            result = osm_markets(point, "Sekitar lokasi Anda")
+        else:
+            center = geocode_region(region)
+            result = (
+                osm_markets(center, region.title(), radius=0.08)
+                if center
+                else {"places": [], "source": "osm", "message": "Wilayah tidak ditemukan."}
+            )
     except MapLimited as exc:
         return {
             **fallback,

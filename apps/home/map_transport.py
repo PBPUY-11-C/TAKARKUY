@@ -26,5 +26,4 @@ if __name__ == "__main__":
         request = json.loads(sys.stdin.buffer.read(8192))
         sys.stdout.write(json.dumps(fetch(request)))
     except Exception:
-        # No provider body, headers, or queries in logs/errors.
         sys.exit(1)

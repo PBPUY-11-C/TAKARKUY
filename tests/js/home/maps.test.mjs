@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {distanceKm, placeLink, rankedPlaces, safeURL, searchPayload, validPoint} from '../static/dashboard/maps.mjs';
+import {distanceKm, placeLink, pointPayload, rankedPlaces, regionPayload, safeURL, validPoint} from '../../../apps/home/static/home/maps.mjs';
 
-test('map payload never includes GPS or personal coordinates', () => {
-  assert.deepEqual(searchPayload({region: {value:' Garut '}, kind:{value:'all'}, online:{checked:true},
-    lat:{value:'-6.3'}, lon:{value:'106.8'}}), {region:'Garut', kind:'all', online:true});
+test('location payload is rounded to about one kilometre', () => {
+  assert.deepEqual(pointPayload(-6.36789, 106.82345), {lat:-6.37, lon:106.82});
+});
+test('region payload sends only the trimmed region', () => {
+  assert.deepEqual(regionPayload({region:{value:' Depok '}, lat:{value:'-6.3'}}), {region:'Depok'});
 });
 test('unknown points stay unknown instead of becoming coordinates zero zero', () => {
   assert.equal(validPoint(null,null), false);

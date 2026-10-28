@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import {runInNewContext} from 'node:vm';
-import {validPoint, rankedPlaces, searchPayload, safeURL, placeLink} from '../static/dashboard/maps.mjs';
+import {validPoint, rankedPlaces, regionPayload, pointPayload, safeURL, placeLink} from '../../../apps/home/static/home/maps.mjs';
 
-const script = readFileSync(new URL('../static/dashboard/dashboard.js',import.meta.url),'utf8').replace(/^import .*;\n/,'');
+const script = readFileSync(new URL('../../../apps/home/static/home/dashboard.js',import.meta.url),'utf8').replace(/^import .*;\n/,'');
 class Element {
   constructor(){this.dataset={};this.children=[];this.listeners={};this.value='';this.open=false;this.disabled=false;this.hidden=false;this.controls=new Map();}
   addEventListener(type,fn){this.listeners[type]=fn;}
@@ -21,26 +21,30 @@ function setup(){
   const place={name:'<img onerror=alert(1)>',kind:'market',region:'Garut',address:'Garut',lat:-7.2,lon:107.9,source_url:'https://example.org'};
   get('#map-places').textContent=JSON.stringify({places:[place]});
   get('#map-config').textContent=JSON.stringify({tiles:'https://tile.openstreetmap.org/{z}/{x}/{y}.png'});
-  get('#market-form').elements={region:{value:'Garut'},kind:{value:'all'}};
+  get('#market-form').elements={region:{value:'Garut'}};
   get('#market-dialog').dataset.url='/modul5/places/';
-  let gps=0, callback, next={places:[place],source:'curated'}, malformed=false, requests=[];
-  runInNewContext(script,{validPoint,rankedPlaces,searchPayload,safeURL,placeLink,URL,JSON,
+  let gps=0, callback, denied, next={places:[place],source:'curated'}, malformed=false, requests=[];
+  runInNewContext(script,{validPoint,rankedPlaces,regionPayload,pointPayload,safeURL,placeLink,URL,JSON,
     document:{querySelector:get,createElement:()=>new Element(),head:new Element()},window:{},
     setTimeout:()=>1,clearTimeout(){},AbortController,
-    navigator:{geolocation:{getCurrentPosition(fn){gps++;callback=fn;}}},
+    navigator:{geolocation:{getCurrentPosition(fn,fail){gps++;callback=fn;denied=fail;}}},
     fetch:async(url,options)=>{requests.push(JSON.parse(options.body));if(next instanceof Error)throw next;return{ok:true,json:async()=>{if(malformed)throw new SyntaxError('HTML response');return next;}};}});
-  return{get,requests,setNext:v=>next=v,setMalformed:()=>malformed=true,gps:()=>gps,locate:()=>callback?.({coords:{latitude:-7.2,longitude:107.9}})};
+  return{get,requests,setNext:v=>next=v,setMalformed:()=>malformed=true,gps:()=>gps,deny:()=>denied?.(),locate:()=>callback?.({coords:{latitude:-7.20123,longitude:107.90456}})};
 }
-test('opening map does not request GPS or geocoding and names are plain text',async()=>{
+test('opening the dialog detects location and searches nearby markets',async()=>{
   const ui=setup(); await ui.get('#open-market').trigger();
-  assert.equal(ui.gps(),0);assert.equal(ui.requests.length,0);
-  assert.equal(ui.get('#market-results').children[0].children[0].children[0].textContent,'<img onerror=alert(1)>');
-});
-test('GPS is opt-in and remains absent from subsequent search payload',async()=>{
-  const ui=setup();await ui.get('#open-market').trigger();await ui.get('#locate-market').trigger();ui.locate();
   assert.equal(ui.gps(),1);assert.equal(ui.requests.length,0);
+  await ui.locate();
+  assert.deepEqual(ui.requests[0],{lat:-7.2,lon:107.9});
+  const info=ui.get('#market-results').children[0].children[0];
+  assert.equal(info.children[0].textContent,'<img onerror=alert(1)>');
+  assert.match(info.children[2].textContent,/km dari Anda/);
+});
+test('denied location falls back to region search without coordinates',async()=>{
+  const ui=setup();await ui.get('#open-market').trigger();ui.deny();
+  assert.equal(ui.get('#market-message').textContent,'Lokasi tidak diizinkan. Cari nama kota atau kabupaten.');
   await ui.get('#market-form').trigger('submit');
-  assert.deepEqual(ui.requests[0],{region:'Garut',kind:'all',online:false});
+  assert.deepEqual(ui.requests[0],{region:'Garut'});
 });
 test('network failure keeps curated list available without HTML injection',async()=>{
   const ui=setup();await ui.get('#open-market').trigger();ui.setNext(new Error('Offline'));

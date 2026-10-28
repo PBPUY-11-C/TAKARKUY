@@ -8,11 +8,11 @@ from django.db.models import Case, CharField, Count, F, Max, Prefetch, Q, Value,
 from django.db.models.functions import RowNumber
 from django.utils import timezone
 
-from apps.budget_planner.models import BudgetPlan, PlannedMeal
-from apps.budget_planner.planner import meal_staple
-from apps.budget_planner.services import draft_is_clean
 from apps.pantry.models import PantryItem
-from apps.recipe_book.models import CookingHistory
+from apps.planner.models import BudgetPlan, PlannedMeal
+from apps.planner.planner import meal_staple
+from apps.planner.services import draft_is_clean
+from apps.recipe.models import CookingHistory
 
 JAKARTA = ZoneInfo("Asia/Jakarta")
 MEALS = {"sarapan": "Sarapan", "makan_siang": "Makan siang", "makan_malam": "Makan malam"}
@@ -54,7 +54,6 @@ def dashboard_data(user):
     for plan in plans:
         inputs = plan.inputs if isinstance(plan.inputs, dict) else {}
         snapshot = plan.snapshot if isinstance(plan.snapshot, dict) else {}
-        # The budget limits money still to spend after pantry stock (older plans: total).
         budget = parse_money(inputs.get("budget"))
         total = parse_money(snapshot.get("net_total", snapshot.get("total")))
         plan.remaining = budget - total if budget is not None and total is not None else None
@@ -63,9 +62,7 @@ def dashboard_data(user):
             plan.remaining = -plan.remaining
         for meal in plan.today_meals:
             snapshot = meal.snapshot if isinstance(meal.snapshot, dict) else {}
-            meal.display_name = (snapshot.get("name") or meal.recipe.name) + staple_suffix(
-                snapshot
-            )
+            meal.display_name = (snapshot.get("name") or meal.recipe.name) + staple_suffix(snapshot)
             meal.display_time = MEALS.get(meal.meal_type, meal.meal_type)
         plan.today_meals.sort(
             key=lambda meal: list(MEALS).index(meal.meal_type) if meal.meal_type in MEALS else 99
@@ -80,8 +77,6 @@ def dashboard_data(user):
         unknown=Count("pk", filter=unknown),
         expired=Count("pk", filter=expired),
     )
-    # At most three rows per category, not the entire pantry. Window queries work
-    # on both supported SQLite and PostgreSQL; adding batches cannot cause N+1.
     priority = (
         stock.filter(unknown | expired | soon)
         .annotate(
@@ -113,7 +108,6 @@ def dashboard_data(user):
     recent = list(history.select_related("recipe").order_by("-cooked_at", "-pk")[:3])
     for entry in recent:
         entry.display_time = timezone.localtime(entry.cooked_at, JAKARTA)
-    # Next seven days of every saved plan, including plans that start later.
     upcoming = (
         PlannedMeal.objects.filter(
             plan__user=user,

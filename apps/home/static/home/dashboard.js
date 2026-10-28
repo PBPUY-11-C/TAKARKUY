@@ -1,4 +1,4 @@
-import {validPoint, rankedPlaces, searchPayload, safeURL, placeLink} from './maps.mjs';
+import {validPoint, rankedPlaces, regionPayload, pointPayload, safeURL, placeLink} from './maps.mjs';
 
 const dialog = document.querySelector('#market-dialog');
 if (dialog) {
@@ -7,7 +7,8 @@ if (dialog) {
   const curated = JSON.parse(document.querySelector('#map-places').textContent);
   const config = JSON.parse(document.querySelector('#map-config').textContent);
   let places = [], origin = null, sequence = 0, controller = null, map = null, layer = null, leafletPromise = null;
-  function reset() { sequence++; controller?.abort(); origin = null; layer?.clearLayers(); form.querySelector('[type=submit]').disabled = false; }
+  const locate = document.querySelector('#locate-market');
+  function reset() { sequence++; controller?.abort(); origin = null; layer?.clearLayers(); form.querySelector('[type=submit]').disabled = false; locate.disabled = false; }
   dialog.addEventListener('close', reset);
   document.querySelector('#close-market').addEventListener('click', () => dialog.close());
   function addLink(parent, label, url) {
@@ -17,11 +18,11 @@ if (dialog) {
   }
   function renderList() {
     output.replaceChildren();
-    for (const place of rankedPlaces(places, origin)) {
+    for (const place of rankedPlaces(places, origin).slice(0, 10)) {
       const li = document.createElement('li'), text = document.createElement('div');
       const title = document.createElement('strong'); title.textContent = place.name;
       const address = document.createElement('small'); address.textContent = place.address || place.region;
-      const info = document.createElement('small'); info.textContent = `${place.kind === 'market' ? 'Pasar' : 'Bank sampah'}${place.distance === null ? '' : ` · ±${place.distance.toFixed(1)} km (garis lurus)`}`;
+      const info = document.createElement('small'); info.textContent = place.distance === null ? 'Pasar' : `±${place.distance.toFixed(1)} km dari Anda (garis lurus)`;
       text.append(title, address, info);
       if (!validPoint(place.lat, place.lon)) {
         const note = document.createElement('small'); note.textContent = 'Titik belum diverifikasi'; text.append(note);
@@ -29,7 +30,7 @@ if (dialog) {
       addLink(text, 'Sumber', place.source_url); li.append(text); addLink(li, 'Buka peta ↗', placeLink(place)); output.append(li);
     }
     if (!places.length) {
-      const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'Data belum tersedia di wilayah ini.'; output.append(li);
+      const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'Belum ada pasar yang ditemukan. Coba cari nama kota atau kabupaten.'; output.append(li);
     }
   }
   function loadLeaflet() {
@@ -69,42 +70,47 @@ if (dialog) {
     } catch (error) { if (current === sequence && dialog.open) message.textContent = error.message; }
   }
   function localSearch() {
-    const region = form.elements.region.value.trim().toLowerCase().replace(/^(kota|kabupaten)\s+/, ''), kind = form.elements.kind.value;
-    places = curated.places.filter(p => `${p.region} ${p.address}`.toLowerCase().includes(region) && (kind === 'all' || p.kind === kind));
+    const region = form.elements.region.value.trim().toLowerCase().replace(/^(kota|kabupaten)\s+/, '');
+    places = region ? curated.places.filter(p => `${p.region} ${p.address}`.toLowerCase().includes(region)) : [];
     renderList();
   }
-  document.querySelector('#open-market').addEventListener('click', () => {
-    dialog.showModal(); message.textContent = ''; localSearch(); drawMap(++sequence);
-  });
-  form.addEventListener('submit', async event => {
-    event.preventDefault(); const current = ++sequence; controller?.abort(); const pending = new AbortController(); controller = pending;
-    const button = form.querySelector('[type=submit]'); button.disabled = true; message.textContent = 'Mencari…';
+  async function search(payload, button) {
+    const current = ++sequence; controller?.abort(); const pending = new AbortController(); controller = pending;
+    button.disabled = true; message.textContent = 'Mencari pasar terdekat…';
     const timer = setTimeout(() => pending.abort(), 20000);
     try {
       const response = await fetch(dialog.dataset.url, {method: 'POST', credentials: 'same-origin', signal: pending.signal,
-        headers: {'Content-Type': 'application/json', 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value}, body: JSON.stringify(searchPayload(form.elements))});
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value}, body: JSON.stringify(payload)});
       let data;
       try { data = await response.json(); }
       catch { throw new Error('Sesi atau layanan tidak tersedia. Muat ulang halaman.'); }
       if (current !== sequence || !dialog.open) return;
       if (!response.ok) throw new Error(data.error || 'Pencarian gagal.');
-      places = data.places; message.textContent = data.message || (data.source === 'osm' ? 'Data OpenStreetMap · belum tentu lengkap.' : 'Data kurasi');
+      places = data.places; message.textContent = data.message || (data.source === 'osm' ? `Data OpenStreetMap${data.cached ? ' · dari cache server' : ''} · belum tentu lengkap.` : 'Data kurasi');
       renderList(); drawMap(current);
     } catch (error) {
       if (current !== sequence || !dialog.open) return;
-      localSearch(); message.textContent = error.name === 'AbortError' ? 'Pencarian terlalu lama. Menampilkan data kurasi.' : error.message;
+      if ('region' in payload) localSearch(); message.textContent = error.name === 'AbortError' ? 'Pencarian terlalu lama. Coba lagi.' : error.message;
     } finally { clearTimeout(timer); if (current === sequence || !dialog.open) button.disabled = false; }
-  });
-  document.querySelector('#locate-market').addEventListener('click', () => {
-    if (!navigator.geolocation) { message.textContent = 'Lokasi tidak didukung. Gunakan pencarian wilayah.'; return; }
-    const current = sequence;
+  }
+  function findNearby() {
+    if (!navigator.geolocation) { message.textContent = 'Lokasi tidak didukung. Cari nama kota atau kabupaten.'; return; }
+    const current = ++sequence; locate.disabled = true; message.textContent = 'Mendeteksi lokasi…';
     navigator.geolocation.getCurrentPosition(position => {
       if (!dialog.open || current !== sequence) return;
       const {latitude, longitude} = position.coords;
-      if (!validPoint(latitude, longitude)) return;
-      origin = [latitude, longitude]; renderList(); drawMap(current);
-      message.textContent = 'Jarak hanya dihitung untuk tempat bertitik terverifikasi di daftar ini.';
-    }, () => { if (dialog.open && current === sequence) message.textContent = 'Lokasi tidak tersedia. Cari wilayah secara manual.'; },
-    {enableHighAccuracy: false, timeout: 8000, maximumAge: 0});
+      if (!validPoint(latitude, longitude)) { locate.disabled = false; return; }
+      origin = [latitude, longitude]; return search(pointPayload(latitude, longitude), locate);
+    }, () => {
+      if (!dialog.open || current !== sequence) return;
+      locate.disabled = false; message.textContent = 'Lokasi tidak diizinkan. Cari nama kota atau kabupaten.';
+    }, {enableHighAccuracy: false, timeout: 8000, maximumAge: 300000});
+  }
+  document.querySelector('#open-market').addEventListener('click', () => {
+    dialog.showModal(); places = []; renderList(); findNearby();
   });
+  form.addEventListener('submit', event => {
+    event.preventDefault(); return search(regionPayload(form.elements), form.querySelector('[type=submit]'));
+  });
+  locate.addEventListener('click', findNearby);
 }

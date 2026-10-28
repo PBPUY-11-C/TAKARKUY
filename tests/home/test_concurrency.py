@@ -7,8 +7,8 @@ from django.contrib.auth import get_user_model
 from django.db import close_old_connections, connections
 from django.test import TransactionTestCase, override_settings, skipUnlessDBFeature
 
-from .maps import MapLimited, _http, reserve_map
-from .models import MapQuota
+from apps.home.maps import MapLimited, _http, reserve_map
+from apps.home.models import MapQuota
 
 
 @skipUnlessDBFeature("has_select_for_update")
@@ -44,7 +44,7 @@ class MapConcurrencyTests(TransactionTestCase):
 
     @override_settings(MAP_USER_AGENT="TAKARKUY/1.0 (+https://github.com/PBPUY-11-C/TAKARKUY)")
     @patch(
-        "apps.dashboard.maps.subprocess.run",
+        "apps.home.maps.subprocess.run",
         return_value=SimpleNamespace(returncode=0, stdout=b"[]"),
     )
     def test_provider_gate_is_shared_not_per_user_or_worker(self, run):
