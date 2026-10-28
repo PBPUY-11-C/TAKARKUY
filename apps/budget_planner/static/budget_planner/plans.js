@@ -326,7 +326,7 @@
     const buttons = Array.from(tabs.querySelectorAll("[data-day-tab]"));
     const section = tabs.closest("section");
     const panels = Array.from(section.querySelectorAll("[data-day-panel]"));
-    if (buttons.length < 2) return;
+    if (!buttons.length) return;
     const show = (day) => {
       buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.dayTab === day)));
       panels.forEach((panel) => { panel.hidden = panel.dataset.dayPanel !== day; });

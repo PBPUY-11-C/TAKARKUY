@@ -7,7 +7,7 @@
   <meta name="description" content="Rencana makan TAKARKUY dari budget, katalog resep, dan harga bahan.">
   <title>TAKARKUY</title>
   {% include "partials/head.html" %}
-  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}?v=20261028-fix">
+  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}?v=20261028-target">
 </head>
 <body class="has-app-nav planner-page">
   {% include "partials/app_header.html" %}
@@ -16,12 +16,11 @@
     <div class="page-heading">
       <h1>Meal Planner</h1>
       <nav class="plan-nav" aria-label="Navigasi rencana">
-        {% if active_draft and active_draft.pk != plan.pk %}<a class="pill-link" href="{% url 'modul1' %}?plan={{ active_draft.pk }}#hasil">Draft terakhir</a>{% endif %}
         <button type="button" class="pill-link" data-open-dialog="rencana-saya">Rencana Saya · {{ saved_plans|length }}</button>
         <a class="pill-link pill-dark" href="{% url 'modul1' %}?new=1">+ Rencana baru</a>
       </nav>
     </div>
-    <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite">{% if plan_missing %}Rencana itu sudah dihapus atau tidak ditemukan. Ini draft terakhirmu.{% endif %}</p>
+    <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite">{% if plan_missing %}Rencana itu sudah dihapus atau tidak ditemukan.{% endif %}</p>
 
     <form class="planner-form card" method="post" action="{% url 'modul1' %}#hasil" novalidate>
       {% csrf_token %}
@@ -68,7 +67,7 @@
       {% if not plan and active_draft %}
       <input type="hidden" name="replace_draft_id" value="{{ active_draft.pk }}">
       <input type="hidden" name="replace_draft_version" value="{{ active_draft.version }}">
-      <label class="form-note"><input type="checkbox" name="replace_draft" value="1"> Ganti draft terakhir dengan rencana baru</label>
+      <input type="hidden" name="replace_draft" value="1">
       {% endif %}
       {% if form.errors %}<ul class="form-errors" role="alert">{% for field in form %}{% for message in field.errors %}<li>{{ field.label }}: {{ message }}</li>{% endfor %}{% endfor %}{% for message in form.non_field_errors %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
     </form>
@@ -236,7 +235,7 @@
     {% include 'budget_planner/preview_dialog.html' %}
   </main>
   {% if pending_preview %}{{ pending_preview|json_script:'pending-plan-preview' }}{% endif %}
-  <script src="{% static 'budget_planner/plans.js' %}?v=20261028-fix" defer></script>
+  <script src="{% static 'budget_planner/plans.js' %}?v=20261028-target" defer></script>
   <script src="{% static 'recipe_book/image_fallback.js' %}" defer></script>
 </body>
 </html>
