@@ -42,8 +42,6 @@ for name, rel in FILES.items():
     assert len({r[key] for r in rows}) == len(rows), (name, "primary key ganda")
     tables[name] = rows
 
-# Stable IDs alone do not prevent the same relation from being emitted twice
-# under different IDs. Reject redundant relations without merging food variants.
 for name, fields in {
     "recipe_ingredients": ("recipe_code", "ingredient_code"),
     "recipe_tags": ("recipe_code", "tag"),
@@ -149,7 +147,6 @@ for r in ready:
     else:
         assert r["instructions"]
     assert links[r["recipe_code"]] and "halal" in tags[r["recipe_code"]]
-    # TAKARKUY only plans halal menus; a halal tag must not hide such an ingredient.
     non_halal = [
         ingredient[x["ingredient_code"]]["name"]
         for x in links[r["recipe_code"]]

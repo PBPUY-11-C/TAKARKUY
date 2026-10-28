@@ -60,8 +60,6 @@ def main():
     breakfast_ids = {str(meal["idMeal"]) for meal in breakfast_list}
     breakfast_pool = {"Breakfast": [(str(m["idMeal"]), "Breakfast") for m in breakfast_list]}
 
-    # The Breakfast category has 19 meals at collection time. Add one banana
-    # recipe as an explicitly tentative breakfast suggestion to reach 20.
     banana_list = get_json("filter.php", {"i": "banana"}).get("meals") or []
     banana_candidate = next((m for m in banana_list if str(m["idMeal"]) not in breakfast_ids), None)
     if len(breakfast_pool["Breakfast"]) < 20 and banana_candidate:
@@ -84,8 +82,6 @@ def main():
     meal_pool = {}
     for category in savory_categories:
         meals = get_json("filter.php", {"c": category}).get("meals") or []
-        # Keep portions suitable as lunch/dinner ideas; skip dessert/side courses
-        # and recipes already selected for breakfast.
         meal_pool[category] = [
             (str(m["idMeal"]), category)
             for m in meals
@@ -168,8 +164,6 @@ def main():
     with (SCRATCH / "themealdb_100_candidates.csv").open(
         "w", newline="", encoding="utf-8"
     ) as stream:
-        # Instructions and structured ingredients belong in the JSON snapshot;
-        # the compact CSV intentionally contains only the review index fields.
         writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(candidate_rows)

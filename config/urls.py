@@ -1,27 +1,13 @@
-"""
-URL configuration for config project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+"""URL configuration for config project."""
 
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 from django.views.generic import RedirectView
 
-from apps.accounts.forms import EmailOrUsernameAuthenticationForm
-from apps.accounts.views import (
+from apps.home.views import dashboard_page, market_lookup
+from apps.login.forms import EmailOrUsernameAuthenticationForm
+from apps.login.views import (
     AccountLoginView,
     food_preferences_view,
     landing_view,
@@ -29,8 +15,18 @@ from apps.accounts.views import (
     profile_view,
     signup_view,
 )
-
-from apps.budget_planner.plan_views import (
+from apps.pantry.views import (
+    delete_pantry_item,
+    fallback_receipt_ocr,
+    pantry_movements,
+    pantry_page,
+    pantry_recipe_matches,
+    save_pantry_items,
+    save_staple_preferences,
+    suggest_receipt_items,
+    update_pantry_details,
+)
+from apps.planner.plan_views import (
     add_plan_purchases,
     apply_plan_preview,
     delete_account_plan,
@@ -39,20 +35,8 @@ from apps.budget_planner.plan_views import (
     save_account_plan,
     shopping_list_download,
 )
-from apps.budget_planner.views import planner_page
-from apps.dashboard.views import dashboard_page, market_lookup
-from apps.pantry.views import (
-    pantry_page,
-    delete_pantry_item,
-    fallback_receipt_ocr,
-    pantry_movements,
-    pantry_recipe_matches,
-    save_staple_preferences,
-    save_pantry_items,
-    suggest_receipt_items,
-    update_pantry_details,
-)
-from apps.recipe_book.views import (
+from apps.planner.views import planner_page
+from apps.recipe.views import (
     book_page,
     cooking_preview,
     estimate_recipe_cost,
@@ -60,8 +44,8 @@ from apps.recipe_book.views import (
     recipe_review_photo,
     recipe_review_photo_delete,
     recipe_review_photo_file,
-    report_recipe_data,
     record_cooking,
+    report_recipe_data,
     save_recipe_note,
     set_favorite,
     set_slot_status,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Catch stale catalog counts in the three user-facing dataset documents."""
+"""Check that the catalog counts in DATA_API.md match the build output."""
 
 import json
 import re
@@ -18,26 +18,18 @@ def validate_documents():
         and row["fields"].get("is_plannable", False)
         for row in fixture
     )
-    for path in (ROOT / "PIPELINE_DATA.md", ROOT / "DATASETS.md"):
-        content = path.read_text(encoding="utf-8")
-        for relative, expected in counts.items():
-            if not relative.endswith(".csv"):
-                continue
-            pattern = rf"\| `{re.escape(relative)}` \| ([\d.]+) \|"
-            match = re.search(pattern, content)
-            assert match and int(match[1].replace(".", "")) == expected, (
-                path.name,
-                relative,
-                expected,
-            )
-        assert f"{fixture_count:,}".replace(",", ".") + " objek" in content.replace("**", ""), path
-        assert f"{counts['plannable_recipes']} siap dihitung" in content.replace("**", ""), path
-        assert "SOURCE_REVIEW.md" in content and "Mendeley" in content
-        assert f"{mendeley_count} Mendeley" in content.replace("**", ""), path
-    # The root README.md follows the team's own template and is not checked here.
-    print(
-        "VALID: hitungan katalog dan fixture sinkron pada data/PIPELINE_DATA.md dan data/DATASETS.md"
-    )
+    path = ROOT.parent / "DATA_API.md"
+    content = path.read_text(encoding="utf-8")
+    plain = content.replace("**", "")
+    for relative, expected in counts.items():
+        if not relative.endswith(".csv"):
+            continue
+        match = re.search(rf"\| `{re.escape(relative)}` \| ([\d.]+) \|", content)
+        assert match and int(match[1].replace(".", "")) == expected, (relative, expected)
+    assert f"{fixture_count:,}".replace(",", ".") + " objek" in plain, "jumlah objek fixture"
+    assert f"{counts['plannable_recipes']} siap dihitung" in plain, "jumlah resep siap dihitung"
+    assert f"{mendeley_count} Mendeley" in plain, "jumlah resep Mendeley"
+    print("VALID: hitungan katalog dan fixture sinkron dengan DATA_API.md")
 
 
 if __name__ == "__main__":

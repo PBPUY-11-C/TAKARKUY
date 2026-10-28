@@ -1,9 +1,4 @@
-"""Clear, standard recipe names shown to users.
-
-Curated renames, exclusions and deactivations live in
-mapping/recipe_name_overrides.csv; the
-rules below only normalize spelling, casing and source noise such as numbering.
-"""
+"""Clear, standard recipe names shown to users."""
 
 import csv
 import re
@@ -11,10 +6,7 @@ import unicodedata
 from pathlib import Path
 
 EXCLUDE = "exclude"
-# Keeps the recipe row and code (saved plans still resolve) but hides it from
-# the app with is_active=false. Usable for every source, unlike EXCLUDE.
 DEACTIVATE = "nonaktif"
-# Standard Indonesian spelling for words that sources write informally.
 SPELLING = {
     "telor": "telur",
     "cabe": "cabai",
