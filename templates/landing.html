@@ -1,19 +1,13 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}TAKARKUY{% endblock %}
+{% block body_class %}landing{% endblock %}
+{% block header %}{% endblock %}
+{% block extra_head %}
   <meta name="description" content="TAKARKUY membantu Anda mengatur budget makan dan menghabiskan stok pantry tanpa sisa.">
-  <title>TAKARKUY</title>
-  <link rel="icon" href="{% static 'takarkuy/logo.svg' %}" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'takarkuy/base.css' %}?v=20261028-integrated">
   <link rel="stylesheet" href="{% static 'login/landing.css' %}?v=20261028-steps">
-</head>
-<body class="landing">
+{% endblock %}
+{% block content %}
   <a class="skip-link" href="#main">Langsung ke konten</a>
 
   <section class="hero" aria-labelledby="hero-title">
@@ -21,6 +15,7 @@
       <div class="topbar">
         <a class="brand" href="{% url 'landing' %}" aria-label="TAKARKUY, ke beranda"><img src="{% static 'takarkuy/logo-light.svg' %}" alt="" width="34" height="40"><span>TAKARKUY</span></a>
         <nav class="topnav" aria-label="Akun">
+          {% include "partials/theme_toggle.html" %}
           <a class="topnav-link" href="{% url 'login' %}">Masuk</a>
           <a class="topnav-cta" href="{% url 'signup' %}">Daftar</a>
         </nav>
@@ -147,8 +142,8 @@
       </div>
     </section>
   </main>
-
+{% endblock %}
+{% block scripts %}
   {{ landing_menu|json_script:"landing-menu" }}
   <script src="{% static 'login/landing.js' %}?v=20261028-rupiah" defer></script>
-</body>
-</html>
+{% endblock %}

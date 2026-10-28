@@ -1,6 +1,6 @@
 {% extends "login/settings_base.html" %}
 {% load static %}
-{% block title %}Preferensi makanan - Pengaturan profil{% endblock %}
+{% block page_title %}Preferensi makanan - Pengaturan profil{% endblock %}
 {% block settings_content %}
 <h2 id="settings-panel-title">Preferensi makanan</h2>
 <p class="settings-description">Ubah bagian yang kamu perlukan, lalu simpan.</p>
@@ -75,4 +75,4 @@
   </div>
 </form>
 {% endblock %}
-{% block scripts %}<script src="{% static 'login/profile.js' %}?v=20261028-simple-preferences" defer></script>{% endblock %}
+{% block page_scripts %}<script src="{% static 'login/profile.js' %}?v=20261028-simple-preferences" defer></script>{% endblock %}

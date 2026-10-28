@@ -1,6 +1,6 @@
 {% extends "login/settings_base.html" %}
 {% load static avatar_tags %}
-{% block title %}Akun - Pengaturan profil{% endblock %}
+{% block page_title %}Akun - Pengaturan profil{% endblock %}
 {% block settings_content %}
 <h2 id="settings-panel-title">Akun</h2>
 <p class="settings-description">Perbarui nama, username, dan alamat email akunmu.</p>
@@ -37,4 +37,4 @@
   <div class="settings-actions"><button class="submit" type="submit">Simpan informasi akun</button></div>
 </form>
 {% endblock %}
-{% block scripts %}<script src="{% static 'login/avatar.js' %}" defer></script>{% endblock %}
+{% block page_scripts %}<script src="{% static 'login/avatar.js' %}" defer></script>{% endblock %}

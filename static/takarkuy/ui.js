@@ -29,6 +29,22 @@
 
   window.TakarKuy = { toast, flash };
 
+  function syncThemeButtons() {
+    const dark = document.documentElement.dataset.theme === "dark";
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(dark));
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest("[data-theme-toggle]")) return;
+    const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("takarkuy-theme", theme); } catch {  }
+    syncThemeButtons();
+  });
+  document.addEventListener("DOMContentLoaded", syncThemeButtons);
+
   document.addEventListener("submit", (event) => {
     const form = event.target;
     const confirmText = form.dataset.confirm;
