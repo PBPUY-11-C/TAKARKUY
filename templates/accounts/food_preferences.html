@@ -1,0 +1,78 @@
+{% extends "accounts/settings_base.html" %}
+{% load static %}
+{% block title %}Preferensi makanan - Pengaturan profil{% endblock %}
+{% block settings_content %}
+<h2 id="settings-panel-title">Preferensi makanan</h2>
+<p class="settings-description">Ubah bagian yang kamu perlukan, lalu simpan.</p>
+<form method="post" class="food-preferences-form" data-food-preferences>
+  {% csrf_token %}{{ preference_form.version }}
+  {{ preference_form.version.errors }}
+  {{ preference_form.non_field_errors }}
+  <nav class="pref-shortcuts" aria-label="Bagian preferensi makanan">
+    <a href="#pref-target">Target makan</a><a href="#pref-schedule">Jadwal &amp; porsi</a><a href="#pref-allergies">Alergi</a><a href="#pref-ingredients">Bahan yang dihindari</a>
+  </nav>
+  <section class="pref-block" id="pref-target" aria-labelledby="pref-target-title">
+    <h3 id="pref-target-title">Target makan</h3>
+    <p class="pref-validation" data-pref-notice="target" role="alert" hidden></p>
+    <p class="pref-hint">Pilih Seimbang, atau gabungkan target lainnya sesuai kebutuhanmu.</p>
+    {{ preference_form.targets.errors }}
+    <fieldset>
+      <legend class="pref-sr-only">Target makan</legend>
+      <div class="pref-target-grid">
+      {% for choice in preference_form.targets %}
+        <label class="pref-target-card">{{ choice.tag }}<span><strong>{{ choice.choice_label }}</strong><small>{% if choice.data.value == 'seimbang' %}Menu beragam untuk sehari-hari.{% elif choice.data.value == 'tinggi_protein' %}Utamakan asupan protein dalam menu.{% else %}Pilihan menu dengan kalori lebih ringan.{% endif %}</small></span></label>
+      {% endfor %}
+      </div>
+    </fieldset>
+  </section>
+  <section class="pref-block" id="pref-schedule" aria-labelledby="pref-schedule-title">
+    <h3 id="pref-schedule-title">Jadwal dan porsi</h3>
+    <p class="pref-validation" data-pref-notice="schedule" role="alert" hidden></p>
+    <p class="pref-hint">Pilih waktu makan dan jumlah orang untuk rencana barumu.</p>
+    <div class="pref-schedule-grid">
+    <fieldset><legend>Waktu makan</legend>{{ preference_form.meal_types.errors }}{{ preference_form.meal_types }}</fieldset>
+    <div class="pref-servings">
+      <label for="{{ preference_form.servings.id_for_label }}">Jumlah orang</label>
+      {{ preference_form.servings.errors }}
+      <div class="pref-number-control">
+        <button type="button" data-servings-change="-1" aria-label="Kurangi jumlah orang" hidden>&minus;</button>
+        {{ preference_form.servings }}
+        <button type="button" data-servings-change="1" aria-label="Tambah jumlah orang" hidden>+</button>
+      </div>
+      <p class="helptext">Untuk 1 sampai 10 orang.</p>
+    </div>
+    </div>
+  </section>
+  <section class="pref-block" id="pref-allergies" aria-labelledby="pref-allergy-title">
+    <h3 id="pref-allergy-title">Alergi makanan</h3>
+    <p class="pref-validation" data-pref-notice="allergies" role="alert" hidden></p>
+    <p class="pref-hint">Pilih alergi yang kamu miliki. Boleh dikosongkan jika tidak ada.</p>
+    {{ preference_form.allergens.errors }}{{ preference_form.allergens }}
+    <button type="button" class="pref-text-button" data-pref-clear="allergens" hidden>Kosongkan pilihan alergi</button>
+    <details class="preference-details"><summary>Catatan tentang alergi</summary><p class="profile-note">Filter bukan jaminan bebas alergen dan belum mencakup semua jenis alergi. Tetap periksa komposisi bahan serta risiko kontaminasi silang. Resep dengan bahan yang belum ditinjau atau bumbu minor yang tidak tercatat dikecualikan saat alergi dipilih.</p></details>
+  </section>
+  <section class="pref-block" id="pref-ingredients" aria-labelledby="pref-ingredients-title">
+    <h3 id="pref-ingredients-title">Bahan yang dihindari</h3>
+    <p class="pref-validation" data-pref-notice="ingredients" role="alert" hidden></p>
+    <p class="pref-hint">Pilih bahan yang kurang kamu sukai. Alergi diatur pada bagian di atas.</p>
+    <fieldset class="ingredient-picker" data-ingredient-picker data-limit="10">
+      <legend class="pref-sr-only">Bahan yang ingin dihindari</legend>
+      {{ preference_form.avoided_ingredients.errors }}
+      <div class="ingredient-tools" hidden>
+        <label for="ingredient-search">Cari bahan</label>
+        <input type="search" id="ingredient-search" placeholder="Contoh: bayam, terong, atau bawang" aria-controls="id_avoided_ingredients" autocomplete="off">
+        <output id="ingredient-count" aria-live="polite"></output>
+        <p class="helptext">Maksimal 10 bahan. Ketik nama untuk mencari pilihan lainnya.</p>
+        <div class="pref-chosen" data-selected-ingredients aria-label="Bahan yang dipilih"></div>
+      </div>
+      {{ preference_form.avoided_ingredients }}
+      <p class="helptext ingredient-empty" role="status" hidden>Bahan tidak ditemukan. Coba nama lain.</p>
+    </fieldset>
+  </section>
+  <div class="settings-actions pref-savebar">
+    <p data-pref-save-status aria-live="polite">Simpan setelah selesai mengubah pilihan.</p>
+    <button class="submit" type="submit">Simpan preferensi</button>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}<script src="{% static 'accounts/profile.js' %}?v=20261028-simple-preferences" defer></script>{% endblock %}

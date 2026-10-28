@@ -4,10 +4,29 @@ from django.urls import reverse
 
 
 class AccountFlowTests(TestCase):
-    def test_planner_requires_login_and_opens_for_accounts(self):
+    def test_error_popup_only_appears_for_invalid_auth_submissions(self):
+        for name in ("login", "signup"):
+            self.assertNotContains(self.client.get(reverse(name)), "data-auth-error-popup")
+            response = self.client.post(reverse(name), {})
+            self.assertContains(response, "data-auth-error-popup", count=1)
+            self.assertContains(response, "Periksa kolom yang ditandai.")
+
+    def test_signup_popup_identifies_invalid_fields_and_duplicate_email(self):
+        response = self.client.post(reverse("signup"), self.signup_data(
+            email="not-an-email", password2="Different!827"
+        ))
+        self.assertContains(response, 'id="id_email_error"')
+        self.assertContains(response, 'id="id_password2_error"')
+        self.assertContains(response, "Konfirmasi kata sandi")
+        self.client.post(reverse("signup"), self.signup_data())
+        self.client.post(reverse("logout"))
+        response = self.client.post(reverse("signup"), self.signup_data(username="another"))
+        self.assertContains(response, "data-auth-error-popup")
+        self.assertContains(response, "Email ini sudah terdaftar")
+
+    def test_planner_alias_requires_login_and_opens_for_authenticated_accounts(self):
         self.assertRedirects(
-            self.client.get(reverse("planner")),
-            f"{reverse('login')}?next={reverse('planner')}",
+            self.client.get(reverse("planner")), f"{reverse('login')}?next={reverse('planner')}"
         )
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("planner"), {"new": "1"})
@@ -204,13 +223,15 @@ class AccountFlowTests(TestCase):
         self.client.post(reverse("login"), {**credentials, "remember_me": "1"})
         self.assertFalse(self.client.session.get_expire_at_browser_close())
 
-    def test_other_module_pages_require_login_and_use_shared_header(self):
+    def test_other_module_pages_require_login_and_render_real_modules(self):
         for name in ("modul2", "modul4", "modul5"):
             url = reverse(name)
-            self.assertRedirects(
-                self.client.get(url),
-                f"{reverse('login')}?next={url}",
-            )
+            self.assertRedirects(self.client.get(url), f"{reverse('login')}?next={url}")
+        self.client.post(reverse("signup"), self.signup_data())
+        for name in ("modul2", "modul4", "modul5"):
+            response = self.client.get(reverse(name))
+            self.assertTemplateUsed(response, {"modul2": "modul2.html", "modul4": "modul4.html", "modul5": "modul5.html"}[name])
+            self.assertContains(response, 'aria-label="Profil dan preferensi"')
 
         self.client.post(reverse("signup"), self.signup_data())
         response = self.client.get(reverse("modul4"))

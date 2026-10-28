@@ -163,6 +163,10 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .calc-head { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 480px) {
+  .topbar { gap: 8px; padding-inline: 10px; }
+  .brand { gap: 6px; font-size: 14px; }
+  .topnav { gap: 0; }
+  .topnav-cta { padding-inline: 12px; }
   .wrap, .calc-wrap { padding-inline: 16px; }
   .calc, .tool-main { padding: 20px; }
   .topnav-link { padding-inline: 10px; }

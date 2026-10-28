@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+from .avatars import AVATAR_CHOICES, AVATAR_KEYS
 
 def default_targets():
     return ["seimbang"]
@@ -18,6 +19,12 @@ def default_tracked_staples():
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     version = models.PositiveIntegerField(default=1)
+    avatar = models.CharField(max_length=16, choices=AVATAR_CHOICES, default="initials")
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=models.Q(avatar__in=AVATAR_KEYS), name="accounts_avatar_valid")
+        ]
 
 
 class FoodPreference(models.Model):

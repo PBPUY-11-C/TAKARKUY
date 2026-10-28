@@ -77,4 +77,3 @@ def recipe_images_for(recipe_codes):
             "file_title": f"Foto komunitas: {review.recipe.name}",
         }
     return images
-

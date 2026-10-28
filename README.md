@@ -89,9 +89,9 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 
 - **Landing page:** hero, cara kerja, fitur, dan FAQ untuk guest.
 - **Autentikasi:** daftar, masuk (username atau email), dan keluar.
-- **Profil & Preferensi:** nama, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, pilihan halal per pengguna, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
+- **Profil & Preferensi:** nama, pilihan avatar bergaya logo, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
 - **Data yang dipegang:** `User`, `UserProfile`, `FoodPreference`.
-- **Halaman:** Landing, Daftar, Masuk, serta Profil & Preferensi.
+- **Halaman:** Landing, Daftar, Masuk, Profil (`/profil/`), Preferensi Makanan (`/profil/preferensi/`), serta Ganti Kata Sandi (`/profil/ganti-kata-sandi/`).
 
 **CRUD User Account & Food Preference:**
 
@@ -188,6 +188,10 @@ Total aplikasi **8 halaman**. Market locator berupa popup di Dashboard, bukan ha
 
 ## Status Integrasi
 
-Modul 1 (`/planner/`) dan Modul 3 (landing, daftar, masuk, profil dan preferensi) aktif. Halaman Modul 2, 4, dan 5 masih berupa placeholder mengikuti `main`; endpoint integrasi planner tetap tersedia. Setelah daftar/masuk, pengguna diarahkan ke planner sementara Dashboard belum aktif.
+Seluruh modul memakai view aslinya dan wajib login. Landing, daftar/masuk, dan kalkulator pembagian budget tetap publik. Setelah daftar/masuk, pengguna diarahkan ke planner. Profil menggunakan chip preferensi dan pencarian bahan (maksimal 10 pilihan). Ganti sandi dibatasi 5 percobaan per akun dan 30 per IP dalam jendela 15 menit.
 
 Jalankan `python manage.py migrate --noinput` untuk menerapkan pemisahan `FoodPreference` tanpa menghapus data preferensi lama, lalu `python manage.py collectstatic --noinput` saat deployment.
+
+Planner wajib login, termasuk alias `/modul1/`. Guest hanya dapat membuka landing, daftar/masuk, serta kalkulator pembagian budget di landing; akses planner diarahkan ke `/login/?next=...`.
+
+Avatar akun disimpan di `UserProfile.avatar`. Terapkan migrasi `accounts.0004` melalui `python manage.py migrate --noinput` sebelum menjalankan versi ini; akun lama menggunakan inisial secara otomatis. Pilihan avatar berupa SVG statis dan tidak memerlukan upload berkas.

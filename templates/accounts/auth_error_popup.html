@@ -1,0 +1,19 @@
+{% load static %}
+{% if form.errors %}
+<link rel="stylesheet" href="{% static 'accounts/auth_feedback.css' %}?v=20261026-compact">
+<dialog class="auth-error-popup" data-auth-error-popup aria-labelledby="auth-error-title" aria-describedby="auth-error-description">
+  <button type="button" class="auth-error-close" data-close-auth-error aria-label="Tutup pemberitahuan">&times;</button>
+  <h2 id="auth-error-title">{{ popup_title }}</h2>
+  <p id="auth-error-description">
+    {% if form.non_field_errors %}
+      {{ form.non_field_errors|first }}
+    {% elif form.errors|length > 1 %}
+      Beberapa isian belum sesuai. Periksa kolom yang ditandai.
+    {% else %}
+      {% for field in form %}{% if field.errors %}{{ field.label }}: {{ field.errors|first }}{% endif %}{% endfor %}
+    {% endif %}
+  </p>
+  <button type="button" class="submit" data-close-auth-error autofocus>Perbaiki</button>
+</dialog>
+<script src="{% static 'accounts/auth_feedback.js' %}?v=20261026-compact" defer></script>
+{% endif %}

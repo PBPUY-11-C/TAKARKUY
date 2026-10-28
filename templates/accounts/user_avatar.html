@@ -1,0 +1,1 @@
+{% load avatar_tags %}{% avatar_url user.userprofile.avatar as avatar_src %}<span class="avatar" aria-hidden="true">{% if avatar_src %}<img src="{{ avatar_src }}" alt="" width="34" height="34">{% else %}{{ user.first_name|default:user.username|slice:":1" }}{% endif %}</span>

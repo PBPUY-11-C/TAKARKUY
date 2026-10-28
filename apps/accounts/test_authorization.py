@@ -168,7 +168,7 @@ class AuthorizationTests(TestCase):
         for name in ("landing", "signup", "login"):
             with self.subTest(page=name):
                 self.assertEqual(self.client.get(reverse(name)).status_code, 200)
-        for name in ("modul1", "modul2", "modul4", "modul5"):
+        for name in ("modul1", "modul2", "modul3", "modul4", "modul5"):
             with self.subTest(page=name):
                 self.assertRedirects(
                     self.client.get(reverse(name)), f"{reverse('login')}?next={reverse(name)}"

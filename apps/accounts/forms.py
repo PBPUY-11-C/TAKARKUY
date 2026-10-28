@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from apps.budget_planner.forms import PlannerForm
 from apps.catalog.models import Ingredient
 
+from .avatars import AVATAR_CHOICES
 from .choices import ALLERGEN_CHOICES
 
 
@@ -41,6 +42,8 @@ def clean_email(value, *, user=None):
 
 
 class SignUpForm(forms.Form):
+    field_order = ["full_name", "username", "email", "password1", "password2"]
+
     username = forms.CharField(
         max_length=30,
         label="Username",
@@ -50,6 +53,7 @@ class SignUpForm(forms.Form):
     )
     full_name = forms.CharField(
         max_length=150,
+        label="Nama lengkap",
         widget=forms.TextInput(
             attrs={
                 "autocomplete": "name",
@@ -59,6 +63,7 @@ class SignUpForm(forms.Form):
     )
     email = forms.EmailField(
         max_length=150,
+        label="Alamat email",
         widget=forms.EmailInput(
             attrs={
                 "autocomplete": "email",
@@ -68,6 +73,7 @@ class SignUpForm(forms.Form):
     )
     password1 = forms.CharField(
         strip=False,
+        label="Kata sandi",
         widget=forms.PasswordInput(
             attrs={
                 "autocomplete": "new-password",
@@ -78,6 +84,7 @@ class SignUpForm(forms.Form):
     )
     password2 = forms.CharField(
         strip=False,
+        label="Konfirmasi kata sandi",
         widget=forms.PasswordInput(
             attrs={
                 "autocomplete": "new-password",
@@ -133,6 +140,7 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
         "inactive": "Akun ini dinonaktifkan.",
     }
     username = forms.CharField(
+        label="Email atau username",
         widget=forms.TextInput(
             attrs={
                 "autocomplete": "username",
@@ -142,6 +150,7 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
     )
     password = forms.CharField(
         strip=False,
+        label="Kata sandi",
         widget=forms.PasswordInput(
             attrs={
                 "autocomplete": "current-password",
@@ -156,6 +165,9 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
 
 
 class AccountDetailsForm(forms.Form):
+    avatar = forms.ChoiceField(
+        choices=AVATAR_CHOICES, required=False, label="Avatar", widget=forms.RadioSelect
+    )
     full_name = forms.CharField(max_length=150, label="Nama lengkap")
     username = forms.CharField(max_length=150, label="Username")
     email = forms.EmailField(max_length=150, label="Email")
@@ -171,6 +183,11 @@ class AccountDetailsForm(forms.Form):
         self.user = user
         super().__init__(*args, **kwargs)
         self.fields["version"].widget.attrs["id"] = "account-version"
+        self.current_avatar = getattr(getattr(user, "userprofile", None), "avatar", "initials")
+        self.fields["avatar"].initial = self.current_avatar
+
+    def clean_avatar(self):
+        return self.cleaned_data["avatar"] or self.current_avatar
 
     def clean_username(self):
         return clean_username(self.cleaned_data["username"], user=self.user)
@@ -194,34 +211,29 @@ class PreferenceForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["version"].widget.attrs["id"] = "preference-version"
 
-    halal_only = forms.TypedChoiceField(
-        label="Preferensi halal",
-        choices=(("yes", "Halal saja"), ("no", "Tidak membatasi")),
-        coerce=lambda value: value == "yes",
-        initial="yes",
-        widget=forms.RadioSelect,
-    )
     targets = forms.MultipleChoiceField(
         choices=PlannerForm.TARGET_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips"}),
         label="Target makan",
     )
     meal_types = forms.MultipleChoiceField(
-        choices=PlannerForm.MEAL_CHOICES, widget=forms.CheckboxSelectMultiple, label="Waktu makan"
+        choices=PlannerForm.MEAL_CHOICES,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips"}),
+        label="Waktu makan",
     )
     servings = forms.IntegerField(min_value=1, max_value=10, label="Jumlah orang")
     allergens = forms.MultipleChoiceField(
         choices=ALLERGEN_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips"}),
         label="Alergi",
     )
     avoided_ingredients = IngredientChoiceField(
         queryset=Ingredient.objects.order_by("name"),
         required=False,
         label="Bahan yang ingin dihindari (bukan alergi)",
-        help_text="Maksimal 10 bahan. Tahan Ctrl (Windows) atau ⌘ (Mac) untuk memilih beberapa bahan.",
-        widget=forms.SelectMultiple(attrs={"size": 8}),
+        help_text="Pilih maksimal 10 bahan. Gunakan pencarian untuk menemukan bahan.",
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "preference-chips ingredient-options"}),
     )
     version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
 

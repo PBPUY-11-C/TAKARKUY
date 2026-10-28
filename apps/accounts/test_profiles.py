@@ -90,6 +90,109 @@ class IdentityTests(TestCase):
 
 
 class ProfileTests(TestCase):
+    def test_avatar_selection_is_owned_versioned_and_visible_in_header(self):
+        other = UserProfile.objects.create(user=self.other, avatar="leaf")
+        payload = self.details(avatar="rice", user_id=self.other.pk)
+        self.assertRedirects(self.client.post(reverse("modul3"), payload), reverse("modul3"))
+        self.assertEqual(UserProfile.objects.get(user=self.user).avatar, "rice")
+        other.refresh_from_db()
+        self.assertEqual(other.avatar, "leaf")
+        self.assertEqual(self.client.post(reverse("modul3"), payload).status_code, 409)
+        page = self.client.get(reverse("modul3"))
+        self.assertEqual(page.context["account_form"]["avatar"].value(), "rice")
+        self.assertContains(page, "accounts/avatars/rice.svg")
+        self.assertRedirects(
+            self.client.post(reverse("modul3"), self.details(avatar="initials")), reverse("modul3")
+        )
+        self.assertEqual(UserProfile.objects.get(user=self.user).avatar, "initials")
+
+    def test_avatar_rejects_unknown_values_and_preserves_selection_for_old_forms(self):
+        profile = UserProfile.objects.create(user=self.user, avatar="chef")
+        for value in ("unknown", "../../outside.svg", "https://example.com/avatar.svg"):
+            response = self.client.post(reverse("modul3"), self.details(avatar=value))
+            self.assertEqual(response.status_code, 400)
+            self.assertIn("avatar", response.context["account_form"].errors)
+        profile.refresh_from_db()
+        self.assertEqual(profile.avatar, "chef")
+        self.assertRedirects(
+            self.client.post(reverse("modul3"), self.details()), reverse("modul3")
+        )
+        profile.refresh_from_db()
+        self.assertEqual(profile.avatar, "chef")
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            UserProfile.objects.filter(pk=profile.pk).update(avatar="invalid")
+
+    def test_settings_pages_share_navigation_with_the_current_page_marked(self):
+        for route, label in (
+            ("modul3", "Akun"), ("password-change", "Keamanan akun"),
+            ("food-preferences", "Preferensi makanan"),
+        ):
+            with self.subTest(route=route):
+                response = self.client.get(reverse(route))
+                self.assertContains(response, "<h1>Pengaturan profil</h1>", html=True)
+                self.assertContains(response, 'aria-label="Pengaturan profil"')
+                self.assertContains(
+                    response, f'<a href="{reverse(route)}" aria-current="page">{label}</a>', html=True
+                )
+
+    def test_preferences_have_a_separate_protected_page(self):
+        url = reverse("food-preferences")
+        response = self.client.get(reverse("modul3"))
+        self.assertContains(response, f'href="{url}"')
+        for name in ("targets", "meal_types", "allergens", "avoided_ingredients"):
+            self.assertNotContains(response, f'name="{name}"')
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, "accounts/food_preferences.html")
+        self.assertContains(response, 'id="ingredient-search"')
+        self.assertIn("no-store", response["Cache-Control"])
+        self.assertRedirects(Client().get(url), f"{reverse('login')}?next={url}")
+        self.assertRedirects(Client().post(url, {}), f"{reverse('login')}?next={url}")
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.user)
+        self.assertEqual(csrf_client.post(url, {}).status_code, 403)
+
+    def test_profile_rejects_old_preferences_action(self):
+        response = self.client.post(reverse("modul3"), {
+            "action": "preferences", "targets": ["tinggi_protein"],
+            "meal_types": ["sarapan"], "servings": 3,
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(FoodPreference.objects.filter(user=self.user).exists())
+
+    def test_preferences_update_invalidates_an_old_account_tab(self):
+        old_account_data = self.details()
+        response = self.client.post(reverse("food-preferences"), {
+            "targets": ["seimbang"], "meal_types": ["sarapan"], "servings": 3,
+            "version": old_account_data["version"],
+        })
+        self.assertRedirects(response, reverse("food-preferences"))
+        self.assertEqual(
+            self.client.post(reverse("modul3"), old_account_data).status_code, 409
+        )
+        self.assertEqual(FoodPreference.objects.get(user=self.user).servings, 3)
+
+    def test_password_form_is_separate_from_profile_and_requires_login(self):
+        url = reverse("password-change")
+        response = self.client.get(reverse("modul3"))
+        self.assertContains(response, f'href="{url}"')
+        self.assertNotContains(response, 'name="old_password"')
+        self.assertNotContains(response, 'name="new_password1"')
+        page = self.client.get(url)
+        self.assertTemplateUsed(page, "accounts/password_change.html")
+        self.assertContains(page, 'name="old_password"')
+        self.assertIn("no-store", page["Cache-Control"])
+        self.assertRedirects(Client().get(url), f"{reverse('login')}?next={url}")
+        self.assertRedirects(Client().post(url, {}), f"{reverse('login')}?next={url}")
+
+    def test_profile_rejects_old_password_action(self):
+        response = self.client.post(reverse("modul3"), {
+            "action": "password", "old_password": "Password!827",
+            "new_password1": "NewPassword!938", "new_password2": "NewPassword!938",
+        })
+        self.assertEqual(response.status_code, 400)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Password!827"))
+
     def setUp(self):
         self.user = get_user_model().objects.create_user(
             "penakar", "dina@example.com", "Password!827"
@@ -162,7 +265,7 @@ class ProfileTests(TestCase):
             "allergens": ["telur", "moluska"],
             "version": profile.version,
         }
-        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
+        self.assertRedirects(self.client.post(reverse("food-preferences"), data), reverse("food-preferences"))
         profile.refresh_from_db()
         self.assertEqual(FoodPreference.objects.get(user=self.user).allergens, ["telur", "moluska"])
         for changes in (
@@ -172,7 +275,7 @@ class ProfileTests(TestCase):
         ):
             self.assertEqual(
                 self.client.post(
-                    reverse("modul3"), {**data, "version": profile.version, **changes}
+                    reverse("food-preferences"), {**data, "version": profile.version, **changes}
                 ).status_code,
                 400,
             )
@@ -181,19 +284,18 @@ class ProfileTests(TestCase):
         other_device = Client()
         other_device.force_login(self.user)
         data = {
-            "action": "password",
             "old_password": "Password!827",
             "new_password1": "NewPassword!938",
             "new_password2": "NewPassword!938",
         }
-        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
+        self.assertRedirects(self.client.post(reverse("password-change"), data), reverse("modul3"))
         self.assertEqual(self.client.get(reverse("modul3")).status_code, 200)
         self.assertEqual(other_device.get(reverse("modul3")).status_code, 302)
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password("NewPassword!938"))
 
-    def test_preferences_are_owned_and_halal_choice_requires_fresh_version(self):
-        self.client.get(reverse("modul3"))
+    def test_preferences_are_owned_and_require_fresh_version(self):
+        self.client.get(reverse("food-preferences"))
         profile = UserProfile.objects.get(user=self.user)
         other = FoodPreference.objects.create(user=self.other)
         data = {
@@ -201,14 +303,15 @@ class ProfileTests(TestCase):
             "meal_types": ["makan_siang"], "servings": 4, "halal_only": "no",
             "version": profile.version, "user_id": self.other.pk,
         }
-        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
-        self.assertFalse(FoodPreference.objects.get(user=self.user).halal_only)
+        self.assertRedirects(self.client.post(reverse("food-preferences"), data), reverse("food-preferences"))
+        self.assertTrue(FoodPreference.objects.get(user=self.user).halal_only)
         other.refresh_from_db()
         self.assertTrue(other.halal_only)
         self.assertEqual(other.servings, 2)
-        self.assertEqual(self.client.post(reverse("modul3"), data).status_code, 409)
-        response = self.client.get(reverse("modul3"))
-        self.assertEqual(response.context["preference_form"]["halal_only"].value(), "no")
+        self.assertEqual(self.client.post(reverse("food-preferences"), data).status_code, 409)
+        response = self.client.get(reverse("food-preferences"))
+        self.assertNotIn("halal_only", response.context["preference_form"].fields)
+        self.assertNotContains(response, "Preferensi halal")
 
     def test_avoided_ingredients_show_names_and_can_be_cleared(self):
         from apps.catalog.models import Ingredient
@@ -216,8 +319,10 @@ class ProfileTests(TestCase):
         ingredient = Ingredient.objects.create(
             ingredient_code="TEST-BAYAM", name="Bayam", category="sayur", base_unit="g"
         )
-        response = self.client.get(reverse("modul3"))
-        self.assertContains(response, '<option value="TEST-BAYAM">Bayam</option>', html=True)
+        response = self.client.get(reverse("food-preferences"))
+        self.assertContains(response, 'value="TEST-BAYAM"')
+        self.assertContains(response, "Bayam")
+        self.assertNotContains(response, '<select name="avoided_ingredients"')
         self.assertNotContains(response, "Ingredient object")
         profile = UserProfile.objects.get(user=self.user)
         data = {
@@ -225,12 +330,12 @@ class ProfileTests(TestCase):
             "meal_types": ["sarapan"], "servings": 2, "halal_only": "yes",
             "version": profile.version, "avoided_ingredients": [ingredient.pk],
         }
-        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
+        self.assertRedirects(self.client.post(reverse("food-preferences"), data), reverse("food-preferences"))
         preference = FoodPreference.objects.get(user=self.user)
         self.assertEqual(list(preference.avoided_ingredients.all()), [ingredient])
         profile.refresh_from_db()
         data.update(version=profile.version, avoided_ingredients=[])
-        self.assertRedirects(self.client.post(reverse("modul3"), data), reverse("modul3"))
+        self.assertRedirects(self.client.post(reverse("food-preferences"), data), reverse("food-preferences"))
         self.assertFalse(preference.avoided_ingredients.exists())
 
     def test_password_old_confirmation_and_strength_are_enforced(self):
@@ -240,18 +345,78 @@ class ProfileTests(TestCase):
             {"new_password1": "weak", "new_password2": "weak"},
         ):
             data = {
-                "action": "password",
-                "old_password": "Password!827",
+                    "old_password": "Password!827",
                 "new_password1": "NewPassword!938",
                 "new_password2": "NewPassword!938",
                 **changes,
             }
-            self.assertEqual(self.client.post(reverse("modul3"), data).status_code, 400)
+            self.assertEqual(self.client.post(reverse("password-change"), data).status_code, 400)
 
     def test_profile_write_requires_csrf(self):
         client = Client(enforce_csrf_checks=True)
         client.force_login(self.user)
         self.assertEqual(client.post(reverse("modul3"), self.details()).status_code, 403)
+
+    def test_password_attempts_share_account_quota_across_devices(self):
+        other_device = Client()
+        other_device.force_login(self.user)
+        payload = {"old_password": "wrong"}
+        with patch("apps.accounts.rate_limits.datetime", wraps=datetime) as clock:
+            clock.now.return_value = datetime(2026, 10, 26, 9, 1, tzinfo=UTC)
+            for _ in range(5):
+                self.assertEqual(self.client.post(reverse("password-change"), payload).status_code, 400)
+            with patch("apps.accounts.views.PasswordChangeForm") as validator:
+                response = other_device.post(reverse("password-change"), payload)
+            self.assertEqual(response.status_code, 429)
+            self.assertGreater(int(response["Retry-After"]), 0)
+            self.assertIn("no-store", response["Cache-Control"])
+            validator.assert_not_called()
+            self.user.refresh_from_db()
+            self.assertTrue(self.user.check_password("Password!827"))
+            self.assertEqual(self.client.get(reverse("modul3")).status_code, 200)
+            # A password quota must not lock out account/preference edits.
+            self.assertRedirects(
+                self.client.post(reverse("modul3"), self.details()), reverse("modul3")
+            )
+            clock.now.return_value = datetime(2026, 10, 26, 9, 16, tzinfo=UTC)
+            self.assertEqual(self.client.post(reverse("password-change"), payload).status_code, 400)
+
+    def test_password_csrf_rejection_does_not_consume_attempt(self):
+        device = Client(enforce_csrf_checks=True)
+        device.force_login(self.user)
+        self.assertEqual(
+            device.post(reverse("password-change"), {}).status_code, 403
+        )
+        self.assertFalse(AuthRateBucket.objects.exists())
+
+    def test_preference_limit_is_enforced_without_javascript(self):
+        from apps.catalog.models import Ingredient
+
+        ingredients = [Ingredient.objects.create(
+            ingredient_code=f"CHOICE-{index}", name=f"Bahan {index}", category="sayur", base_unit="g"
+        ) for index in range(11)]
+        self.client.get(reverse("food-preferences"))
+        response = self.client.post(reverse("food-preferences"), {
+            "action": "preferences", "targets": ["seimbang"], "meal_types": ["sarapan"],
+            "servings": 2, "halal_only": "yes", "version": UserProfile.objects.get(user=self.user).version,
+            "avoided_ingredients": [item.pk for item in ingredients],
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertContains(response, "Pilih maksimal 10 bahan", status_code=400)
+        self.assertFalse(FoodPreference.objects.get(user=self.user).avoided_ingredients.exists())
+
+    def test_account_pages_have_one_title_and_profile_has_searchable_choices(self):
+        for name in ("signup", "login"):
+            response = Client().get(reverse(name))
+            self.assertContains(response, "<title>", count=1)
+            self.assertNotContains(response, "TAKARKUY — TAKARKUY")
+        response = self.client.get(reverse("modul3"))
+        self.assertContains(response, "<title>", count=1)
+        self.assertNotContains(response, 'class="back-home"')
+        response = self.client.get(reverse("food-preferences"))
+        self.assertContains(response, "<title>", count=1)
+        self.assertContains(response, 'id="ingredient-search"')
+        self.assertContains(response, "preference-chips")
 
 
 class RateLimitTests(TestCase):

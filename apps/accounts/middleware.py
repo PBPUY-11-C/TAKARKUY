@@ -66,10 +66,16 @@ class AuthRateLimitMiddleware:
         return self.get_response(request)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if request.method != "POST" or request.resolver_match.url_name not in {"login", "signup"}:
+        if request.method != "POST":
             return None
         action = request.resolver_match.url_name
-        identity = request.POST.get("username" if action == "login" else "email", "")
+        if action == "password-change" and request.user.is_authenticated:
+            action = "password"
+            identity = f"account:{request.user.pk}"
+        elif action in {"login", "signup"}:
+            identity = request.POST.get("username" if action == "login" else "email", "")
+        else:
+            return None
         try:
             reserve_auth_attempt(request, action, identity)
         except AuthLimited as error:

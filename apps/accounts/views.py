@@ -50,7 +50,7 @@ def landing_view(request):
 def signup_view(request):
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
-    form = SignUpForm(request.POST or None)
+    form = SignUpForm(request.POST if request.method == "POST" else None)
     # Same-site "next" only, as LoginView does, so signing up can return to the planner.
     next_url = request.POST.get("next") or request.GET.get("next", "")
     if not url_has_allowed_host_and_scheme(
@@ -84,7 +84,6 @@ class AccountLoginView(LoginView):
 @require_http_methods(["GET", "POST"])
 def profile_view(request):
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
-    food = preferences_for(request.user)
     account = AccountDetailsForm(
         user=request.user,
         initial={
@@ -94,58 +93,20 @@ def profile_view(request):
             "version": profile.version,
         },
     )
-    preferences = PreferenceForm(
-        initial={
-            "targets": food.targets,
-            "meal_types": food.meal_types,
-            "servings": food.servings,
-            "allergens": food.allergens,
-            "halal_only": "yes" if food.halal_only else "no",
-            "avoided_ingredients": food.avoided_ingredients.all(),
-            "version": profile.version,
-        }
-    )
-    password = PasswordChangeForm(request.user)
-    status = 200
+    status, error = 200, None
     if request.method == "POST":
-        action = request.POST.get("action")
-        active = {
-            "account": AccountDetailsForm,
-            "preferences": PreferenceForm,
-            "password": PasswordChangeForm,
-        }
-        if action not in active:
-            response = render(
-                request,
-                "accounts/profile.html",
-                {
-                    "account_form": account,
-                    "preference_form": preferences,
-                    "password_form": password,
-                    "error": "Aksi tidak valid.",
-                },
-                status=400,
-            )
-            patch_cache_control(response, private=True, no_store=True)
-            return response
-        if action == "account":
-            account = form = AccountDetailsForm(request.POST, user=request.user)
-        elif action == "preferences":
-            preferences = form = PreferenceForm(request.POST)
+        if request.POST.get("action") != "account":
+            status, error = 400, "Aksi tidak valid."
         else:
-            password = form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            try:
-                with transaction.atomic():
-                    # User -> profile is the common lock order with planner operations.
-                    locked = get_user_model().objects.select_for_update().get(pk=request.user.pk)
-                    current = UserProfile.objects.select_for_update().get(pk=profile.pk)
-                    if action != "password" and current.version != form.cleaned_data["version"]:
-                        raise ValueError(
-                            "Profil berubah di tab lain. Muat ulang sebelum menyimpan."
-                        )
-                    if action == "account":
-                        data = form.cleaned_data
+            account = AccountDetailsForm(request.POST, user=request.user)
+            if account.is_valid():
+                try:
+                    with transaction.atomic():
+                        locked = get_user_model().objects.select_for_update().get(pk=request.user.pk)
+                        current = UserProfile.objects.select_for_update().get(pk=profile.pk)
+                        if current.version != account.cleaned_data["version"]:
+                            raise ValueError("Profil berubah di tab lain. Muat ulang sebelum menyimpan.")
+                        data = account.cleaned_data
                         if data["email"] != locked.email and not locked.check_password(
                             data["current_password"]
                         ):
@@ -154,25 +115,63 @@ def profile_view(request):
                         locked.first_name, locked.last_name = first, last
                         locked.username, locked.email = data["username"], data["email"]
                         locked.save(update_fields=["first_name", "last_name", "username", "email"])
-                    elif action == "preferences":
-                        food = preferences_for(locked)
-                        for field in ("targets", "meal_types", "servings", "allergens", "halal_only"):
-                            setattr(food, field, form.cleaned_data[field])
-                        food.save()
-                        food.avoided_ingredients.set(form.cleaned_data["avoided_ingredients"])
-                    else:
-                        password = PasswordChangeForm(locked, request.POST)
-                        if not password.is_valid():
-                            raise ValueError("Kata sandi berubah. Muat ulang dan coba kembali.")
-                        locked = password.save()
+                        current.avatar = data["avatar"]
+                        current.version += 1
+                        current.save(update_fields=["version", "avatar"])
+                    messages.success(request, "Perubahan berhasil disimpan.")
+                    return redirect("modul3")
+                except IntegrityError:
+                    account.add_error(None, "Username atau email sudah dipakai. Periksa kembali.")
+                    status = 400
+                except ValueError as exc:
+                    account.add_error(None, str(exc))
+                    status = 409
+            else:
+                status = 400
+    response = render(
+        request, "accounts/profile.html", {"account_form": account, "error": error}, status=status
+    )
+    patch_cache_control(response, private=True, no_store=True)
+    return response
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def food_preferences_view(request):
+    profile = profile_for(request.user)
+    food = preferences_for(request.user)
+    form = PreferenceForm(
+        request.POST if request.method == "POST" else None,
+        initial={
+            "targets": food.targets,
+            "meal_types": food.meal_types,
+            "servings": food.servings,
+            "allergens": food.allergens,
+            "avoided_ingredients": food.avoided_ingredients.all(),
+            "version": profile.version,
+        },
+    )
+    status = 200
+    if request.method == "POST":
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    locked = get_user_model().objects.select_for_update().get(pk=request.user.pk)
+                    current = UserProfile.objects.select_for_update().get(pk=profile.pk)
+                    if current.version != form.cleaned_data["version"]:
+                        raise ValueError("Profil berubah di tab lain. Muat ulang sebelum menyimpan.")
+                    food = preferences_for(locked)
+                    for field in ("targets", "meal_types", "servings", "allergens"):
+                        setattr(food, field, form.cleaned_data[field])
+                    food.halal_only = True
+                    food.save()
+                    food.avoided_ingredients.set(form.cleaned_data["avoided_ingredients"])
                     current.version += 1
-                    current.save()
-                if action == "password":
-                    update_session_auth_hash(request, locked)
+                    current.save(update_fields=["version"])
                 messages.success(request, "Perubahan berhasil disimpan.")
-                return redirect("modul3")
+                return redirect("food-preferences")
             except IntegrityError:
-                form.add_error(None, "Username atau email sudah dipakai. Periksa kembali.")
+                form.add_error(None, "Preferensi belum bisa disimpan. Muat ulang dan coba kembali.")
                 status = 400
             except ValueError as exc:
                 form.add_error(None, str(exc))
@@ -180,10 +179,33 @@ def profile_view(request):
         else:
             status = 400
     response = render(
-        request,
-        "accounts/profile.html",
-        {"account_form": account, "preference_form": preferences, "password_form": password},
-        status=status,
+        request, "accounts/food_preferences.html", {"preference_form": form}, status=status
     )
+    patch_cache_control(response, private=True, no_store=True)
+    return response
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def password_change_view(request):
+    form = PasswordChangeForm(request.user)
+    status = 200
+    if request.method == "POST":
+        with transaction.atomic():
+            # Validate the current password against the locked account, not a stale request user.
+            locked = get_user_model().objects.select_for_update().get(pk=request.user.pk)
+            form = PasswordChangeForm(locked, request.POST)
+            if form.is_valid():
+                user = form.save()
+                profile, _ = UserProfile.objects.select_for_update().get_or_create(user=locked)
+                profile.version += 1
+                profile.save(update_fields=["version"])
+            else:
+                status = 400
+        if status == 200:
+            update_session_auth_hash(request, user)
+            messages.success(request, "Kata sandi berhasil diperbarui.")
+            return redirect("modul3")
+    response = render(request, "accounts/password_change.html", {"password_form": form}, status=status)
     patch_cache_control(response, private=True, no_store=True)
     return response

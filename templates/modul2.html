@@ -255,7 +255,7 @@
           </svg>
           Periksa kembali nama dan jumlah bahan sebelum disimpan ke pantry.
         </p>
-        
+
         <div class="panel-footer">
           <div>
             <span class="total-label">Baris siap diperiksa</span>
@@ -358,7 +358,7 @@
         </table>
       </div>
       {% else %}<p class="saved-empty">Belum ada bahan tersimpan. Pindai struk atau masukkan bahan secara manual.</p>{% endif %}
-      
+
       {% if used_up_items %}<details class="used-up"><summary>Stok habis (30 hari terakhir) · {{ used_up_items|length }}</summary><ul>{% for item in used_up_items %}<li><strong>{{ item.name }}</strong> · habis {{ item.updated_at|date:"d M Y" }}<ul>{% for move in item.movements.all %}<li>{{ move.created_at|date:"d M Y, H:i" }} · {{ move.get_kind_display }}: {{ move.quantity_before|floatformat:"-2" }} → {{ move.quantity_after|floatformat:"-2" }}</li>{% endfor %}</ul></li>{% endfor %}</ul></details>{% endif %}
     </section>
 
