@@ -131,3 +131,10 @@ body.profile-page { display: block; padding: 0; place-items: normal; }
 .avatar-option:has(input:checked) { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); background: var(--green-soft); }
 .avatar-option:has(input:focus-visible) { outline: 2px solid var(--green); outline-offset: 3px; }
 .avatar-option:hover { border-color: var(--green); }
+
+/* Short confirmation before discarding settings edits. */
+.unsaved-popup { width: min(340px, calc(100vw - 32px)); margin: auto; padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--ink); box-shadow: 0 24px 80px rgba(15, 61, 46, .25); font: inherit; }
+.unsaved-popup::backdrop { background: rgba(10, 44, 33, .48); backdrop-filter: blur(3px); }
+.unsaved-popup h2 { margin: 0 0 22px; color: var(--green); font-size: 20px; font-weight: 800; line-height: 1.4; }
+.unsaved-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.unsaved-actions .btn { flex: 1; min-height: 44px; font-size: 13px; white-space: nowrap; }

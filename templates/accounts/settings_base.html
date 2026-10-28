@@ -1,7 +1,7 @@
 {% extends "accounts/base.html" %}
 {% load static %}
 {% block title %}Pengaturan profil{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/profile.css' %}?v=20261028-avatars">{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'accounts/profile.css' %}?v=20261028-unsaved">{% endblock %}
 {% block body_class %}has-app-nav profile-page{% endblock %}
 {% block header %}{% include "partials/app_header.html" %}{% endblock %}
 {% block content %}
@@ -22,4 +22,13 @@
     </section>
   </div>
 </main>
+<dialog class="unsaved-popup" data-unsaved-popup aria-labelledby="unsaved-title"
+        data-initial-dirty="{% if account_form.errors or preference_form.errors or password_form.errors or error %}true{% else %}false{% endif %}">
+  <h2 id="unsaved-title">Perubahan belum disimpan</h2>
+  <div class="unsaved-actions">
+    <button type="button" class="btn btn-primary" data-unsaved-stay autofocus>Tetap di sini</button>
+    <button type="button" class="btn btn-secondary" data-unsaved-leave>Tinggalkan</button>
+  </div>
+</dialog>
+<script src="{% static 'accounts/unsaved_changes.js' %}?v=20261028" defer></script>
 {% endblock %}
