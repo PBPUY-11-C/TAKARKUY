@@ -453,6 +453,15 @@ class PlannerCatalogTests(TestCase):
         )
         self.assertContains(response, "% dari acuan label gizi 2150")
 
+    def test_landing_prefill_reads_rupiah_with_thousands_dots(self):
+        from django.http import QueryDict
+
+        from .plan_views import landing_prefill
+
+        values = landing_prefill(QueryDict("budget=150.000&days=3&servings=2&meal_types=sarapan"))
+        self.assertEqual(values, {"budget": 150000, "days": 3, "servings": 2, "meal_types": ["sarapan"]})
+        self.assertNotIn("budget", landing_prefill(QueryDict("budget=Rp150.000,00")))
+
     def test_balanced_cannot_be_combined_with_specific_targets(self):
         form = PlannerForm(
             {

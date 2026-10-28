@@ -20,6 +20,13 @@
     el.classList.add(name);
   };
   const valid = (input) => input.value !== '' && input.checkValidity();
+  // The budget shows rupiah thousands ("150.000"); the slider and maths use the plain number.
+  const amount = () => Number(budget.value.replace(/\D/g, ''));
+  const showAmount = (value) => {
+    const digits = String(value).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+    budget.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+  const budgetValid = () => amount() >= Number(budget.dataset.min) && amount() <= Number(budget.dataset.max);
 
   function renderMenu() {
     const list = $('menu-list');
@@ -57,7 +64,7 @@
   }
 
   function calculate() {
-    const ok = valid(budget) && valid(days) && valid(servings);
+    const ok = budgetValid() && valid(days) && valid(servings);
     $('budget-error').hidden = ok;
     if (!ok) {
       meal = 0;
@@ -66,7 +73,7 @@
       renderMenu();
       return;
     }
-    const daily = Number(budget.value) / Number(days.value) / Number(servings.value);
+    const daily = amount() / Number(days.value) / Number(servings.value);
     meal = daily / freq;
     $('per-day').textContent = rupiah(daily);
     $('per-meal').textContent = rupiah(meal);
@@ -76,17 +83,18 @@
     pop($('per-day'));
     pop($('per-meal'));
     form.querySelectorAll('[data-budget]').forEach((chip) => {
-      chip.setAttribute('aria-pressed', String(chip.dataset.budget === budget.value));
+      chip.setAttribute('aria-pressed', String(Number(chip.dataset.budget) === amount()));
     });
     renderMenu();
   }
 
-  budget.addEventListener('input', () => { range.value = budget.value; calculate(); });
-  range.addEventListener('input', () => { budget.value = range.value; calculate(); });
+  budget.addEventListener('input', () => { showAmount(budget.value); range.value = amount(); calculate(); });
+  range.addEventListener('input', () => { showAmount(range.value); calculate(); });
   days.addEventListener('input', calculate);
   servings.addEventListener('input', calculate);
   form.querySelectorAll('[data-budget]').forEach((chip) => chip.addEventListener('click', () => {
-    budget.value = range.value = chip.dataset.budget;
+    range.value = chip.dataset.budget;
+    showAmount(chip.dataset.budget);
     calculate();
   }));
   form.querySelectorAll('[data-step]').forEach((button) => button.addEventListener('click', () => {
@@ -119,15 +127,19 @@
     const cooked = cook.getAttribute('aria-pressed') !== 'true';
     cook.setAttribute('aria-pressed', String(cooked));
     cook.querySelector('span').textContent = cooked ? 'Sudah masak' : 'Masak sekarang';
-    $('cook-note').textContent = cooked ? 'Stok berkurang: 1 ikat bayam, 2 telur' : 'Pakai 1 ikat bayam, 2 telur';
     $('bayam-row').classList.toggle('used', cooked);
-    $('bayam-note').textContent = cooked ? 'Terpakai, nggak kebuang' : 'Beli 2 hari lalu · Cepat layu';
     const badge = $('bayam-badge');
     badge.textContent = cooked ? 'Habis' : 'Segera masak';
     badge.className = cooked ? 'badge badge-gone' : 'badge badge-soon pulse';
     $('egg-count').textContent = cooked ? '4' : '6';
     pop($('egg-count'));
   });
+
+  // The highlighted planner step follows the pointer and stays on the last one shown.
+  const steps = document.querySelectorAll('.tool-steps li');
+  steps.forEach((step) => step.addEventListener('pointerenter', () => {
+    steps.forEach((other) => other.classList.toggle('on', other === step));
+  }));
 
   calculate();
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
