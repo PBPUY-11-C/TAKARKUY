@@ -23,6 +23,7 @@ from django.views.generic import RedirectView
 from apps.accounts.forms import EmailOrUsernameAuthenticationForm
 from apps.accounts.views import (
     AccountLoginView,
+    food_preferences_view,
     landing_view,
     password_change_view,
     profile_view,
@@ -67,6 +68,7 @@ urlpatterns = [
     ),
     path("logout/", LogoutView.as_view(next_page="landing"), name="logout"),
     path("profil/", profile_view, name="modul3"),
+    path("profil/preferensi/", food_preferences_view, name="food-preferences"),
     path("profil/ganti-kata-sandi/", password_change_view, name="password-change"),
     path("modul3/", RedirectView.as_view(pattern_name="modul3", query_string=True)),
     path("planner/", planner_page, name="modul1"),

@@ -39,3 +39,6 @@ body.profile-page { display: block; padding: 0; place-items: normal; }
 
 .password-page-card { max-width: 660px; }
 .password-page-card .back-home { margin-bottom: 20px; }
+
+.preferences-page-card { max-width: 850px; }
+.preferences-page-card .back-home { margin-bottom: 20px; }

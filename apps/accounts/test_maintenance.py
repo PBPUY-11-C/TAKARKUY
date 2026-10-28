@@ -34,6 +34,7 @@ class MaintenanceTests(TestCase):
             "/planner/",
             "/modul2/",
             "/profil/",
+            "/profil/preferensi/",
             "/profil/ganti-kata-sandi/",
             "/modul4/",
             "/modul5/",
