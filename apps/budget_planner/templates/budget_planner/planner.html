@@ -7,7 +7,7 @@
   <meta name="description" content="Rencana makan TAKARKUY dari budget, katalog resep, dan harga bahan.">
   <title>TAKARKUY</title>
   {% include "partials/head.html" %}
-  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}?v=20261026-clean5">
+  <link rel="stylesheet" href="{% static 'budget_planner/planner.css' %}?v=20261028-fix">
 </head>
 <body class="has-app-nav planner-page">
   {% include "partials/app_header.html" %}
@@ -21,7 +21,7 @@
         <a class="pill-link pill-dark" href="{% url 'modul1' %}?new=1">+ Rencana baru</a>
       </nav>
     </div>
-    <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite"></p>
+    <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite">{% if plan_missing %}Rencana itu sudah dihapus atau tidak ditemukan. Ini draft terakhirmu.{% endif %}</p>
 
     <form class="planner-form card" method="post" action="{% url 'modul1' %}#hasil" novalidate>
       {% csrf_token %}
@@ -120,14 +120,18 @@
               {% endfor %}
             </div>
             {% if result.protein_floor or result.calorie_cap %}<p class="muted">Target {% if result.protein_floor %}≥ {{ result.protein_floor }} g protein{% endif %}{% if result.protein_floor and result.calorie_cap %} · {% endif %}{% if result.calorie_cap %}≤ {{ result.calorie_cap }} kkal{% endif %}</p>{% endif %}
-            {% if result.purchase_yield_estimates %}<p class="muted">Biaya dan daftar belanja memakai berat utuh bahan sebelum dibersihkan; nilai gizi dihitung dari bagian yang dapat dimakan.</p>{% endif %}
-            {% if result.nutrition_proxy_names %}<p class="muted">Nilai gizi memakai padanan estimasi untuk: {{ result.nutrition_proxy_names|join:", " }}.</p>{% endif %}
           </div>
           {% if plan %}
           <form class="card summary-card plan-save" data-save-plan data-url="{% url 'modul1-plan-save' plan.pk %}" data-version="{{ plan.version }}">
             <label for="plan-title" class="label">Judul rencana <span class="status">· {% if plan.status == 'draft' %}Draft{% else %}Tersimpan{% endif %}</span></label>
             <input id="plan-title" name="title" maxlength="100" required value="{{ plan.title }}">
-            <button class="primary-button" type="submit">{% if plan.status == 'draft' %}Simpan Rencana{% else %}Simpan Judul{% endif %}</button>
+            <div class="plan-save-row">
+              <div class="plan-date">
+                <label for="plan-start" class="label">Mulai</label>
+                <input id="plan-start" name="starts_on" type="date" value="{{ start_value|date:'Y-m-d' }}" min="{{ start_min|date:'Y-m-d' }}" max="{{ start_max|date:'Y-m-d' }}"{% if date_locked %} disabled title="Sudah ada menu yang dimasak"{% endif %}>
+              </div>
+              <button class="primary-button" type="submit">{% if plan.status == 'draft' %}Simpan Rencana{% else %}Simpan Perubahan{% endif %}</button>
+            </div>
             {% if plan.status == 'draft' and plan.source_plan_id %}<button class="link-button" type="submit" name="replace_original" value="yes">Simpan ke rencana asal</button>{% endif %}
           </form>
           {% endif %}
@@ -141,7 +145,7 @@
             </div>
             {% for day in display_schedule %}
             <div class="day" data-day-panel="{{ day.number }}">
-              <h3 class="day-title"><span class="day-name">Hari {{ day.number }}</span>{% if result.protein_floor or result.calorie_cap %} <span class="day-nutrition">{{ day.protein }} g protein · {{ day.calories }} kkal / orang</span>{% endif %}</h3>
+              <h3 class="day-title"><span class="day-name">Hari {{ day.number }}</span>{% if day.date %} <span class="day-date">{{ day.date|date:'l, d M Y' }}</span>{% endif %}{% if result.protein_floor or result.calorie_cap %} <span class="day-nutrition">· {{ day.protein }} g protein · {{ day.calories }} kkal / orang</span>{% endif %}</h3>
               {% for meal in day.meals %}
               <article class="meal">
                 {% if meal.photo %}<img class="meal-photo" src="{{ meal.photo.image_url }}" alt="" title="Foto: {{ meal.photo.creator }} ({{ meal.photo.license_name }})" loading="lazy">{% else %}<div class="meal-photo meal-photo-empty" aria-hidden="true">♨</div>{% endif %}
@@ -232,7 +236,7 @@
     {% include 'budget_planner/preview_dialog.html' %}
   </main>
   {% if pending_preview %}{{ pending_preview|json_script:'pending-plan-preview' }}{% endif %}
-  <script src="{% static 'budget_planner/plans.js' %}?v=20261026-clean5" defer></script>
+  <script src="{% static 'budget_planner/plans.js' %}?v=20261028-fix" defer></script>
   <script src="{% static 'recipe_book/image_fallback.js' %}" defer></script>
 </body>
 </html>
