@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { needsGeminiFallback, parseReceiptText } from "../static/pantry/receipt_parser.mjs";
+import { needsGeminiFallback, parseReceiptText } from "../../../apps/pantry/static/pantry/receipt_parser.mjs";
 
 test("Gemini fallback uses the 80 percent boundary and empty-result guard", () => {
   assert.equal(needsGeminiFallback(79.99, 2), true);

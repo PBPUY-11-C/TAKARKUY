@@ -7,10 +7,10 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .gemini_transport import generate_json
-from .models import PantryItem
-from .receipt_ocr import clean_items, gemini_read_receipt, image_mime
-from .test_helpers import authenticate
+from apps.pantry.gemini_transport import generate_json
+from apps.pantry.models import PantryItem
+from apps.pantry.receipt_ocr import clean_items, gemini_read_receipt, image_mime
+from tests.pantry.test_helpers import authenticate
 
 
 class ReceiptOCRFallbackTests(TestCase):
@@ -170,7 +170,7 @@ class ReceiptOCRFallbackTests(TestCase):
     @patch.dict(os.environ, {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
     @patch("apps.pantry.views.gemini_read_receipt")
     def test_oversized_upload_is_rejected_before_ai(self, gemini):
-        from .receipt_ocr import MAX_IMAGE_BYTES
+        from apps.pantry.receipt_ocr import MAX_IMAGE_BYTES
 
         for size in (MAX_IMAGE_BYTES + 1, MAX_IMAGE_BYTES + 1024 * 1024 + 1):
             upload = SimpleUploadedFile(
@@ -184,7 +184,7 @@ class ReceiptOCRFallbackTests(TestCase):
     @patch.dict(os.environ, {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
     @patch("apps.pantry.views.gemini_read_receipt")
     def test_oversized_second_file_cannot_trigger_ai_for_first_file(self, gemini):
-        from .receipt_ocr import MAX_IMAGE_BYTES
+        from apps.pantry.receipt_ocr import MAX_IMAGE_BYTES
 
         first = SimpleUploadedFile("receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg")
         extra = SimpleUploadedFile(

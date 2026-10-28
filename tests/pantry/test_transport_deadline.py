@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from django.test import SimpleTestCase
 
-from .gemini import GeminiUnavailable, generate_json
+from apps.pantry.gemini import GeminiUnavailable, generate_json
 
 
 @patch.dict("os.environ", {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})

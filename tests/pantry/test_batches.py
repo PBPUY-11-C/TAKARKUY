@@ -14,17 +14,22 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.catalog.models import Ingredient, Recipe, RecipeIngredient, RecipeTag, UnitConversion
-
-from .ai_cache import claim, finish
-from .models import NameResolution, PantryItem, PantryLLMUsage, PantryMovement, PantryOperation
-from .recommendations import resolve_names
-from .services import (
+from apps.pantry.ai_cache import claim, finish
+from apps.pantry.models import (
+    NameResolution,
+    PantryItem,
+    PantryLLMUsage,
+    PantryMovement,
+    PantryOperation,
+)
+from apps.pantry.recommendations import resolve_names
+from apps.pantry.services import (
     StockError,
     conversion,
     reserve_llm,
     stock_for_planning,
 )
-from .test_helpers import authenticate, available_grams
+from tests.pantry.test_helpers import authenticate, available_grams
 
 
 class BatchTests(TestCase):
@@ -174,7 +179,6 @@ class BatchTests(TestCase):
 
     def test_location_only_change_logged_as_move(self):
         item = self.batch()
-        # The page sends quantities without trailing zeros, e.g. "100" for 100.000000.
         self.assertEqual(self.edit(item, location="freezer", quantity="100").status_code, 200)
         self.assertEqual(item.movements.last().kind, "move")
 
@@ -261,11 +265,9 @@ class BatchTests(TestCase):
 
         old = self.batch()
         new = self.batch()
-        # Saved before liquids honoured the field: weight stored but never applied.
         PantryItem.objects.filter(pk=old.pk).update(
             unit="liter", pack_weight_g=500, grams_per_unit=None
         )
-        # Saved after: the weight is in use, so it must stay.
         PantryItem.objects.filter(pk=new.pk).update(
             unit="liter", pack_weight_g=920, grams_per_unit=920
         )
@@ -357,7 +359,6 @@ class BatchTests(TestCase):
 
     def test_recipe_matching_checks_servings_and_does_not_consume_stock(self):
         self.batch()
-        # Recommendations follow the Recipe Book defaults, so the recipe needs published guidance.
         recipe = Recipe.objects.create(
             recipe_code="RCP-TEST",
             name="Sayur",
@@ -397,7 +398,7 @@ class BatchTests(TestCase):
         )
 
     def test_young_accounts_cannot_promote_shared_corrections(self):
-        from .models import PantryNameCorrection
+        from apps.pantry.models import PantryNameCorrection
 
         for index in range(10):
             user = get_user_model().objects.create_user(f"young-{index}")
@@ -437,18 +438,7 @@ class BatchTests(TestCase):
 
     def test_used_up_batch_leaves_stock_list_but_keeps_its_history(self):
         item = self.batch()
-        self.edit(item, quantity="0.5")  # writes a ledger movement
-        PantryItem.objects.filter(pk=item.pk).update(name="Bayam Habis", quantity=0)
-        page = self.client.get(reverse("modul2"))
-        self.assertNotIn(item.pk, [row.pk for row in page.context["pantry_items"]])
-        self.assertEqual([row.pk for row in page.context["used_up_items"]], [item.pk])
-        self.assertContains(page, "Stok habis (30 hari terakhir)")
-        self.assertContains(page, "Bayam Habis")
-        self.assertContains(page, "Koreksi")
-
-    def test_used_up_batch_leaves_stock_list_but_keeps_its_history(self):
-        item = self.batch()
-        self.edit(item, quantity="0.5")  # writes a ledger movement
+        self.edit(item, quantity="0.5")
         PantryItem.objects.filter(pk=item.pk).update(name="Bayam Habis", quantity=0)
         page = self.client.get(reverse("modul2"))
         self.assertNotIn(item.pk, [row.pk for row in page.context["pantry_items"]])

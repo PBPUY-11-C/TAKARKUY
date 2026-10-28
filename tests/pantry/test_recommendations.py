@@ -9,10 +9,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.catalog.models import Ingredient, IngredientAlias, IngredientShelfLife
-
-from .models import PantryNameCorrection
-from .recommendations import resolve_names
-from .test_helpers import authenticate
+from apps.pantry.models import PantryNameCorrection
+from apps.pantry.recommendations import resolve_names
+from tests.pantry.test_helpers import authenticate
 
 
 class PantryRecommendationTests(TestCase):
@@ -63,7 +62,6 @@ class PantryRecommendationTests(TestCase):
         result = response.json()["suggestions"][0]
         self.assertEqual(result["ingredient_code"], "ING-BAYAM")
         self.assertEqual(result["method"], "katalog")
-        # A refrigerated reference must never be reused for default room storage.
         self.assertIsNone(result["storage"])
         llm.assert_not_called()
 
@@ -100,7 +98,7 @@ class PantryRecommendationTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
-        from .models import PantryItem
+        from apps.pantry.models import PantryItem
 
         self.assertEqual(PantryItem.objects.get().name, "Beras")
 
@@ -227,7 +225,7 @@ class PantryRecommendationTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 201)
-        from .models import PantryItem
+        from apps.pantry.models import PantryItem
 
         self.assertEqual(PantryItem.objects.get().estimated_expires_on, date(2026, 9, 30))
 

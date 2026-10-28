@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 
-from .services import eligible_stock
+from apps.pantry.services import eligible_stock
 
 
 def authenticate(client, username="pantry-test"):

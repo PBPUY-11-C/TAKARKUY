@@ -11,14 +11,13 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.catalog.models import Ingredient
-
-from .ai_cache import claim, finish
-from .catalog_context import catalog_snapshot
-from .forms import PantryItemForm
-from .models import NameResolution, PantryItem, PantryLLMUsage, PantryNameCorrection
-from .receipt_ocr import clean_items
-from .recommendations import _gemini_choices, resolve_names
-from .test_helpers import authenticate
+from apps.pantry.ai_cache import claim, finish
+from apps.pantry.catalog_context import catalog_snapshot
+from apps.pantry.forms import PantryItemForm
+from apps.pantry.models import NameResolution, PantryItem, PantryLLMUsage, PantryNameCorrection
+from apps.pantry.receipt_ocr import clean_items
+from apps.pantry.recommendations import _gemini_choices, resolve_names
+from tests.pantry.test_helpers import authenticate
 
 
 @patch.dict("os.environ", {"PANTRY_LLM_PROVIDER": "gemini", "GEMINI_API_KEY": "test-key"})
@@ -143,7 +142,7 @@ class SingleScanTests(TestCase):
     @patch("apps.pantry.recommendations._gemini_choices")
     @patch("apps.pantry.receipt_ocr.generate_json")
     def test_photo_failure_followed_by_local_suggestions_never_calls_text(self, photo_ai, text_ai):
-        from .gemini import GeminiUnavailable
+        from apps.pantry.gemini import GeminiUnavailable
 
         photo_ai.side_effect = GeminiUnavailable("Unavailable")
         self.assertEqual(self.photo().status_code, 502)

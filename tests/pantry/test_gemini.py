@@ -8,8 +8,8 @@ from urllib.error import URLError
 
 from django.test import SimpleTestCase
 
-from .gemini_transport import DEFAULT_MODEL, GeminiUnavailable, generate_json
-from .recommendations import _gemini_choices
+from apps.pantry.gemini_transport import DEFAULT_MODEL, GeminiUnavailable, generate_json
+from apps.pantry.recommendations import _gemini_choices
 
 
 @patch.dict(

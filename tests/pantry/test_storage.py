@@ -9,10 +9,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.catalog.models import Ingredient, IngredientShelfLife
-
-from .models import PantryItem, ShelfLifeEstimate
-from .storage import shelf_key, storage_options
-from .test_helpers import authenticate
+from apps.pantry.models import PantryItem, ShelfLifeEstimate
+from apps.pantry.storage import shelf_key, storage_options
+from tests.pantry.test_helpers import authenticate
 
 
 class PantryStorageTests(TestCase):
@@ -21,7 +20,6 @@ class PantryStorageTests(TestCase):
         cls.ingredient = Ingredient.objects.create(
             ingredient_code="ING-STORAGE-TEST", name="Bahan Uji", category="test", base_unit="g"
         )
-        # Synthetic references for testing the calculation, not food guidance.
         for location, days in (("suhu_ruang", 2), ("kulkas", 5), ("freezer", 20)):
             IngredientShelfLife.objects.create(
                 shelf_life_code=f"SHF-TEST-{location}",
@@ -87,7 +85,6 @@ class PantryStorageTests(TestCase):
         self.add("ocr", starting_on=start.isoformat())
         item = PantryItem.objects.get()
         for location, days in (("chiller", 5), ("freezer", 20), ("suhu_ruang", 2)):
-            # A stale date sent by the client must not override automatic recalculation.
             response = self.update(
                 item,
                 location=location,
@@ -103,8 +100,6 @@ class PantryStorageTests(TestCase):
             )
 
     def test_move_on_the_day_it_was_stored_uses_new_location_fully(self):
-        # Everything enters as room temperature; putting it in the fridge right away
-        # must give fridge shelf life. Later moves still never extend (test above).
         self.add()
         item = PantryItem.objects.get()
         self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=2))

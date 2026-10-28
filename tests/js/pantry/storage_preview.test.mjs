@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { storagePreview } from "../static/pantry/storage_preview.mjs";
+import { storagePreview } from "../../../apps/pantry/static/pantry/storage_preview.mjs";
 
 const storage = { options: {
   suhu_ruang: { estimated_expires_on: "2026-10-03", shelf_life_days: 2 },

@@ -12,10 +12,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.catalog.models import Ingredient
-
-from .ai_cache import claim
-from .models import NameResolution, PantryItem, PantryLLMUsage, PantryMovement
-from .services import StockError, reserve_llm
+from apps.pantry.ai_cache import claim
+from apps.pantry.models import NameResolution, PantryItem, PantryLLMUsage, PantryMovement
+from apps.pantry.services import StockError, reserve_llm
 
 
 @skipUnlessDBFeature("has_select_for_update")
@@ -91,7 +90,7 @@ class PantryConcurrencyTests(TransactionTestCase):
         self.assertEqual(outcomes[0], outcomes[1])
         self.assertEqual(outcomes[0][0], 201)
         self.assertEqual(PantryMovement.objects.count(), 1)
-        self.assertEqual(PantryItem.objects.count(), 2)  # includes setup stock
+        self.assertEqual(PantryItem.objects.count(), 2)
 
     def test_parallel_edits_with_same_version_only_one_wins(self):
         def action():

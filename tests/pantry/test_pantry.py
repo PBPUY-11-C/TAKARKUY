@@ -8,10 +8,9 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.accounts.models import FoodPreference, UserProfile
-
-from .models import PantryItem
-from .test_helpers import authenticate
+from apps.login.models import FoodPreference, UserProfile
+from apps.pantry.models import PantryItem
+from tests.pantry.test_helpers import authenticate
 
 
 class PantryFlowTests(TestCase):
@@ -226,7 +225,7 @@ class PantryFlowTests(TestCase):
         )
         self.assertIn('<option value="pack">pack / bungkus</option>', manual_select)
         self.assertNotIn('<option value="papan">', manual_select)
-        self.assertEqual(ocr_select.count("<option value="), 10)  # placeholder + nine units
+        self.assertEqual(ocr_select.count("<option value="), 10)
         self.assertIn('<option value="pack">pack / bungkus</option>', ocr_select)
         self.assertNotIn('<option value="papan">', ocr_select)
         self.assertNotIn('<option value="kotak">', ocr_select)
@@ -251,7 +250,7 @@ class PantryFlowTests(TestCase):
             .split('<select id="ingredient-category"', 1)[1]
             .split("</select>", 1)[0]
         )
-        self.assertEqual(category_select.count("<option value="), 7)  # placeholder + six categories
+        self.assertEqual(category_select.count("<option value="), 7)
         for label in (
             "Sayur &amp; Buah",
             "Daging &amp; Seafood",

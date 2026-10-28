@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {createActionKeyStore, locationExpiry, isAISuggestion, correctionConsent} from "../static/pantry/batch_actions.mjs";
+import {createActionKeyStore, locationExpiry, isAISuggestion, correctionConsent} from "../../../apps/pantry/static/pantry/batch_actions.mjs";
 
 test("a retry retains its operation key; a changed payload gets a new key", () => {
   let count = 0;

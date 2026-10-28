@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import test from "node:test";
 import {runInNewContext} from "node:vm";
-import {createActionKeyStore, locationExpiry, isAISuggestion, correctionConsent} from "../static/pantry/batch_actions.mjs";
-import {storagePreview} from "../static/pantry/storage_preview.mjs";
+import {createActionKeyStore, locationExpiry, isAISuggestion, correctionConsent} from "../../../apps/pantry/static/pantry/batch_actions.mjs";
+import {storagePreview} from "../../../apps/pantry/static/pantry/storage_preview.mjs";
 
-const script = readFileSync(new URL("../static/pantry/pantry.js", import.meta.url), "utf8").replace(/^import .*;\n/gm, "");
+const script = readFileSync(new URL("../../../apps/pantry/static/pantry/pantry.js", import.meta.url), "utf8").replace(/^import .*;\n/gm, "");
 class Element {
   constructor() { this.listeners = {}; this.dataset = {}; this.value = ""; this.textContent = ""; this.hidden = false; this.disabled = false; this.children = []; this.classList = {toggle() {}}; this.controls = new Map(); }
   addEventListener(name, fn) { this.listeners[name] = fn; }
@@ -70,7 +70,6 @@ test("actual low-confidence scan sends one photo, never a text-AI request afterw
   for (const outcome of ["success", "empty", "failure"]) {
     const app = setup({scan: true});
     app.response(outcome !== "failure", outcome === "success" ? {items: [{raw: "BYM", name: "Bayam", quantity: 1, unit: "g", ingredient_code: "ING-BAYAM", method: "ai_foto_perlu_periksa"}]} : {items: [], error: "Provider unavailable"});
-    // readWithGemini uses FormData; this mock never transmits or stores images.
     app.context.FormData = class { append() {} };
     await app.get("receipt-file").trigger("change");
     assert.equal(app.requests.filter(request => request.url === "/pantry/ocr-fallback/").length, 1);

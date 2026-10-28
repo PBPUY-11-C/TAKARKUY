@@ -12,10 +12,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.catalog.models import Ingredient, IngredientShelfLife
-
-from .models import NameResolution, PantryItem, PantryNameCorrection
-from .recommendations import resolve_names
-from .test_helpers import authenticate, available_grams
+from apps.pantry.models import NameResolution, PantryItem, PantryNameCorrection
+from apps.pantry.recommendations import resolve_names
+from tests.pantry.test_helpers import authenticate, available_grams
 
 
 class AuditRegressionTests(TestCase):
@@ -107,9 +106,7 @@ class AuditRegressionTests(TestCase):
     def test_nested_json_returns_json_400_on_all_input_endpoints(self):
         self.create()
         item = PantryItem.objects.get()
-        # 1,200 levels triggers Python's decoder recursion limit and fits every cap.
         for body in ("[" * 1200 + "0" + "]" * 1200, "[" * 30 + "0" + "]" * 30):
-            # The edit/delete cap is 2 KB, so use 950 levels there.
             short_body = body if len(body) <= 2000 else "[" * 950 + "0" + "]" * 950
             cases = (
                 (self.client.post, reverse("modul2-items"), body),
@@ -234,8 +231,6 @@ class AuditRegressionTests(TestCase):
                 days_conversion_method="test",
                 shelf_life_status="test",
             )
-        # Stored since yesterday: a later move may shorten but never extend the estimate.
-        # (A move on the storage day itself counts as the first placement.)
         start = self.today - timedelta(days=1)
         self.create(starting_on=start.isoformat())
         item = PantryItem.objects.get()
