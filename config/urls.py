@@ -5,7 +5,12 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 from django.views.generic import RedirectView
 
-from apps.home.views import dashboard_page, market_lookup
+from apps.home.views import (
+    dashboard_page,
+    market_lookup,
+    my_recipe_create,
+    my_recipe_detail,
+)
 from apps.login.forms import EmailOrUsernameAuthenticationForm
 from apps.login.views import (
     AccountLoginView,
@@ -110,6 +115,8 @@ urlpatterns = [
 
     path("modul5/", dashboard_page, name="modul5"),
     path("modul5/places/", market_lookup, name="modul5-places"),
+    path("modul5/resep/tambah/", my_recipe_create, name="modul5-recipe-create"),
+    path("modul5/resep/<int:pk>/", my_recipe_detail, name="modul5-recipe-detail"),
 
     path("admin/", admin.site.urls),
 ]
