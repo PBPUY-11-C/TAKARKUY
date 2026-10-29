@@ -295,3 +295,12 @@ class PantryFlowTests(TestCase):
         self.assertEqual(item.location, "chiller")
         self.assertEqual(item.estimated_expires_on.isoformat(), "2026-10-02")
         self.assertContains(self.client.get(reverse("modul2")), 'value="2026-10-02"')
+
+    def test_pantry_page_renders_receipt_guide_modal(self):
+        response = self.client.get(reverse("modul2"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "pantry/pantry.html")
+        self.assertContains(response, 'id="receipt-guide-open"')
+        self.assertContains(response, 'id="receipt-guide-dialog"')
+        self.assertContains(response, "Panduan Foto Struk")

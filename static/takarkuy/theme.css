@@ -215,6 +215,21 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body.page-modul2 .exp-badge.unknown { background: #26332b; color: #b9c7c0; }
 :root[data-theme="dark"] body.page-modul2 .stock-table tr.pantry-edit td { background: #26332b; border-top: 1px solid #3b463f; }
 :root[data-theme="dark"] body.page-modul2 .edit-note { color: #b9c7c0; }
+:root[data-theme="dark"] body.page-modul2 .guide-link { color: var(--ink); }
+:root[data-theme="dark"] body.page-modul2 .guide-dialog { background: #1e2723; color: #dee5e2; border-color: #3b463f; }
+:root[data-theme="dark"] body.page-modul2 .guide-dialog::backdrop { background: rgba(0, 0, 0, 0.65); }
+:root[data-theme="dark"] body.page-modul2 .guide-head { border-bottom-color: #3b463f; }
+:root[data-theme="dark"] body.page-modul2 .guide-head p { color: #b9c7c0; }
+:root[data-theme="dark"] body.page-modul2 .guide-close { background: #26332b; border-color: #3b463f; color: #dee5e2; }
+:root[data-theme="dark"] body.page-modul2 .guide-close:hover { background: #34443a; }
+:root[data-theme="dark"] body.page-modul2 .guide-card { background: #1e2723; }
+:root[data-theme="dark"] body.page-modul2 .guide-card.bad { border-color: #754640; background: #2d211f; }
+:root[data-theme="dark"] body.page-modul2 .guide-card.good { border-color: #33503f; background: #202e26; }
+:root[data-theme="dark"] body.page-modul2 .guide-card.bad .guide-status { background: #3a1d1a; color: #ec8a80; }
+:root[data-theme="dark"] body.page-modul2 .guide-card.good .guide-status { background: #263d30; color: #88ddc1; }
+:root[data-theme="dark"] body.page-modul2 .guide-figure { background: #121914; border-color: #3b463f; }
+:root[data-theme="dark"] body.page-modul2 .guide-card p { color: #c2cdcb; }
+:root[data-theme="dark"] body.page-modul2 .guide-tip { background: #26332b; color: #88ddc1; }
 @media (max-width: 820px) {
   :root[data-theme="dark"] body.page-modul2 .stock-table tbody { border: 1px solid #3b463f; background: #1e2723; }
   :root[data-theme="dark"] body.page-modul2 .stock-table tbody + tbody { border-top: 1px solid #3b463f; }
