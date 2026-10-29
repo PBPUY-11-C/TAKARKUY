@@ -37,7 +37,7 @@
       <div class="input-wrap">{{ form.password2 }}<button class="toggle-password" type="button" data-password-toggle="{{ form.password2.id_for_label }}" aria-label="Tampilkan kata sandi">Tampilkan</button></div>
       {% if form.password2.errors %}<ul class="field-errors" id="{{ form.password2.id_for_label }}_error">{% for error in form.password2.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
     </div>
-    <button class="submit" type="submit">Jadi Penakar →</button>
+    <button class="submit" type="submit">DaftarKuy</button>
   </form>
   <p class="switch-page">Sudah memiliki akun? <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Masuk di sini</a></p>
 </main>
