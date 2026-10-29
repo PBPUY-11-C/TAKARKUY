@@ -709,3 +709,89 @@ window.addEventListener("pagehide", () => {
   if (previewUrl) URL.revokeObjectURL(previewUrl);
   if (workerPromise) workerPromise.then((worker) => worker.terminate()).catch(() => {});
 });
+
+(() => {
+  function initExpiryFilter() {
+    const filter = document.getElementById("expiry-filter");
+    const result = document.getElementById("expiry-filter-result");
+
+    if (!filter || !result) return;
+
+    const items = [
+      ...document.querySelectorAll(
+        ".stock-table tbody[data-pantry-item]"
+      ),
+    ];
+
+    function parseDate(value) {
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+      if (!match) return null;
+
+      const [, y, m, d] = match;
+      const date = new Date(Number(y), Number(m) - 1, Number(d));
+
+      if (
+        date.getFullYear() !== Number(y) ||
+        date.getMonth() !== Number(m) - 1 ||
+        date.getDate() !== Number(d)
+      ) {
+        return null;
+      }
+
+      return date;
+    }
+
+    function applyFilter() {
+      const now = new Date();
+      const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      );
+      const oneDay = 86400000;
+      let visible = 0;
+
+      items.forEach((item) => {
+        const expiry = parseDate(item.dataset.expiryDate);
+        let show = filter.value === "all";
+
+        if (filter.value === "unknown") {
+          show = expiry === null;
+        } else if (expiry && filter.value !== "all") {
+          const days = Math.round(
+            (expiry.getTime() - today.getTime()) / oneDay
+          );
+
+          switch (filter.value) {
+            case "expired":
+              show = days < 0;
+              break;
+            case "next7":
+              show = days >= 0 && days <= 7;
+              break;
+            default:
+              show = false;
+          }
+        }
+
+        item.hidden = !show;
+
+        if (show) visible++;
+      });
+
+      result.textContent =
+        `Menampilkan ${visible} dari ${items.length} bahan.`;
+    }
+
+    filter.addEventListener("change", applyFilter);
+    applyFilter();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initExpiryFilter, {
+      once: true,
+    });
+  } else {
+    initExpiryFilter();
+  }
+})();
