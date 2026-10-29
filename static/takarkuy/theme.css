@@ -418,6 +418,11 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup h2 { color: #d8e0de; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup > p { color: #b9c7c0; }
 
+:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) :is(.auth-error-popup,.unsaved-popup) button:focus-visible {
+  outline: 3px solid #64ceac;
+  outline-offset: 3px;
+}
+
 :root[data-theme="dark"] .toast, :root[data-theme="dark"] .skip-link { border: 1px solid #3d4f45; background: #26332c; color: #f1f5f3; }
 :root[data-theme="dark"] .toast button { color: #c9d6cf; }
 :root[data-theme="dark"] body.page-landing .cta-box h2, :root[data-theme="dark"] body.page-landing .pill-lime:hover { color: #0b3522; }
