@@ -9,9 +9,9 @@ from apps.home.views import (
     dashboard_page,
     market_lookup,
     my_recipe_create,
+    my_recipe_delete,
     my_recipe_detail,
     my_recipe_edit,
-    my_recipe_delete,
 )
 from apps.login.forms import EmailOrUsernameAuthenticationForm
 from apps.login.views import (
