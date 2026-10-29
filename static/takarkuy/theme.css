@@ -423,6 +423,31 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
   outline-offset: 3px;
 }
 
+/* Profile settings use light accents so actions stand out on dark surfaces. */
+:root[data-theme="dark"] body.profile-page { background: #181e23; }
+:root[data-theme="dark"] body.profile-page .settings-shell {
+  --green: #f1f5f3;
+  --lime: #18211c;
+  --ink: #f1f5f3;
+  --green-soft: #37434c;
+  --green-line: #63717a;
+}
+:root[data-theme="dark"] body.profile-page .settings-shell .settings-panel { background: #262e35; border-color: #53616b; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section select { background: #303b43; border-color: #63717a; color: #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell .settings-nav a[aria-current="page"] { background: #37434c; color: #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell .submit { background: #f1f5f3; color: #18211c; box-shadow: 0 4px 12px rgba(0, 0, 0, .15); }
+:root[data-theme="dark"] body.profile-page .settings-shell .submit:hover { background: #d8e0de; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section :is(.avatar-option,.pref-target-card,.preference-chips label) { background: #303b43; border-color: #63717a; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section :is(.avatar-option,.pref-target-card):has(input:checked) { background: #37434c; border-color: #f1f5f3; box-shadow: 0 0 0 1px #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section .preference-chips label:has(input:checked) { background: #f1f5f3; border-color: #f1f5f3; color: #18211c; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section .preference-chips label:has(input:checked) input { accent-color: #18211c; }
+:root[data-theme="dark"] body.profile-page .settings-shell .pref-chosen button { background: #f1f5f3; color: #18211c; }
+:root[data-theme="dark"] body.profile-page .settings-shell :is(.avatar-intro p,.pref-target-card strong,.pref-text-button,.preference-details summary) { color: #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell :is(.pref-shortcuts a,.pref-number-control button) { background: #37434c; border-color: #63717a; color: #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section .pref-savebar { background: #303b43; border-color: #63717a; }
+:root[data-theme="dark"] body.profile-page .settings-shell .ingredient-options { border-color: #63717a; }
+
 :root[data-theme="dark"] .toast, :root[data-theme="dark"] .skip-link { border: 1px solid #3d4f45; background: #26332c; color: #f1f5f3; }
 :root[data-theme="dark"] .toast button { color: #c9d6cf; }
 :root[data-theme="dark"] body.page-landing .cta-box h2, :root[data-theme="dark"] body.page-landing .pill-lime:hover { color: #0b3522; }
