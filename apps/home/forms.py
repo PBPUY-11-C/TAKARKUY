@@ -1,5 +1,7 @@
 from django import forms
+
 from .models import MyRecipe
+
 
 class MyRecipeForm(forms.ModelForm):
     class Meta:

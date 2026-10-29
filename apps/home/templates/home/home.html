@@ -60,7 +60,15 @@
         {% if stock_groups.expired %}<details class="stock-detail"><summary class="danger">Lewat tanggal · {{ stock_counts.expired }}</summary><ul class="dashboard-list">{% for batch in stock_groups.expired %}<li><div><strong>{{ batch.name }}</strong><small>{{ batch.estimated_expires_on|date:'d M Y' }} · {{ batch.get_expiry_source_display }}</small></div><a href="{% url 'modul2' %}">Periksa →</a></li>{% endfor %}</ul><p class="small-note">Tidak ditawarkan untuk memasak.</p></details>{% endif %}
         {% if stock_groups.unknown %}<details class="stock-detail"><summary>Tanggal belum diketahui · {{ stock_counts.unknown }}</summary><ul class="dashboard-list">{% for batch in stock_groups.unknown %}<li><div><strong>{{ batch.name }}</strong><small>{{ batch.quantity|floatformat:-6 }} {{ batch.get_unit_display }}</small></div><a href="{% url 'modul2' %}">Lengkapi →</a></li>{% endfor %}</ul></details>{% endif %}
         </section>
-        <section class="dashboard-panel history-panel"><div class="section-title"><h2>Terakhir dimasak</h2><a href="{% url 'modul4' %}#cooking-history">Semua →</a></div><ul class="dashboard-list">{% for entry in recent_cooking %}<li><div><strong>{{ entry.recipe_name }}</strong><small>{{ entry.display_time|date:'d M Y, H:i' }} WIB · {{ entry.servings }} porsi</small></div>{% if entry.recipe and entry.recipe.is_active %}<a href="{% url 'modul4' %}?recipe={{ entry.recipe_id|urlencode }}#recipe-reviews">Ulas resep →</a>{% else %}<span class="muted">Resep tidak tersedia</span>{% endif %}</li>{% empty %}<li class="empty">Masakan yang dicatat di Recipe Book akan tampil di sini.</li>{% endfor %}</ul></section>
+          <section class="dashboard-panel history-panel"><div class="section-title"><h2>Resep Saya</h2><a href="{% url 'modul5-recipe-create' %}">+ Tambah resep</a></div>
+            <ul class="dashboard-list">
+              {% for r in my_recipes %}
+                <li><div><small>{{ r.get_waktu_makan_display }} · {{ r.porsi }} porsi</small><strong>{{ r.nama }}</strong></div><a class="row-action" href="{% url 'modul5-recipe-detail' r.pk %}">Lihat →</a></li>
+              {% empty %}
+                <li class="empty">Belum ada resep. Simpan resep andalanmu di sini.</li>
+              {% endfor %}
+            </ul>
+        </section>
       </div>
     </main>
 

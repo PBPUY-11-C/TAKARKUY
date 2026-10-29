@@ -1,19 +1,17 @@
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.utils.cache import patch_cache_control
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.cache import patch_cache_control
+from django.views.decorators.http import require_POST
 
 from apps.recipe.views import api
 
-from .maps import MapLimited, lookup_places, read_places
-from .services import dashboard_data
-
 from .forms import MyRecipeForm
+from .maps import MapLimited, lookup_places, read_places
 from .models import MyRecipe
-from django.contrib import messages
-from django.views.decorators.http import require_POST
+from .services import dashboard_data
 
 
 @login_required
@@ -25,6 +23,7 @@ def dashboard_page(request):
             **dashboard_data(request.user),
             "map_places": read_places(),
             "map_config": {"tiles": settings.MAP_TILE_URL, "online": settings.MAP_LOOKUP_ENABLED},
+            "my_recipes": MyRecipe.objects.filter(user=request.user)[:5],
         },
     )
     patch_cache_control(response, private=True, no_store=True)
