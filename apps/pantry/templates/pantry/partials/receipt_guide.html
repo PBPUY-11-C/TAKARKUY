@@ -1,0 +1,32 @@
+{% load static %}
+<dialog id="receipt-guide-dialog" class="guide-dialog" aria-labelledby="receipt-guide-title" aria-describedby="receipt-guide-desc">
+    <div class="guide-head">
+      <div>
+        <h2 id="receipt-guide-title">Panduan Foto Struk</h2>
+      </div>
+      <button type="button" class="guide-close" data-guide-close aria-label="Tutup panduan foto struk">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="guide-body">
+      <ul class="guide-grid">
+        <li class="guide-card bad">
+          <span class="guide-status">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+            Tidak Dapat Dipindai dengan Benar
+          </span>
+          <figure class="guide-figure"><img src="{% static 'pantry/img/struk1.png' %}" width="576" height="1024" loading="lazy" decoding="async" alt="Contoh struk Karis Jaya Shop dengan dua baris teks alamat; baris kedua dikotaki hijau."></figure>
+          <p>Bagian struk memiliki dua baris teks. Hanya baris kedua yang terbaca, sehingga hasilnya akan tidak sesuai.</p>
+        </li>
+        <li class="guide-card good">
+          <span class="guide-status">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg>
+            Dapat Dipindai
+          </span>
+          <figure class="guide-figure"><img src="{% static 'pantry/img/struk2.jpg' %}" width="736" height="981" loading="lazy" decoding="async" alt="Contoh struk Tlogomas 44 dengan satu baris teks untuk setiap informasi, daftar belanja terbaca jelas."></figure>
+          <p>Setiap informasi hanya memiliki satu baris teks, sehingga setiap informasi bahan dapat terbaca.</p>
+        </li>
+      </ul>
+      <p class="guide-tip">Tips: foto struk tegak lurus, terang, dan tidak buram agar semua baris terbaca. Hasil pindai tetap bisa diperiksa dan diedit sebelum disimpan.</p>
+    </div>
+</dialog>
