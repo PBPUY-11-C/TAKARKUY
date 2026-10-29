@@ -29,6 +29,11 @@ class AuthNavigationBrowserTests(StaticLiveServerTestCase):
                         page.set_viewport_size({"width": width, "height": 900})
                         response = page.goto(self.live_server_url + reverse(route))
                         self.assertEqual(response.status, 200)
+                        submit = page.locator(".auth-card form button[type=submit]")
+                        expect(submit).to_have_css("background-color",
+                            "rgb(212, 244, 90)" if theme == "dark" else "rgb(15, 61, 46)")
+                        expect(submit).to_have_css("color",
+                            "rgb(11, 53, 34)" if theme == "dark" else "rgb(255, 255, 255)")
                         card = page.locator(".auth-card")
                         metrics = card.evaluate("""element => {
                             const style = getComputedStyle(element);

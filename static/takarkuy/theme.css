@@ -371,6 +371,13 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .remember { color: #c2ccca; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .switch-page { color: #c4cfcc; }
 
+:root[data-theme="dark"] body:is(.page-login,.page-signup) .auth-card .submit {
+  background: var(--lime);
+  color: #0b3522;
+  box-shadow: 0 5px 16px rgba(212, 244, 90, .14);
+}
+:root[data-theme="dark"] body:is(.page-login,.page-signup) .auth-card .submit:hover { filter: brightness(1.06); }
+
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-intro { color: #b9c7c0; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-section { border: 1px solid #373b41; background: #1e2723; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-section input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-section select { border: 1px solid #3d4843; background: #26332b; color: #dee5e2; }
