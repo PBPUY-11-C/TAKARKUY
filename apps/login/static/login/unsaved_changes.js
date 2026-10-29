@@ -9,6 +9,19 @@
   const dirty = () => popup.dataset.initialDirty === 'true' || snapshot() !== original;
   let leaving = false;
   let pending;
+  let opener;
+  popup.addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    const buttons = [...popup.querySelectorAll('button:not(:disabled)')]
+      .filter(button => button.getClientRects().length);
+    const first = buttons[0];
+    const last = buttons[buttons.length - 1];
+    if (first && ((event.shiftKey && document.activeElement === first)
+      || (!event.shiftKey && document.activeElement === last))) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    }
+  });
   function confirmLeave(action) {
     if (typeof popup.showModal !== 'function') {
       if (window.confirm('Perubahan belum disimpan. Tinggalkan?')) {
@@ -18,7 +31,10 @@
       return;
     }
     pending = action;
-    if (!popup.open) popup.showModal();
+    if (!popup.open) {
+      opener = document.activeElement;
+      popup.showModal();
+    }
   }
   popup.querySelector('[data-unsaved-stay]').addEventListener('click', () => popup.close());
   popup.querySelector('[data-unsaved-leave]').addEventListener('click', () => {
@@ -27,7 +43,11 @@
     popup.close();
     action?.();
   });
-  popup.addEventListener('close', () => { pending = undefined; });
+  popup.addEventListener('close', () => {
+    pending = undefined;
+    if (!leaving && opener?.isConnected) opener.focus();
+    opener = undefined;
+  });
 
   document.addEventListener('click', event => {
     if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey
