@@ -23,11 +23,23 @@ class AuthNavigationBrowserTests(StaticLiveServerTestCase):
                 context.add_init_script(f"localStorage.setItem('takarkuy-theme', '{theme}')")
                 context.route("https://**/*", lambda route: route.abort())
                 page = context.new_page()
+                card_sizes = {}
                 for route in ("login", "signup"):
                     for width in (320, 1280):
                         page.set_viewport_size({"width": width, "height": 900})
                         response = page.goto(self.live_server_url + reverse(route))
                         self.assertEqual(response.status, 200)
+                        card = page.locator(".auth-card")
+                        metrics = card.evaluate("""element => {
+                            const style = getComputedStyle(element);
+                            return {width: element.getBoundingClientRect().width,
+                                padding: style.padding, radius: style.borderRadius};
+                        }""")
+                        if route == "login":
+                            card_sizes[width] = metrics
+                        else:
+                            self.assertEqual(metrics, card_sizes[width],
+                                "Login and signup must share card width, padding and corners")
                         navigation = page.get_by_role("navigation", name="Navigasi halaman akun")
                         home = navigation.get_by_role("link", name="Kembali ke beranda", exact=True)
                         switch = navigation.get_by_role("switch", name="Mode gelap")
