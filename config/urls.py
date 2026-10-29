@@ -10,6 +10,8 @@ from apps.home.views import (
     market_lookup,
     my_recipe_create,
     my_recipe_detail,
+    my_recipe_edit,
+    my_recipe_delete,
 )
 from apps.login.forms import EmailOrUsernameAuthenticationForm
 from apps.login.views import (
@@ -117,6 +119,8 @@ urlpatterns = [
     path("modul5/places/", market_lookup, name="modul5-places"),
     path("modul5/resep/tambah/", my_recipe_create, name="modul5-recipe-create"),
     path("modul5/resep/<int:pk>/", my_recipe_detail, name="modul5-recipe-detail"),
+    path("modul5/resep/<int:pk>/edit/", my_recipe_edit, name="modul5-recipe-edit"),
+    path("modul5/resep/<int:pk>/hapus/", my_recipe_delete, name="modul5-recipe-delete"),
 
     path("admin/", admin.site.urls),
 ]

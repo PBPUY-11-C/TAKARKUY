@@ -11,5 +11,12 @@
 
   <h2>Cara memasak</h2>
   <ol>{% for s in recipe.daftar_langkah %}<li>{{ s }}</li>{% endfor %}</ol>
+  
+  <a href="{% url 'modul5-recipe-edit' recipe.pk %}">Edit</a>
+  <form method="post" action="{% url 'modul5-recipe-delete' recipe.pk %}" style="display:inline">
+    {% csrf_token %}
+    <button type="submit">Hapus</button>
+  </form>
+
 </main>
 {% endblock %}

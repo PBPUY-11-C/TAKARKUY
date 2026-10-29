@@ -12,7 +12,7 @@
       </div>
     {% endfor %}
     <button type="submit">Simpan</button>
-    <a href="{% url 'modul5' %}">Batal</a>
+    <a href="{% if recipe %}{% url 'modul5-recipe-detail' recipe.pk %}{% else %}{% url 'modul5' %}{% endif %}">Batal</a>
   </form>
 </main>
 {% endblock %}

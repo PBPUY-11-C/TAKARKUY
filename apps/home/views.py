@@ -13,6 +13,7 @@ from .services import dashboard_data
 from .forms import MyRecipeForm
 from .models import MyRecipe
 from django.contrib import messages
+from django.views.decorators.http import require_POST
 
 
 @login_required
@@ -56,3 +57,22 @@ def my_recipe_create(request):
 def my_recipe_detail(request, pk):
     recipe = get_object_or_404(MyRecipe, pk=pk, user=request.user)
     return render(request, "home/my_recipe_detail.html", {"recipe": recipe})
+
+@login_required
+def my_recipe_edit(request, pk):
+    recipe = get_object_or_404(MyRecipe, pk=pk, user=request.user)
+    form = MyRecipeForm(request.POST or None, instance=recipe)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Resep diperbarui.")
+        return redirect("modul5-recipe-detail", pk=recipe.pk)
+    return render(request, "home/my_recipe_form.html", {"form": form, "judul": "Edit resep", "recipe": recipe})
+
+
+@login_required
+@require_POST
+def my_recipe_delete(request, pk):
+    recipe = get_object_or_404(MyRecipe, pk=pk, user=request.user)
+    recipe.delete()
+    messages.success(request, "Resep dihapus.")
+    return redirect("modul5")
