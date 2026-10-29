@@ -304,3 +304,22 @@ class PantryFlowTests(TestCase):
         self.assertContains(response, 'id="receipt-guide-open"')
         self.assertContains(response, 'id="receipt-guide-dialog"')
         self.assertContains(response, "Panduan Foto Struk")
+    
+    def test_pantry_toolbar_renders_information_and_expiry_filter(self):
+        response = self.client.get(reverse("modul2"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="pantry-toolbar"')
+        self.assertContains(response, 'class="pantry-info"')
+        self.assertContains(response, 'class="pantry-filter"')
+
+        self.assertContains(
+            response,
+            "Perkiraan kedaluwarsa mengikuti lokasi simpan",
+        )
+        self.assertContains(response, "Catatan penyimpanan")
+        self.assertContains(response, 'id="expiry-filter"')
+        self.assertContains(response, 'id="expiry-filter-result"')
+
+        for option in ("Semua stok", "Sudah kedaluwarsa", "7 hari ke depan", "Tanggal belum diketahui"):
+            self.assertContains(response, option)
