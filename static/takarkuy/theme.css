@@ -409,10 +409,11 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-section .avatar-option { border: 1px solid #3b463f; background: #1e2723; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .avatar-initial { background: #26332b; color: #d8e0de; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .avatar-option:has(input:checked) { background: #26332b; }
-:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .unsaved-popup { border: 1px solid #3b463f; background: #1e2723; color: #dee5e2; }
+body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) :is(.auth-error-popup,.unsaved-popup) { border: 2px solid var(--green); }
+:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .unsaved-popup { border: 2px solid #d8e0de; background: #1e2723; color: #dee5e2; box-shadow: 0 0 0 4px rgba(216, 224, 222, .08), 0 24px 80px rgba(0, 0, 0, .5); }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .unsaved-popup h2 { color: #d8e0de; }
 
-:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup { border: 1px solid #3b463f; background: #1e2723; color: #dee5e2; }
+:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup { border: 2px solid #d8e0de; background: #1e2723; color: #dee5e2; box-shadow: 0 0 0 4px rgba(216, 224, 222, .08), 0 24px 80px rgba(0, 0, 0, .5); }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-close { color: #b9c7c0; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-close:hover { background: #26332b; color: #d8e0de; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup h2 { color: #d8e0de; }
