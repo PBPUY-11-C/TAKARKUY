@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="container">
+  <a href="{% url 'modul5' %}">← Dashboard</a>
+  <h1>{{ recipe.nama }}</h1>
+  <p>{{ recipe.get_waktu_makan_display }} · {{ recipe.porsi }} porsi
+    {% if recipe.estimasi_harga %} · Rp {{ recipe.estimasi_harga }}{% endif %}</p>
+
+  <h2>Bahan</h2>
+  <ul>{% for b in recipe.daftar_bahan %}<li>{{ b }}</li>{% endfor %}</ul>
+
+  <h2>Cara memasak</h2>
+  <ol>{% for s in recipe.daftar_langkah %}<li>{{ s }}</li>{% endfor %}</ol>
+</main>
+{% endblock %}

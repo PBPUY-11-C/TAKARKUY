@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="container">
+  <h1>{{ judul }}</h1>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div>
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit">Simpan</button>
+    <a href="{% url 'modul5' %}">Batal</a>
+  </form>
+</main>
+{% endblock %}
