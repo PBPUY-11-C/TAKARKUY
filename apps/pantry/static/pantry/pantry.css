@@ -183,6 +183,27 @@ tr:last-child td { border-bottom: 0; }
 .guide-link svg { transition: transform .25s ease; }
 .guide-link:hover svg { transform: scale(1.15); }
 
+/* Filter status kedaluwarsa stok pantry */
+.stock-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 20px 0 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.stock-filter label { color: var(--ink); font-size: 16px; font-weight: 400; }
+.stock-filter select, #expiry-filter, #expiry-status-filter { box-sizing: border-box; min-height: 42px; padding: 9px 20px 9px 12px; border: 1px solid var(--line); border-radius: 10px; background-color: var(--canvas); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.stock-filter select:hover, #expiry-filter:hover, #expiry-status-filter:hover { border-color: #04daa3; }
+.stock-filter select:focus-visible, #expiry-filter:focus-visible, #expiry-status-filter:focus-visible { outline: 2px solid #04daa3; outline-offset: 2px; border-color: #04daa3; }
+.stock-filter select option, #expiry-filter option, #expiry-status-filter option { background: var(--surface); color: var(--ink); }
+#expiry-filter-result { flex-basis: 100%; color: var(--muted); font-size: 12px; line-height: 1.5; }
+#expiry-filter-empty { margin: 12px 0; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font-size: 14px; }
+
+.pantry-toolbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin: 16px 0 20px; }
+.pantry-info { flex: 1; min-width: 0; }
+.pantry-info > .sample-note { margin: 0; line-height: 1.6; color: var(--muted); }
+.pantry-more { margin-top: 8px; }
+.pantry-more summary { width: fit-content; cursor: pointer; color: var(--ink); font-size: 13px; font-weight: 500; }
+.pantry-more summary:hover { color: var(--green, var(--ink)); }
+.pantry-more .sample-note { margin: 8px 0 0; line-height: 1.6; color: var(--muted); font-size: 13px; }
+.pantry-filter { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.pantry-filter select { width: 100%; min-width: 0; box-sizing: border-box; }
+#expiry-filter-result { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; text-align: right; }
+
 @media (prefers-reduced-motion: reduce) {
  .guide-dialog, .guide-dialog::backdrop, .guide-close svg, .guide-link svg { transition: none; }
  .guide-dialog[open] .guide-card, .guide-dialog[open] .guide-status svg, .guide-dialog[open] .guide-card.good .guide-status svg path { animation: none; }
@@ -235,4 +256,14 @@ tr:last-child td { border-bottom: 0; }
  .field.full { grid-column: auto; }
  .manual-fields .field:nth-child(2) { grid-column: auto; }
  .edit-grid, .edit-convert { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+ .stock-filter { align-items: stretch; flex-direction: column; gap: 8px; padding: 12px; }
+ .stock-filter select, #expiry-filter, #expiry-status-filter { width: 100%; min-width: 0; }
+ #expiry-filter-result { margin-top: 2px; }
+}
+@media (max-width: 600px) {
+ .pantry-toolbar { flex-direction: column; gap: 16px; }
+ .pantry-info, .pantry-filter { width: 100%; flex: initial; }
+ #expiry-filter-result { text-align: left; }
 }
