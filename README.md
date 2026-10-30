@@ -126,17 +126,17 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 **PIC:** Aiko Zahwa
 
 - **Dashboard:** kalender menu 7 hari, sisa budget per rencana, bahan yang segera harus dipakai, dan masakan terakhir.
-- **Ulasan resep:** rating 1–5 dan komentar di detail resep, setelah pernah memasak resep itu.
+- **Resep saya:** fitur tambahan untuk memungkinkan pengguna membuat dan menyimpan resep pribadi. Pengguna dapat menambahkan resep, melihat daftar dan detail resep, mengubah informasi resep, serta menghapus resep miliknya.
 - **Market locator:** popup di Dashboard yang mendeteksi lokasi pengguna lalu menampilkan pasar terdekat di peta dan daftar, diurutkan dari yang paling dekat.
 - **Data yang dipegang:** `RecipeReview`, serta cache dan kuota pencarian peta. Ringkasan Dashboard dibaca dari Modul 1, 2, dan 4.
 - **Halaman:** Dashboard sebagai beranda setelah masuk; peta berupa popup.
 
 **CRUD Dashboard, Ulasan & Market Locator:**
 
-- **Create:** menulis ulasan setelah memasak.
+- **Create:** menulis dan menambah resep buatan sendiri.
 - **Read:** melihat ringkasan Dashboard, ulasan resep, dan peta pasar terdekat.
-- **Update:** mengubah ulasan sendiri.
-- **Delete:** menghapus ulasan sendiri; administrator dapat menyembunyikan ulasan.
+- **Update:** mengubah resep sendiri.
+- **Delete:** menghapus resep sendiri.
 
 ## Integrasi Antar Modul
 
