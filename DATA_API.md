@@ -65,7 +65,7 @@ python manage.py import_catalog data/fixtures/catalog_seed.json --sync-generated
 | API | Modul | Cara kerja | Pengaturan |
 |---|---|---|---|
 | [Nominatim](https://nominatim.org/) dan [Overpass](https://wiki.openstreetmap.org/wiki/Overpass_API) (OpenStreetMap) | Home (Dashboard) — pencarian pasar terdekat | Cache server 7 hari (`MapLookupCache`), kuota 10 pencarian per akun per 10 menit, jeda antar panggilan, timeout 8 detik. Jika server luar gagal atau dimatikan, daftar pasar kurasi tetap tampil. | `MAP_LOOKUP_ENABLED=true`, `MAP_USER_AGENT` (wajib berisi "TAKARKUY" dan URL/email) |
-| [Gemini](https://ai.google.dev/) (`gemini-2.5-flash-lite`) | Pantry — cadangan OCR struk dan pencocokan nama bahan | Dipanggil hanya saat Tesseract.js kurang yakin. Cache hasil 30 hari, kuota 10 panggilan per akun per hari, timeout 5–25 detik, foto maksimal 10 MB dan tidak disimpan. | `PANTRY_LLM_PROVIDER=gemini`, `GEMINI_API_KEY` |
+| [Gemini](https://ai.google.dev/) (`gemini-3.5-flash-lite`, diatur lewat `PANTRY_LLM_MODEL`) | Pantry — cadangan OCR struk dan pencocokan nama bahan | Dipanggil hanya saat Tesseract.js kurang yakin. Cache hasil 30 hari, kuota 10 panggilan per akun per hari, timeout 5–25 detik, foto maksimal 10 MB dan tidak disimpan. | `PANTRY_LLM_PROVIDER=gemini`, `GEMINI_API_KEY` |
 | [Tesseract.js](https://github.com/naptha/tesseract.js) 7.0.0 | Pantry — OCR struk di browser | Library di sisi browser (bukan API server); dimuat dengan SRI. | — |
 
 Tanpa pengaturan di atas, aplikasi tetap berjalan: peta memakai daftar pasar kurasi dan Pantry memakai Tesseract.js serta input manual.
