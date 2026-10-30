@@ -102,7 +102,9 @@ urlpatterns = [
     path("pantry/recipes/", pantry_recipe_matches, name="modul2-recipes"),
     path("pantry/staples/", save_staple_preferences, name="modul2-staples"),
 
-    path("modul4/", book_page, name="modul4"),
+    path("recipes/", book_page, name="modul4"),
+    path("recipe/", RedirectView.as_view(pattern_name="modul4", query_string=True), name="recipe-legacy"),
+    path("modul4/", RedirectView.as_view(pattern_name="modul4", query_string=True), name="modul4-legacy"),
     path("modul4/favorite/", set_favorite, name="modul4-favorite"),
     path("modul4/note/", save_recipe_note, name="modul4-note"),
     path("modul4/estimate/", estimate_recipe_cost, name="modul4-estimate"),

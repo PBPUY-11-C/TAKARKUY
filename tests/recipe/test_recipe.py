@@ -402,7 +402,7 @@ class CookingTests(TestCase):
         response = self.client.get(reverse("modul4"))
         self.assertContains(response, "Sup bayam")
         self.assertNotContains(response, "Rebus air.")
-        self.assertContains(response, "1 resep belum memiliki panduan memasak")
+        self.assertContains(response, "1 recipe does not have a cooking guide yet")
         filtered = self.client.get(reverse("modul4"), {"guidance": "1"})
         self.assertNotContains(filtered, "Sup bayam")
         response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
@@ -418,7 +418,9 @@ class CookingTests(TestCase):
         self.ingredient.allergens = ["kacang_pohon"]
         self.ingredient.save()
         self.assertFalse(recipe_query(self.user).exists())
-        self.assertContains(self.client.get(reverse("modul4")), "1 karena alergen")
+        self.assertContains(
+            self.client.get(reverse("modul4")), "1 hidden by your allergen preferences"
+        )
         self.ingredient.allergens = []
         self.ingredient.save()
         self.assertTrue(recipe_query(self.user).exists())
@@ -584,16 +586,16 @@ class CookingTests(TestCase):
         response = self.client.get(reverse("modul4"), {"stock": "best"})
         content = response.content.decode()
         self.assertEqual(response.status_code, 200)
-        cards = content[content.index('class="recipe-cards"'):]
+        cards = content[content.index('class="recipe-grid recipe-cards"'):]
         self.assertLess(cards.index("Sup Bayam Lebih Cocok"), cards.index("Sup bayam"))
-        self.assertContains(response, "Stok cocok 80%")
-        self.assertContains(response, "Stok cocok 40%")
-        self.assertContains(response, "Kurang: Bayam")
+        self.assertContains(response, "stok cocok 80%")
+        self.assertContains(response, "stok cocok 40%")
+        self.assertContains(response, "Belum ada: Bayam")
         self.assertFalse(PantryMovement.objects.exists())
 
     def test_best_stock_filter_explains_when_pantry_has_no_matching_stock(self):
         response = self.client.get(reverse("modul4"), {"stock": "best"})
-        self.assertContains(response, "Belum ada kecocokan resep dengan bahan di Pantry")
+        self.assertContains(response, "No Pantry matches yet")
         self.assertEqual(response.context["recipes"].paginator.count, 0)
     def test_stock_matches_counts_unknown_expiry_and_flags_it(self):
         self.batch(estimated_expires_on=None, expiry_source="unknown")

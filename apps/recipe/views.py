@@ -332,6 +332,7 @@ def book_page(request):
     price_unavailable_count = 0
     price_candidate_count = 0
     price_filtered_candidate_count = None
+    costs = None  # diisi filter harga; dipakai ulang untuk harga kartu
     if max_price in PRICE_LIMITS:
         started = perf_counter()
         codes = set(query.values_list("pk", flat=True))
@@ -421,8 +422,13 @@ def book_page(request):
     missing_names = {
         code: ingredient.name for code, ingredient in Ingredient.objects.in_bulk(missing_codes).items()
     }
+    # Harga referensi kartu (porsi profil). Bila filter harga aktif, biaya sudah dihitung untuk
+    # semua kandidat; pakai ulang hasil itu. Selain itu hitung hanya untuk resep di halaman ini.
+    if costs is None:
+        costs = recipe_costs(profile.servings, set(page_codes)) if page_codes else {}
     for recipe in page.object_list:
         recipe.photo = photos.get(recipe.pk)
+        recipe.card_cost = costs.get(recipe.pk)
         match = stock_rows.get(recipe.pk)
         if match:
             recipe.stock_match = {
@@ -453,8 +459,6 @@ def book_page(request):
                 selection_error = "Menu di rencana ini tidak memiliki resep yang tersedia."
         else:
             selection_error = "Menu rencana tidak ditemukan."
-    if not code and page.object_list and not selection_error:
-        code = page.object_list[0].pk
     detail, stock = None, None
     if code and not selection_error:
         try:
@@ -558,6 +562,7 @@ def book_page(request):
             "meal": meal,
             "max_price": max_price,
             "price_limits": PRICE_LIMITS,
+            "profile_servings": profile.servings,
             "staple": slot_staple(slot),
             "filters": request.GET,
             "query_params": urlencode(params, doseq=True),

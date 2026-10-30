@@ -1,0 +1,313 @@
+/* &SC diganti alat/scope_css.py dengan :is(.book-shell, #cooking-dialog) */
+
+/* IV.0 · Font & wadah halaman mengikuti aplikasi ------------------------------------ */
+.book-shell, #cooking-dialog {
+  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
+  font-family: var(--font-sans);
+}
+.book-shell { display: block; background: transparent; }
+&SC :is(h1, h2, h3, h4, .text-h1, .text-h2, .text-h3, .text-h4, .result-count, .step__title) { font-family: var(--font-heading); letter-spacing: -0.01em; }
+&SC .page__body { max-width: 1248px; padding: 34px 24px 72px; }
+&SC [hidden] { display: none !important; }          /* JS memakai atribut hidden; jangan sampai kalah oleh display komponen */
+&SC .eyebrow { margin-bottom: 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: var(--color-text-success); }
+&SC .helper { font-size: 13px; line-height: 19px; color: var(--color-text-secondary); }
+&SC .missing { color: var(--color-text-warning); font-weight: 600; }
+&SC .icon--inline { display: inline-block; vertical-align: -3px; }
+&SC .page-title { margin-bottom: 24px; }
+&SC .page__main { gap: 20px; }
+
+/* IV.1 · Tombol: atribut disabled (dipakai JS) tampil seperti aria-disabled di Figma ---- */
+&SC .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+&SC .btn--primary:disabled:hover { background: var(--color-action-primary); }
+&SC .btn--secondary:disabled:hover { background: var(--color-bg-surface-2); border-color: var(--color-border-control); }
+&SC .btn--quiet { background: transparent; border-color: transparent; color: var(--color-text-success); text-decoration: underline; text-underline-offset: 3px; }
+&SC .btn--quiet:hover { background: var(--color-bg-surface-2); border-color: transparent; }
+&SC .btn--quiet:disabled:hover { background: transparent; border-color: transparent; }
+
+/* IV.2 · Kontrol form generik (select, input, file) --------------------------------- */
+&SC .control {
+  width: 100%; min-height: var(--target-min); padding: 10px 12px;
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-md);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+}
+&SC .control--number { width: 96px; text-align: center; }
+&SC .control--file { padding: 8px; background: var(--color-bg-surface-2); }
+&SC .control[readonly] { background: var(--color-bg-surface-2); color: var(--color-text-secondary); }
+&SC .form-stack { display: flex; flex-direction: column; gap: 8px; }
+&SC .form-stack .field-label { margin-top: 8px; }
+&SC .form-stack .field-label:first-of-type { margin-top: 0; }
+&SC .note-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+&SC .check-field { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 20px; cursor: pointer; }
+&SC .check-field input { flex: none; width: 20px; height: 20px; margin: 0; }
+
+/* IV.3 · Pencarian & filter: <select> dan checkbox asli dibungkus chip Figma ---------- */
+&SC .search-panel { display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--color-bg-surface); border: 1px solid var(--color-border-divider); border-radius: var(--radius-xl); }
+&SC .search__input { font-size: 15px; }
+&SC .search__input::-webkit-search-cancel-button { cursor: pointer; }
+&SC .chip--select { position: relative; gap: 4px; padding-block: 0; padding-right: 12px; cursor: pointer; }
+&SC .chip--select .chip__label { color: var(--color-text-secondary); }
+&SC .chip--select .chip__label::after { content: ":"; }
+&SC .chip--select select {
+  appearance: none; -webkit-appearance: none;
+  min-height: calc(var(--target-min) - 2px); max-width: 15rem;
+  padding: 0 24px 0 0; margin-right: -20px;            /* ruang untuk chevron */
+  border: 0; background: transparent; color: var(--color-text-primary);
+  font-weight: var(--weight-semibold); text-overflow: ellipsis; cursor: pointer;
+}
+&SC .chip--select select:focus-visible { outline: none; }
+&SC .chip--select:focus-within { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+&SC .chip--select .chip__chevron { pointer-events: none; }
+&SC .chip--select:has(select option:checked:not([value=""])) { background: var(--color-bg-success); border-color: var(--color-text-success); }
+&SC .chip--toggle { position: relative; cursor: pointer; }
+&SC .chip__input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+&SC .chip--toggle:focus-within { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+&SC .chip--toggle:has(.chip__input:checked) { padding-left: var(--space-12); background: var(--color-bg-success); border-color: var(--color-text-success); color: var(--color-text-success); }
+&SC .chip--toggle:has(.chip__input:checked) .chip__check { display: block; }
+&SC .filters__hint { font-size: 13px; color: var(--color-text-secondary); }
+
+/* IV.4 · Ringkasan hasil ------------------------------------------------------------ */
+&SC .results-header { margin-top: 8px; }
+&SC .results-header .stack { gap: 2px; }
+&SC .recipe-result-summary { font-size: 14px; color: var(--color-text-secondary); }
+&SC .recipe-result-summary .result-count { color: var(--color-text-primary); font-size: 18px; }
+&SC .active-filter-list > span:first-child { font-weight: var(--weight-medium); }
+&SC .active-filter-chip { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: var(--radius-pill); background: var(--color-bg-success); color: var(--color-text-success); font-weight: var(--weight-semibold); }
+&SC .recipe-list > .notice--info { font-size: 14px; }
+&SC .disclosure--quiet { background: transparent; border-color: var(--color-border-divider); }
+&SC .disclosure--quiet > summary { min-height: var(--target-min); padding: 8px 12px; }
+&SC .disclosure--quiet .disclosure__title { font-size: 14px; line-height: 20px; }
+&SC .disclosure--quiet .disclosure__body { padding: 0 12px 12px; }
+&SC .price-availability-note { padding-left: 10px; border-left: 3px solid var(--color-text-warning); }
+
+/* IV.5 · Kartu resep --------------------------------------------------------------- */
+&SC .recipe-card { min-width: 0; }
+&SC .recipe-card__photo, &SC .recipe-card-photo { max-width: none; }   /* base.css bisa membatasi img; lebar diatur aturan kartu */
+&SC .recipe-card-photo-placeholder {                 /* dibuat image_fallback.js bila foto gagal dimuat */
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  aspect-ratio: 20 / 9; background: var(--color-bg-surface-2); color: var(--color-text-secondary); font-size: 13px;
+}
+&SC .recipe-card-photo-placeholder > span { font-size: 28px; line-height: 1; }
+&SC .recipe-card__placeholder small, &SC .recipe-card-photo-placeholder small { font-size: 13px; color: var(--color-text-secondary); }
+&SC .recipe-card__placeholder .icon { color: var(--color-text-success); }
+&SC .stock-match { display: flex; flex-direction: column; gap: 2px; }
+&SC .stock-match small { font-size: 13px; line-height: 18px; color: var(--color-text-secondary); }
+&SC .recipe-card:not([data-readiness]) .readiness { color: var(--color-text-secondary); }
+&SC .recipe-guidance-notice { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: var(--weight-semibold); color: var(--color-text-info); }
+&SC .recipe-card__body { flex: 1; }
+&SC .recipe-card__body > .recipe-card__title { flex: none; }   /* di Figma judul berbagi baris dengan tombol favorit; di sini judul satu kolom */
+&SC .recipe-card__credit { margin-top: auto; padding-top: 4px; }
+@container cards (max-width: 440px) {
+  &SC .recipe-card-photo-placeholder { width: 104px; flex: none; aspect-ratio: auto; min-height: 104px; }
+  &SC .recipe-card__placeholder small, &SC .recipe-card-photo-placeholder small { display: none; }
+  &SC .recipe-card__credit { display: none; }
+}
+
+/* IV.6 · Empty state, pagination, notice -------------------------------------------- */
+&SC .empty-state { border: 1px dashed var(--color-border-control); }
+&SC .empty-state--inline { display: block; padding: 16px; text-align: left; background: var(--color-bg-surface-2); border: 0; font-size: 14px; color: var(--color-text-secondary); }
+&SC .pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; margin-top: 8px; font-size: 14px; color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
+&SC .pagination--compact { justify-content: flex-start; gap: 8px; }
+&SC a.icon-btn { text-decoration: none; }
+&SC #page-message { margin-bottom: 16px; }
+&SC .notice--info a { text-decoration: underline; }
+&SC :is(.helper, .notice--info span, .credit) .link { display: inline; min-height: 0; }   /* tautan di tengah kalimat */
+
+/* IV.7 · Detail: tata letak dua kolom (Figma) ---------------------------------------- */
+&SC .detail-view {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  gap: 24px 40px; align-items: start;
+}
+&SC .detail-view__nav { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+&SC .recipe-detail {
+  grid-column: 1; grid-row: 2; min-width: 0; display: flex; flex-direction: column; gap: 24px;
+}
+&SC .recipe-hero { display: flex; align-items: flex-start; gap: 16px; }
+&SC .recipe-hero__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+&SC .recipe-hero__meta { color: var(--color-text-secondary); }
+&SC .recipe-figure { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+&SC .detail-aside { position: static; min-width: 0; }
+&SC .detail-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+&SC #recipe-reviews { grid-column: 1; grid-row: 3; min-width: 0; }
+&SC .detail-view__aside { grid-column: 2; grid-row: 2; min-width: 0; }
+
+&SC .chip--status { min-height: 0; padding: 4px 12px; font-size: 13px; line-height: 18px; font-weight: var(--weight-semibold); cursor: default; }
+&SC .chip--status:hover { background: var(--color-bg-surface-2); }
+&SC .chip--info { color: var(--color-text-info); border-color: var(--color-text-info); }
+&SC .recipe-photo, &SC .recipe-photo-image { display: block; width: 100%; max-width: none; height: auto; }
+&SC .recipe-photo-placeholder {                      /* tanpa foto, atau dibuat image_fallback.js */
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  aspect-ratio: 41 / 19; border: 1px dashed var(--color-border-control); border-radius: var(--radius-xl);
+  background: var(--color-bg-surface-2); color: var(--color-text-secondary); font-size: 14px;
+}
+&SC .recipe-photo-placeholder .icon { color: var(--color-text-success); }
+&SC .recipe-photo-placeholder > span:first-child { font-size: 32px; line-height: 1; }
+
+/* porsi & gizi */
+&SC .detail-aside .panel { gap: 16px; }
+&SC .panel__header { flex-wrap: wrap; }
+&SC .serving-control { display: flex; flex-direction: column; gap: 8px; }
+&SC .stepper__value {
+  width: 72px; min-height: var(--target-min); padding: 0 4px;
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-md);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  text-align: center; appearance: textfield; -moz-appearance: textfield;
+}
+&SC .stepper__value::-webkit-inner-spin-button, &SC .stepper__value::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+&SC .serving-fixed { font-size: 14px; color: var(--color-text-secondary); }
+&SC .serving-fixed strong { color: var(--color-text-primary); }
+&SC .nutrition__grid .nutrition__value { font-variant-numeric: tabular-nums; }
+&SC .nutrition__label { display: block; }
+&SC #serving-summary { font-size: 14px; line-height: 20px; color: var(--color-text-primary); }
+&SC #serving-scale-status { margin-top: 8px; }
+
+/* IV.8 · Bahan: daftar bergaya tabel Figma (Bahan · Takaran · Status) ----------------- */
+&SC .ingredients { padding: 24px; background: var(--color-bg-surface); border-radius: var(--radius-xl); }
+&SC .ingredients__columns, &SC .ingredient-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) 6.5rem minmax(9rem, 13rem);
+  column-gap: 16px; align-items: center;
+}
+&SC .ingredients__columns {
+  padding: 8px 16px; border: 1px solid var(--color-border-divider); border-bottom: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  font-size: 13px; line-height: 19px; font-weight: var(--weight-semibold); color: var(--color-text-secondary);
+}
+&SC .ingredients__columns span:not(:first-child) { text-align: right; }
+&SC .ingredients__list { border: 1px solid var(--color-border-divider); border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; }
+&SC .ingredient-row { padding: 12px 16px; background: var(--color-bg-surface-2); border-bottom: 1px solid var(--color-border-divider); }
+&SC .ingredient-row:last-child { border-bottom: 0; }
+&SC .ingredient__name { font-weight: var(--weight-medium); min-width: 0; overflow-wrap: anywhere; }
+&SC .ingredient__name small { display: block; font-size: 13px; line-height: 18px; font-weight: var(--weight-regular); color: var(--color-text-secondary); }
+&SC .ingredient-row .amount { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+&SC .ingredient-row .status { display: block; text-align: right; font-size: 14px; line-height: 20px; font-weight: var(--weight-semibold); }
+&SC .ingredient-row .status b { font-weight: inherit; }
+&SC .ingredient-row[data-stock="ok"] .status { color: var(--color-text-success); }
+&SC .ingredient-row[data-stock="short"] .status { color: var(--color-text-warning); }
+&SC .ingredient-row[data-stock="check"] .status { color: var(--color-text-info); }
+&SC .ingredient-row:is([data-stock="untracked"], [data-stock="optional"]) .status { color: var(--color-text-secondary); font-weight: var(--weight-regular); }
+
+/* IV.9 · Panduan & mode memasak ------------------------------------------------------ */
+&SC .guide__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+&SC .guide .notice--info { font-size: 14px; color: var(--color-text-secondary); }
+&SC .cooking-mode.step {
+  gap: 20px; padding: 24px;
+  background: var(--color-bg-surface-2); border: 1px solid var(--color-border-divider);
+}
+&SC .cooking-mode__top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 16px; }
+&SC .cooking-mode__top .progress-group { flex: 1 1 240px; }
+&SC .cooking-mode__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+&SC .progress-group__label { margin: 0; font-family: var(--font-sans); text-transform: uppercase; }
+&SC #cooking-progress .progress__fill { width: var(--progress, 0%); }
+&SC .cooking-mode p.step__title {
+  color: var(--color-text-primary);
+  min-height: 3em; padding: 20px; border-radius: var(--radius-lg); background: var(--color-bg-surface);
+  font-size: 28px; line-height: 36px; font-weight: var(--weight-semibold);
+}
+&SC .cooking-mode .step-nav .btn { flex: 1 1 0; max-width: 260px; }
+&SC .cooking-checklist { background: var(--color-bg-surface); }
+&SC ul.checklist { padding: 0 16px 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+&SC .checklist label {                                /* li > label > input + span, dibuat cooking_mode.js */
+  display: flex; align-items: center; gap: 12px; min-height: var(--target-min);
+  padding: 8px 12px; border: 1px solid var(--color-border-divider); border-radius: var(--radius-md);
+  background: var(--color-bg-surface-2); font-size: 14px; line-height: 20px; cursor: pointer;
+}
+&SC .checklist input { flex: none; width: 20px; height: 20px; margin: 0; }
+&SC .checklist label:has(input:checked) { color: var(--color-text-secondary); text-decoration: line-through; background: var(--color-bg-success); }
+&SC .step-timer { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--color-border-divider); }
+&SC .timer-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+&SC .timer-controls .control { width: 96px; }
+&SC p.timer-display { color: var(--color-text-primary); font-family: var(--font-heading); font-size: 32px; line-height: 40px; font-weight: 700; font-variant-numeric: tabular-nums; }
+&SC p.timer-display[data-state="running"] { color: var(--color-text-success); }
+&SC p.timer-display[data-state="done"] { color: var(--color-text-warning); }
+
+/* IV.10 · Catatan, laporan, bar Sudah Masak ------------------------------------------ */
+&SC .disclosure__body .helper { margin-bottom: 4px; }
+&SC .cook-bar__text strong { font-size: 16px; }
+&SC .cook-bar .btn { flex: none; }
+
+/* IV.11 · Panel samping: favorit & riwayat ------------------------------------------- */
+&SC .side-list { display: flex; flex-direction: column; }
+&SC .side-list__item { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 12px 0; border-bottom: 1px solid var(--color-border-divider); font-size: 14px; line-height: 20px; }
+&SC .side-list__item:last-child { border-bottom: 0; }
+&SC .side-list__item--stack { flex-direction: column; align-items: stretch; gap: 2px; }
+&SC .side-list__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+&SC .side-list__title { font-weight: var(--weight-semibold); color: var(--color-text-primary); }
+&SC .side-list small { font-size: 13px; line-height: 18px; color: var(--color-text-secondary); }
+&SC .side-list__meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-text-success); }
+&SC .side-list__empty { padding: 8px 0; font-size: 14px; color: var(--color-text-secondary); }
+&SC .mini-disclosure { margin-top: 4px; font-size: 13px; line-height: 19px; }
+&SC .mini-disclosure > summary { display: inline-flex; align-items: center; min-height: var(--link-min-height); color: var(--color-text-success); font-weight: var(--weight-semibold); cursor: pointer; }
+&SC .mini-disclosure ul { margin: 4px 0 0; padding-left: 18px; color: var(--color-text-secondary); }
+
+/* IV.12 · Ulasan --------------------------------------------------------------------- */
+&SC .reviews[data-state="can-review"] { outline: 0; box-shadow: inset 0 0 0 1px var(--color-text-success); }
+&SC .review-list { display: flex; flex-direction: column; }
+&SC .review { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-bottom: 1px solid var(--color-border-divider); }
+&SC .review:last-child { border-bottom: 0; }
+&SC p.review__head { font-size: 15px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; color: var(--color-text-primary); }
+&SC .review__rating { color: var(--color-text-warning); font-weight: var(--weight-semibold); }
+&SC p.review__text { font-size: 15px; line-height: 22px; color: var(--color-text-primary); }
+&SC .review-photo { display: flex; flex-direction: column; gap: 6px; }
+&SC .review-photo img, &SC .review-photo-preview { max-width: min(100%, 360px); border-radius: var(--radius-md); }
+&SC .review-photo figcaption { font-size: 12px; color: var(--color-text-secondary); }
+&SC .photo-permission { font-size: 13px; line-height: 19px; color: var(--color-text-secondary); }
+
+/* IV.13 · Dialog konfirmasi + elemen yang dibuat book.js -------------------------------- */
+&SC .modal__form { display: flex; flex-direction: column; gap: 16px; }
+&SC #cooking-preview { display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 20px; }
+&SC #cooking-preview:empty, &SC #manual-batches:empty { display: none; }
+&SC #cooking-preview > p:not(.missing) { color: var(--color-text-primary); }
+&SC #cooking-preview > p:first-of-type { font-weight: var(--weight-semibold); }
+&SC .external-ingredient { padding: 12px; border: 1px solid var(--color-border-divider); border-radius: var(--radius-md); background: var(--color-bg-success); }
+&SC .manual-row { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--color-border-divider); border-radius: var(--radius-md); background: var(--color-bg-surface-2); font-size: 14px; }
+&SC .manual-row legend { float: left; width: 100%; font-weight: var(--weight-semibold); }
+&SC .manual-row label { display: flex; flex-direction: column; gap: 4px; }
+&SC .manual-row input { min-height: var(--target-min); padding: 8px 12px; border: 1px solid var(--color-border-control); border-radius: var(--radius-md); background: var(--color-bg-surface); }
+&SC #cooking-error { font-size: 14px; }
+&SC #cooking-error:empty { margin: 0; }
+&SC .modal__actions .btn--block { flex: 1 1 100%; }
+
+/* IV.14 · Responsif ------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  &SC .page__body { padding: 28px 24px 64px; }
+  &SC .detail-view, &SC .recipe-detail { grid-template-columns: minmax(0, 1fr); }
+  &SC :is(.recipe-hero, .recipe-figure, .detail-aside, .detail-main, #recipe-reviews, .detail-view__aside) { grid-column: 1; grid-row: auto; }
+  &SC .detail-aside { position: static; }
+}
+@media (max-width: 860px) {
+  &SC .page__body { padding: 24px 16px 48px; }
+}
+@media (max-width: 480px) {
+  &SC .page__body { padding: 20px 16px 40px; }
+  &SC .search-panel { padding: 16px; }
+  &SC .search__field { flex-wrap: wrap; padding: 4px 4px 4px 12px; }
+  &SC .chip--select { flex: 1 1 100%; justify-content: space-between; }
+  &SC .chip--select select { flex: 1; max-width: none; text-align: right; text-align-last: right; }
+  &SC .ingredients { padding: 16px; }
+  &SC .ingredients__columns { display: none; }
+  &SC .ingredients__list { border-radius: var(--radius-lg); }
+  &SC .ingredient-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 2px; }
+  &SC .ingredient-row .status { grid-column: 1 / -1; text-align: left; font-size: 13px; }
+  &SC .cooking-mode.step { padding: 16px; }
+  &SC .cooking-mode p.step__title { font-size: 22px; line-height: 30px; padding: 16px; }
+  &SC .cooking-mode .step-nav .btn { max-width: none; }
+  &SC .checklist { grid-template-columns: 1fr; }
+  &SC .cook-bar__text p { display: none; }
+  &SC .cook-bar--sticky { margin-inline: -16px; padding-inline: 16px; }
+  &SC .side-list__item { flex-wrap: wrap; }
+}
+
+/* IV.15 · Gerak tambahan untuk markup aplikasi (hanya bila gerakan tidak dikurangi) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  &SC .chip--toggle:has(.chip__input:checked) .chip__check { animation: m4-pop-in var(--motion-small) var(--ease-spring); }
+  &SC .cooking-mode .step__title.is-entering { animation: m4-step-in var(--motion-medium) var(--ease-decelerate); }
+  &SC .timer-display[data-state="done"] { animation: m4-ring 1.2s var(--ease-standard) 3; border-radius: var(--radius-md); }
+  &SC .checklist input:checked { animation: m4-check-pop var(--motion-medium) var(--ease-spring); }
+  &SC .detail-view > *, &SC .recipe-detail > * { animation: m4-rise var(--motion-medium) var(--ease-decelerate) both; }
+  &SC .recipe-detail > .detail-aside { animation-delay: var(--motion-stagger); }
+  &SC .recipe-detail > .detail-main { animation-delay: calc(2 * var(--motion-stagger)); }
+  &SC .mini-disclosure::details-content { block-size: 0; overflow: hidden; transition: block-size var(--motion-small) var(--ease-standard), content-visibility var(--motion-small) allow-discrete; }
+  &SC .mini-disclosure[open]::details-content { block-size: auto; }
+  &SC #cooking-mode:not([hidden]) { animation: m4-rise var(--motion-medium) var(--ease-decelerate); }
+}
+@keyframes m4-step-in { from { opacity: 0; transform: translateX(16px); } }

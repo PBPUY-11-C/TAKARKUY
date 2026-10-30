@@ -1,21 +1,20 @@
-<section class="panel">
-  <div class="section-heading">
-  <h2>Resep favorit</h2>
-  <span>{{ favorites|length }}</span>
-  </div>
+<section class="panel favorites" aria-labelledby="favorites-title">
+  <div class="panel__header"><h2 class="text-h4" id="favorites-title">Resep favorit</h2><span class="panel__count">{{ favorites|length }}</span></div>
   <ul class="side-list">
   {% for favorite in favorites %}
-  <li>
-  {% if favorite.available %}
-  <a href="?recipe={{ favorite.recipe_id|urlencode }}#recipe-detail">{{ favorite.recipe.name }}</a>
-  {% else %}
-  <span>{{ favorite.recipe.name }}</span>
-  <small>Tidak tersedia / tidak sesuai preferensi</small>
-  {% endif %}
-  <button type="button" class="text-button" data-remove-favorite="{{ favorite.recipe_id }}" data-url="{% url 'modul4-favorite' %}">Hapus favorit</button>
-  </li>
+    <li class="side-list__item">
+      <div class="side-list__text">
+      {% if favorite.available %}
+        <a class="link" href="?recipe={{ favorite.recipe_id|urlencode }}#recipe-detail">{{ favorite.recipe.name }}</a>
+      {% else %}
+        <span class="side-list__title">{{ favorite.recipe.name }}</span>
+        <small>Tidak tersedia / tidak sesuai preferensi</small>
+      {% endif %}
+      </div>
+      <button type="button" class="btn btn--secondary btn--small btn--quiet" data-remove-favorite="{{ favorite.recipe_id }}" data-url="{% url 'modul4-favorite' %}" aria-label="Hapus {{ favorite.recipe.name }} dari favorit">Hapus</button>
+    </li>
   {% empty %}
-  <li class="empty-state">Simpan resep lewat tombol ♡.</li>
+    <li class="side-list__empty">Simpan resep lewat tombol <svg class="icon icon--sm icon--inline" aria-hidden="true"><use href="#m4-i-heart"/></svg><span class="sr-only">favorit</span> di halaman resep.</li>
   {% endfor %}
   </ul>
-  </section>
+</section>

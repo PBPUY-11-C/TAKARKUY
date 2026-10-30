@@ -1,0 +1,1304 @@
+/*!
+ * TAKARKUY · Modul 4 (Resep) · CSS lengkap
+ * Satu file pengganti: takarkuy-modul4.css + takarkuy-modul4-enhancements.css + takarkuy-modul4-motion.css
+ *
+ * Pemakaian (Django):
+ *   {% load static %}
+ *   <link rel="preconnect" href="https://fonts.googleapis.com">
+ *   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+ *   <link rel="stylesheet" href="{% static 'css/takarkuy-modul4.css' %}">
+ *
+ * Tema   : :root = terang (default, atau ikut sistem bila belum memilih) · [data-theme="dark"] / [data-theme="light"] = pilihan pengguna
+ * Layar  : desktop ≥ 1025 px · tablet ≤ 1024 px · mobile ≤ 480 px
+ * State  : data-readiness = ready|short|check · data-stock = ok|short|check|outside|untracked · data-allergen="true"
+ *          data-allergen-ack · data-state (cook-bar, reviews, toast, timer) · ARIA: aria-pressed|expanded|busy|disabled|checked, [open]
+ * Gerak  : semua animasi hanya aktif bila pengguna tidak meminta "kurangi gerakan"
+ *
+ * Daftar isi
+ *   BAGIAN I   · DASAR        0 Token · 1 Reset · 2 Tipografi · 3 Aksesibilitas · 4 Header · 5 Layout · 6 Kontrol
+ *                             7 Pencarian & filter · 8 Kartu resep · 9 Banner & status · 10 Panel samping · 11 Detail resep
+ *                             12 Panduan, catatan, bar Sudah masak, ulasan · 13 Mode memasak · 14 Dialog · 15 Toast
+ *                             16 Memuat/kosong/gagal · 17 Responsif · 18 Gerak dikurangi
+ *   BAGIAN II  · PERBAIKAN    1 Tema sistem · 2 Toolbar menempel · 3 Kartu bisa diklik · 4 Kartu ringkas · 5 Menu filter
+ *                             6 Aksi bahan kurang · 7 Kilatan porsi · 8 Langkah & timer · 9 Toast berwaktu · 10 Ketahanan
+ *   BAGIAN III · ANIMASI      0 Token gerak · 1 Pindah halaman · 2 Masuk bertahap · 3 Kartu · 4 Tekan · 5 Menu · 6 Disclosure
+ *                             7 Langkah & timer · 8 Dialog/sheet · 9 Toast · 10 Memuat & galat · 11 Ganti tema · 12 Polesan
+ */
+
+
+/* =====================================================================
+   BAGIAN I · DASAR: token, tipografi, layout, komponen, state, responsif
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   0. TOKEN
+   --------------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+
+  /* Warna · tema terang (default) */
+  --color-bg-page: #F6F8F7;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-surface-2: #F1F5F3;
+  --color-bg-header: #0D4032;
+  --color-bg-warning: #FFF4DC;
+  --color-bg-success: #E2F4EC;
+  --color-text-primary: #12241C;
+  --color-text-secondary: #4B5D54;
+  --color-text-success: #0B6B50;
+  --color-text-warning: #7A4F00;
+  --color-text-info: #1E5A9E;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-lime: #15372A;
+  --color-action-primary: #007F5F;
+  --color-action-primary-hover: #006A4F;
+  --color-progress-fill: #008967;
+  --color-nav-active: #D7F35B;
+  --color-focus-ring: #0D4032;
+  --color-border-control: #7C8C84;
+  --color-border-divider: #D6E0DB;
+  --color-backdrop: rgb(0 0 0 / 0.6);
+
+  /* Header selalu hijau tua di kedua tema */
+  --color-header-text: #F3F6F4;
+  --color-header-text-muted: #C6DACF;
+  --color-header-border: #66776E;
+  --color-header-focus-ring: #D7F35B;
+
+  /* Jarak (skala 4 px) */
+  --space-0: 0;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-28: 28px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-72: 72px;
+  --space-80: 80px;
+  --space-120: 120px;
+
+  /* Sudut */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  --radius-pill: 999px;
+
+  /* Tipografi */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Ukuran tetap */
+  --target-min: 44px;        /* target sentuh minimum */
+  --link-min-height: 24px;   /* tinggi tautan teks minimum (WCAG 2.5.8) */
+  --page-max: 1296px;
+  --dialog-max: 600px;
+
+  /* Gerak */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg-page: #121419;
+  --color-bg-surface: #1D2923;
+  --color-bg-surface-2: #151E19;
+  --color-bg-warning: #3A3020;
+  --color-bg-success: #203D30;
+  --color-text-primary: #F3F6F4;
+  --color-text-secondary: #BDCEC5;
+  --color-text-success: #77E2C5;
+  --color-text-warning: #F3BE57;
+  --color-text-info: #9CCBFA;
+  --color-focus-ring: #D7F35B;
+  --color-border-control: #66776E;
+  --color-border-divider: #3B4A43;
+}
+
+/* ---------------------------------------------------------------------
+   1. RESET & DASAR
+   --------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: var(--weight-regular);
+}
+
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure, fieldset { margin: 0; }
+ul[class], ol[class] { list-style: none; padding: 0; }
+fieldset { border: 0; padding: 0; min-width: 0; }
+legend { padding: 0; }
+img, svg { display: block; max-width: 100%; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+table { border-collapse: collapse; width: 100%; }
+
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.icon { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon--sm { width: 16px; height: 16px; }
+.icon--lg { width: 28px; height: 28px; }
+
+/* ---------------------------------------------------------------------
+   2. TIPOGRAFI (text style Figma → class)
+   --------------------------------------------------------------------- */
+.text-caption  { font-size: 12px; line-height: 18px; }
+.text-small    { font-size: 13px; line-height: 19px; }
+.text-body-sm  { font-size: 14px; line-height: 20px; }
+.text-body     { font-size: 15px; line-height: 22px; }
+.text-body-lg  { font-size: 16px; line-height: 24px; }
+.text-h4       { font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold); }
+.text-h3       { font-size: 20px; line-height: 26px; font-weight: var(--weight-semibold); }
+.text-h2       { font-size: 22px; line-height: 28px; font-weight: var(--weight-semibold); }
+.text-h1-sm    { font-size: 26px; line-height: 32px; font-weight: var(--weight-semibold); }
+.text-h1       { font-size: 32px; line-height: 40px; font-weight: var(--weight-semibold); }
+.text-display  { font-size: 40px; line-height: 48px; font-weight: var(--weight-semibold); }
+
+.text-medium   { font-weight: var(--weight-medium); }
+.text-semibold { font-weight: var(--weight-semibold); }
+.text-muted    { color: var(--color-text-secondary); }
+
+h1 { font-size: 32px; line-height: 40px; font-weight: var(--weight-semibold); }
+h2 { font-size: 22px; line-height: 28px; font-weight: var(--weight-semibold); }
+h3 { font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold); }
+small, .small { font-size: 13px; line-height: 19px; color: var(--color-text-secondary); }
+
+/* ---------------------------------------------------------------------
+   3. UTILITAS AKSESIBILITAS
+   --------------------------------------------------------------------- */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: absolute; left: var(--space-16); top: -100px; z-index: 100;
+  padding: var(--space-12) var(--space-16);
+  background: var(--color-nav-active); color: var(--color-text-on-lime);
+  border-radius: var(--radius-md); font-weight: var(--weight-semibold);
+}
+.skip-link:focus { top: var(--space-12); }
+.icon-text { font-weight: var(--weight-semibold); }   /* ✓ ▲ ≈ − ＋, selalu aria-hidden */
+
+/* ---------------------------------------------------------------------
+   4. HEADER & NAVIGASI (selalu hijau tua)
+   --------------------------------------------------------------------- */
+.site-header {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--space-12);
+  min-height: 64px;
+  padding: var(--space-8) var(--space-24);
+  background: var(--color-bg-header);
+  color: var(--color-header-text);
+  --color-focus-ring: var(--color-header-focus-ring);
+}
+.site-header__brand {
+  display: flex; align-items: center; gap: var(--space-8);
+  color: var(--color-header-text); text-decoration: none;
+  font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold);
+}
+.nav { display: flex; align-items: center; gap: var(--space-4); }
+.nav__link {
+  display: inline-flex; align-items: center; min-height: var(--target-min);
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-pill);
+  color: var(--color-header-text-muted); text-decoration: none;
+  font-size: 14px; line-height: 20px;
+}
+.nav__link:hover { color: var(--color-header-text); }
+.nav__link[aria-current="page"] {
+  background: var(--color-nav-active); color: var(--color-text-on-lime);
+  font-weight: var(--weight-semibold);
+}
+.site-header__account { display: flex; align-items: center; gap: var(--space-12); }
+.user { display: flex; align-items: center; gap: var(--space-8); font-size: 14px; font-weight: var(--weight-medium); }
+.user__avatar {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--radius-pill);
+  background: var(--color-nav-active); color: var(--color-text-on-lime);
+  font-size: 14px; font-weight: var(--weight-semibold);
+}
+.logout {
+  display: inline-flex; align-items: center; gap: var(--space-8); min-height: var(--target-min);
+  padding: var(--space-8) var(--space-12); border: 0; border-radius: var(--radius-md);
+  background: transparent; color: var(--color-header-text); font-size: 14px; font-weight: var(--weight-medium);
+}
+.logout:hover { background: rgb(255 255 255 / 0.08); }
+.nav .nav__menu { display: none; }
+
+/* Switch tema · <button class="theme-toggle" role="switch" aria-checked> */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: var(--space-8); min-height: var(--target-min);
+  padding: var(--space-8) var(--space-12);
+  border: 1px solid var(--color-header-border); border-radius: var(--radius-pill);
+  background: transparent; color: var(--color-header-text);
+  font-size: 13px; line-height: 19px; font-weight: var(--weight-medium);
+}
+.switch {
+  position: relative; width: 36px; height: 20px; flex: none;
+  border-radius: var(--radius-pill); background: rgb(255 255 255 / 0.25);
+  transition: background var(--duration-base) var(--ease-out);
+}
+.switch__knob {
+  position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+  border-radius: var(--radius-pill); background: #FFFFFF;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+.theme-toggle[aria-checked="true"] .switch { background: var(--color-action-primary); }
+.theme-toggle[aria-checked="true"] .switch__knob { transform: translateX(16px); }
+.theme-toggle .icon--sun { display: block; }
+.theme-toggle .icon--moon { display: none; }
+.theme-toggle[aria-checked="true"] .icon--sun { display: none; }
+.theme-toggle[aria-checked="true"] .icon--moon { display: block; }
+
+/* ---------------------------------------------------------------------
+   5. LAYOUT HALAMAN
+   --------------------------------------------------------------------- */
+.page__body {
+  width: 100%; max-width: calc(var(--page-max) + 2 * var(--space-72));
+  margin: 0 auto;
+  padding: var(--space-32) var(--space-72) var(--space-72);
+}
+.page__layout {                      /* kolom utama + kolom samping */
+  display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-40);
+}
+.page__main { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: var(--space-24); }
+.page__aside { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: var(--space-20); }
+.page--search .page__aside { flex-basis: 360px; }
+
+.page-title { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-12); }
+.page-title__text { display: flex; flex-direction: column; gap: var(--space-4); }
+.page-title__text p { color: var(--color-text-secondary); }
+
+.back-link { display: inline-flex; align-items: center; gap: var(--space-4); }
+
+.stack { display: flex; flex-direction: column; gap: var(--space-8); }
+.row { display: flex; align-items: center; gap: var(--space-12); }
+
+.credit { font-size: 12px; line-height: 18px; color: var(--color-text-secondary); }
+
+/* ---------------------------------------------------------------------
+   6. KONTROL
+   --------------------------------------------------------------------- */
+/* Tautan teks */
+.link {
+  display: inline-flex; align-items: center; gap: var(--space-4);
+  min-height: var(--link-min-height);
+  color: var(--color-text-success);
+  font-weight: var(--weight-semibold);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.link:hover { text-decoration-thickness: 2px; }
+.link--small { font-size: 13px; }
+
+/* Tombol · <button class="btn btn--primary|btn--secondary"> */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-8);
+  min-height: var(--target-min);
+  padding: var(--space-12) var(--space-20);
+  border: 1px solid transparent; border-radius: var(--radius-md);
+  font-size: 15px; line-height: 20px; font-weight: var(--weight-semibold);
+  text-decoration: none; white-space: nowrap;
+  transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+.btn--primary { background: var(--color-action-primary); color: var(--color-text-on-primary); }
+.btn--primary:hover, .btn--primary:active { background: var(--color-action-primary-hover); }
+.btn--secondary { background: var(--color-bg-surface-2); color: var(--color-text-primary); border-color: var(--color-border-control); }
+.btn--secondary:hover, .btn--secondary:active { background: var(--color-bg-surface); border-color: var(--color-text-secondary); }
+.btn--small { padding: var(--space-8) var(--space-16); font-size: 14px; }
+.btn--large { padding: var(--space-20) var(--space-28); }
+.btn--block { width: 100%; }
+
+.btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.btn[aria-disabled="true"]:hover { background: inherit; }
+.btn[aria-busy="true"] { cursor: progress; pointer-events: none; }   /* klik kedua diabaikan */
+.btn__spinner { display: none; width: 18px; height: 18px; animation: spin 0.8s linear infinite; }
+.btn[aria-busy="true"] .btn__spinner { display: block; }
+.btn[aria-busy="true"] .btn__icon { display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Tombol ikon 44×44 · favorit, tutup */
+.icon-btn {
+  display: inline-grid; place-items: center; flex: none;
+  width: var(--target-min); height: var(--target-min);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-pill);
+  background: var(--color-bg-surface-2); color: var(--color-text-secondary);
+}
+.icon-btn--plain { border-color: transparent; background: transparent; color: var(--color-text-primary); }
+.icon-btn:hover { color: var(--color-text-primary); }
+.favorite[aria-pressed="true"] { color: var(--color-text-warning); }
+.favorite[aria-pressed="true"] .icon { fill: currentColor; }
+
+/* Chip · toggle <button class="chip" aria-pressed> · dropdown <button class="chip chip--dropdown" aria-haspopup aria-expanded> */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--space-8);
+  min-height: var(--target-min);
+  padding: var(--space-12) var(--space-16);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-pill);
+  background: var(--color-bg-surface-2); color: var(--color-text-primary);
+  font-size: 14px; line-height: 20px; font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+.chip:hover { background: var(--color-bg-surface); }
+.chip__check { display: none; }
+.chip[aria-pressed="true"] {
+  padding-left: var(--space-12);
+  background: var(--color-bg-success); border-color: var(--color-text-success); color: var(--color-text-success);
+}
+.chip[aria-pressed="true"] .chip__check { display: block; }
+.chip--dropdown .chip__chevron { color: var(--color-text-secondary); transition: transform var(--duration-fast) var(--ease-out); }
+.chip--dropdown[aria-expanded="true"] .chip__chevron { transform: rotate(180deg); }
+
+/* Stepper porsi */
+.stepper { display: flex; align-items: center; gap: var(--space-12); }
+.stepper__btn {
+  display: grid; place-items: center; width: var(--target-min); height: var(--target-min);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-md);
+  background: var(--color-bg-surface-2); color: var(--color-text-primary);
+  font-size: 20px; line-height: 24px; font-weight: var(--weight-semibold);
+}
+.stepper__btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.stepper__value { min-width: 2ch; text-align: center; font-size: 20px; line-height: 26px; font-weight: var(--weight-semibold); }
+.stepper__unit { color: var(--color-text-secondary); }
+
+/* ---------------------------------------------------------------------
+   7. FORM PENCARIAN & FILTER
+   --------------------------------------------------------------------- */
+.search { display: flex; flex-direction: column; gap: var(--space-8); }
+.search__label, .field-label { font-size: 14px; line-height: 20px; font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+.search__field {
+  display: flex; align-items: center; gap: var(--space-12);
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-16);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-lg);
+}
+.search__field:focus-within { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+.search__field .icon { color: var(--color-text-secondary); }
+.search__input {
+  flex: 1; min-width: 0; min-height: var(--target-min);
+  border: 0; background: transparent; color: var(--color-text-primary);
+}
+.search__input:focus-visible { outline: none; }   /* ring ditampilkan di .search__field */
+.search__input::placeholder { color: var(--color-text-secondary); opacity: 1; }
+
+.filters { display: flex; flex-direction: column; gap: var(--space-8); }
+.filters__row { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.filters__active { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-12); font-size: 13px; color: var(--color-text-secondary); }
+
+.results-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-12); }
+.result-count { font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold); }
+.sort { display: flex; align-items: center; gap: var(--space-8); }
+
+/* ---------------------------------------------------------------------
+   8. KARTU RESEP & STATUS KESIAPAN
+   --------------------------------------------------------------------- */
+.recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-20); }
+.recipe-list { display: flex; flex-direction: column; gap: var(--space-16); }
+
+.recipe-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.recipe-card:hover { border-color: var(--color-border-control); }
+.recipe-card:focus-within { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+.recipe-card__photo { width: 100%; aspect-ratio: 20 / 9; object-fit: cover; background: var(--color-bg-surface-2); }
+.recipe-card__placeholder {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-8);
+  aspect-ratio: 20 / 9; background: var(--color-bg-surface-2);
+  color: var(--color-text-secondary); font-size: 13px;
+}
+.recipe-card__body { display: flex; flex-direction: column; gap: var(--space-8); padding: var(--space-16) var(--space-16) var(--space-20); }
+.recipe-card__head { display: flex; align-items: flex-start; gap: var(--space-12); }
+.recipe-card__title { flex: 1; min-width: 0; font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold); }
+.recipe-card__title a { color: inherit; text-decoration: none; }
+.recipe-card__title a:hover { text-decoration: underline; }
+.recipe-card__title a:focus-visible { outline: none; }   /* ring di kartu (focus-within) */
+.recipe-card__meta { font-size: 14px; line-height: 20px; color: var(--color-text-secondary); }
+.recipe-card__credit { font-size: 12px; line-height: 18px; color: var(--color-text-secondary); }
+
+/* Baris kesiapan · <p class="readiness"><span class="icon-text" aria-hidden="true">▲</span> Kurang 1 bahan</p> */
+.readiness {
+  display: flex; align-items: center; gap: var(--space-8);
+  font-size: 14px; line-height: 20px; font-weight: var(--weight-semibold);
+}
+[data-readiness="ready"] .readiness, .readiness[data-readiness="ready"] { color: var(--color-text-success); }
+[data-readiness="short"] .readiness, .readiness[data-readiness="short"] { color: var(--color-text-warning); }
+[data-readiness="check"] .readiness, .readiness[data-readiness="check"] { color: var(--color-text-info); }
+.is-pantry-empty .recipe-card .readiness { display: none; }   /* skenario C */
+
+/* Badge & tag alergen */
+.badge {
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: var(--space-8);
+  padding: var(--space-4) var(--space-12) var(--space-4) var(--space-8);
+  border-radius: var(--radius-sm);
+  font-size: 13px; line-height: 18px; font-weight: var(--weight-semibold);
+}
+.badge--allergen { background: var(--color-bg-warning); color: var(--color-text-warning); border: 1px solid var(--color-text-warning); }
+.tag--allergen { font-size: 12px; line-height: 18px; font-weight: var(--weight-semibold); color: var(--color-text-warning); }
+
+/* ---------------------------------------------------------------------
+   9. BANNER, NOTICE, STATUS
+   --------------------------------------------------------------------- */
+.allergy-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-12) var(--space-16);
+  padding: var(--space-16) var(--space-20);
+  background: var(--color-bg-warning); color: var(--color-text-primary);
+  border: 2px solid var(--color-text-warning); border-radius: var(--radius-lg);
+}
+.allergy-banner > .icon { color: var(--color-text-warning); }
+.allergy-banner__text { flex: 1 1 240px; display: flex; flex-direction: column; gap: var(--space-2); }
+.allergy-banner__title { color: var(--color-text-warning); font-weight: var(--weight-semibold); font-size: 16px; line-height: 24px; }
+.allergy-banner__actions { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.allergy-banner--compact {
+  flex-wrap: nowrap; gap: var(--space-8);
+  padding: var(--space-12) var(--space-16); border-width: 1px;
+  color: var(--color-text-warning); font-size: 14px; line-height: 20px; font-weight: var(--weight-semibold);
+}
+.allergy-banner--compact .allergy-banner__text { flex: 1; }
+/* Detail: banner penuh sebelum "Saya paham", ringkas sesudahnya */
+[data-allergen-ack="true"] .allergy-banner--full { display: none; }
+[data-allergen-ack="false"] .allergy-banner--ack { display: none; }
+
+.empty-pantry {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-16) var(--space-20);
+  padding: var(--space-20) var(--space-24);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-text-success); border-radius: var(--radius-xl);
+}
+.empty-pantry__icon {
+  display: grid; place-items: center; width: 56px; height: 56px; flex: none;
+  border-radius: var(--radius-pill); background: var(--color-bg-success); color: var(--color-text-success);
+}
+.empty-pantry__text { flex: 1 1 240px; display: flex; flex-direction: column; gap: var(--space-4); }
+.empty-pantry__text p { font-size: 14px; color: var(--color-text-secondary); }
+
+.notice, .status--success, .status--warning {   /* bukan .status saja: td.status di tabel bahan */
+  display: flex; flex-direction: column; gap: var(--space-4);
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-lg);
+  font-size: 14px; line-height: 20px;
+}
+.notice__title, .status__title { display: flex; align-items: center; gap: var(--space-8); font-weight: var(--weight-semibold); }
+.notice--info { flex-direction: row; align-items: center; gap: var(--space-8); padding: 0; color: var(--color-text-primary); }
+.notice--info > .icon { color: var(--color-text-info); }
+.notice--warning, .notice--error, .status--warning {
+  background: var(--color-bg-warning); border: 1px solid var(--color-text-warning);
+}
+.notice--warning .notice__title, .notice--error .notice__title, .status--warning .status__title { color: var(--color-text-warning); }
+.status--success { background: var(--color-bg-success); border: 1px solid var(--color-text-success); }
+.status--success .status__title { color: var(--color-text-success); }
+
+/* ---------------------------------------------------------------------
+   10. PANEL SAMPING
+   --------------------------------------------------------------------- */
+.panel {
+  display: flex; flex-direction: column; gap: var(--space-12);
+  padding: var(--space-24);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  /* tanpa bingkai: panel dipisah oleh latar & jarak, bingkai hanya untuk elemen yang bisa diklik */
+}
+.panel__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
+.panel__count { font-size: 13px; font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+.panel p { font-size: 14px; line-height: 20px; color: var(--color-text-secondary); }
+
+.legend { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--space-8) var(--space-12); }
+.legend dt { font-weight: var(--weight-semibold); }
+.legend dd b { display: block; font-size: 14px; font-weight: var(--weight-semibold); }
+.legend dd span { font-size: 13px; color: var(--color-text-secondary); }
+.legend [data-stock="ok"]    { color: var(--color-text-success); }
+.legend [data-stock="short"] { color: var(--color-text-warning); }
+.legend [data-stock="check"] { color: var(--color-text-info); }
+
+/* ---------------------------------------------------------------------
+   11. DETAIL RESEP
+   --------------------------------------------------------------------- */
+.recipe-hero { display: flex; align-items: flex-start; gap: var(--space-16); }
+.recipe-hero__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+.recipe-hero__text p { color: var(--color-text-secondary); }
+.recipe-photo { width: 100%; aspect-ratio: 41 / 19; object-fit: cover; border-radius: var(--radius-xl); background: var(--color-bg-surface-2); }
+
+.nutrition__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); }
+.nutrition__tile { padding: var(--space-12) var(--space-16); background: var(--color-bg-surface-2); border-radius: var(--radius-md); }
+.nutrition__value { display: block; font-size: 20px; line-height: 26px; font-weight: var(--weight-semibold); }
+.nutrition__label { font-size: 13px; color: var(--color-text-secondary); }
+.nutrition__cost { padding-top: var(--space-16); border-top: 1px solid var(--color-border-divider); }
+.nutrition__cost strong { display: block; font-size: 20px; line-height: 26px; }
+
+.ingredients { display: flex; flex-direction: column; gap: var(--space-12); }
+.ingredients__header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-12); }
+.ingredients__summary { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-16); font-size: 14px; font-weight: var(--weight-semibold); }
+.ingredients__summary [data-stock="short"] { color: var(--color-text-warning); }
+
+.ingredients__table, .shortage {
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-lg);
+  border-collapse: separate; border-spacing: 0; overflow: hidden;
+}
+.ingredients__table th, .ingredients__table td, .shortage td {
+  padding: var(--space-12) var(--space-16);
+  background: var(--color-bg-surface-2);
+  border-bottom: 1px solid var(--color-border-divider);
+  text-align: left; vertical-align: middle;
+}
+.ingredients__table tr:last-child td, .shortage tr:last-child td { border-bottom: 0; }
+.ingredients__table thead th {
+  padding-block: var(--space-8);
+  background: var(--color-bg-surface);
+  font-size: 13px; line-height: 19px; font-weight: var(--weight-semibold); color: var(--color-text-secondary);
+}
+.ingredients__table .ingredient__name { font-weight: var(--weight-medium); }
+.ingredients__table .amount { text-align: right; white-space: nowrap; }
+.ingredients__table .status { text-align: right; white-space: nowrap; font-size: 14px; font-weight: var(--weight-semibold); }
+tr[data-stock="ok"]        .status { color: var(--color-text-success); }
+tr[data-stock="short"]     .status { color: var(--color-text-warning); }
+tr[data-stock="check"]     .status { color: var(--color-text-info); }
+tr[data-stock="outside"]   .status,
+tr[data-stock="untracked"] .status { color: var(--color-text-secondary); }
+
+.shortage td { padding: var(--space-8) var(--space-16); font-size: 14px; }
+.shortage .amount { text-align: right; white-space: nowrap; font-weight: var(--weight-semibold); color: var(--color-text-warning); }
+
+.ready[data-readiness] .readiness { font-size: 15px; }
+
+/* ---------------------------------------------------------------------
+   12. PANDUAN, DISCLOSURE, BAR SUDAH MASAK, ULASAN
+   --------------------------------------------------------------------- */
+.guide { gap: var(--space-20); }
+.steps { counter-reset: step; }
+.steps__item {
+  counter-increment: step;
+  display: flex; align-items: flex-start; gap: var(--space-16);
+  padding: var(--space-12) 0;
+  border-bottom: 1px solid var(--color-border-divider);
+  font-size: 16px; line-height: 24px;
+}
+.steps__item:last-child { border-bottom: 0; }
+.steps__item::before {
+  content: counter(step);
+  display: grid; place-items: center; flex: none; width: 28px; height: 28px;
+  border-radius: var(--radius-pill); background: var(--color-bg-success); color: var(--color-text-success);
+  font-size: 14px; font-weight: var(--weight-semibold);
+}
+.source { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); font-size: 14px; color: var(--color-text-secondary); }
+
+.disclosures { display: flex; flex-direction: column; gap: var(--space-12); }
+.disclosure {
+  background: var(--color-bg-surface-2);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-lg);
+}
+.disclosure > summary {
+  display: flex; align-items: center; gap: var(--space-12);
+  min-height: var(--target-min); padding: var(--space-16);
+  cursor: pointer; list-style: none;
+}
+.disclosure > summary::-webkit-details-marker { display: none; }
+.disclosure > summary > .icon:first-child { color: var(--color-text-success); }
+.disclosure__text { flex: 1; display: flex; flex-direction: column; gap: var(--space-2); }
+.disclosure__title { font-size: 16px; line-height: 24px; font-weight: var(--weight-semibold); }
+.disclosure__hint { font-size: 13px; color: var(--color-text-secondary); }
+.disclosure__chevron { color: var(--color-text-secondary); transition: transform var(--duration-fast) var(--ease-out); }
+.disclosure[open] .disclosure__chevron { transform: rotate(180deg); }
+.disclosure__body { display: flex; flex-direction: column; gap: var(--space-12); padding: 0 var(--space-16) var(--space-16); }
+
+.field {
+  width: 100%; min-height: 96px; padding: var(--space-12) var(--space-16);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-md);
+  resize: vertical;
+}
+.field::placeholder { color: var(--color-text-secondary); opacity: 1; }
+
+.cook-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-12) var(--space-16);
+  padding: var(--space-16) var(--space-20);
+  background: var(--color-bg-surface-2);
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-lg);
+}
+.cook-bar__text { flex: 1 1 240px; display: flex; flex-direction: column; gap: var(--space-2); }
+.cook-bar__text p { font-size: 14px; color: var(--color-text-secondary); }
+.cook-bar[data-state="recorded"] { color: var(--color-text-success); font-weight: var(--weight-semibold); }
+
+.reviews__status { display: inline-flex; align-items: center; gap: var(--space-8); font-size: 13px; font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+.reviews[data-state="can-review"] { outline: 2px solid var(--color-text-success); outline-offset: -2px; }
+.reviews[data-state="can-review"] .reviews__status { display: none; }
+
+/* ---------------------------------------------------------------------
+   13. MODE MEMASAK
+   --------------------------------------------------------------------- */
+.page--cooking .page__body { max-width: calc(920px + 2 * var(--space-72)); }
+.cooking { display: flex; flex-direction: column; gap: var(--space-20); }
+.step {
+  display: flex; flex-direction: column; gap: var(--space-24);
+  padding: var(--space-32);
+  background: var(--color-bg-surface); border-radius: var(--radius-2xl);
+}
+.step__title { font-size: 40px; line-height: 48px; font-weight: var(--weight-semibold); }
+.step__title:focus-visible { outline-offset: 6px; }
+.progress-group { display: flex; flex-direction: column; gap: var(--space-8); }
+.progress-group__label { font-size: 13px; font-weight: var(--weight-semibold); letter-spacing: 0.02em; color: var(--color-text-success); }
+.progress { height: 8px; border-radius: var(--radius-sm); background: var(--color-border-divider); overflow: hidden; }
+.progress__fill { height: 100%; border-radius: inherit; background: var(--color-progress-fill); transition: width var(--duration-base) var(--ease-out); }
+.step__ingredient-list { display: flex; flex-wrap: wrap; gap: var(--space-12); }
+.step__ingredient { flex: 1 1 200px; padding: var(--space-12) var(--space-16); background: var(--color-bg-surface-2); border-radius: var(--radius-lg); }
+.step__ingredient strong { display: block; font-size: 20px; line-height: 26px; }
+.step__ingredient span { color: var(--color-text-secondary); }
+.step-nav { display: flex; justify-content: flex-end; gap: var(--space-12); }
+.step-nav .btn { min-height: 56px; padding-inline: var(--space-28); }
+.step-nav .btn--previous { margin-right: auto; }
+
+/* ---------------------------------------------------------------------
+   14. DIALOG KONFIRMASI · <dialog class="modal"> + showModal()
+   --------------------------------------------------------------------- */
+body.has-modal { overflow: hidden; }
+.modal {
+  width: min(var(--dialog-max), calc(100vw - 2 * var(--space-16)));
+  max-height: calc(100vh - 2 * var(--space-32));
+  margin: auto; padding: var(--space-28);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-2xl);
+  overflow: auto;
+}
+.modal[open] { display: flex; flex-direction: column; gap: var(--space-20); }
+.modal::backdrop, .modal__backdrop { background: var(--color-backdrop); }
+.modal__backdrop { position: fixed; inset: 0; }          /* fallback tanpa <dialog> */
+.modal__header { display: flex; align-items: flex-start; gap: var(--space-12); }
+.modal__header .stack { flex: 1; gap: var(--space-2); }
+.modal__header p { color: var(--color-text-secondary); }
+.modal__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
+.modal__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--space-12); }
+.modal__foot { font-size: 13px; color: var(--color-text-secondary); text-align: right; }
+.sheet__handle { display: none; }
+.modal--alert { border: 2px solid var(--color-text-warning); }   /* dialog alergen · role="alertdialog" */
+.modal--alert .modal__header { align-items: center; }
+
+/* ---------------------------------------------------------------------
+   15. TOAST · <div class="toast" role="status" aria-live="polite">
+   --------------------------------------------------------------------- */
+.toast {
+  position: fixed; left: 50%; bottom: var(--space-32); z-index: 50;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: var(--space-12);
+  max-width: calc(100vw - 2 * var(--space-16));
+  padding: var(--space-12) var(--space-12) var(--space-12) var(--space-16);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  border: 1px solid var(--color-text-success); border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  animation: toast-in var(--duration-base) var(--ease-out);
+}
+.toast > .icon { color: var(--color-text-success); }
+.toast__text { display: flex; flex-direction: column; }
+.toast__text strong { font-weight: var(--weight-semibold); }
+.toast__text small { font-size: 13px; }
+.toast[data-state="undone"] { border-color: var(--color-border-control); }
+.toast[data-state="undone"] > .icon { color: var(--color-text-secondary); }
+.toast[hidden] { display: none; }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 8px); } }
+
+/* ---------------------------------------------------------------------
+   16. STATE SISTEM
+   --------------------------------------------------------------------- */
+.recipe-card.is-loading { pointer-events: none; }
+.skeleton {
+  display: block; border-radius: var(--radius-sm);
+  background: var(--color-bg-surface-2);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.skeleton--photo { aspect-ratio: 20 / 9; border-radius: 0; }
+.skeleton--line { height: 14px; }
+.skeleton--title { height: 18px; width: 60%; }
+@keyframes pulse { 50% { opacity: 0.55; } }
+
+.empty-state, .error-state {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-12);
+  padding: var(--space-28) var(--space-24);
+  border-radius: var(--radius-xl); text-align: center;
+}
+.empty-state { background: var(--color-bg-surface); }
+.empty-state > .icon { color: var(--color-text-secondary); }
+.error-state { background: var(--color-bg-warning); border: 1px solid var(--color-text-warning); }
+.error-state > .icon { color: var(--color-text-warning); }
+.empty-state p, .error-state p { font-size: 14px; }
+
+/* ---------------------------------------------------------------------
+   17. RESPONSIF
+   --------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .page__body { padding-inline: var(--space-32); }
+  /* header tetap satu baris di tablet: label teks disembunyikan secara visual, tetap terbaca pembaca layar */
+  .site-header { flex-wrap: nowrap; padding-inline: var(--space-16); }
+  .theme-toggle > span:not(.switch), .user__name {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .nav__link { padding-inline: var(--space-12); }
+}
+
+@media (max-width: 480px) {
+  /* header: navigasi masuk ke menu */
+  .site-header { padding: var(--space-8) var(--space-12) var(--space-8) var(--space-20); }
+  .nav__link:not([aria-current="page"]), .site-header__account { display: none; }
+  .nav .nav__menu { display: inline-grid; }
+  .site-header.is-menu-open .nav__link, .site-header.is-menu-open .site-header__account { display: inline-flex; }
+
+  .page__body { padding: var(--space-24) var(--space-20) var(--space-48); }
+  .page__layout { gap: var(--space-24); }
+  h1, .text-h1 { font-size: 26px; line-height: 32px; }
+
+  .results-header, .page-title { flex-direction: column; align-items: stretch; }
+  .recipe-grid { grid-template-columns: 1fr; }
+
+  .allergy-banner__actions, .allergy-banner__actions .btn { width: 100%; }
+  .empty-pantry .btn { width: 100%; }
+
+  /* tabel bahan bertumpuk: nama + jumlah di baris atas, status di bawah */
+  .ingredients__table thead { display: none; }
+  .ingredients__table tr { display: grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-border-divider); background: var(--color-bg-surface-2); }
+  .ingredients__table tr:last-child { border-bottom: 0; }
+  .ingredients__table td { border: 0; padding: var(--space-8) var(--space-16) 0; }
+  .ingredients__table .status { grid-column: 1 / -1; text-align: left; padding-bottom: var(--space-12); }
+
+  .cook-bar { flex-direction: column; align-items: stretch; }
+  .cook-bar__text { flex: none; }                                              /* kolom: tinggi mengikuti isi */
+  .allergy-banner__text, .empty-pantry__text { flex: 1 1 100%; min-width: 0; } /* baris yang membungkus: teks selebar layar, tidak meluber */
+  .cook-bar .btn { width: 100%; }
+  .cook-bar[data-state="recorded"] { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .cook-bar[data-state="recorded"] .cook-bar__text { flex: 1 1 auto; }
+  .cook-bar--sticky {
+    position: sticky; bottom: 0; z-index: 10;
+    flex-direction: row; align-items: center;
+    margin-inline: calc(-1 * var(--space-20));
+    padding: var(--space-12) var(--space-20) var(--space-20);
+    border-radius: 0; border-width: 1px 0 0;
+    background: var(--color-bg-surface);
+  }
+  .cook-bar--sticky .btn { width: auto; }
+
+  /* dialog → bottom sheet */
+  .modal {
+    width: 100vw; max-width: none; max-height: 90vh;
+    margin: auto 0 0; padding: var(--space-12) var(--space-20) var(--space-24);
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; border-width: 1px 0 0;
+  }
+  .sheet__handle { display: block; align-self: center; width: 40px; height: 4px; border-radius: 2px; background: var(--color-border-control); }
+  .modal__actions { flex-direction: column-reverse; }   /* tombol utama di bawah, dekat ibu jari */
+  .modal__actions .btn { width: 100%; }
+  .modal__foot { text-align: left; }
+
+  .step { padding: var(--space-20); }
+  .step__title { font-size: 26px; line-height: 32px; }
+  .step-nav .btn--next { flex: 1; }
+
+  .toast { left: var(--space-16); right: var(--space-16); bottom: var(--space-16); transform: none; animation: none; }
+}
+
+/* ---------------------------------------------------------------------
+   18. GERAK DIKURANGI
+   --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* =====================================================================
+   BAGIAN II · PERBAIKAN: tema sistem, toolbar, kartu, menu, aksi bahan kurang, langkah, toast, ketahanan
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. TEMA MENGIKUTI SISTEM
+   Tanpa data-theme → ikut pengaturan perangkat.
+   data-theme="light" / "dark" dari switch → pilihan pengguna menang.
+   --------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg-page: #101713;
+    --color-bg-surface: #1D2923;
+    --color-bg-surface-2: #151E19;
+    --color-bg-warning: #3A3020;
+    --color-bg-success: #203D30;
+    --color-text-primary: #F3F6F4;
+    --color-text-secondary: #BDCEC5;
+    --color-text-success: #77E2C5;
+    --color-text-warning: #F3BE57;
+    --color-text-info: #9CCBFA;
+    --color-focus-ring: #D7F35B;
+    --color-border-control: #66776E;
+    --color-border-divider: #3B4A43;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   2. TOOLBAR HASIL MENEMPEL
+   294 resep = daftar panjang; filter, jumlah, dan urutan tetap terjangkau.
+   JS kecil menambah .is-stuck (IntersectionObserver) untuk garis bawah.
+   --------------------------------------------------------------------- */
+.results-toolbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--space-8) var(--space-12);
+  margin-inline: calc(-1 * var(--space-12));
+  padding: var(--space-12);
+  background: color-mix(in srgb, var(--color-bg-page) 90%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+.results-toolbar.is-stuck { border-bottom-color: var(--color-border-divider); }
+.results-toolbar__filters { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+#hasil, [id] { scroll-margin-top: 96px; }   /* tautan lompat tidak tertutup toolbar */
+
+/* ---------------------------------------------------------------------
+   3. KARTU: SELURUH KARTU BISA DIKLIK
+   Tautan judul diperluas menutupi kartu (target besar), tombol favorit
+   tetap di atasnya. Hover mengangkat kartu sedikit.
+   --------------------------------------------------------------------- */
+.recipe-card { transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+.recipe-card__title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.recipe-card .favorite { position: relative; z-index: 2; }
+@media (hover: hover) {
+  .recipe-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgb(0 0 0 / 0.10); }
+  .recipe-card:hover .recipe-card__title a { text-decoration: underline; }
+}
+.recipe-card__photo { background: var(--color-bg-surface-2); }   /* ruang foto terjaga saat lazy-load */
+
+/* ---------------------------------------------------------------------
+   4. KARTU RINGKAS DI KOLOM SEMPIT
+   Daftar memberi tahu lebarnya; di bawah 440 px kartu jadi satu baris
+   (foto kecil di kiri) → 3 resep muat di satu layar ponsel.
+   --------------------------------------------------------------------- */
+.recipe-list, .recipe-grid--adaptive { container: cards / inline-size; }
+@container cards (max-width: 440px) {
+  .recipe-card { flex-direction: row; align-items: stretch; }
+  .recipe-card__photo, .recipe-card__placeholder { width: 104px; flex: none; aspect-ratio: auto; height: auto; min-height: 104px; }
+  .recipe-card__placeholder span { display: none; }
+  .recipe-card__body { flex: 1; min-width: 0; padding: var(--space-12); gap: var(--space-4); }
+  .recipe-card__title { font-size: 15px; line-height: 20px; }
+  .recipe-card__meta { font-size: 13px; line-height: 18px; }
+  .recipe-card .badge { padding: var(--space-2) var(--space-8); font-size: 12px; }
+  .recipe-card .favorite { width: 36px; height: 36px; }   /* tetap ≥ 24 px (WCAG 2.5.8), seluruh kartu juga target */
+}
+
+/* ---------------------------------------------------------------------
+   5. MENU FILTER DENGAN JUMLAH PER OPSI
+   <div class="dropdown"> <button class="chip chip--dropdown" aria-expanded> + <ul class="menu" role="listbox">
+   --------------------------------------------------------------------- */
+.dropdown { position: relative; }
+.menu {
+  position: absolute; top: calc(100% + var(--space-8)); left: 0; z-index: 30;
+  display: none; min-width: 240px;
+  padding: var(--space-8);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.16);
+}
+.chip--dropdown[aria-expanded="true"] + .menu { display: block; }
+.menu__option {
+  display: flex; align-items: center; gap: var(--space-8);
+  min-height: var(--target-min); padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-md); cursor: pointer;
+  font-size: 14px;
+}
+.menu__option:hover, .menu__option.is-active { background: var(--color-bg-surface-2); }
+.menu__check { width: 16px; visibility: hidden; color: var(--color-text-success); }
+.menu__option[aria-selected="true"] { font-weight: var(--weight-semibold); }
+.menu__option[aria-selected="true"] .menu__check { visibility: visible; }
+.menu__count { margin-left: auto; font-size: 13px; color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
+.menu__option[aria-disabled="true"] { opacity: 0.45; cursor: default; }   /* 0 hasil: terlihat, tidak bisa dipilih */
+
+/* ---------------------------------------------------------------------
+   6. AKSI UNTUK BAHAN KURANG
+   Kekurangan bukan jalan buntu: langsung jadi daftar belanja atau
+   pencarian di Market Locator (Modul 5).
+   --------------------------------------------------------------------- */
+.shortage-actions { display: flex; flex-direction: column; gap: var(--space-8); }
+.shortage-actions__list {
+  display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-8);
+  font-size: 13px; color: var(--color-text-secondary);
+}
+.shortage-actions__list li { padding: var(--space-2) var(--space-8); border-radius: var(--radius-pill); background: var(--color-bg-surface-2); }
+.btn--with-count .btn__count {
+  display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, currentColor 18%, transparent);
+  font-size: 12px; font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------
+   7. UMPAN BALIK SAAT PORSI DIUBAH
+   JS menambah .is-updated ke angka yang berubah (takaran, gizi, harga);
+   kilatan singkat menunjukkan apa saja yang ikut berubah.
+   --------------------------------------------------------------------- */
+.is-updated { animation: value-flash 900ms var(--ease-out); border-radius: var(--radius-sm); }
+@keyframes value-flash {
+  0%   { background-color: color-mix(in srgb, var(--color-text-success) 30%, transparent); }
+  100% { background-color: transparent; }
+}
+.stepper__value, .nutrition__value, .amount, .nutrition__cost strong { font-variant-numeric: tabular-nums; }
+.nutrition__value.is-updated, .nutrition__cost strong.is-updated { display: block; width: fit-content; padding-inline: var(--space-4); margin-inline: calc(-1 * var(--space-4)); }   /* sorotan selebar angka, bukan selebar baris */
+
+/* ---------------------------------------------------------------------
+   8. LANGKAH BISA DICENTANG + TIMER
+   Tanpa JS: :has() membaca checkbox. Langkah selesai = nomor jadi centang,
+   teks meredup (tanpa coretan supaya tetap terbaca).
+   --------------------------------------------------------------------- */
+.steps--checkable .steps__item { padding-block: 0; }
+.steps--checkable .steps__item::before { display: none; }
+.steps__label { display: flex; align-items: flex-start; gap: var(--space-16); width: 100%; padding: var(--space-12) 0; cursor: pointer; }
+.steps__check {
+  appearance: none; flex: none; display: grid; place-items: center;
+  width: 28px; height: 28px; margin: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-success); color: var(--color-text-success);
+  font-size: 14px; font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+.steps__check::before { content: attr(data-step); }
+.steps__check:checked { background: var(--color-action-primary); color: var(--color-text-on-primary); }
+.steps__check:checked::before { content: "✓"; }
+.steps__item:has(.steps__check:checked) .steps__text { color: var(--color-text-secondary); }
+.steps__progress { font-size: 13px; color: var(--color-text-secondary); }
+
+.timer {
+  display: inline-flex; align-items: center; gap: var(--space-8);
+  margin-top: var(--space-8); min-height: 36px;
+  padding: var(--space-4) var(--space-12);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-pill);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  font-size: 14px; font-weight: var(--weight-semibold); font-variant-numeric: tabular-nums;
+}
+.timer[data-state="running"] { border-color: var(--color-text-success); color: var(--color-text-success); }
+.timer[data-state="done"] { border-color: var(--color-text-warning); background: var(--color-bg-warning); color: var(--color-text-warning); }
+
+/* ---------------------------------------------------------------------
+   9. TOAST DENGAN SISA WAKTU
+   Garis menyusut 8 detik; berhenti saat kursor/fokus di toast,
+   jadi tombol Urungkan tidak hilang ketika hendak ditekan.
+   --------------------------------------------------------------------- */
+.toast-region {
+  position: fixed; left: 50%; bottom: var(--space-32); z-index: 50;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: var(--space-8);
+  width: max-content; max-width: calc(100vw - 2 * var(--space-16));
+}
+.toast-region .toast { position: relative; left: auto; bottom: auto; transform: none; overflow: hidden; }
+.toast__timer {
+  position: absolute; left: 0; bottom: 0; height: 3px; width: 100%;
+  background: var(--color-text-success);
+  transform-origin: left;
+  animation: toast-countdown 8s linear forwards;
+}
+.toast:hover .toast__timer, .toast:focus-within .toast__timer { animation-play-state: paused; }
+@keyframes toast-countdown { to { transform: scaleX(0); } }
+
+/* ---------------------------------------------------------------------
+   10. KETAHANAN
+   --------------------------------------------------------------------- */
+/* Judul tidak menyisakan satu kata di baris terakhir */
+h1, h2, h3, .recipe-card__title, .step__title { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+/* Ukuran judul halaman mengikuti lebar layar tanpa breakpoint tambahan */
+.page-title h1 { font-size: clamp(26px, 2.2vw + 16px, 32px); line-height: 1.25; }
+
+/* Kontras tinggi (Windows): warna latar hilang, jadi state diberi garis */
+@media (forced-colors: active) {
+  .chip[aria-pressed="true"], .badge, .allergy-banner, .status--warning, .status--success, .notice--error,
+  .nav__link[aria-current="page"], .menu__option[aria-selected="true"] { border: 2px solid CanvasText; }
+  .switch { border: 1px solid ButtonText; }
+  .switch__knob, .progress__fill, .toast__timer { background: Highlight; }
+  .steps__check { border: 1px solid ButtonText; }
+  .readiness, .status { forced-color-adjust: none; }
+}
+
+/* Cetak resep: hanya judul, foto, bahan, dan langkah */
+@media print {
+  :root { --color-bg-page: #FFFFFF; --color-bg-surface: #FFFFFF; --color-bg-surface-2: #FFFFFF; --color-text-primary: #000000; --color-text-secondary: #333333; }
+  .site-header, .skip-link, .page--search .page__aside, .results-toolbar, .toast-region, .cook-bar, .reviews,
+  .favorite, .disclosures, .allergy-banner__actions, .shortage-actions .btn, .timer, .no-print { display: none !important; }
+  body { font-size: 11pt; line-height: 1.45; }
+  .page__body { padding: 0; max-width: none; }
+  .page__layout { display: block; }
+  .panel, .ingredients__table, .recipe-card { box-shadow: none; border: 1px solid #999; }
+  .steps__item, tr, .recipe-card { break-inside: avoid; }
+  .allergy-banner { border: 2px solid #000; }      /* peringatan alergi tetap tercetak */
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; }
+}
+
+
+/* =====================================================================
+   BAGIAN III · ANIMASI & POLESAN
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   0. TOKEN GERAK & ELEVASI (dipakai juga di luar blok gerak)
+   --------------------------------------------------------------------- */
+:root {
+  --motion-micro: 120ms;   /* tekan, hover */
+  --motion-small: 200ms;   /* chip, menu, nilai berubah */
+  --motion-medium: 280ms;  /* dialog, toast, kartu masuk */
+  --motion-large: 360ms;   /* perpindahan halaman */
+  --motion-stagger: 40ms;  /* jeda antar kartu */
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);   /* sedikit memantul: favorit, centang */
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 3px rgb(0 0 0 / 0.08);
+  --shadow-2: 0 4px 12px rgb(0 0 0 / 0.10);
+  --shadow-3: 0 12px 32px rgb(0 0 0 / 0.16);
+}
+[data-theme="dark"] {
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 6px 16px rgb(0 0 0 / 0.45);
+  --shadow-3: 0 16px 40px rgb(0 0 0 / 0.55);
+}
+
+/* =====================================================================
+   SEMUA GERAK DI BAWAH HANYA AKTIF BILA PENGGUNA TIDAK MEMINTA
+   "KURANGI GERAKAN"
+   ===================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+
+  html { scroll-behavior: smooth; }
+  :root { interpolate-size: allow-keywords; }   /* izinkan animasi ke height:auto (Chrome 129+) */
+
+  /* -------------------------------------------------------------------
+     1. PERPINDAHAN HALAMAN
+     Django = multi-page. Cross-document View Transitions membuat foto
+     kartu "terbang" menjadi foto besar di Detail. Beri nama yang sama
+     di kedua halaman, unik per resep:
+       Cari  : <img class="recipe-card__photo" style="view-transition-name: foto-{{ resep.id }}">
+       Detail: <img class="recipe-photo"       style="view-transition-name: foto-{{ resep.id }}">
+     Browser tanpa dukungan: pindah halaman biasa.
+     ------------------------------------------------------------------- */
+  @view-transition { navigation: auto; }
+  .site-header { view-transition-name: site-header; }            /* header tidak ikut berkedip */
+  ::view-transition-group(*) { animation-duration: var(--motion-large); animation-timing-function: var(--ease-standard); }
+  ::view-transition-old(root) { animation: vt-out var(--motion-small) var(--ease-accelerate) both; }
+  ::view-transition-new(root) { animation: vt-in var(--motion-medium) var(--ease-decelerate) both; }
+  @keyframes vt-out { to { opacity: 0; } }      /* halaman cukup memudar; yang bergerak hanya elemen bernama (foto) */
+  @keyframes vt-in  { from { opacity: 0; } }
+
+  /* -------------------------------------------------------------------
+     2. MASUK HALAMAN: KARTU BERTAHAP (maks. 6 kartu pertama, 240 ms total)
+     ------------------------------------------------------------------- */
+  .recipe-grid > .recipe-card,
+  .recipe-list > .recipe-card,
+  .page__aside > .panel {
+    animation: rise var(--motion-medium) var(--ease-decelerate) both;
+  }
+  .recipe-grid > .recipe-card:nth-child(2), .recipe-list > .recipe-card:nth-child(2), .page__aside > .panel:nth-child(2) { animation-delay: calc(1 * var(--motion-stagger)); }
+  .recipe-grid > .recipe-card:nth-child(3), .recipe-list > .recipe-card:nth-child(3), .page__aside > .panel:nth-child(3) { animation-delay: calc(2 * var(--motion-stagger)); }
+  .recipe-grid > .recipe-card:nth-child(4) { animation-delay: calc(3 * var(--motion-stagger)); }
+  .recipe-grid > .recipe-card:nth-child(5) { animation-delay: calc(4 * var(--motion-stagger)); }
+  .recipe-grid > .recipe-card:nth-child(n+6) { animation-delay: calc(5 * var(--motion-stagger)); }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+
+  /* hasil baru setelah filter berubah: cukup memudar, tanpa geser */
+  .recipe-grid.is-refreshed > .recipe-card { animation: fade var(--motion-small) var(--ease-standard) both; animation-delay: 0ms; }
+  @keyframes fade { from { opacity: 0; } }
+
+  /* -------------------------------------------------------------------
+     3. KARTU: HOVER & TEKAN
+     ------------------------------------------------------------------- */
+  .recipe-card { transition: transform var(--motion-small) var(--ease-standard), box-shadow var(--motion-small) var(--ease-standard), border-color var(--motion-micro) var(--ease-standard); }
+  .recipe-card__photo { transition: transform var(--motion-large) var(--ease-standard); }
+  @media (hover: hover) {
+    .recipe-card:hover { box-shadow: var(--shadow-2); }
+    .recipe-card:hover .recipe-card__photo { transform: scale(1.04); }
+  }
+  .recipe-card:active { transform: translateY(0) scale(0.99); transition-duration: var(--motion-micro); }
+
+  /* -------------------------------------------------------------------
+     4. UMPAN BALIK TEKAN
+     ------------------------------------------------------------------- */
+  .btn, .chip, .icon-btn, .stepper__btn, .theme-toggle, .logout, .nav__link {
+    transition: background-color var(--motion-micro) var(--ease-standard), border-color var(--motion-micro) var(--ease-standard),
+                color var(--motion-micro) var(--ease-standard), transform var(--motion-micro) var(--ease-standard), opacity var(--motion-micro) var(--ease-standard);
+  }
+  .btn:active, .chip:active, .icon-btn:active, .stepper__btn:active, .theme-toggle:active { transform: scale(0.96); }
+  .btn[aria-busy="true"], .btn[aria-disabled="true"], .stepper__btn[aria-disabled="true"] { transform: none; }
+
+  /* fokus: cincin "mengunci" dari agak jauh ke posisi */
+  :focus-visible { animation: focus-in var(--motion-small) var(--ease-decelerate); }
+  @keyframes focus-in { from { outline-offset: 6px; outline-color: transparent; } }
+
+  /* chip toggle: centang muncul memantul */
+  .chip[aria-pressed="true"] .chip__check { animation: pop-in var(--motion-small) var(--ease-spring); }
+  @keyframes pop-in { from { transform: scale(0); opacity: 0; } }
+
+  /* favorit: hati membesar sebentar saat disimpan */
+  .favorite .icon { transition: fill var(--motion-micro) var(--ease-standard); }
+  .favorite[aria-pressed="true"] .icon { animation: heart-pop var(--motion-medium) var(--ease-spring); }
+  @keyframes heart-pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+  /* stepper: angka bergulir sesuai arah (+ naik, − turun) */
+  .stepper__value.is-updated[data-dir="up"]   { animation: roll-up var(--motion-small) var(--ease-decelerate), value-flash 900ms var(--ease-standard); }
+  .stepper__value.is-updated[data-dir="down"] { animation: roll-down var(--motion-small) var(--ease-decelerate), value-flash 900ms var(--ease-standard); }
+  @keyframes roll-up   { from { transform: translateY(8px);  opacity: 0; } }
+  @keyframes roll-down { from { transform: translateY(-8px); opacity: 0; } }
+
+  /* switch tema */
+  .switch__knob { transition: transform var(--motion-small) var(--ease-spring); }
+
+  /* -------------------------------------------------------------------
+     5. MENU DROPDOWN: tumbuh dari chip, keluar lebih cepat
+     ------------------------------------------------------------------- */
+  .menu {
+    display: block;                          /* animasi butuh elemen tetap ada */
+    visibility: hidden; opacity: 0;
+    transform: translateY(-4px) scale(0.98); transform-origin: top left;
+    transition: opacity var(--motion-micro) var(--ease-accelerate), transform var(--motion-micro) var(--ease-accelerate), visibility 0s linear var(--motion-micro);
+    box-shadow: var(--shadow-3);
+  }
+  .chip--dropdown[aria-expanded="true"] + .menu {
+    visibility: visible; opacity: 1; transform: none;
+    transition: opacity var(--motion-small) var(--ease-decelerate), transform var(--motion-small) var(--ease-decelerate), visibility 0s;
+  }
+  .menu__option { transition: background-color var(--motion-micro) var(--ease-standard); }
+
+  /* -------------------------------------------------------------------
+     6. DISCLOSURE: tinggi berubah halus (Chrome 131+, lainnya langsung)
+     ------------------------------------------------------------------- */
+  .disclosure::details-content {
+    block-size: 0; overflow: hidden;
+    transition: block-size var(--motion-medium) var(--ease-standard), content-visibility var(--motion-medium) allow-discrete;
+  }
+  .disclosure[open]::details-content { block-size: auto; }
+
+  /* -------------------------------------------------------------------
+     7. LANGKAH DICENTANG & TIMER
+     ------------------------------------------------------------------- */
+  .steps__check { transition: background-color var(--motion-small) var(--ease-standard), color var(--motion-small) var(--ease-standard); }
+  .steps__check:checked { animation: check-pop var(--motion-medium) var(--ease-spring); }
+  @keyframes check-pop { 0% { transform: scale(0.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  .steps__text { transition: color var(--motion-small) var(--ease-standard); }
+
+  .timer[data-state="running"] .icon { animation: tick 1s steps(2, jump-none) infinite; }
+  @keyframes tick { 50% { transform: rotate(8deg); } }
+  .timer[data-state="done"] { animation: ring 1.2s var(--ease-standard) 3; }   /* 3 kali, lalu diam */
+  @keyframes ring { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-text-warning) 45%, transparent); } 60% { box-shadow: 0 0 0 10px transparent; } }
+
+  .progress__fill { transition: width var(--motion-medium) var(--ease-decelerate); }
+
+  /* -------------------------------------------------------------------
+     8. DIALOG & BOTTOM SHEET
+     <dialog class="modal"> + showModal(); masuk & keluar dianimasikan
+     (transition-behavior: allow-discrete, Chrome 117+ / Safari 17.4+).
+     ------------------------------------------------------------------- */
+  .modal, .modal::backdrop {
+    transition: opacity var(--motion-small) var(--ease-accelerate), transform var(--motion-small) var(--ease-accelerate),
+                display var(--motion-small) allow-discrete, overlay var(--motion-small) allow-discrete, background-color var(--motion-small) var(--ease-accelerate);
+  }
+  .modal { opacity: 0; transform: translateY(12px) scale(0.98); box-shadow: var(--shadow-3); }
+  .modal[open] {
+    opacity: 1; transform: none;
+    transition-duration: var(--motion-medium); transition-timing-function: var(--ease-decelerate);
+  }
+  .modal::backdrop { background-color: rgb(0 0 0 / 0); }
+  .modal[open]::backdrop { background-color: var(--color-backdrop); transition-duration: var(--motion-medium); }
+  @starting-style {
+    .modal[open] { opacity: 0; transform: translateY(12px) scale(0.98); }
+    .modal[open]::backdrop { background-color: rgb(0 0 0 / 0); }
+  }
+  @media (max-width: 480px) {
+    .modal { opacity: 1; transform: translateY(100%); }
+    .modal[open] { transform: none; }
+    @starting-style { .modal[open] { opacity: 1; transform: translateY(100%); } }
+  }
+
+  /* -------------------------------------------------------------------
+     9. TOAST
+     ------------------------------------------------------------------- */
+  .toast-region .toast { animation: toast-up var(--motion-medium) var(--ease-decelerate) both; }
+  .toast-region .toast.is-leaving { animation: toast-down var(--motion-small) var(--ease-accelerate) both; }
+  @keyframes toast-up   { from { opacity: 0; transform: translateY(16px) scale(0.98); } }
+  @keyframes toast-down { to   { opacity: 0; transform: translateY(16px) scale(0.98); } }
+  .toast > .icon { stroke-dasharray: 60; stroke-dashoffset: 0; animation: draw 420ms var(--ease-decelerate) 120ms both; }
+  @keyframes draw { from { stroke-dashoffset: 60; } }
+
+  /* -------------------------------------------------------------------
+     10. MEMUAT & GALAT
+     ------------------------------------------------------------------- */
+  .skeleton {
+    animation: shimmer 1.4s linear infinite;
+    background: linear-gradient(90deg, var(--color-bg-surface-2) 0%, color-mix(in srgb, var(--color-bg-surface-2) 55%, var(--color-bg-surface)) 50%, var(--color-bg-surface-2) 100%);
+    background-size: 200% 100%;
+  }
+  @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+  /* galat muncul dengan dorongan kecil sekali, menarik perhatian tanpa berulang */
+  .notice--error, .error-state { animation: nudge 360ms var(--ease-standard); }
+  @keyframes nudge { 20% { transform: translateX(-4px); } 50% { transform: translateX(3px); } 80% { transform: translateX(-1px); } }
+
+  /* status baru di dialog (siap ↔ perlu dicek) memudar masuk */
+  .status--success, .status--warning, .empty-pantry, .allergy-banner { animation: fade var(--motion-small) var(--ease-standard); }
+
+  /* -------------------------------------------------------------------
+     11. PERGANTIAN TEMA (pakai document.startViewTransition di JS)
+     ------------------------------------------------------------------- */
+  html.is-theme-switching::view-transition-old(root),
+  html.is-theme-switching::view-transition-new(root) { animation-duration: var(--motion-medium); animation-timing-function: var(--ease-standard); }
+  html.is-theme-switching::view-transition-old(root) { animation-name: fade-out-only; }
+  html.is-theme-switching::view-transition-new(root) { animation-name: fade-in-only; }
+  @keyframes fade-out-only { to { opacity: 0; } }
+  @keyframes fade-in-only { from { opacity: 0; } }
+}
+
+/* Kurangi gerakan: garis waktu toast disembunyikan, tapi tetap menghitung 8 detik
+   (aturan reset di takarkuy-modul4.css memendekkan semua animasi; ini pengecualian). */
+@media (prefers-reduced-motion: reduce) {
+  .toast .toast__timer { animation-duration: 8s !important; opacity: 0; }
+}
+
+/* =====================================================================
+   12. POLESAN VISUAL (bukan gerak, aktif untuk semua)
+   ===================================================================== */
+/* elevasi konsisten: kartu diam datar, melayang = bayangan */
+.menu, .toast { box-shadow: var(--shadow-3); }
+.results-toolbar.is-stuck { box-shadow: 0 6px 12px -8px rgb(0 0 0 / 0.25); }
+
+/* foto sedikit diredupkan di mode gelap agar tidak menyilaukan */
+[data-theme="dark"] .recipe-card__photo, [data-theme="dark"] .recipe-photo { filter: brightness(0.9) saturate(0.95); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .recipe-card__photo, :root:not([data-theme="light"]) .recipe-photo { filter: brightness(0.9) saturate(0.95); } }
+
+/* kontrol bawaan browser ikut warna merek */
+:root { accent-color: var(--color-action-primary); }
+::selection { background: color-mix(in srgb, var(--color-nav-active) 70%, transparent); color: var(--color-text-on-lime); }
+html { scrollbar-color: var(--color-border-control) transparent; }
+
+/* angka sejajar di tabel & ringkasan */
+.ingredients__table, .shortage, .result-count, .panel__count { font-variant-numeric: tabular-nums; }
+
+/* tepi foto halus agar foto terang tidak "bocor" ke latar putih */
+.recipe-card__photo, .recipe-photo { outline: 1px solid rgb(0 0 0 / 0.06); outline-offset: -1px; }
