@@ -1,29 +1,24 @@
-<a class="panel recipe-card" href="?{{ query_params }}&amp;recipe={{ recipe.pk|urlencode }}&amp;page={{ recipes.number }}#recipe-detail">
+{% load planner_format %}
+<li class="recipe-card"{% if recipe.stock_match.missing_names %} data-readiness="short"{% elif recipe.stock_match.unknown_expiry %} data-readiness="check"{% elif recipe.stock_match.coverage_percent == 100 %} data-readiness="ready"{% endif %}>
   {% if recipe.photo %}
-  <img class="recipe-card-photo" src="{{ recipe.photo.image_url }}" alt="" loading="lazy">
+  <img class="recipe-card__photo recipe-card-photo" src="{{ recipe.photo.image_url }}" alt="" loading="lazy">
   {% else %}
-  <div class="recipe-card-photo-placeholder" role="img" aria-label="Foto {{ recipe.name }} belum tersedia" data-meal="{{ recipe.meal_type }}">
-  <svg viewBox="0 0 48 48" width="38" height="38" aria-hidden="true" focusable="false"><path d="M8 18h32l-2 22H10L8 18Zm6 0a10 10 0 0 1 20 0M16 12c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7m8 7c-2-3 2-4 0-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  <small>Foto belum tersedia</small>
+  <div class="recipe-card__placeholder recipe-card-photo-placeholder" role="img" aria-label="Foto {{ recipe.name }} belum tersedia" data-meal="{{ recipe.meal_type }}">
+    <svg class="icon icon--lg" aria-hidden="true" focusable="false"><use href="#m4-i-pot"/></svg>
+    <small>Foto belum tersedia</small>
   </div>
   {% endif %}
-  <h3>{{ recipe.name }}</h3>
-  {% if recipe.stock_match %}
-  <p class="stock-match">
-  <strong>Stok cocok {{ recipe.stock_match.coverage_percent }}%</strong>
-  {% if recipe.stock_match.missing_names %}
-  <small>Kurang: {{ recipe.stock_match.missing_names|join:', ' }}</small>
-  {% endif %}
-  {% if recipe.stock_match.unknown_expiry %}
-  <small>Tanggal kedaluwarsa sebagian stok belum diketahui</small>
-  {% endif %}
-  </p>
-  {% endif %}
-  {% if recipe.instruction_status == 'withheld' %}
-  <small class="recipe-guidance-notice">Panduan memasak belum tersedia</small>
-  {% endif %}
-  {% if recipe.photo %}
-  <small class="photo-credit">{{ recipe.photo.creator }} · {{ recipe.photo.license_name }}</small>
-  {% endif %}
-  <span class="quiet-link">Lihat resep →</span>
-  </a>
+  <div class="recipe-card__body">
+    <h3 class="recipe-card__title"><a href="?{{ query_params }}&amp;recipe={{ recipe.pk|urlencode }}&amp;page={{ recipes.number }}#recipe-detail">{{ recipe.name }}</a></h3>
+    <p class="recipe-card__meta">{% if recipe.meal_type == 'sarapan' %}Sarapan{% elif recipe.meal_type == 'makan_siang' %}Makan siang{% elif recipe.meal_type == 'makan_malam' %}Makan malam{% endif %}{% if recipe.card_cost %}{% if recipe.meal_type %} · {% endif %}≈ {{ recipe.card_cost|rupiah }}{% if profile_servings %} untuk {{ profile_servings }} porsi{% endif %}{% endif %}</p>
+    {% if recipe.stock_match %}
+    <div class="stock-match">
+      <p class="readiness"><span class="icon-text" aria-hidden="true">{% if recipe.stock_match.missing_names %}▲{% elif recipe.stock_match.unknown_expiry %}≈{% elif recipe.stock_match.coverage_percent == 100 %}✓{% else %}·{% endif %}</span>{% if recipe.stock_match.missing_names %}Kurang {{ recipe.stock_match.missing_names|length }} bahan{% elif recipe.stock_match.unknown_expiry %}Perlu dicek{% elif recipe.stock_match.coverage_percent == 100 %}Bahan lengkap di Pantry{% else %}Stok cocok {{ recipe.stock_match.coverage_percent }}%{% endif %}{% if recipe.stock_match.missing_names or recipe.stock_match.unknown_expiry or recipe.stock_match.coverage_percent == 100 %}<span class="readiness__pct"> · stok cocok {{ recipe.stock_match.coverage_percent }}%</span>{% endif %}</p>
+      {% if recipe.stock_match.missing_names %}<small>Belum ada: {{ recipe.stock_match.missing_names|join:', ' }}</small>{% endif %}
+      {% if recipe.stock_match.unknown_expiry %}<small>Tanggal kedaluwarsa sebagian stok belum diketahui</small>{% endif %}
+    </div>
+    {% endif %}
+    {% if recipe.instruction_status == 'withheld' %}<p class="recipe-guidance-notice"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg>Panduan memasak belum tersedia</p>{% endif %}
+    {% if recipe.photo %}<small class="recipe-card__credit photo-credit">Foto: {{ recipe.photo.creator }} · {{ recipe.photo.license_name }}</small>{% endif %}
+  </div>
+</li>

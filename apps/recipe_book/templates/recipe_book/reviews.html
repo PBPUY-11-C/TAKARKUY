@@ -1,58 +1,58 @@
-<section class="panel" id="recipe-reviews">
-  <div class="section-heading">
-    <h2>Masak &amp; bagikan pengalaman</h2>
-    <span>{% if review_stats.count %}★ {{ review_stats.average|floatformat:1 }} · {{ review_stats.count }} ulasan{% else %}Belum ada ulasan{% endif %}</span>
+<section class="panel reviews" id="recipe-reviews" aria-labelledby="reviews-title" data-state="{% if can_review %}can-review{% else %}locked{% endif %}">
+  <div class="panel__header">
+    <h2 id="reviews-title">Masak &amp; bagikan pengalaman</h2>
+    <span class="panel__count">{% if review_stats.count %}<svg class="icon icon--sm icon--inline" aria-hidden="true"><use href="#m4-i-star"/></svg>{{ review_stats.average|floatformat:1 }} · {{ review_stats.count }} ulasan{% else %}Belum ada ulasan{% endif %}</span>
   </div>
-  <ul class="side-list">
+  {% if reviews %}
+  <ul class="review-list">
     {% for review in reviews %}
-      <li>
-        <strong>{{ review.public_name }} <span class="quiet-link">★ {{ review.rating }}/5</span></strong>
-        {% if review.comment %}<p>{{ review.comment|linebreaksbr }}</p>{% endif %}
+      <li class="review">
+        <p class="review__head"><strong>{{ review.public_name }}</strong> <span class="review__rating">★ {{ review.rating }}/5</span> <small>{{ review.updated_at|date:'d M Y' }}</small></p>
+        {% if review.comment %}<p class="review__text">{{ review.comment|linebreaksbr }}</p>{% endif %}
         {% if review.photo_url %}<figure class="review-photo"><img src="{{ review.photo_url }}" alt="Foto hasil memasak {{ selected.name }}" loading="lazy"><figcaption>Foto komunitas oleh {{ review.public_name }}</figcaption></figure>{% endif %}
-        <small>{{ review.updated_at|date:'d M Y' }}</small>
       </li>
     {% endfor %}
   </ul>
+  {% endif %}
   {% if reviews.has_previous or reviews.has_next %}
-    <nav class="pagination" aria-label="Halaman ulasan">
-      {% if reviews.has_previous %}<a href="?{{ review_params }}&amp;review_page={{ reviews.previous_page_number }}#recipe-reviews">←</a>{% endif %}
+    <nav class="pagination pagination--compact" aria-label="Halaman ulasan">
+      {% if reviews.has_previous %}<a class="icon-btn" href="?{{ review_params }}&amp;review_page={{ reviews.previous_page_number }}#recipe-reviews" aria-label="Ulasan sebelumnya"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-back"/></svg></a>{% endif %}
       <span>{{ reviews.number }} / {{ reviews.paginator.num_pages }}</span>
-      {% if reviews.has_next %}<a href="?{{ review_params }}&amp;review_page={{ reviews.next_page_number }}#recipe-reviews">→</a>{% endif %}
+      {% if reviews.has_next %}<a class="icon-btn" href="?{{ review_params }}&amp;review_page={{ reviews.next_page_number }}#recipe-reviews" aria-label="Ulasan berikutnya"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>{% endif %}
     </nav>
   {% endif %}
-  {% if own_review.is_hidden %}<p class="helper">Ulasan Anda sedang disembunyikan moderator; ulasan dan fotonya tidak ditampilkan kepada pengguna lain.</p>{% endif %}
+  {% if own_review.is_hidden %}<p class="notice notice--warning"><span>Ulasan Anda sedang disembunyikan moderator; ulasan dan fotonya tidak ditampilkan kepada pengguna lain.</span></p>{% endif %}
   {% if own_review.photo %}<p class="helper photo-moderation-status">{% if own_review.is_hidden %}Foto tidak ditampilkan karena ulasan disembunyikan moderator.{% elif own_review.photo_is_hidden and own_review.photo_moderated_at %}Foto disembunyikan moderator; hanya Anda yang dapat melihatnya.{% elif own_review.photo_is_hidden %}Foto tersimpan dan menunggu peninjauan moderator.{% else %}Foto disetujui dan tampil untuk pengguna yang masuk.{% endif %}</p>{% endif %}
-  {% if own_review.photo_url %}<figure class="review-photo own-review-photo"><img src="{{ own_review.photo_url }}" alt="Foto masakan yang Anda unggah" loading="lazy"><figcaption>Foto unggahan Anda · izin penayangan dapat dicabut</figcaption><button id="delete-review-photo" type="button" class="text-button">Hapus foto dan cabut izin</button></figure>{% endif %}
+  {% if own_review.photo_url %}<figure class="review-photo own-review-photo"><img src="{{ own_review.photo_url }}" alt="Foto masakan yang Anda unggah" loading="lazy"><figcaption>Foto unggahan Anda · izin penayangan dapat dicabut</figcaption><button id="delete-review-photo" type="button" class="btn btn--secondary btn--small">Hapus foto dan cabut izin</button></figure>{% endif %}
   {% if can_review %}
-    <form id="review-form" data-url="{% url 'modul4-review' %}" data-photo-url="{% url 'modul4-review-photo-upload' %}" data-photo-delete-url="{% url 'modul4-review-photo-delete' %}" data-code="{{ selected.pk }}" data-version="{{ own_review.version|default:'' }}">
+    <form id="review-form" class="form-stack" data-url="{% url 'modul4-review' %}" data-photo-url="{% url 'modul4-review-photo-upload' %}" data-photo-delete-url="{% url 'modul4-review-photo-delete' %}" data-code="{{ selected.pk }}" data-version="{{ own_review.version|default:'' }}">
       {% csrf_token %}
-      <label class="field">Rating
-        <select name="rating" required>
-          <option value="">Pilih rating</option>
-          <option value="5" {% if own_review.rating == 5 %}selected{% endif %}>5 — Sangat suka</option>
-          <option value="4" {% if own_review.rating == 4 %}selected{% endif %}>4 — Suka</option>
-          <option value="3" {% if own_review.rating == 3 %}selected{% endif %}>3 — Cukup</option>
-          <option value="2" {% if own_review.rating == 2 %}selected{% endif %}>2 — Kurang suka</option>
-          <option value="1" {% if own_review.rating == 1 %}selected{% endif %}>1 — Tidak suka</option>
-        </select>
-      </label>
-      <label class="field">Ulasan
-        <textarea name="comment" maxlength="500" rows="3" placeholder="Bagaimana hasil masakanmu? Apa yang ingin kamu ubah lain kali?">{{ own_review.comment }}</textarea>
-      </label>
-      <label class="field">Foto hasil masakan (opsional)
-        <input name="photo" type="file" accept="image/jpeg,image/png,image/webp">
-      </label>
+      <label class="field-label" for="review-rating">Rating</label>
+      <select class="control" id="review-rating" name="rating" required>
+        <option value="">Pilih rating</option>
+        <option value="5" {% if own_review.rating == 5 %}selected{% endif %}>5 — Sangat suka</option>
+        <option value="4" {% if own_review.rating == 4 %}selected{% endif %}>4 — Suka</option>
+        <option value="3" {% if own_review.rating == 3 %}selected{% endif %}>3 — Cukup</option>
+        <option value="2" {% if own_review.rating == 2 %}selected{% endif %}>2 — Kurang suka</option>
+        <option value="1" {% if own_review.rating == 1 %}selected{% endif %}>1 — Tidak suka</option>
+      </select>
+      <label class="field-label" for="review-comment">Ulasan</label>
+      <textarea class="field" id="review-comment" name="comment" maxlength="500" rows="3" placeholder="Bagaimana hasil masakanmu? Apa yang ingin kamu ubah lain kali?">{{ own_review.comment }}</textarea>
+      <label class="field-label" for="review-photo">Foto hasil masakan (opsional)</label>
+      <input class="control control--file" id="review-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="review-photo-help">
+      <p class="helper" id="review-photo-help">Foto JPG, PNG, atau WebP maksimal 6 MB. Foto diperiksa moderator sebelum tampil untuk pengguna lain.</p>
       <img id="review-photo-preview" class="review-photo-preview" alt="Pratinjau foto masakan" hidden>
-      <label class="photo-permission">
+      <label class="check-field photo-permission">
         <input name="photo_permission" type="checkbox" value="on">
         <span>Saya mengambil foto ini atau sudah mendapat izin pemiliknya. Saya memberi TAKARKUY izin non-eksklusif, bebas biaya, dan dapat dicabut untuk menyimpan, mengubah ukuran, serta menampilkan foto ini pada halaman resep, jadwal, dan ulasan dengan kredit akun saya. Saya dapat mencabut izin dengan menghapus foto atau ulasan.</span>
       </label>
-      <p class="helper">Foto JPG, PNG, atau WebP maksimal 6 MB. Foto diperiksa moderator sebelum tampil untuk pengguna lain.</p>
       <p id="review-error" class="missing" role="status"></p>
-      <button type="submit">{% if own_review %}Perbarui ulasan{% else %}Kirim ulasan{% endif %}</button>
-      {% if own_review %} <button id="delete-review" type="button" class="text-button">Hapus ulasan</button>{% endif %}
+      <div class="note-actions">
+        <button class="btn btn--primary" type="submit">{% if own_review %}Perbarui ulasan{% else %}Kirim ulasan{% endif %}</button>
+        {% if own_review %}<button id="delete-review" type="button" class="btn btn--secondary">Hapus ulasan</button>{% endif %}
+      </div>
     </form>
   {% else %}
-    <p class="helper">Catat masak resep ini dengan tombol <strong>Sudah Masak</strong> sebelum membagikan foto atau ulasan.</p>
+    <p class="reviews__status"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg>Catat masak resep ini dengan tombol <strong>Sudah Masak</strong> sebelum membagikan foto atau ulasan.</p>
   {% endif %}
 </section>

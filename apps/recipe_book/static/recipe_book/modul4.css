@@ -1,0 +1,1055 @@
+/*
+ * TAKARKUY · Modul 4 (Recipe Book) · CSS tampilan Figma
+ * DIBUAT OTOMATIS oleh alat/scope_css.py dari takarkuy-modul4-lengkap.css + modul4-adapter.css.
+ * Ubah sumbernya lalu jalankan ulang; jangan sunting bagian I–III langsung.
+ *
+ * Lingkup: setiap selector diawali :is(.book-shell, #cooking-dialog), jadi header bersama
+ * (partials/app_header.html), Planner, dan Pantry tidak tersentuh. Keyframes diberi awalan m4-.
+ * Dihapus dari sumber: header/nav/switch tema/skip-link (milik base.css), aturan html/body global,
+ * dan @media (prefers-color-scheme) karena tema mengikuti aplikasi ([data-theme] pada leluhur).
+ */
+
+/* ===== BAGIAN I–III · dari takarkuy-modul4-lengkap.css (terlingkup) ===== */
+.book-shell, #cooking-dialog { color-scheme: light;
+
+
+  --color-bg-page: #F6F8F7;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-surface-2: #F1F5F3;
+  --color-bg-header: #0D4032;
+  --color-bg-warning: #FFF4DC;
+  --color-bg-success: #E2F4EC;
+  --color-text-primary: #12241C;
+  --color-text-secondary: #4B5D54;
+  --color-text-success: #0B6B50;
+  --color-text-warning: #7A4F00;
+  --color-text-info: #1E5A9E;
+  --color-text-on-primary: #FFFFFF;
+  --color-text-on-lime: #15372A;
+  --color-action-primary: #007F5F;
+  --color-action-primary-hover: #006A4F;
+  --color-progress-fill: #008967;
+  --color-nav-active: #D7F35B;
+  --color-focus-ring: #0D4032;
+  --color-border-control: #7C8C84;
+  --color-border-divider: #D6E0DB;
+  --color-backdrop: rgb(0 0 0 / 0.6);
+
+
+  --color-header-text: #F3F6F4;
+  --color-header-text-muted: #C6DACF;
+  --color-header-border: #66776E;
+  --color-header-focus-ring: #D7F35B;
+
+
+  --space-0: 0;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-28: 28px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-72: 72px;
+  --space-80: 80px;
+  --space-120: 120px;
+
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  --radius-pill: 999px;
+
+
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+
+  --target-min: 44px;
+  --link-min-height: 24px;
+  --page-max: 1296px;
+  --dialog-max: 600px;
+
+
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1); }
+[data-theme="dark"] .book-shell, [data-theme="dark"] #cooking-dialog { color-scheme: dark;
+  --color-bg-page: #101713;
+  --color-bg-surface: #1D2923;
+  --color-bg-surface-2: #151E19;
+  --color-bg-warning: #3A3020;
+  --color-bg-success: #203D30;
+  --color-text-primary: #F3F6F4;
+  --color-text-secondary: #BDCEC5;
+  --color-text-success: #77E2C5;
+  --color-text-warning: #F3BE57;
+  --color-text-info: #9CCBFA;
+  --color-focus-ring: #D7F35B;
+  --color-border-control: #66776E;
+  --color-border-divider: #3B4A43; }
+:is(.book-shell, #cooking-dialog) *, :is(.book-shell, #cooking-dialog) *::before, :is(.book-shell, #cooking-dialog) *::after { box-sizing: border-box; }
+.book-shell, #cooking-dialog { margin: 0;
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: var(--weight-regular); }
+:is(.book-shell, #cooking-dialog) h1, :is(.book-shell, #cooking-dialog) h2, :is(.book-shell, #cooking-dialog) h3, :is(.book-shell, #cooking-dialog) h4, :is(.book-shell, #cooking-dialog) p, :is(.book-shell, #cooking-dialog) ul, :is(.book-shell, #cooking-dialog) ol, :is(.book-shell, #cooking-dialog) dl, :is(.book-shell, #cooking-dialog) dd, :is(.book-shell, #cooking-dialog) figure, :is(.book-shell, #cooking-dialog) fieldset { margin: 0; }
+:is(.book-shell, #cooking-dialog) ul[class], :is(.book-shell, #cooking-dialog) ol[class] { list-style: none; padding: 0; }
+:is(.book-shell, #cooking-dialog) fieldset { border: 0; padding: 0; min-width: 0; }
+:is(.book-shell, #cooking-dialog) legend { padding: 0; }
+:is(.book-shell, #cooking-dialog) img, :is(.book-shell, #cooking-dialog) svg { display: block; max-width: 100%; }
+:is(.book-shell, #cooking-dialog) button, :is(.book-shell, #cooking-dialog) input, :is(.book-shell, #cooking-dialog) textarea, :is(.book-shell, #cooking-dialog) select { font: inherit; color: inherit; }
+:is(.book-shell, #cooking-dialog) button { cursor: pointer; }
+:is(.book-shell, #cooking-dialog) table { border-collapse: collapse; width: 100%; }
+:is(.book-shell, #cooking-dialog) :focus { outline: none; }
+:is(.book-shell, #cooking-dialog) :focus-visible { outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px; }
+:is(.book-shell, #cooking-dialog) .icon { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+:is(.book-shell, #cooking-dialog) .icon--sm { width: 16px; height: 16px; }
+:is(.book-shell, #cooking-dialog) .icon--lg { width: 28px; height: 28px; }
+:is(.book-shell, #cooking-dialog) .text-caption { font-size: 12px; line-height: 18px; }
+:is(.book-shell, #cooking-dialog) .text-small { font-size: 13px; line-height: 19px; }
+:is(.book-shell, #cooking-dialog) .text-body-sm { font-size: 14px; line-height: 20px; }
+:is(.book-shell, #cooking-dialog) .text-body { font-size: 15px; line-height: 22px; }
+:is(.book-shell, #cooking-dialog) .text-body-lg { font-size: 16px; line-height: 24px; }
+:is(.book-shell, #cooking-dialog) .text-h4 { font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .text-h3 { font-size: 20px; line-height: 26px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .text-h2 { font-size: 22px; line-height: 28px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .text-h1-sm { font-size: 26px; line-height: 32px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .text-h1 { font-size: 32px; line-height: 40px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .text-display { font-size: 40px; line-height: 48px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .text-medium { font-weight: var(--weight-medium); }
+:is(.book-shell, #cooking-dialog) .text-semibold { font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .text-muted { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) h1 { font-size: 32px; line-height: 40px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) h2 { font-size: 22px; line-height: 28px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) h3 { font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) small, :is(.book-shell, #cooking-dialog) .small { font-size: 13px; line-height: 19px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+:is(.book-shell, #cooking-dialog) .icon-text { font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .page__body { width: 100%; max-width: calc(var(--page-max) + 2 * var(--space-72));
+  margin: 0 auto;
+  padding: var(--space-32) var(--space-72) var(--space-72); }
+:is(.book-shell, #cooking-dialog) .page__layout { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-40); }
+:is(.book-shell, #cooking-dialog) .page__main { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: var(--space-24); }
+:is(.book-shell, #cooking-dialog) .page__aside { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: var(--space-20); }
+:is(.book-shell, #cooking-dialog) .page--search .page__aside { flex-basis: 360px; }
+:is(.book-shell, #cooking-dialog) .page-title { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .page-title__text { display: flex; flex-direction: column; gap: var(--space-4); }
+:is(.book-shell, #cooking-dialog) .page-title__text p { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .back-link { display: inline-flex; align-items: center; gap: var(--space-4); }
+:is(.book-shell, #cooking-dialog) .stack { display: flex; flex-direction: column; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .row { display: flex; align-items: center; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .credit { font-size: 12px; line-height: 18px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .link { display: inline-flex; align-items: center; gap: var(--space-4);
+  min-height: var(--link-min-height);
+  color: var(--color-text-success);
+  font-weight: var(--weight-semibold);
+  text-decoration: underline; text-underline-offset: 3px; }
+:is(.book-shell, #cooking-dialog) .link:hover { text-decoration-thickness: 2px; }
+:is(.book-shell, #cooking-dialog) .link--small { font-size: 13px; }
+:is(.book-shell, #cooking-dialog) .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-8);
+  min-height: var(--target-min);
+  padding: var(--space-12) var(--space-20);
+  border: 1px solid transparent; border-radius: var(--radius-md);
+  font-size: 15px; line-height: 20px; font-weight: var(--weight-semibold);
+  text-decoration: none; white-space: nowrap;
+  transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+:is(.book-shell, #cooking-dialog) .btn--primary { background: var(--color-action-primary); color: var(--color-text-on-primary); }
+:is(.book-shell, #cooking-dialog) .btn--primary:hover, :is(.book-shell, #cooking-dialog) .btn--primary:active { background: var(--color-action-primary-hover); }
+:is(.book-shell, #cooking-dialog) .btn--secondary { background: var(--color-bg-surface-2); color: var(--color-text-primary); border-color: var(--color-border-control); }
+:is(.book-shell, #cooking-dialog) .btn--secondary:hover, :is(.book-shell, #cooking-dialog) .btn--secondary:active { background: var(--color-bg-surface); border-color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .btn--small { padding: var(--space-8) var(--space-16); font-size: 14px; }
+:is(.book-shell, #cooking-dialog) .btn--large { padding: var(--space-20) var(--space-28); }
+:is(.book-shell, #cooking-dialog) .btn--block { width: 100%; }
+:is(.book-shell, #cooking-dialog) .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+:is(.book-shell, #cooking-dialog) .btn[aria-disabled="true"]:hover { background: inherit; }
+:is(.book-shell, #cooking-dialog) .btn[aria-busy="true"] { cursor: progress; pointer-events: none; }
+:is(.book-shell, #cooking-dialog) .btn__spinner { display: none; width: 18px; height: 18px; animation: m4-spin 0.8s linear infinite; }
+:is(.book-shell, #cooking-dialog) .btn[aria-busy="true"] .btn__spinner { display: block; }
+:is(.book-shell, #cooking-dialog) .btn[aria-busy="true"] .btn__icon { display: none; }
+@keyframes m4-spin {to { transform: rotate(360deg); }}
+:is(.book-shell, #cooking-dialog) .icon-btn { display: inline-grid; place-items: center; flex: none;
+  width: var(--target-min); height: var(--target-min);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-pill);
+  background: var(--color-bg-surface-2); color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .icon-btn--plain { border-color: transparent; background: transparent; color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) .icon-btn:hover { color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) .favorite[aria-pressed="true"] { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .favorite[aria-pressed="true"] .icon { fill: currentColor; }
+:is(.book-shell, #cooking-dialog) .chip { display: inline-flex; align-items: center; gap: var(--space-8);
+  min-height: var(--target-min);
+  padding: var(--space-12) var(--space-16);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-pill);
+  background: var(--color-bg-surface-2); color: var(--color-text-primary);
+  font-size: 14px; line-height: 20px; font-weight: var(--weight-medium);
+  white-space: nowrap; }
+:is(.book-shell, #cooking-dialog) .chip:hover { background: var(--color-bg-surface); }
+:is(.book-shell, #cooking-dialog) .chip__check { display: none; }
+:is(.book-shell, #cooking-dialog) .chip[aria-pressed="true"] { padding-left: var(--space-12);
+  background: var(--color-bg-success); border-color: var(--color-text-success); color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .chip[aria-pressed="true"] .chip__check { display: block; }
+:is(.book-shell, #cooking-dialog) .chip--dropdown .chip__chevron { color: var(--color-text-secondary); transition: transform var(--duration-fast) var(--ease-out); }
+:is(.book-shell, #cooking-dialog) .chip--dropdown[aria-expanded="true"] .chip__chevron { transform: rotate(180deg); }
+:is(.book-shell, #cooking-dialog) .stepper { display: flex; align-items: center; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .stepper__btn { display: grid; place-items: center; width: var(--target-min); height: var(--target-min);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-md);
+  background: var(--color-bg-surface-2); color: var(--color-text-primary);
+  font-size: 20px; line-height: 24px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .stepper__btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+:is(.book-shell, #cooking-dialog) .stepper__value { min-width: 2ch; text-align: center; font-size: 20px; line-height: 26px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .stepper__unit { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .search { display: flex; flex-direction: column; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .search__label, :is(.book-shell, #cooking-dialog) .field-label { font-size: 14px; line-height: 20px; font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .search__field { display: flex; align-items: center; gap: var(--space-12);
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-16);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-lg); }
+:is(.book-shell, #cooking-dialog) .search__field:focus-within { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+:is(.book-shell, #cooking-dialog) .search__field .icon { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .search__input { flex: 1; min-width: 0; min-height: var(--target-min);
+  border: 0; background: transparent; color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) .search__input:focus-visible { outline: none; }
+:is(.book-shell, #cooking-dialog) .search__input::placeholder { color: var(--color-text-secondary); opacity: 1; }
+:is(.book-shell, #cooking-dialog) .filters { display: flex; flex-direction: column; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .filters__row { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .filters__active { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-12); font-size: 13px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .results-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .result-count { font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .sort { display: flex; align-items: center; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-20); }
+:is(.book-shell, #cooking-dialog) .recipe-list { display: flex; flex-direction: column; gap: var(--space-16); }
+:is(.book-shell, #cooking-dialog) .recipe-card { position: relative;
+  display: flex; flex-direction: column;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-xl);
+  overflow: hidden; }
+:is(.book-shell, #cooking-dialog) .recipe-card:hover { border-color: var(--color-border-control); }
+:is(.book-shell, #cooking-dialog) .recipe-card:focus-within { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+:is(.book-shell, #cooking-dialog) .recipe-card__photo { width: 100%; aspect-ratio: 20 / 9; object-fit: cover; background: var(--color-bg-surface-2); }
+:is(.book-shell, #cooking-dialog) .recipe-card__placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-8);
+  aspect-ratio: 20 / 9; background: var(--color-bg-surface-2);
+  color: var(--color-text-secondary); font-size: 13px; }
+:is(.book-shell, #cooking-dialog) .recipe-card__body { display: flex; flex-direction: column; gap: var(--space-8); padding: var(--space-16) var(--space-16) var(--space-20); }
+:is(.book-shell, #cooking-dialog) .recipe-card__head { display: flex; align-items: flex-start; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .recipe-card__title { flex: 1; min-width: 0; font-size: 18px; line-height: 24px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .recipe-card__title a { color: inherit; text-decoration: none; }
+:is(.book-shell, #cooking-dialog) .recipe-card__title a:hover { text-decoration: underline; }
+:is(.book-shell, #cooking-dialog) .recipe-card__title a:focus-visible { outline: none; }
+:is(.book-shell, #cooking-dialog) .recipe-card__meta { font-size: 14px; line-height: 20px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .recipe-card__credit { font-size: 12px; line-height: 18px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .readiness { display: flex; align-items: center; gap: var(--space-8);
+  font-size: 14px; line-height: 20px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) [data-readiness="ready"] .readiness, :is(.book-shell, #cooking-dialog) .readiness[data-readiness="ready"] { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) [data-readiness="short"] .readiness, :is(.book-shell, #cooking-dialog) .readiness[data-readiness="short"] { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) [data-readiness="check"] .readiness, :is(.book-shell, #cooking-dialog) .readiness[data-readiness="check"] { color: var(--color-text-info); }
+:is(.book-shell, #cooking-dialog) .is-pantry-empty .recipe-card .readiness { display: none; }
+:is(.book-shell, #cooking-dialog) .badge { align-self: flex-start;
+  display: inline-flex; align-items: center; gap: var(--space-8);
+  padding: var(--space-4) var(--space-12) var(--space-4) var(--space-8);
+  border-radius: var(--radius-sm);
+  font-size: 13px; line-height: 18px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .badge--allergen { background: var(--color-bg-warning); color: var(--color-text-warning); border: 1px solid var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .tag--allergen { font-size: 12px; line-height: 18px; font-weight: var(--weight-semibold); color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .allergy-banner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-12) var(--space-16);
+  padding: var(--space-16) var(--space-20);
+  background: var(--color-bg-warning); color: var(--color-text-primary);
+  border: 2px solid var(--color-text-warning); border-radius: var(--radius-lg); }
+:is(.book-shell, #cooking-dialog) .allergy-banner > .icon { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .allergy-banner__text { flex: 1 1 240px; display: flex; flex-direction: column; gap: var(--space-2); }
+:is(.book-shell, #cooking-dialog) .allergy-banner__title { color: var(--color-text-warning); font-weight: var(--weight-semibold); font-size: 16px; line-height: 24px; }
+:is(.book-shell, #cooking-dialog) .allergy-banner__actions { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .allergy-banner--compact { flex-wrap: nowrap; gap: var(--space-8);
+  padding: var(--space-12) var(--space-16); border-width: 1px;
+  color: var(--color-text-warning); font-size: 14px; line-height: 20px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .allergy-banner--compact .allergy-banner__text { flex: 1; }
+:is(.book-shell, #cooking-dialog) [data-allergen-ack="true"] .allergy-banner--full { display: none; }
+:is(.book-shell, #cooking-dialog) [data-allergen-ack="false"] .allergy-banner--ack { display: none; }
+:is(.book-shell, #cooking-dialog) .empty-pantry { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-16) var(--space-20);
+  padding: var(--space-20) var(--space-24);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-text-success); border-radius: var(--radius-xl); }
+:is(.book-shell, #cooking-dialog) .empty-pantry__icon { display: grid; place-items: center; width: 56px; height: 56px; flex: none;
+  border-radius: var(--radius-pill); background: var(--color-bg-success); color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .empty-pantry__text { flex: 1 1 240px; display: flex; flex-direction: column; gap: var(--space-4); }
+:is(.book-shell, #cooking-dialog) .empty-pantry__text p { font-size: 14px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .notice, :is(.book-shell, #cooking-dialog) .status--success, :is(.book-shell, #cooking-dialog) .status--warning { display: flex; flex-direction: column; gap: var(--space-4);
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-lg);
+  font-size: 14px; line-height: 20px; }
+:is(.book-shell, #cooking-dialog) .notice__title, :is(.book-shell, #cooking-dialog) .status__title { display: flex; align-items: center; gap: var(--space-8); font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .notice--info { flex-direction: row; align-items: center; gap: var(--space-8); padding: 0; color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) .notice--info > .icon { color: var(--color-text-info); }
+:is(.book-shell, #cooking-dialog) .notice--warning, :is(.book-shell, #cooking-dialog) .notice--error, :is(.book-shell, #cooking-dialog) .status--warning { background: var(--color-bg-warning); border: 1px solid var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .notice--warning .notice__title, :is(.book-shell, #cooking-dialog) .notice--error .notice__title, :is(.book-shell, #cooking-dialog) .status--warning .status__title { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .status--success { background: var(--color-bg-success); border: 1px solid var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .status--success .status__title { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .panel { display: flex; flex-direction: column; gap: var(--space-12);
+  padding: var(--space-24);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl); }
+:is(.book-shell, #cooking-dialog) .panel__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .panel__count { font-size: 13px; font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .panel p { font-size: 14px; line-height: 20px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .legend { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: var(--space-8) var(--space-12); }
+:is(.book-shell, #cooking-dialog) .legend dt { font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .legend dd b { display: block; font-size: 14px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .legend dd span { font-size: 13px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .legend [data-stock="ok"] { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .legend [data-stock="short"] { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .legend [data-stock="check"] { color: var(--color-text-info); }
+:is(.book-shell, #cooking-dialog) .recipe-hero { display: flex; align-items: flex-start; gap: var(--space-16); }
+:is(.book-shell, #cooking-dialog) .recipe-hero__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+:is(.book-shell, #cooking-dialog) .recipe-hero__text p { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .recipe-photo { width: 100%; aspect-ratio: 41 / 19; object-fit: cover; border-radius: var(--radius-xl); background: var(--color-bg-surface-2); }
+:is(.book-shell, #cooking-dialog) .nutrition__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .nutrition__tile { padding: var(--space-12) var(--space-16); background: var(--color-bg-surface-2); border-radius: var(--radius-md); }
+:is(.book-shell, #cooking-dialog) .nutrition__value { display: block; font-size: 20px; line-height: 26px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .nutrition__label { font-size: 13px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .nutrition__cost { padding-top: var(--space-16); border-top: 1px solid var(--color-border-divider); }
+:is(.book-shell, #cooking-dialog) .nutrition__cost strong { display: block; font-size: 20px; line-height: 26px; }
+:is(.book-shell, #cooking-dialog) .ingredients { display: flex; flex-direction: column; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .ingredients__header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .ingredients__summary { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-16); font-size: 14px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .ingredients__summary [data-stock="short"] { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .ingredients__table, :is(.book-shell, #cooking-dialog) .shortage { border: 1px solid var(--color-border-divider); border-radius: var(--radius-lg);
+  border-collapse: separate; border-spacing: 0; overflow: hidden; }
+:is(.book-shell, #cooking-dialog) .ingredients__table th, :is(.book-shell, #cooking-dialog) .ingredients__table td, :is(.book-shell, #cooking-dialog) .shortage td { padding: var(--space-12) var(--space-16);
+  background: var(--color-bg-surface-2);
+  border-bottom: 1px solid var(--color-border-divider);
+  text-align: left; vertical-align: middle; }
+:is(.book-shell, #cooking-dialog) .ingredients__table tr:last-child td, :is(.book-shell, #cooking-dialog) .shortage tr:last-child td { border-bottom: 0; }
+:is(.book-shell, #cooking-dialog) .ingredients__table thead th { padding-block: var(--space-8);
+  background: var(--color-bg-surface);
+  font-size: 13px; line-height: 19px; font-weight: var(--weight-semibold); color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .ingredients__table .ingredient__name { font-weight: var(--weight-medium); }
+:is(.book-shell, #cooking-dialog) .ingredients__table .amount { text-align: right; white-space: nowrap; }
+:is(.book-shell, #cooking-dialog) .ingredients__table .status { text-align: right; white-space: nowrap; font-size: 14px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) tr[data-stock="ok"]        .status { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) tr[data-stock="short"]     .status { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) tr[data-stock="check"]     .status { color: var(--color-text-info); }
+:is(.book-shell, #cooking-dialog) tr[data-stock="outside"]   .status, :is(.book-shell, #cooking-dialog) tr[data-stock="untracked"] .status { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .shortage td { padding: var(--space-8) var(--space-16); font-size: 14px; }
+:is(.book-shell, #cooking-dialog) .shortage .amount { text-align: right; white-space: nowrap; font-weight: var(--weight-semibold); color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .ready[data-readiness] .readiness { font-size: 15px; }
+:is(.book-shell, #cooking-dialog) .guide { gap: var(--space-20); }
+:is(.book-shell, #cooking-dialog) .steps { counter-reset: step; }
+:is(.book-shell, #cooking-dialog) .steps__item { counter-increment: step;
+  display: flex; align-items: flex-start; gap: var(--space-16);
+  padding: var(--space-12) 0;
+  border-bottom: 1px solid var(--color-border-divider);
+  font-size: 16px; line-height: 24px; }
+:is(.book-shell, #cooking-dialog) .steps__item:last-child { border-bottom: 0; }
+:is(.book-shell, #cooking-dialog) .steps__item::before { content: counter(step);
+  display: grid; place-items: center; flex: none; width: 28px; height: 28px;
+  border-radius: var(--radius-pill); background: var(--color-bg-success); color: var(--color-text-success);
+  font-size: 14px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .source { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); font-size: 14px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .disclosures { display: flex; flex-direction: column; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .disclosure { background: var(--color-bg-surface-2);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-lg); }
+:is(.book-shell, #cooking-dialog) .disclosure > summary { display: flex; align-items: center; gap: var(--space-12);
+  min-height: var(--target-min); padding: var(--space-16);
+  cursor: pointer; list-style: none; }
+:is(.book-shell, #cooking-dialog) .disclosure > summary::-webkit-details-marker { display: none; }
+:is(.book-shell, #cooking-dialog) .disclosure > summary > .icon:first-child { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .disclosure__text { flex: 1; display: flex; flex-direction: column; gap: var(--space-2); }
+:is(.book-shell, #cooking-dialog) .disclosure__title { font-size: 16px; line-height: 24px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .disclosure__hint { font-size: 13px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .disclosure__chevron { color: var(--color-text-secondary); transition: transform var(--duration-fast) var(--ease-out); }
+:is(.book-shell, #cooking-dialog) .disclosure[open] .disclosure__chevron { transform: rotate(180deg); }
+:is(.book-shell, #cooking-dialog) .disclosure__body { display: flex; flex-direction: column; gap: var(--space-12); padding: 0 var(--space-16) var(--space-16); }
+:is(.book-shell, #cooking-dialog) .field { width: 100%; min-height: 96px; padding: var(--space-12) var(--space-16);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-md);
+  resize: vertical; }
+:is(.book-shell, #cooking-dialog) .field::placeholder { color: var(--color-text-secondary); opacity: 1; }
+:is(.book-shell, #cooking-dialog) .cook-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-12) var(--space-16);
+  padding: var(--space-16) var(--space-20);
+  background: var(--color-bg-surface-2);
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-lg); }
+:is(.book-shell, #cooking-dialog) .cook-bar__text { flex: 1 1 240px; display: flex; flex-direction: column; gap: var(--space-2); }
+:is(.book-shell, #cooking-dialog) .cook-bar__text p { font-size: 14px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .cook-bar[data-state="recorded"] { color: var(--color-text-success); font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .reviews__status { display: inline-flex; align-items: center; gap: var(--space-8); font-size: 13px; font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .reviews[data-state="can-review"] { outline: 2px solid var(--color-text-success); outline-offset: -2px; }
+:is(.book-shell, #cooking-dialog) .reviews[data-state="can-review"] .reviews__status { display: none; }
+:is(.book-shell, #cooking-dialog) .page--cooking .page__body { max-width: calc(920px + 2 * var(--space-72)); }
+:is(.book-shell, #cooking-dialog) .cooking { display: flex; flex-direction: column; gap: var(--space-20); }
+:is(.book-shell, #cooking-dialog) .step { display: flex; flex-direction: column; gap: var(--space-24);
+  padding: var(--space-32);
+  background: var(--color-bg-surface); border-radius: var(--radius-2xl); }
+:is(.book-shell, #cooking-dialog) .step__title { font-size: 40px; line-height: 48px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .step__title:focus-visible { outline-offset: 6px; }
+:is(.book-shell, #cooking-dialog) .progress-group { display: flex; flex-direction: column; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .progress-group__label { font-size: 13px; font-weight: var(--weight-semibold); letter-spacing: 0.02em; color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .progress { height: 8px; border-radius: var(--radius-sm); background: var(--color-border-divider); overflow: hidden; }
+:is(.book-shell, #cooking-dialog) .progress__fill { height: 100%; border-radius: inherit; background: var(--color-progress-fill); transition: width var(--duration-base) var(--ease-out); }
+:is(.book-shell, #cooking-dialog) .step__ingredient-list { display: flex; flex-wrap: wrap; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .step__ingredient { flex: 1 1 200px; padding: var(--space-12) var(--space-16); background: var(--color-bg-surface-2); border-radius: var(--radius-lg); }
+:is(.book-shell, #cooking-dialog) .step__ingredient strong { display: block; font-size: 20px; line-height: 26px; }
+:is(.book-shell, #cooking-dialog) .step__ingredient span { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .step-nav { display: flex; justify-content: flex-end; gap: var(--space-12); }
+:is(.book-shell, #cooking-dialog) .step-nav .btn { min-height: 56px; padding-inline: var(--space-28); }
+:is(.book-shell, #cooking-dialog) .step-nav .btn--previous { margin-right: auto; }
+#cooking-dialog.modal { width: min(var(--dialog-max), calc(100vw - 2 * var(--space-16)));
+  max-height: calc(100vh - 2 * var(--space-32));
+  margin: auto; padding: var(--space-28);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-2xl);
+  overflow: auto; }
+#cooking-dialog.modal[open] { display: flex; flex-direction: column; gap: var(--space-20); }
+#cooking-dialog.modal::backdrop, #cooking-dialog.modal__backdrop { background: var(--color-backdrop); }
+#cooking-dialog.modal__backdrop { position: fixed; inset: 0; }
+#cooking-dialog.modal__header { display: flex; align-items: flex-start; gap: var(--space-12); }
+#cooking-dialog.modal__header .stack { flex: 1; gap: var(--space-2); }
+#cooking-dialog.modal__header p { color: var(--color-text-secondary); }
+#cooking-dialog.modal__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
+#cooking-dialog.modal__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--space-12); }
+#cooking-dialog.modal__foot { font-size: 13px; color: var(--color-text-secondary); text-align: right; }
+:is(.book-shell, #cooking-dialog) .sheet__handle { display: none; }
+#cooking-dialog.modal--alert { border: 2px solid var(--color-text-warning); }
+#cooking-dialog.modal--alert .modal__header { align-items: center; }
+:is(.book-shell, #cooking-dialog) .toast { position: fixed; left: 50%; bottom: var(--space-32); z-index: 50;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: var(--space-12);
+  max-width: calc(100vw - 2 * var(--space-16));
+  padding: var(--space-12) var(--space-12) var(--space-12) var(--space-16);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  border: 1px solid var(--color-text-success); border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  animation: m4-toast-in var(--duration-base) var(--ease-out); }
+:is(.book-shell, #cooking-dialog) .toast > .icon { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .toast__text { display: flex; flex-direction: column; }
+:is(.book-shell, #cooking-dialog) .toast__text strong { font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .toast__text small { font-size: 13px; }
+:is(.book-shell, #cooking-dialog) .toast[data-state="undone"] { border-color: var(--color-border-control); }
+:is(.book-shell, #cooking-dialog) .toast[data-state="undone"] > .icon { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .toast[hidden] { display: none; }
+@keyframes m4-toast-in {from { opacity: 0; transform: translate(-50%, 8px); }}
+:is(.book-shell, #cooking-dialog) .recipe-card.is-loading { pointer-events: none; }
+:is(.book-shell, #cooking-dialog) .skeleton { display: block; border-radius: var(--radius-sm);
+  background: var(--color-bg-surface-2);
+  animation: m4-pulse 1.4s ease-in-out infinite; }
+:is(.book-shell, #cooking-dialog) .skeleton--photo { aspect-ratio: 20 / 9; border-radius: 0; }
+:is(.book-shell, #cooking-dialog) .skeleton--line { height: 14px; }
+:is(.book-shell, #cooking-dialog) .skeleton--title { height: 18px; width: 60%; }
+@keyframes m4-pulse {50% { opacity: 0.55; }}
+:is(.book-shell, #cooking-dialog) .empty-state, :is(.book-shell, #cooking-dialog) .error-state { display: flex; flex-direction: column; align-items: center; gap: var(--space-12);
+  padding: var(--space-28) var(--space-24);
+  border-radius: var(--radius-xl); text-align: center; }
+:is(.book-shell, #cooking-dialog) .empty-state { background: var(--color-bg-surface); }
+:is(.book-shell, #cooking-dialog) .empty-state > .icon { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .error-state { background: var(--color-bg-warning); border: 1px solid var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .error-state > .icon { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .empty-state p, :is(.book-shell, #cooking-dialog) .error-state p { font-size: 14px; }
+@media (max-width: 1024px) {
+  :is(.book-shell, #cooking-dialog) .page__body { padding-inline: var(--space-32); }
+}
+@media (max-width: 480px) {
+  :is(.book-shell, #cooking-dialog) .page__body { padding: var(--space-24) var(--space-20) var(--space-48); }
+  :is(.book-shell, #cooking-dialog) .page__layout { gap: var(--space-24); }
+  :is(.book-shell, #cooking-dialog) h1, :is(.book-shell, #cooking-dialog) .text-h1 { font-size: 26px; line-height: 32px; }
+  :is(.book-shell, #cooking-dialog) .results-header, :is(.book-shell, #cooking-dialog) .page-title { flex-direction: column; align-items: stretch; }
+  :is(.book-shell, #cooking-dialog) .recipe-grid { grid-template-columns: 1fr; }
+  :is(.book-shell, #cooking-dialog) .allergy-banner__actions, :is(.book-shell, #cooking-dialog) .allergy-banner__actions .btn { width: 100%; }
+  :is(.book-shell, #cooking-dialog) .empty-pantry .btn { width: 100%; }
+  :is(.book-shell, #cooking-dialog) .ingredients__table thead { display: none; }
+  :is(.book-shell, #cooking-dialog) .ingredients__table tr { display: grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-border-divider); background: var(--color-bg-surface-2); }
+  :is(.book-shell, #cooking-dialog) .ingredients__table tr:last-child { border-bottom: 0; }
+  :is(.book-shell, #cooking-dialog) .ingredients__table td { border: 0; padding: var(--space-8) var(--space-16) 0; }
+  :is(.book-shell, #cooking-dialog) .ingredients__table .status { grid-column: 1 / -1; text-align: left; padding-bottom: var(--space-12); }
+  :is(.book-shell, #cooking-dialog) .cook-bar { flex-direction: column; align-items: stretch; }
+  :is(.book-shell, #cooking-dialog) .cook-bar__text { flex: none; }
+  :is(.book-shell, #cooking-dialog) .allergy-banner__text, :is(.book-shell, #cooking-dialog) .empty-pantry__text { flex: 1 1 100%; min-width: 0; }
+  :is(.book-shell, #cooking-dialog) .cook-bar .btn { width: 100%; }
+  :is(.book-shell, #cooking-dialog) .cook-bar[data-state="recorded"] { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  :is(.book-shell, #cooking-dialog) .cook-bar[data-state="recorded"] .cook-bar__text { flex: 1 1 auto; }
+  :is(.book-shell, #cooking-dialog) .cook-bar--sticky { position: sticky; bottom: 0; z-index: 10;
+    flex-direction: row; align-items: center;
+    margin-inline: calc(-1 * var(--space-20));
+    padding: var(--space-12) var(--space-20) var(--space-20);
+    border-radius: 0; border-width: 1px 0 0;
+    background: var(--color-bg-surface); }
+  :is(.book-shell, #cooking-dialog) .cook-bar--sticky .btn { width: auto; }
+  #cooking-dialog.modal { width: 100vw; max-width: none; max-height: 90vh;
+    margin: auto 0 0; padding: var(--space-12) var(--space-20) var(--space-24);
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; border-width: 1px 0 0; }
+  :is(.book-shell, #cooking-dialog) .sheet__handle { display: block; align-self: center; width: 40px; height: 4px; border-radius: 2px; background: var(--color-border-control); }
+  #cooking-dialog.modal__actions { flex-direction: column-reverse; }
+  #cooking-dialog.modal__actions .btn { width: 100%; }
+  #cooking-dialog.modal__foot { text-align: left; }
+  :is(.book-shell, #cooking-dialog) .step { padding: var(--space-20); }
+  :is(.book-shell, #cooking-dialog) .step__title { font-size: 26px; line-height: 32px; }
+  :is(.book-shell, #cooking-dialog) .step-nav .btn--next { flex: 1; }
+  :is(.book-shell, #cooking-dialog) .toast { left: var(--space-16); right: var(--space-16); bottom: var(--space-16); transform: none; animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.book-shell, #cooking-dialog) *, :is(.book-shell, #cooking-dialog) *::before, :is(.book-shell, #cooking-dialog) *::after { animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important; }
+}
+:is(.book-shell, #cooking-dialog) .results-toolbar { position: sticky; top: 0; z-index: 20;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--space-8) var(--space-12);
+  margin-inline: calc(-1 * var(--space-12));
+  padding: var(--space-12);
+  background: color-mix(in srgb, var(--color-bg-page) 90%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-base) var(--ease-out); }
+:is(.book-shell, #cooking-dialog) .results-toolbar.is-stuck { border-bottom-color: var(--color-border-divider); }
+:is(.book-shell, #cooking-dialog) .results-toolbar__filters { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) #hasil, :is(.book-shell, #cooking-dialog) [id] { scroll-margin-top: 96px; }
+:is(.book-shell, #cooking-dialog) .recipe-card { transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+:is(.book-shell, #cooking-dialog) .recipe-card__title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+:is(.book-shell, #cooking-dialog) .recipe-card .favorite { position: relative; z-index: 2; }
+@media (hover: hover) {
+  :is(.book-shell, #cooking-dialog) .recipe-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgb(0 0 0 / 0.10); }
+  :is(.book-shell, #cooking-dialog) .recipe-card:hover .recipe-card__title a { text-decoration: underline; }
+}
+:is(.book-shell, #cooking-dialog) .recipe-card__photo { background: var(--color-bg-surface-2); }
+:is(.book-shell, #cooking-dialog) .recipe-list, :is(.book-shell, #cooking-dialog) .recipe-grid--adaptive { container: cards / inline-size; }
+@container cards (max-width: 440px) {
+  :is(.book-shell, #cooking-dialog) .recipe-card { flex-direction: row; align-items: stretch; }
+  :is(.book-shell, #cooking-dialog) .recipe-card__photo, :is(.book-shell, #cooking-dialog) .recipe-card__placeholder { width: 104px; flex: none; aspect-ratio: auto; height: auto; min-height: 104px; }
+  :is(.book-shell, #cooking-dialog) .recipe-card__placeholder span { display: none; }
+  :is(.book-shell, #cooking-dialog) .recipe-card__body { flex: 1; min-width: 0; padding: var(--space-12); gap: var(--space-4); }
+  :is(.book-shell, #cooking-dialog) .recipe-card__title { font-size: 15px; line-height: 20px; }
+  :is(.book-shell, #cooking-dialog) .recipe-card__meta { font-size: 13px; line-height: 18px; }
+  :is(.book-shell, #cooking-dialog) .recipe-card .badge { padding: var(--space-2) var(--space-8); font-size: 12px; }
+  :is(.book-shell, #cooking-dialog) .recipe-card .favorite { width: 36px; height: 36px; }
+}
+:is(.book-shell, #cooking-dialog) .dropdown { position: relative; }
+:is(.book-shell, #cooking-dialog) .menu { position: absolute; top: calc(100% + var(--space-8)); left: 0; z-index: 30;
+  display: none; min-width: 240px;
+  padding: var(--space-8);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-divider); border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.16); }
+:is(.book-shell, #cooking-dialog) .chip--dropdown[aria-expanded="true"] + .menu { display: block; }
+:is(.book-shell, #cooking-dialog) .menu__option { display: flex; align-items: center; gap: var(--space-8);
+  min-height: var(--target-min); padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-md); cursor: pointer;
+  font-size: 14px; }
+:is(.book-shell, #cooking-dialog) .menu__option:hover, :is(.book-shell, #cooking-dialog) .menu__option.is-active { background: var(--color-bg-surface-2); }
+:is(.book-shell, #cooking-dialog) .menu__check { width: 16px; visibility: hidden; color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .menu__option[aria-selected="true"] { font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .menu__option[aria-selected="true"] .menu__check { visibility: visible; }
+:is(.book-shell, #cooking-dialog) .menu__count { margin-left: auto; font-size: 13px; color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) .menu__option[aria-disabled="true"] { opacity: 0.45; cursor: default; }
+:is(.book-shell, #cooking-dialog) .shortage-actions { display: flex; flex-direction: column; gap: var(--space-8); }
+:is(.book-shell, #cooking-dialog) .shortage-actions__list { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-8);
+  font-size: 13px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .shortage-actions__list li { padding: var(--space-2) var(--space-8); border-radius: var(--radius-pill); background: var(--color-bg-surface-2); }
+:is(.book-shell, #cooking-dialog) .btn--with-count .btn__count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, currentColor 18%, transparent);
+  font-size: 12px; font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) .is-updated { animation: m4-value-flash 900ms var(--ease-out); border-radius: var(--radius-sm); }
+@keyframes m4-value-flash {0%   { background-color: color-mix(in srgb, var(--color-text-success) 30%, transparent); }
+  100% { background-color: transparent; }}
+:is(.book-shell, #cooking-dialog) .stepper__value, :is(.book-shell, #cooking-dialog) .nutrition__value, :is(.book-shell, #cooking-dialog) .amount, :is(.book-shell, #cooking-dialog) .nutrition__cost strong { font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) .nutrition__value.is-updated, :is(.book-shell, #cooking-dialog) .nutrition__cost strong.is-updated { display: block; width: fit-content; padding-inline: var(--space-4); margin-inline: calc(-1 * var(--space-4)); }
+:is(.book-shell, #cooking-dialog) .steps--checkable .steps__item { padding-block: 0; }
+:is(.book-shell, #cooking-dialog) .steps--checkable .steps__item::before { display: none; }
+:is(.book-shell, #cooking-dialog) .steps__label { display: flex; align-items: flex-start; gap: var(--space-16); width: 100%; padding: var(--space-12) 0; cursor: pointer; }
+:is(.book-shell, #cooking-dialog) .steps__check { appearance: none; flex: none; display: grid; place-items: center;
+  width: 28px; height: 28px; margin: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-success); color: var(--color-text-success);
+  font-size: 14px; font-weight: var(--weight-semibold);
+  cursor: pointer; }
+:is(.book-shell, #cooking-dialog) .steps__check::before { content: attr(data-step); }
+:is(.book-shell, #cooking-dialog) .steps__check:checked { background: var(--color-action-primary); color: var(--color-text-on-primary); }
+:is(.book-shell, #cooking-dialog) .steps__check:checked::before { content: "✓"; }
+:is(.book-shell, #cooking-dialog) .steps__item:has(.steps__check:checked) .steps__text { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .steps__progress { font-size: 13px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .timer { display: inline-flex; align-items: center; gap: var(--space-8);
+  margin-top: var(--space-8); min-height: 36px;
+  padding: var(--space-4) var(--space-12);
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-pill);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  font-size: 14px; font-weight: var(--weight-semibold); font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) .timer[data-state="running"] { border-color: var(--color-text-success); color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .timer[data-state="done"] { border-color: var(--color-text-warning); background: var(--color-bg-warning); color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .toast-region { position: fixed; left: 50%; bottom: var(--space-32); z-index: 50;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: var(--space-8);
+  width: max-content; max-width: calc(100vw - 2 * var(--space-16)); }
+:is(.book-shell, #cooking-dialog) .toast-region .toast { position: relative; left: auto; bottom: auto; transform: none; overflow: hidden; }
+:is(.book-shell, #cooking-dialog) .toast__timer { position: absolute; left: 0; bottom: 0; height: 3px; width: 100%;
+  background: var(--color-text-success);
+  transform-origin: left;
+  animation: m4-toast-countdown 8s linear forwards; }
+:is(.book-shell, #cooking-dialog) .toast:hover .toast__timer, :is(.book-shell, #cooking-dialog) .toast:focus-within .toast__timer { animation-play-state: paused; }
+@keyframes m4-toast-countdown {to { transform: scaleX(0); }}
+:is(.book-shell, #cooking-dialog) h1, :is(.book-shell, #cooking-dialog) h2, :is(.book-shell, #cooking-dialog) h3, :is(.book-shell, #cooking-dialog) .recipe-card__title, :is(.book-shell, #cooking-dialog) .step__title { text-wrap: balance; }
+:is(.book-shell, #cooking-dialog) p { text-wrap: pretty; }
+:is(.book-shell, #cooking-dialog) .page-title h1 { font-size: clamp(26px, 2.2vw + 16px, 32px); line-height: 1.25; }
+@media (forced-colors: active) {
+  :is(.book-shell, #cooking-dialog) .chip[aria-pressed="true"], :is(.book-shell, #cooking-dialog) .badge, :is(.book-shell, #cooking-dialog) .allergy-banner, :is(.book-shell, #cooking-dialog) .status--warning, :is(.book-shell, #cooking-dialog) .status--success, :is(.book-shell, #cooking-dialog) .notice--error, :is(.book-shell, #cooking-dialog) .menu__option[aria-selected="true"] { border: 2px solid CanvasText; }
+  :is(.book-shell, #cooking-dialog) .progress__fill, :is(.book-shell, #cooking-dialog) .toast__timer { background: Highlight; }
+  :is(.book-shell, #cooking-dialog) .steps__check { border: 1px solid ButtonText; }
+  :is(.book-shell, #cooking-dialog) .readiness, :is(.book-shell, #cooking-dialog) .status { forced-color-adjust: none; }
+}
+@media print {
+  .book-shell, #cooking-dialog { --color-bg-page: #FFFFFF; --color-bg-surface: #FFFFFF; --color-bg-surface-2: #FFFFFF; --color-text-primary: #000000; --color-text-secondary: #333333; }
+  :is(.book-shell, #cooking-dialog) .page--search .page__aside, :is(.book-shell, #cooking-dialog) .results-toolbar, :is(.book-shell, #cooking-dialog) .toast-region, :is(.book-shell, #cooking-dialog) .cook-bar, :is(.book-shell, #cooking-dialog) .reviews, :is(.book-shell, #cooking-dialog) .favorite, :is(.book-shell, #cooking-dialog) .disclosures, :is(.book-shell, #cooking-dialog) .allergy-banner__actions, :is(.book-shell, #cooking-dialog) .shortage-actions .btn, :is(.book-shell, #cooking-dialog) .timer, :is(.book-shell, #cooking-dialog) .no-print { display: none !important; }
+  .book-shell, #cooking-dialog { font-size: 11pt; line-height: 1.45; }
+  :is(.book-shell, #cooking-dialog) .page__body { padding: 0; max-width: none; }
+  :is(.book-shell, #cooking-dialog) .page__layout { display: block; }
+  :is(.book-shell, #cooking-dialog) .panel, :is(.book-shell, #cooking-dialog) .ingredients__table, :is(.book-shell, #cooking-dialog) .recipe-card { box-shadow: none; border: 1px solid #999; }
+  :is(.book-shell, #cooking-dialog) .steps__item, :is(.book-shell, #cooking-dialog) tr, :is(.book-shell, #cooking-dialog) .recipe-card { break-inside: avoid; }
+  :is(.book-shell, #cooking-dialog) .allergy-banner { border: 2px solid #000; }
+  :is(.book-shell, #cooking-dialog) a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; }
+}
+.book-shell, #cooking-dialog { --motion-micro: 120ms;
+  --motion-small: 200ms;
+  --motion-medium: 280ms;
+  --motion-large: 360ms;
+  --motion-stagger: 40ms;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 3px rgb(0 0 0 / 0.08);
+  --shadow-2: 0 4px 12px rgb(0 0 0 / 0.10);
+  --shadow-3: 0 12px 32px rgb(0 0 0 / 0.16); }
+[data-theme="dark"] .book-shell, [data-theme="dark"] #cooking-dialog { --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 6px 16px rgb(0 0 0 / 0.45);
+  --shadow-3: 0 16px 40px rgb(0 0 0 / 0.55); }
+@media (prefers-reduced-motion: no-preference) {
+  .book-shell, #cooking-dialog { interpolate-size: allow-keywords; }
+  @view-transition {navigation: auto;}
+  ::view-transition-group(*) { animation-duration: var(--motion-large); animation-timing-function: var(--ease-standard); }
+  ::view-transition-old(root) { animation: m4-vt-out var(--motion-small) var(--ease-accelerate) both; }
+  ::view-transition-new(root) { animation: m4-vt-in var(--motion-medium) var(--ease-decelerate) both; }
+  @keyframes m4-vt-out {to { opacity: 0; }}
+  @keyframes m4-vt-in {from { opacity: 0; }}
+  :is(.book-shell, #cooking-dialog) .recipe-grid > .recipe-card, :is(.book-shell, #cooking-dialog) .recipe-list > .recipe-card, :is(.book-shell, #cooking-dialog) .page__aside > .panel { animation: m4-rise var(--motion-medium) var(--ease-decelerate) both; }
+  :is(.book-shell, #cooking-dialog) .recipe-grid > .recipe-card:nth-child(2), :is(.book-shell, #cooking-dialog) .recipe-list > .recipe-card:nth-child(2), :is(.book-shell, #cooking-dialog) .page__aside > .panel:nth-child(2) { animation-delay: calc(1 * var(--motion-stagger)); }
+  :is(.book-shell, #cooking-dialog) .recipe-grid > .recipe-card:nth-child(3), :is(.book-shell, #cooking-dialog) .recipe-list > .recipe-card:nth-child(3), :is(.book-shell, #cooking-dialog) .page__aside > .panel:nth-child(3) { animation-delay: calc(2 * var(--motion-stagger)); }
+  :is(.book-shell, #cooking-dialog) .recipe-grid > .recipe-card:nth-child(4) { animation-delay: calc(3 * var(--motion-stagger)); }
+  :is(.book-shell, #cooking-dialog) .recipe-grid > .recipe-card:nth-child(5) { animation-delay: calc(4 * var(--motion-stagger)); }
+  :is(.book-shell, #cooking-dialog) .recipe-grid > .recipe-card:nth-child(n+6) { animation-delay: calc(5 * var(--motion-stagger)); }
+  @keyframes m4-rise {from { opacity: 0; transform: translateY(12px); }}
+  :is(.book-shell, #cooking-dialog) .recipe-grid.is-refreshed > .recipe-card { animation: m4-fade var(--motion-small) var(--ease-standard) both; animation-delay: 0ms; }
+  @keyframes m4-fade {from { opacity: 0; }}
+  :is(.book-shell, #cooking-dialog) .recipe-card { transition: transform var(--motion-small) var(--ease-standard), box-shadow var(--motion-small) var(--ease-standard), border-color var(--motion-micro) var(--ease-standard); }
+  :is(.book-shell, #cooking-dialog) .recipe-card__photo { transition: transform var(--motion-large) var(--ease-standard); }
+  @media (hover: hover) {
+    :is(.book-shell, #cooking-dialog) .recipe-card:hover { box-shadow: var(--shadow-2); }
+    :is(.book-shell, #cooking-dialog) .recipe-card:hover .recipe-card__photo { transform: scale(1.04); }
+  }
+  :is(.book-shell, #cooking-dialog) .recipe-card:active { transform: translateY(0) scale(0.99); transition-duration: var(--motion-micro); }
+  :is(.book-shell, #cooking-dialog) .btn, :is(.book-shell, #cooking-dialog) .chip, :is(.book-shell, #cooking-dialog) .icon-btn, :is(.book-shell, #cooking-dialog) .stepper__btn { transition: background-color var(--motion-micro) var(--ease-standard), border-color var(--motion-micro) var(--ease-standard),
+                color var(--motion-micro) var(--ease-standard), transform var(--motion-micro) var(--ease-standard), opacity var(--motion-micro) var(--ease-standard); }
+  :is(.book-shell, #cooking-dialog) .btn:active, :is(.book-shell, #cooking-dialog) .chip:active, :is(.book-shell, #cooking-dialog) .icon-btn:active, :is(.book-shell, #cooking-dialog) .stepper__btn:active { transform: scale(0.96); }
+  :is(.book-shell, #cooking-dialog) .btn[aria-busy="true"], :is(.book-shell, #cooking-dialog) .btn[aria-disabled="true"], :is(.book-shell, #cooking-dialog) .stepper__btn[aria-disabled="true"] { transform: none; }
+  :is(.book-shell, #cooking-dialog) :focus-visible { animation: m4-focus-in var(--motion-small) var(--ease-decelerate); }
+  @keyframes m4-focus-in {from { outline-offset: 6px; outline-color: transparent; }}
+  :is(.book-shell, #cooking-dialog) .chip[aria-pressed="true"] .chip__check { animation: m4-pop-in var(--motion-small) var(--ease-spring); }
+  @keyframes m4-pop-in {from { transform: scale(0); opacity: 0; }}
+  :is(.book-shell, #cooking-dialog) .favorite .icon { transition: fill var(--motion-micro) var(--ease-standard); }
+  :is(.book-shell, #cooking-dialog) .favorite[aria-pressed="true"] .icon { animation: m4-heart-pop var(--motion-medium) var(--ease-spring); }
+  @keyframes m4-heart-pop {0% { transform: scale(0.8); } 50% { transform: scale(1.25); } 100% { transform: scale(1); }}
+  :is(.book-shell, #cooking-dialog) .stepper__value.is-updated[data-dir="up"] { animation: m4-roll-up var(--motion-small) var(--ease-decelerate), m4-value-flash 900ms var(--ease-standard); }
+  :is(.book-shell, #cooking-dialog) .stepper__value.is-updated[data-dir="down"] { animation: m4-roll-down var(--motion-small) var(--ease-decelerate), m4-value-flash 900ms var(--ease-standard); }
+  @keyframes m4-roll-up {from { transform: translateY(8px);  opacity: 0; }}
+  @keyframes m4-roll-down {from { transform: translateY(-8px); opacity: 0; }}
+  :is(.book-shell, #cooking-dialog) .menu { display: block;
+    visibility: hidden; opacity: 0;
+    transform: translateY(-4px) scale(0.98); transform-origin: top left;
+    transition: opacity var(--motion-micro) var(--ease-accelerate), transform var(--motion-micro) var(--ease-accelerate), visibility 0s linear var(--motion-micro);
+    box-shadow: var(--shadow-3); }
+  :is(.book-shell, #cooking-dialog) .chip--dropdown[aria-expanded="true"] + .menu { visibility: visible; opacity: 1; transform: none;
+    transition: opacity var(--motion-small) var(--ease-decelerate), transform var(--motion-small) var(--ease-decelerate), visibility 0s; }
+  :is(.book-shell, #cooking-dialog) .menu__option { transition: background-color var(--motion-micro) var(--ease-standard); }
+  :is(.book-shell, #cooking-dialog) .disclosure::details-content { block-size: 0; overflow: hidden;
+    transition: block-size var(--motion-medium) var(--ease-standard), content-visibility var(--motion-medium) allow-discrete; }
+  :is(.book-shell, #cooking-dialog) .disclosure[open]::details-content { block-size: auto; }
+  :is(.book-shell, #cooking-dialog) .steps__check { transition: background-color var(--motion-small) var(--ease-standard), color var(--motion-small) var(--ease-standard); }
+  :is(.book-shell, #cooking-dialog) .steps__check:checked { animation: m4-check-pop var(--motion-medium) var(--ease-spring); }
+  @keyframes m4-check-pop {0% { transform: scale(0.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); }}
+  :is(.book-shell, #cooking-dialog) .steps__text { transition: color var(--motion-small) var(--ease-standard); }
+  :is(.book-shell, #cooking-dialog) .timer[data-state="running"] .icon { animation: m4-tick 1s steps(2, jump-none) infinite; }
+  @keyframes m4-tick {50% { transform: rotate(8deg); }}
+  :is(.book-shell, #cooking-dialog) .timer[data-state="done"] { animation: m4-ring 1.2s var(--ease-standard) 3; }
+  @keyframes m4-ring {0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-text-warning) 45%, transparent); } 60% { box-shadow: 0 0 0 10px transparent; }}
+  :is(.book-shell, #cooking-dialog) .progress__fill { transition: width var(--motion-medium) var(--ease-decelerate); }
+  #cooking-dialog.modal, #cooking-dialog.modal::backdrop { transition: opacity var(--motion-small) var(--ease-accelerate), transform var(--motion-small) var(--ease-accelerate),
+                display var(--motion-small) allow-discrete, overlay var(--motion-small) allow-discrete, background-color var(--motion-small) var(--ease-accelerate); }
+  #cooking-dialog.modal { opacity: 0; transform: translateY(12px) scale(0.98); box-shadow: var(--shadow-3); }
+  #cooking-dialog.modal[open] { opacity: 1; transform: none;
+    transition-duration: var(--motion-medium); transition-timing-function: var(--ease-decelerate); }
+  #cooking-dialog.modal::backdrop { background-color: rgb(0 0 0 / 0); }
+  #cooking-dialog.modal[open]::backdrop { background-color: var(--color-backdrop); transition-duration: var(--motion-medium); }
+  @starting-style {
+    #cooking-dialog.modal[open] { opacity: 0; transform: translateY(12px) scale(0.98); }
+    #cooking-dialog.modal[open]::backdrop { background-color: rgb(0 0 0 / 0); }
+  }
+  @media (max-width: 480px) {
+    #cooking-dialog.modal { opacity: 1; transform: translateY(100%); }
+    #cooking-dialog.modal[open] { transform: none; }
+    @starting-style {
+      #cooking-dialog.modal[open] { opacity: 1; transform: translateY(100%); }
+    }
+  }
+  :is(.book-shell, #cooking-dialog) .toast-region .toast { animation: m4-toast-up var(--motion-medium) var(--ease-decelerate) both; }
+  :is(.book-shell, #cooking-dialog) .toast-region .toast.is-leaving { animation: m4-toast-down var(--motion-small) var(--ease-accelerate) both; }
+  @keyframes m4-toast-up {from { opacity: 0; transform: translateY(16px) scale(0.98); }}
+  @keyframes m4-toast-down {to   { opacity: 0; transform: translateY(16px) scale(0.98); }}
+  :is(.book-shell, #cooking-dialog) .toast > .icon { stroke-dasharray: 60; stroke-dashoffset: 0; animation: m4-draw 420ms var(--ease-decelerate) 120ms both; }
+  @keyframes m4-draw {from { stroke-dashoffset: 60; }}
+  :is(.book-shell, #cooking-dialog) .skeleton { animation: m4-shimmer 1.4s linear infinite;
+    background: linear-gradient(90deg, var(--color-bg-surface-2) 0%, color-mix(in srgb, var(--color-bg-surface-2) 55%, var(--color-bg-surface)) 50%, var(--color-bg-surface-2) 100%);
+    background-size: 200% 100%; }
+  @keyframes m4-shimmer {from { background-position: 100% 0; } to { background-position: -100% 0; }}
+  :is(.book-shell, #cooking-dialog) .notice--error, :is(.book-shell, #cooking-dialog) .error-state { animation: m4-nudge 360ms var(--ease-standard); }
+  @keyframes m4-nudge {20% { transform: translateX(-4px); } 50% { transform: translateX(3px); } 80% { transform: translateX(-1px); }}
+  :is(.book-shell, #cooking-dialog) .status--success, :is(.book-shell, #cooking-dialog) .status--warning, :is(.book-shell, #cooking-dialog) .empty-pantry, :is(.book-shell, #cooking-dialog) .allergy-banner { animation: m4-fade var(--motion-small) var(--ease-standard); }
+  @keyframes m4-fade-out-only {to { opacity: 0; }}
+  @keyframes m4-fade-in-only {from { opacity: 0; }}
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.book-shell, #cooking-dialog) .toast .toast__timer { animation-duration: 8s !important; opacity: 0; }
+}
+:is(.book-shell, #cooking-dialog) .menu, :is(.book-shell, #cooking-dialog) .toast { box-shadow: var(--shadow-3); }
+:is(.book-shell, #cooking-dialog) .results-toolbar.is-stuck { box-shadow: 0 6px 12px -8px rgb(0 0 0 / 0.25); }
+[data-theme="dark"] :is(.book-shell, #cooking-dialog) .recipe-card__photo, [data-theme="dark"] :is(.book-shell, #cooking-dialog) .recipe-photo { filter: brightness(0.9) saturate(0.95); }
+.book-shell, #cooking-dialog { accent-color: var(--color-action-primary); }
+:is(.book-shell, #cooking-dialog) ::selection { background: color-mix(in srgb, var(--color-nav-active) 70%, transparent); color: var(--color-text-on-lime); }
+:is(.book-shell, #cooking-dialog) .ingredients__table, :is(.book-shell, #cooking-dialog) .shortage, :is(.book-shell, #cooking-dialog) .result-count, :is(.book-shell, #cooking-dialog) .panel__count { font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) .recipe-card__photo, :is(.book-shell, #cooking-dialog) .recipe-photo { outline: 1px solid rgb(0 0 0 / 0.06); outline-offset: -1px; }
+
+/* ===== BAGIAN IV · ADAPTER untuk markup & JavaScript Recipe Book ===== */
+/* :is(.book-shell, #cooking-dialog) diganti alat/scope_css.py dengan :is(.book-shell, #cooking-dialog) */
+
+/* IV.0 · Font & wadah halaman mengikuti aplikasi ------------------------------------ */
+.book-shell, #cooking-dialog {
+  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Plus Jakarta Sans", "DM Sans", system-ui, sans-serif;
+  font-family: var(--font-sans);
+}
+.book-shell { display: block; background: transparent; }
+:is(.book-shell, #cooking-dialog) :is(h1, h2, h3, h4, .text-h1, .text-h2, .text-h3, .text-h4, .result-count, .step__title) { font-family: var(--font-heading); letter-spacing: -0.01em; }
+:is(.book-shell, #cooking-dialog) .page__body { max-width: 1248px; padding: 34px 24px 72px; }
+:is(.book-shell, #cooking-dialog) [hidden] { display: none !important; }          /* JS memakai atribut hidden; jangan sampai kalah oleh display komponen */
+:is(.book-shell, #cooking-dialog) .eyebrow { margin-bottom: 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .helper { font-size: 13px; line-height: 19px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .missing { color: var(--color-text-warning); font-weight: 600; }
+:is(.book-shell, #cooking-dialog) .icon--inline { display: inline-block; vertical-align: -3px; }
+:is(.book-shell, #cooking-dialog) .page-title { margin-bottom: 24px; }
+:is(.book-shell, #cooking-dialog) .page__main { gap: 20px; }
+
+/* IV.1 · Tombol: atribut disabled (dipakai JS) tampil seperti aria-disabled di Figma ---- */
+:is(.book-shell, #cooking-dialog) .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+:is(.book-shell, #cooking-dialog) .btn--primary:disabled:hover { background: var(--color-action-primary); }
+:is(.book-shell, #cooking-dialog) .btn--secondary:disabled:hover { background: var(--color-bg-surface-2); border-color: var(--color-border-control); }
+:is(.book-shell, #cooking-dialog) .btn--quiet { background: transparent; border-color: transparent; color: var(--color-text-success); text-decoration: underline; text-underline-offset: 3px; }
+:is(.book-shell, #cooking-dialog) .btn--quiet:hover { background: var(--color-bg-surface-2); border-color: transparent; }
+:is(.book-shell, #cooking-dialog) .btn--quiet:disabled:hover { background: transparent; border-color: transparent; }
+
+/* IV.2 · Kontrol form generik (select, input, file) --------------------------------- */
+:is(.book-shell, #cooking-dialog) .control {
+  width: 100%; min-height: var(--target-min); padding: 10px 12px;
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-md);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+}
+:is(.book-shell, #cooking-dialog) .control--number { width: 96px; text-align: center; }
+:is(.book-shell, #cooking-dialog) .control--file { padding: 8px; background: var(--color-bg-surface-2); }
+:is(.book-shell, #cooking-dialog) .control[readonly] { background: var(--color-bg-surface-2); color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .form-stack { display: flex; flex-direction: column; gap: 8px; }
+:is(.book-shell, #cooking-dialog) .form-stack .field-label { margin-top: 8px; }
+:is(.book-shell, #cooking-dialog) .form-stack .field-label:first-of-type { margin-top: 0; }
+:is(.book-shell, #cooking-dialog) .note-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+:is(.book-shell, #cooking-dialog) .check-field { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 20px; cursor: pointer; }
+:is(.book-shell, #cooking-dialog) .check-field input { flex: none; width: 20px; height: 20px; margin: 0; }
+
+/* IV.3 · Pencarian & filter: <select> dan checkbox asli dibungkus chip Figma ---------- */
+:is(.book-shell, #cooking-dialog) .search-panel { display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--color-bg-surface); border: 1px solid var(--color-border-divider); border-radius: var(--radius-xl); }
+:is(.book-shell, #cooking-dialog) .search__input { font-size: 15px; }
+:is(.book-shell, #cooking-dialog) .search__input::-webkit-search-cancel-button { cursor: pointer; }
+:is(.book-shell, #cooking-dialog) .chip--select { position: relative; gap: 4px; padding-block: 0; padding-right: 12px; cursor: pointer; }
+:is(.book-shell, #cooking-dialog) .chip--select .chip__label { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .chip--select .chip__label::after { content: ":"; }
+:is(.book-shell, #cooking-dialog) .chip--select select {
+  appearance: none; -webkit-appearance: none;
+  min-height: calc(var(--target-min) - 2px); max-width: 15rem;
+  padding: 0 24px 0 0; margin-right: -20px;            /* ruang untuk chevron */
+  border: 0; background: transparent; color: var(--color-text-primary);
+  font-weight: var(--weight-semibold); text-overflow: ellipsis; cursor: pointer;
+}
+:is(.book-shell, #cooking-dialog) .chip--select select:focus-visible { outline: none; }
+:is(.book-shell, #cooking-dialog) .chip--select:focus-within { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+:is(.book-shell, #cooking-dialog) .chip--select .chip__chevron { pointer-events: none; }
+:is(.book-shell, #cooking-dialog) .chip--select:has(select option:checked:not([value=""])) { background: var(--color-bg-success); border-color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .chip--toggle { position: relative; cursor: pointer; }
+:is(.book-shell, #cooking-dialog) .chip__input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+:is(.book-shell, #cooking-dialog) .chip--toggle:focus-within { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+:is(.book-shell, #cooking-dialog) .chip--toggle:has(.chip__input:checked) { padding-left: var(--space-12); background: var(--color-bg-success); border-color: var(--color-text-success); color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .chip--toggle:has(.chip__input:checked) .chip__check { display: block; }
+:is(.book-shell, #cooking-dialog) .filters__hint { font-size: 13px; color: var(--color-text-secondary); }
+
+/* IV.4 · Ringkasan hasil ------------------------------------------------------------ */
+:is(.book-shell, #cooking-dialog) .results-header { margin-top: 8px; }
+:is(.book-shell, #cooking-dialog) .results-header .stack { gap: 2px; }
+:is(.book-shell, #cooking-dialog) .recipe-result-summary { font-size: 14px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .recipe-result-summary .result-count { color: var(--color-text-primary); font-size: 18px; }
+:is(.book-shell, #cooking-dialog) .active-filter-list > span:first-child { font-weight: var(--weight-medium); }
+:is(.book-shell, #cooking-dialog) .active-filter-chip { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: var(--radius-pill); background: var(--color-bg-success); color: var(--color-text-success); font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .recipe-list > .notice--info { font-size: 14px; }
+:is(.book-shell, #cooking-dialog) .disclosure--quiet { background: transparent; border-color: var(--color-border-divider); }
+:is(.book-shell, #cooking-dialog) .disclosure--quiet > summary { min-height: var(--target-min); padding: 8px 12px; }
+:is(.book-shell, #cooking-dialog) .disclosure--quiet .disclosure__title { font-size: 14px; line-height: 20px; }
+:is(.book-shell, #cooking-dialog) .disclosure--quiet .disclosure__body { padding: 0 12px 12px; }
+:is(.book-shell, #cooking-dialog) .price-availability-note { padding-left: 10px; border-left: 3px solid var(--color-text-warning); }
+
+/* IV.5 · Kartu resep --------------------------------------------------------------- */
+:is(.book-shell, #cooking-dialog) .recipe-card { min-width: 0; }
+:is(.book-shell, #cooking-dialog) .recipe-card__photo, :is(.book-shell, #cooking-dialog) .recipe-card-photo { max-width: none; }   /* base.css bisa membatasi img; lebar diatur aturan kartu */
+:is(.book-shell, #cooking-dialog) .recipe-card-photo-placeholder {                 /* dibuat image_fallback.js bila foto gagal dimuat */
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  aspect-ratio: 20 / 9; background: var(--color-bg-surface-2); color: var(--color-text-secondary); font-size: 13px;
+}
+:is(.book-shell, #cooking-dialog) .recipe-card-photo-placeholder > span { font-size: 28px; line-height: 1; }
+:is(.book-shell, #cooking-dialog) .recipe-card__placeholder small, :is(.book-shell, #cooking-dialog) .recipe-card-photo-placeholder small { font-size: 13px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .recipe-card__placeholder .icon { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .stock-match { display: flex; flex-direction: column; gap: 2px; }
+:is(.book-shell, #cooking-dialog) .stock-match small { font-size: 13px; line-height: 18px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .recipe-card:not([data-readiness]) .readiness { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .recipe-guidance-notice { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: var(--weight-semibold); color: var(--color-text-info); }
+:is(.book-shell, #cooking-dialog) .recipe-card__body { flex: 1; }
+:is(.book-shell, #cooking-dialog) .recipe-card__body > .recipe-card__title { flex: none; }   /* di Figma judul berbagi baris dengan tombol favorit; di sini judul satu kolom */
+:is(.book-shell, #cooking-dialog) .recipe-card__credit { margin-top: auto; padding-top: 4px; }
+@container cards (max-width: 440px) {
+  :is(.book-shell, #cooking-dialog) .recipe-card-photo-placeholder { width: 104px; flex: none; aspect-ratio: auto; min-height: 104px; }
+  :is(.book-shell, #cooking-dialog) .recipe-card__placeholder small, :is(.book-shell, #cooking-dialog) .recipe-card-photo-placeholder small { display: none; }
+  :is(.book-shell, #cooking-dialog) .recipe-card__credit { display: none; }
+}
+
+/* IV.6 · Empty state, pagination, notice -------------------------------------------- */
+:is(.book-shell, #cooking-dialog) .empty-state { border: 1px dashed var(--color-border-control); }
+:is(.book-shell, #cooking-dialog) .empty-state--inline { display: block; padding: 16px; text-align: left; background: var(--color-bg-surface-2); border: 0; font-size: 14px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; margin-top: 8px; font-size: 14px; color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) .pagination--compact { justify-content: flex-start; gap: 8px; }
+:is(.book-shell, #cooking-dialog) a.icon-btn { text-decoration: none; }
+:is(.book-shell, #cooking-dialog) #page-message { margin-bottom: 16px; }
+:is(.book-shell, #cooking-dialog) .notice--info a { text-decoration: underline; }
+:is(.book-shell, #cooking-dialog) :is(.helper, .notice--info span, .credit) .link { display: inline; min-height: 0; }   /* tautan di tengah kalimat */
+
+/* IV.7 · Detail: tata letak dua kolom (Figma) ---------------------------------------- */
+:is(.book-shell, #cooking-dialog) .detail-view {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  gap: 24px 40px; align-items: start;
+}
+:is(.book-shell, #cooking-dialog) .detail-view__nav { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+:is(.book-shell, #cooking-dialog) .recipe-detail {
+  grid-column: 1; grid-row: 2; min-width: 0; display: flex; flex-direction: column; gap: 24px;
+}
+:is(.book-shell, #cooking-dialog) .recipe-hero { display: flex; align-items: flex-start; gap: 16px; }
+:is(.book-shell, #cooking-dialog) .recipe-hero__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+:is(.book-shell, #cooking-dialog) .recipe-hero__meta { color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .recipe-figure { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+:is(.book-shell, #cooking-dialog) .detail-aside { position: static; min-width: 0; }
+:is(.book-shell, #cooking-dialog) .detail-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+:is(.book-shell, #cooking-dialog) #recipe-reviews { grid-column: 1; grid-row: 3; min-width: 0; }
+:is(.book-shell, #cooking-dialog) .detail-view__aside { grid-column: 2; grid-row: 2; min-width: 0; }
+
+:is(.book-shell, #cooking-dialog) .chip--status { min-height: 0; padding: 4px 12px; font-size: 13px; line-height: 18px; font-weight: var(--weight-semibold); cursor: default; }
+:is(.book-shell, #cooking-dialog) .chip--status:hover { background: var(--color-bg-surface-2); }
+:is(.book-shell, #cooking-dialog) .chip--info { color: var(--color-text-info); border-color: var(--color-text-info); }
+:is(.book-shell, #cooking-dialog) .recipe-photo, :is(.book-shell, #cooking-dialog) .recipe-photo-image { display: block; width: 100%; max-width: none; height: auto; }
+:is(.book-shell, #cooking-dialog) .recipe-photo-placeholder {                      /* tanpa foto, atau dibuat image_fallback.js */
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  aspect-ratio: 41 / 19; border: 1px dashed var(--color-border-control); border-radius: var(--radius-xl);
+  background: var(--color-bg-surface-2); color: var(--color-text-secondary); font-size: 14px;
+}
+:is(.book-shell, #cooking-dialog) .recipe-photo-placeholder .icon { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .recipe-photo-placeholder > span:first-child { font-size: 32px; line-height: 1; }
+
+/* porsi & gizi */
+:is(.book-shell, #cooking-dialog) .detail-aside .panel { gap: 16px; }
+:is(.book-shell, #cooking-dialog) .panel__header { flex-wrap: wrap; }
+:is(.book-shell, #cooking-dialog) .serving-control { display: flex; flex-direction: column; gap: 8px; }
+:is(.book-shell, #cooking-dialog) .stepper__value {
+  width: 72px; min-height: var(--target-min); padding: 0 4px;
+  border: 1px solid var(--color-border-control); border-radius: var(--radius-md);
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  text-align: center; appearance: textfield; -moz-appearance: textfield;
+}
+:is(.book-shell, #cooking-dialog) .stepper__value::-webkit-inner-spin-button, :is(.book-shell, #cooking-dialog) .stepper__value::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+:is(.book-shell, #cooking-dialog) .serving-fixed { font-size: 14px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .serving-fixed strong { color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) .nutrition__grid .nutrition__value { font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) .nutrition__label { display: block; }
+:is(.book-shell, #cooking-dialog) #serving-summary { font-size: 14px; line-height: 20px; color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) #serving-scale-status { margin-top: 8px; }
+
+/* IV.8 · Bahan: daftar bergaya tabel Figma (Bahan · Takaran · Status) ----------------- */
+:is(.book-shell, #cooking-dialog) .ingredients { padding: 24px; background: var(--color-bg-surface); border-radius: var(--radius-xl); }
+:is(.book-shell, #cooking-dialog) .ingredients__columns, :is(.book-shell, #cooking-dialog) .ingredient-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) 6.5rem minmax(9rem, 13rem);
+  column-gap: 16px; align-items: center;
+}
+:is(.book-shell, #cooking-dialog) .ingredients__columns {
+  padding: 8px 16px; border: 1px solid var(--color-border-divider); border-bottom: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  font-size: 13px; line-height: 19px; font-weight: var(--weight-semibold); color: var(--color-text-secondary);
+}
+:is(.book-shell, #cooking-dialog) .ingredients__columns span:not(:first-child) { text-align: right; }
+:is(.book-shell, #cooking-dialog) .ingredients__list { border: 1px solid var(--color-border-divider); border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; }
+:is(.book-shell, #cooking-dialog) .ingredient-row { padding: 12px 16px; background: var(--color-bg-surface-2); border-bottom: 1px solid var(--color-border-divider); }
+:is(.book-shell, #cooking-dialog) .ingredient-row:last-child { border-bottom: 0; }
+:is(.book-shell, #cooking-dialog) .ingredient__name { font-weight: var(--weight-medium); min-width: 0; overflow-wrap: anywhere; }
+:is(.book-shell, #cooking-dialog) .ingredient__name small { display: block; font-size: 13px; line-height: 18px; font-weight: var(--weight-regular); color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .ingredient-row .amount { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) .ingredient-row .status { display: block; text-align: right; font-size: 14px; line-height: 20px; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .ingredient-row .status b { font-weight: inherit; }
+:is(.book-shell, #cooking-dialog) .ingredient-row[data-stock="ok"] .status { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .ingredient-row[data-stock="short"] .status { color: var(--color-text-warning); }
+:is(.book-shell, #cooking-dialog) .ingredient-row[data-stock="check"] .status { color: var(--color-text-info); }
+:is(.book-shell, #cooking-dialog) .ingredient-row:is([data-stock="untracked"], [data-stock="optional"]) .status { color: var(--color-text-secondary); font-weight: var(--weight-regular); }
+
+/* IV.9 · Panduan & mode memasak ------------------------------------------------------ */
+:is(.book-shell, #cooking-dialog) .guide__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+:is(.book-shell, #cooking-dialog) .guide .notice--info { font-size: 14px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .cooking-mode.step {
+  gap: 20px; padding: 24px;
+  background: var(--color-bg-surface-2); border: 1px solid var(--color-border-divider);
+}
+:is(.book-shell, #cooking-dialog) .cooking-mode__top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 16px; }
+:is(.book-shell, #cooking-dialog) .cooking-mode__top .progress-group { flex: 1 1 240px; }
+:is(.book-shell, #cooking-dialog) .cooking-mode__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+:is(.book-shell, #cooking-dialog) .progress-group__label { margin: 0; font-family: var(--font-sans); text-transform: uppercase; }
+:is(.book-shell, #cooking-dialog) #cooking-progress .progress__fill { width: var(--progress, 0%); }
+:is(.book-shell, #cooking-dialog) .cooking-mode p.step__title {
+  color: var(--color-text-primary);
+  min-height: 3em; padding: 20px; border-radius: var(--radius-lg); background: var(--color-bg-surface);
+  font-size: 28px; line-height: 36px; font-weight: var(--weight-semibold);
+}
+:is(.book-shell, #cooking-dialog) .cooking-mode .step-nav .btn { flex: 1 1 0; max-width: 260px; }
+:is(.book-shell, #cooking-dialog) .cooking-checklist { background: var(--color-bg-surface); }
+:is(.book-shell, #cooking-dialog) ul.checklist { padding: 0 16px 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+:is(.book-shell, #cooking-dialog) .checklist label {                                /* li > label > input + span, dibuat cooking_mode.js */
+  display: flex; align-items: center; gap: 12px; min-height: var(--target-min);
+  padding: 8px 12px; border: 1px solid var(--color-border-divider); border-radius: var(--radius-md);
+  background: var(--color-bg-surface-2); font-size: 14px; line-height: 20px; cursor: pointer;
+}
+:is(.book-shell, #cooking-dialog) .checklist input { flex: none; width: 20px; height: 20px; margin: 0; }
+:is(.book-shell, #cooking-dialog) .checklist label:has(input:checked) { color: var(--color-text-secondary); text-decoration: line-through; background: var(--color-bg-success); }
+:is(.book-shell, #cooking-dialog) .step-timer { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--color-border-divider); }
+:is(.book-shell, #cooking-dialog) .timer-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+:is(.book-shell, #cooking-dialog) .timer-controls .control { width: 96px; }
+:is(.book-shell, #cooking-dialog) p.timer-display { color: var(--color-text-primary); font-family: var(--font-heading); font-size: 32px; line-height: 40px; font-weight: 700; font-variant-numeric: tabular-nums; }
+:is(.book-shell, #cooking-dialog) p.timer-display[data-state="running"] { color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) p.timer-display[data-state="done"] { color: var(--color-text-warning); }
+
+/* IV.10 · Catatan, laporan, bar Sudah Masak ------------------------------------------ */
+:is(.book-shell, #cooking-dialog) .disclosure__body .helper { margin-bottom: 4px; }
+:is(.book-shell, #cooking-dialog) .cook-bar__text strong { font-size: 16px; }
+:is(.book-shell, #cooking-dialog) .cook-bar .btn { flex: none; }
+
+/* IV.11 · Panel samping: favorit & riwayat ------------------------------------------- */
+:is(.book-shell, #cooking-dialog) .side-list { display: flex; flex-direction: column; }
+:is(.book-shell, #cooking-dialog) .side-list__item { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 12px 0; border-bottom: 1px solid var(--color-border-divider); font-size: 14px; line-height: 20px; }
+:is(.book-shell, #cooking-dialog) .side-list__item:last-child { border-bottom: 0; }
+:is(.book-shell, #cooking-dialog) .side-list__item--stack { flex-direction: column; align-items: stretch; gap: 2px; }
+:is(.book-shell, #cooking-dialog) .side-list__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+:is(.book-shell, #cooking-dialog) .side-list__title { font-weight: var(--weight-semibold); color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) .side-list small { font-size: 13px; line-height: 18px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .side-list__meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .side-list__empty { padding: 8px 0; font-size: 14px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .mini-disclosure { margin-top: 4px; font-size: 13px; line-height: 19px; }
+:is(.book-shell, #cooking-dialog) .mini-disclosure > summary { display: inline-flex; align-items: center; min-height: var(--link-min-height); color: var(--color-text-success); font-weight: var(--weight-semibold); cursor: pointer; }
+:is(.book-shell, #cooking-dialog) .mini-disclosure ul { margin: 4px 0 0; padding-left: 18px; color: var(--color-text-secondary); }
+
+/* IV.12 · Ulasan --------------------------------------------------------------------- */
+:is(.book-shell, #cooking-dialog) .reviews[data-state="can-review"] { outline: 0; box-shadow: inset 0 0 0 1px var(--color-text-success); }
+:is(.book-shell, #cooking-dialog) .review-list { display: flex; flex-direction: column; }
+:is(.book-shell, #cooking-dialog) .review { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-bottom: 1px solid var(--color-border-divider); }
+:is(.book-shell, #cooking-dialog) .review:last-child { border-bottom: 0; }
+:is(.book-shell, #cooking-dialog) p.review__head { font-size: 15px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) .review__rating { color: var(--color-text-warning); font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) p.review__text { font-size: 15px; line-height: 22px; color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) .review-photo { display: flex; flex-direction: column; gap: 6px; }
+:is(.book-shell, #cooking-dialog) .review-photo img, :is(.book-shell, #cooking-dialog) .review-photo-preview { max-width: min(100%, 360px); border-radius: var(--radius-md); }
+:is(.book-shell, #cooking-dialog) .review-photo figcaption { font-size: 12px; color: var(--color-text-secondary); }
+:is(.book-shell, #cooking-dialog) .photo-permission { font-size: 13px; line-height: 19px; color: var(--color-text-secondary); }
+
+/* IV.13 · Dialog konfirmasi + elemen yang dibuat book.js -------------------------------- */
+:is(.book-shell, #cooking-dialog) .modal__form { display: flex; flex-direction: column; gap: 16px; }
+:is(.book-shell, #cooking-dialog) #cooking-preview { display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 20px; }
+:is(.book-shell, #cooking-dialog) #cooking-preview:empty, :is(.book-shell, #cooking-dialog) #manual-batches:empty { display: none; }
+:is(.book-shell, #cooking-dialog) #cooking-preview > p:not(.missing) { color: var(--color-text-primary); }
+:is(.book-shell, #cooking-dialog) #cooking-preview > p:first-of-type { font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .external-ingredient { padding: 12px; border: 1px solid var(--color-border-divider); border-radius: var(--radius-md); background: var(--color-bg-success); }
+:is(.book-shell, #cooking-dialog) .manual-row { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--color-border-divider); border-radius: var(--radius-md); background: var(--color-bg-surface-2); font-size: 14px; }
+:is(.book-shell, #cooking-dialog) .manual-row legend { float: left; width: 100%; font-weight: var(--weight-semibold); }
+:is(.book-shell, #cooking-dialog) .manual-row label { display: flex; flex-direction: column; gap: 4px; }
+:is(.book-shell, #cooking-dialog) .manual-row input { min-height: var(--target-min); padding: 8px 12px; border: 1px solid var(--color-border-control); border-radius: var(--radius-md); background: var(--color-bg-surface); }
+:is(.book-shell, #cooking-dialog) #cooking-error { font-size: 14px; }
+:is(.book-shell, #cooking-dialog) #cooking-error:empty { margin: 0; }
+:is(.book-shell, #cooking-dialog) .modal__actions .btn--block { flex: 1 1 100%; }
+
+/* IV.14 · Responsif ------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  :is(.book-shell, #cooking-dialog) .page__body { padding: 28px 24px 64px; }
+  :is(.book-shell, #cooking-dialog) .detail-view, :is(.book-shell, #cooking-dialog) .recipe-detail { grid-template-columns: minmax(0, 1fr); }
+  :is(.book-shell, #cooking-dialog) :is(.recipe-hero, .recipe-figure, .detail-aside, .detail-main, #recipe-reviews, .detail-view__aside) { grid-column: 1; grid-row: auto; }
+  :is(.book-shell, #cooking-dialog) .detail-aside { position: static; }
+}
+@media (max-width: 860px) {
+  :is(.book-shell, #cooking-dialog) .page__body { padding: 24px 16px 48px; }
+}
+@media (max-width: 480px) {
+  :is(.book-shell, #cooking-dialog) .page__body { padding: 20px 16px 40px; }
+  :is(.book-shell, #cooking-dialog) .search-panel { padding: 16px; }
+  :is(.book-shell, #cooking-dialog) .search__field { flex-wrap: wrap; padding: 4px 4px 4px 12px; }
+  :is(.book-shell, #cooking-dialog) .chip--select { flex: 1 1 100%; justify-content: space-between; }
+  :is(.book-shell, #cooking-dialog) .chip--select select { flex: 1; max-width: none; text-align: right; text-align-last: right; }
+  :is(.book-shell, #cooking-dialog) .ingredients { padding: 16px; }
+  :is(.book-shell, #cooking-dialog) .ingredients__columns { display: none; }
+  :is(.book-shell, #cooking-dialog) .ingredients__list { border-radius: var(--radius-lg); }
+  :is(.book-shell, #cooking-dialog) .ingredient-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 2px; }
+  :is(.book-shell, #cooking-dialog) .ingredient-row .status { grid-column: 1 / -1; text-align: left; font-size: 13px; }
+  :is(.book-shell, #cooking-dialog) .cooking-mode.step { padding: 16px; }
+  :is(.book-shell, #cooking-dialog) .cooking-mode p.step__title { font-size: 22px; line-height: 30px; padding: 16px; }
+  :is(.book-shell, #cooking-dialog) .cooking-mode .step-nav .btn { max-width: none; }
+  :is(.book-shell, #cooking-dialog) .checklist { grid-template-columns: 1fr; }
+  :is(.book-shell, #cooking-dialog) .cook-bar__text p { display: none; }
+  :is(.book-shell, #cooking-dialog) .cook-bar--sticky { margin-inline: -16px; padding-inline: 16px; }
+  :is(.book-shell, #cooking-dialog) .side-list__item { flex-wrap: wrap; }
+}
+
+/* IV.15 · Gerak tambahan untuk markup aplikasi (hanya bila gerakan tidak dikurangi) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  :is(.book-shell, #cooking-dialog) .chip--toggle:has(.chip__input:checked) .chip__check { animation: m4-pop-in var(--motion-small) var(--ease-spring); }
+  :is(.book-shell, #cooking-dialog) .cooking-mode .step__title.is-entering { animation: m4-step-in var(--motion-medium) var(--ease-decelerate); }
+  :is(.book-shell, #cooking-dialog) .timer-display[data-state="done"] { animation: m4-ring 1.2s var(--ease-standard) 3; border-radius: var(--radius-md); }
+  :is(.book-shell, #cooking-dialog) .checklist input:checked { animation: m4-check-pop var(--motion-medium) var(--ease-spring); }
+  :is(.book-shell, #cooking-dialog) .detail-view > *, :is(.book-shell, #cooking-dialog) .recipe-detail > * { animation: m4-rise var(--motion-medium) var(--ease-decelerate) both; }
+  :is(.book-shell, #cooking-dialog) .recipe-detail > .detail-aside { animation-delay: var(--motion-stagger); }
+  :is(.book-shell, #cooking-dialog) .recipe-detail > .detail-main { animation-delay: calc(2 * var(--motion-stagger)); }
+  :is(.book-shell, #cooking-dialog) .mini-disclosure::details-content { block-size: 0; overflow: hidden; transition: block-size var(--motion-small) var(--ease-standard), content-visibility var(--motion-small) allow-discrete; }
+  :is(.book-shell, #cooking-dialog) .mini-disclosure[open]::details-content { block-size: auto; }
+  :is(.book-shell, #cooking-dialog) #cooking-mode:not([hidden]) { animation: m4-rise var(--motion-medium) var(--ease-decelerate); }
+}
+@keyframes m4-step-in { from { opacity: 0; transform: translateX(16px); } }

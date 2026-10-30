@@ -20,6 +20,7 @@ if (startButton && mode) {
   const resetTimerButton = document.querySelector('#reset-step-timer');
   const timerDisplay = document.querySelector('#step-timer-display');
   const timerStatus = document.querySelector('#step-timer-status');
+  const progressBar = document.querySelector('#cooking-progress');
   let storage = null;
   try { storage = window.sessionStorage; } catch { /* Cooking mode remains usable without session storage. */ }
   const progressKey = `takarkuy:cooking-progress:${recipeDetail.dataset.code}:${recipeDetail.dataset.servings}`;
@@ -39,6 +40,7 @@ if (startButton && mode) {
     const minutes = Math.floor(remainingSeconds / 60).toString().padStart(2, '0');
     const seconds = (remainingSeconds % 60).toString().padStart(2, '0');
     timerDisplay.textContent = `${minutes}:${seconds}`;
+    timerDisplay.dataset.state = timerInterval !== null ? 'running' : (remainingSeconds === 0 ? 'done' : 'idle');
   }
 
   function stopTimer(reset = false) {
@@ -57,6 +59,15 @@ if (startButton && mode) {
     nextButton.disabled = false;
     nextButton.textContent = activeStep === steps.length - 1 ? 'Selesai' : 'Berikutnya';
     modeStatus.textContent = `Langkah ${activeStep + 1} dari ${steps.length}.`;
+    if (progressBar) {
+      progressBar.setAttribute('aria-valuenow', String(activeStep + 1));
+      progressBar.setAttribute('aria-valuetext', `Langkah ${activeStep + 1} dari ${steps.length}`);
+      progressBar.style.setProperty('--progress', `${((activeStep + 1) / steps.length) * 100}%`);
+    }
+    // Animasi masuk langkah baru (CSS: .is-entering, hanya bila gerakan tidak dikurangi).
+    currentStep.classList.remove('is-entering');
+    void currentStep.offsetWidth;
+    currentStep.classList.add('is-entering');
     if (focus) currentStep.focus();
   }
 

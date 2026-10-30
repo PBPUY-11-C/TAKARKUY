@@ -2,30 +2,10 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <title>Resep &amp; Riwayat Masak — TAKARKUY</title>
+  <title>{% if selected and request.GET.recipe or selected and slot %}{{ selected.name }} — {% endif %}Resep &amp; Riwayat Masak — TAKARKUY</title>
   {% include 'partials/head.html' %}
-
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; background: #f7f9fe; color: #172235; font-family: "DM Sans", Arial, sans-serif; }
-    a { color: inherit; text-decoration: none; }
-    .site-header {
-      min-height: 80px; padding: 15px clamp(20px, 4vw, 56px); display: flex;
-      align-items: center; justify-content: space-between; gap: 20px;
-      background: #fff; border-bottom: 1px solid #e7edf4;
-    }
-    .brand { display: inline-flex; align-items: center; gap: 10px; color: #005b40; font: 800 17px "Plus Jakarta Sans", sans-serif; }
-    .brand-mark { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 9px; background: #007452; color: #fff; font-size: 24px; }
-    .back-link { color: #007452; font-size: 13px; font-weight: 700; white-space: nowrap; }
-    .back-link:hover, .back-link:focus-visible { text-decoration: underline; }
-    @media (max-width: 480px) {
-      .site-header { padding-inline: 18px; }
-      .brand { font-size: 14px; }
-      .back-link { font-size: 12px; }
-    }
-  </style>
-  <link rel="stylesheet" href="{% static 'recipe_book/book.css' %}?v=20261028-shared-theme">
   <link rel="stylesheet" href="{% static 'recipe_book/reviews.css' %}">
+  <link rel="stylesheet" href="{% static 'recipe_book/modul4.css' %}?v=20261030-layout-fix1">
   <script type="module" src="{% static 'recipe_book/book.js' %}"></script>
   <script type="module" src="{% static 'recipe_book/cooking_mode.js' %}"></script>
   <script type="module" src="{% static 'recipe_book/quality.js' %}"></script>
@@ -36,33 +16,108 @@
 </head>
 <body>
   {% include 'partials/app_header.html' %}
-  <main class="book-shell">
-    <div class="page-heading"><div><p class="eyebrow">DAPUR SAYA</p><h1>Resep &amp; Riwayat Masak</h1></div><a class="quiet-link" href="{% url 'modul2' %}">Kelola pantry →</a></div>
-    <div id="page-message" class="notice" role="status" hidden></div>
-    <form id="csrf-bootstrap" hidden>{% csrf_token %}</form>
-    <div class="book-layout">
-      <div>
-        <form class="panel search-panel" method="get" action="{% url 'modul4' %}">
-          <div class="search-row"><label class="sr-only" for="recipe-search">Cari resep atau bahan</label><input id="recipe-search" name="q" value="{{ q }}" placeholder="Cari resep atau bahan…" maxlength="100"><button type="submit">Cari</button></div>
-          <div class="filters"><label>Waktu makan <select name="meal"><option value="">Semua</option><option value="sarapan" {% if meal == 'sarapan' %}selected{% endif %}>Sarapan</option><option value="makan_siang" {% if meal == 'makan_siang' %}selected{% endif %}>Makan siang</option><option value="makan_malam" {% if meal == 'makan_malam' %}selected{% endif %}>Makan malam</option></select></label><label>Stok <select name="stock"><option value="">Semua</option><option value="best" {% if filters.stock == 'best' %}selected{% endif %}>Paling cocok dengan stok</option><option value="complete" {% if filters.stock == 'complete' %}selected{% endif %}>Bahan utama lengkap</option><option value="soon" {% if filters.stock == 'soon' %}selected{% endif %}>Gunakan segera (≤2 hari)</option></select></label><label>Harga <select name="max_price"><option value="">Semua</option>{% for limit in price_limits %}<option value="{{ limit }}" {% if max_price == limit %}selected{% endif %}>Maks. {{ limit|rupiah }}</option>{% endfor %}</select></label><label><input type="checkbox" name="favorites" value="1" {% if filters.favorites == '1' %}checked{% endif %}> Favorit saja</label><label><input type="checkbox" name="guidance" value="1" {% if guidance_only %}checked{% endif %}> Hanya resep dengan panduan</label></div>
-          <p class="recipe-result-summary" role="status"><strong>{{ recipes.paginator.count }} resep cocok</strong> dari {{ available_recipe_count }} resep yang tersedia untuk akun Anda.</p>
-          {% if active_filters %}<div class="active-filter-list" aria-label="Filter aktif"><span>Filter aktif:</span>{% for active_filter in active_filters %}<span class="active-filter-chip">{{ active_filter }}</span>{% endfor %}</div>{% else %}<p class="helper">Tidak ada filter pencarian atau kategori aktif.</p>{% endif %}
-          <p class="helper">Katalog menampilkan resep aktif, siap digunakan, dan berlabel halal. Kandidat yang belum dikurasi atau dipromosikan belum dihitung. Preferensi dan alergi profil tetap diterapkan.</p>
-          {% if max_price and price_unavailable_count %}<p class="helper price-availability-note">Dari {{ price_candidate_count }} resep yang tersisa setelah pencarian, waktu makan, favorit, panduan, dan profil diterapkan, {{ price_unavailable_count }} tidak memiliki harga referensi. Resep itu tidak dapat dibandingkan dan tidak ditampilkan oleh batas harga; hitungan ini dibuat sebelum filter stok diterapkan.</p>{% endif %}
-          {% if unknown_count or allergen_count %}<p class="helper">{{ unknown_count }} resep disembunyikan karena data alergen belum lengkap; {{ allergen_count }} karena alergen pilihan Anda. <a href="{% url 'modul3' %}">Profil</a></p>{% endif %}
-          {% if held_count and not guidance_only %}<p class="helper">{{ held_count }} resep belum memiliki panduan memasak; resep tetap ditampilkan dan detailnya menjelaskan jika panduan belum tersedia.</p>{% endif %}
-        </form>
-        {% if selection_error %}<div class="notice" role="alert">{{ selection_error }}</div>{% endif %}
-        {% if selected %}
+  {% include 'recipe_book/partials/icons.html' %}
+  <main class="book-shell" id="main">
+    <div class="page__body {% if selected and request.GET.recipe or selected and slot %}page--detail{% else %}page--search{% endif %}">
+      <div id="page-message" class="notice notice--error" role="status" hidden></div>
+      <form id="csrf-bootstrap" hidden>{% csrf_token %}</form>
+      {% if selection_error %}<div class="notice notice--error" role="alert"><p class="notice__title"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-warn"/></svg>{{ selection_error }}</p></div>{% endif %}
+
+      {% if selected and request.GET.recipe or selected and slot %}
+      <div class="detail-view">
+        <nav class="detail-view__nav" aria-label="Navigasi resep">
+          <a class="link back-link" href="?{{ query_params }}&amp;page={{ recipes.number }}#hasil"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-back"/></svg>Kembali ke hasil</a>
+          {% if slot %}<a class="link" href="{% url 'modul1' %}">Kembali ke Meal Planner</a>{% endif %}
+        </nav>
         {% include 'recipe_book/partials/recipe_detail.html' %}
         {% include 'recipe_book/reviews.html' %}
-        {% endif %}
-        <section class="recipe-list"><div class="section-heading"><h2>{% if filters.stock == 'best' %}Resep paling cocok dengan stok{% else %}Pilihan resep{% endif %}</h2><span>{{ recipes.paginator.count }} resep</span></div><div class="recipe-cards">{% for recipe in recipes %}{% include 'recipe_book/partials/recipe_card.html' %}{% empty %}<p class="panel empty-state">{% if filters.stock == 'best' %}Belum ada kecocokan resep dengan bahan di Pantry. <a href="{% url 'modul2' %}">Perbarui stok Pantry</a> untuk melihat saran.{% else %}Belum ada resep yang sesuai filter. Coba kata kunci lain atau periksa preferensi Anda.{% endif %}</p>{% endfor %}</div><nav class="pagination" aria-label="Halaman resep">{% if recipes.has_previous %}<a href="?{{ query_params }}&amp;page={{ recipes.previous_page_number }}">← Sebelumnya</a>{% endif %}<span>{{ recipes.number }} / {{ recipes.paginator.num_pages }}</span>{% if recipes.has_next %}<a href="?{{ query_params }}&amp;page={{ recipes.next_page_number }}">Berikutnya →</a>{% endif %}</nav></section>
+        <aside class="page__aside detail-view__aside" aria-label="Arti status, favorit, dan riwayat masak">
+          {% include 'recipe_book/partials/status_legend.html' %}
+          {% include 'recipe_book/partials/favorites_sidebar.html' %}
+          {% include 'recipe_book/partials/history_sidebar.html' %}
+        </aside>
       </div>
-      <aside>
-        {% include 'recipe_book/partials/favorites_sidebar.html' %}
-        {% include 'recipe_book/partials/history_sidebar.html' %}
-      </aside>
+      {% else %}
+      <div class="page-title">
+        <div class="page-title__text"><p class="eyebrow">DAPUR SAYA</p><h1>Resep &amp; Riwayat Masak</h1></div>
+        <a class="link" href="{% url 'modul2' %}">Kelola Pantry<svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>
+      </div>
+      <div class="page__layout">
+        <div class="page__main" id="hasil">
+          <form class="search-panel" method="get" action="{% url 'modul4' %}">
+            <div class="search" role="search">
+              <label class="search__label" for="recipe-search">Cari resep atau bahan</label>
+              <div class="search__field">
+                <svg class="icon" aria-hidden="true"><use href="#m4-i-search"/></svg>
+                <input class="search__input" id="recipe-search" name="q" type="search" value="{{ q }}" placeholder="Contoh: tongkol, bayam, tempe" maxlength="100">
+                <button class="btn btn--primary" type="submit">Cari</button>
+              </div>
+            </div>
+            <fieldset class="filters">
+              <legend class="field-label">Filter resep</legend>
+              <div class="filters__row">
+                <label class="chip chip--dropdown chip--select"><span class="chip__label">Waktu makan</span>
+                  <select name="meal"><option value="">Semua</option><option value="sarapan" {% if meal == 'sarapan' %}selected{% endif %}>Sarapan</option><option value="makan_siang" {% if meal == 'makan_siang' %}selected{% endif %}>Makan siang</option><option value="makan_malam" {% if meal == 'makan_malam' %}selected{% endif %}>Makan malam</option></select>
+                  <svg class="icon icon--sm chip__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg></label>
+                <label class="chip chip--dropdown chip--select"><span class="chip__label">Stok Pantry</span>
+                  <select name="stock"><option value="">Semua resep</option><option value="best" {% if filters.stock == 'best' %}selected{% endif %}>Paling cocok dengan stok</option><option value="complete" {% if filters.stock == 'complete' %}selected{% endif %}>Bahan utama lengkap</option><option value="soon" {% if filters.stock == 'soon' %}selected{% endif %}>Gunakan segera (≤2 hari)</option></select>
+                  <svg class="icon icon--sm chip__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg></label>
+                <label class="chip chip--dropdown chip--select"><span class="chip__label">Harga</span>
+                  <select name="max_price"><option value="">Semua</option>{% for limit in price_limits %}<option value="{{ limit }}" {% if max_price == limit %}selected{% endif %}>Maks. {{ limit|rupiah }}</option>{% endfor %}</select>
+                  <svg class="icon icon--sm chip__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg></label>
+                <label class="chip chip--toggle"><input class="chip__input" type="checkbox" name="favorites" value="1" {% if filters.favorites == '1' %}checked{% endif %}><svg class="icon icon--sm chip__check" aria-hidden="true"><use href="#m4-i-check"/></svg>Favorit saja</label>
+                <label class="chip chip--toggle"><input class="chip__input" type="checkbox" name="guidance" value="1" {% if guidance_only %}checked{% endif %}><svg class="icon icon--sm chip__check" aria-hidden="true"><use href="#m4-i-check"/></svg>Hanya resep dengan panduan</label>
+              </div>
+              <p class="filters__hint">Pilih filter, lalu tekan <strong>Cari</strong>.</p>
+            </fieldset>
+          </form>
+
+          <section class="recipe-list" aria-labelledby="recipe-list-title">
+            <div class="results-header">
+              <div class="stack">
+                <h2 id="recipe-list-title" class="text-h3">{% if filters.stock == 'best' %}Resep paling cocok dengan stok{% else %}Pilihan resep{% endif %}</h2>
+                <p class="recipe-result-summary" role="status"><strong class="result-count">{{ recipes.paginator.count }} resep cocok</strong> dari {{ available_recipe_count }} resep yang tersedia untuk akun Anda.</p>
+              </div>
+            </div>
+            {% if active_filters %}<div class="filters__active active-filter-list" aria-label="Filter aktif"><span>Filter aktif:</span>{% for active_filter in active_filters %}<span class="active-filter-chip">{{ active_filter }}</span>{% endfor %}</div>{% endif %}
+            {% if unknown_count or allergen_count %}<p class="notice notice--info"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg><span>{{ unknown_count }} resep disembunyikan karena data alergen belum lengkap; {{ allergen_count }} karena alergen pilihan Anda. <a class="link" href="{% url 'modul3' %}">Profil</a></span></p>{% endif %}
+            <details class="disclosure disclosure--quiet results-about">
+              <summary><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg><span class="disclosure__text"><span class="disclosure__title">Tentang hasil ini</span></span><svg class="icon icon--sm disclosure__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg></summary>
+              <div class="disclosure__body">
+                {% if not active_filters %}<p class="helper">Tidak ada filter pencarian atau kategori aktif.</p>{% endif %}
+                <p class="helper">Katalog menampilkan resep aktif, siap digunakan, dan berlabel halal. Kandidat yang belum dikurasi atau dipromosikan belum dihitung. Preferensi dan alergi profil tetap diterapkan.</p>
+                {% if max_price and price_unavailable_count %}<p class="helper price-availability-note">Dari {{ price_candidate_count }} resep yang tersisa setelah pencarian, waktu makan, favorit, panduan, dan profil diterapkan, {{ price_unavailable_count }} tidak memiliki harga referensi. Resep itu tidak dapat dibandingkan dan tidak ditampilkan oleh batas harga; hitungan ini dibuat sebelum filter stok diterapkan.</p>{% endif %}
+                {% if held_count and not guidance_only %}<p class="helper">{{ held_count }} resep belum memiliki panduan memasak; resep tetap ditampilkan dan detailnya menjelaskan jika panduan belum tersedia.</p>{% endif %}
+              </div>
+            </details>
+
+            {% if recipes %}
+            <ul class="recipe-grid recipe-cards">
+              {% for recipe in recipes %}{% include 'recipe_book/partials/recipe_card.html' %}{% endfor %}
+            </ul>
+            {% elif filters.stock == 'best' %}
+            <section class="empty-pantry" role="status">
+              <span class="empty-pantry__icon"><svg class="icon icon--lg" aria-hidden="true"><use href="#m4-i-pot"/></svg></span>
+              <div class="empty-pantry__text"><h3 class="text-h4">Belum ada kecocokan dengan Pantry</h3><p>Perbarui stok Pantry untuk melihat resep yang paling siap dimasak.</p></div>
+              <a class="btn btn--primary" href="{% url 'modul2' %}">Perbarui stok Pantry<svg class="icon icon--sm btn__icon" aria-hidden="true"><use href="#m4-i-right"/></svg></a>
+            </section>
+            {% else %}
+            <section class="empty-state" role="status">
+              <svg class="icon icon--lg" aria-hidden="true"><use href="#m4-i-search"/></svg>
+              <h3 class="text-h4">Belum ada resep yang sesuai</h3>
+              <p>Coba kata kunci lain, kurangi filter, atau periksa preferensi Anda.</p>
+            </section>
+            {% endif %}
+            <nav class="pagination" aria-label="Halaman resep">{% if recipes.has_previous %}<a class="btn btn--secondary btn--small" href="?{{ query_params }}&amp;page={{ recipes.previous_page_number }}"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-back"/></svg>Sebelumnya</a>{% endif %}<span>Halaman {{ recipes.number }} dari {{ recipes.paginator.num_pages }}</span>{% if recipes.has_next %}<a class="btn btn--secondary btn--small" href="?{{ query_params }}&amp;page={{ recipes.next_page_number }}">Berikutnya<svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>{% endif %}</nav>
+          </section>
+        </div>
+        <aside class="page__aside" aria-label="Favorit, riwayat masak, dan arti status">
+          {% include 'recipe_book/partials/status_legend.html' %}
+          {% include 'recipe_book/partials/favorites_sidebar.html' %}
+          {% include 'recipe_book/partials/history_sidebar.html' %}
+        </aside>
+      </div>
+      {% endif %}
     </div>
   </main>
   {% include 'recipe_book/partials/cooking_dialog.html' %}

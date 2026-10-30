@@ -1,47 +1,40 @@
-<section class="panel" id="cooking-history">
-  <div class="section-heading">
-  <h2>Riwayat masak</h2>
-  <span>{{ week_count }} / 7 hari</span>
-  </div>
+<section class="panel history" id="cooking-history" aria-labelledby="history-title">
+  <div class="panel__header"><h2 class="text-h4" id="history-title">Riwayat masak</h2><span class="panel__count">{{ week_count }} / 7 hari</span></div>
   <ul class="side-list">
   {% for entry in history %}
-  <li>
-  <small>{{ entry.cooked_at|date:'d M Y, H:i' }}</small>
-  <strong>{{ entry.recipe_name }}</strong>
-  <span>{{ entry.servings }} porsi · Stok tercatat</span>
-  <details>
-  <summary>Bahan terpakai</summary>
-  <ul>
-  {% for move in entry.operation.pantrymovement_set.all %}
-  <li>{{ move.snapshot.before.name }} · {{ move.consumed_grams|floatformat:1 }} g · {{ move.quantity_before }} → {{ move.quantity_after }} {{ move.snapshot.before.unit }}</li>
+    <li class="side-list__item side-list__item--stack">
+      <small>{{ entry.cooked_at|date:'d M Y, H:i' }}</small>
+      <span class="side-list__title">{{ entry.recipe_name }}</span>
+      <span class="side-list__meta"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-check"/></svg>{{ entry.servings }} porsi · Stok tercatat</span>
+      <details class="mini-disclosure">
+        <summary>Bahan terpakai</summary>
+        <ul>
+        {% for move in entry.operation.pantrymovement_set.all %}
+          <li>{{ move.snapshot.before.name }} · {{ move.consumed_grams|floatformat:1 }} g · {{ move.quantity_before }} → {{ move.quantity_after }} {{ move.snapshot.before.unit }}</li>
+        {% empty %}
+          <li>Bumbu dapur yang tidak dilacak tidak mengurangi stok.</li>
+        {% endfor %}
+        </ul>
+      </details>
+      {% if entry.snapshot.external_ingredients %}
+      <details class="mini-disclosure">
+        <summary>Bahan dari luar Pantry</summary>
+        <ul>
+        {% for item in entry.snapshot.external_ingredients %}
+          <li>{{ item.name }} &middot; {{ item.grams|floatformat:1 }} g</li>
+        {% endfor %}
+        </ul>
+      </details>
+      {% endif %}
+    </li>
   {% empty %}
-  <li>Bumbu dapur yang tidak dilacak tidak mengurangi stok.</li>
+    <li class="side-list__empty">Belum ada masakan tercatat. Resep yang Anda konfirmasi lewat <strong>Sudah Masak</strong> muncul di sini.</li>
   {% endfor %}
   </ul>
-  </details>
-  {% if entry.snapshot.external_ingredients %}
-  <details>
-  <summary>Bahan dari luar Pantry</summary>
-  <ul>
-  {% for item in entry.snapshot.external_ingredients %}
-  <li>{{ item.name }} &middot; {{ item.grams|floatformat:1 }} g</li>
-  {% endfor %}
-  </ul>
-  </details>
-  {% endif %}
-  </li>
-  {% empty %}
-  <li class="empty-state">Belum ada masakan tercatat.</li>
-  {% endfor %}
-  </ul>
-  <nav class="pagination" aria-label="Halaman riwayat">
-  {% if history.has_previous %}
-  <a href="?{{ history_params }}&amp;history_page={{ history.previous_page_number }}">←</a>
-  {% endif %}
-  <span>{{ history.number }} / {{ history.paginator.num_pages }}</span>
-  {% if history.has_next %}
-  <a href="?{{ history_params }}&amp;history_page={{ history.next_page_number }}">→</a>
-  {% endif %}
+  <nav class="pagination pagination--compact" aria-label="Halaman riwayat">
+    {% if history.has_previous %}<a class="icon-btn" href="?{{ history_params }}&amp;history_page={{ history.previous_page_number }}" aria-label="Riwayat sebelumnya"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-back"/></svg></a>{% endif %}
+    <span>{{ history.number }} / {{ history.paginator.num_pages }}</span>
+    {% if history.has_next %}<a class="icon-btn" href="?{{ history_params }}&amp;history_page={{ history.next_page_number }}" aria-label="Riwayat berikutnya"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>{% endif %}
   </nav>
-  <p class="helper">Salah input? Koreksi lewat <a href="{% url 'modul2' %}">Smart Pantry</a>. Koreksi stok tidak menghapus riwayat masak.</p>
-  </section>
+  <p class="helper">Salah input? Koreksi lewat <a class="link" href="{% url 'modul2' %}">Smart Pantry</a>. Koreksi stok tidak menghapus riwayat masak.</p>
+</section>
