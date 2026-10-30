@@ -1,9 +1,7 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
-import { runInNewContext } from "node:vm";
-
-const script = readFileSync(new URL("../../../apps/planner/static/planner/plans.js", import.meta.url), "utf8");
+import { initPlanDialog } from "../../../apps/planner/static/planner/plan_dialog.mjs";
+import { initSavedPlans } from "../../../apps/planner/static/planner/saved_plans.mjs";
 
 class Element {
   constructor() {
@@ -65,8 +63,10 @@ function setup(overBudget = 5000, { pending = false, notes = [], targetsSet = fa
         : { version: 1, recipes: [{ recipe_code: "B", name: "Menu B" }] } };
     },
   };
-  runInNewContext(script, context);
-  return { get, replace, close, requests, redirects, context, proposal };
+  // The modules read document/window/fetch as globals when they run, so point those at the fakes.
+  Object.assign(globalThis, context);
+  initPlanDialog();
+  return { get, replace, close, requests, redirects, context: globalThis, proposal };
 }
 
 test("replacement waits for preview and explicit budget approval before applying", async () => {
@@ -168,4 +168,35 @@ test("a destination differing only by #fragment reloads instead of silently stay
   await app.get("apply-preview").trigger();
   assert.deepEqual(app.redirects, ["reload"]);
   assert.equal(app.context.window.location.hash, "");
+});
+
+test("deleting a saved plan hides it at once and puts it back when the server refuses", async () => {
+  const counter = { textContent: "2" };
+  const list = { rows: [], insertBefore(row) { this.rows.push(row); }, querySelector: () => null };
+  const row = { parentElement: list, nextSibling: null, remove() { list.rows = list.rows.filter((item) => item !== row); } };
+  list.rows.push(row);
+  const remove = new Element();
+  remove.dataset = { title: "Minggu ini", url: "/delete/", version: "3", planId: "p1" };
+  remove.closest = () => row;
+  const feedback = new Element();
+  let answer;
+  Object.assign(globalThis, {
+    document: {
+      getElementById: () => feedback,
+      querySelector: (selector) => selector.includes("csrfmiddlewaretoken") ? { value: "test-csrf" } : null,
+      querySelectorAll: (selector) => selector === "[data-delete-plan]" ? [remove]
+        : selector === "[data-saved-count]" ? [counter] : [],
+    },
+    window: { confirm: () => true },
+    fetch: () => new Promise((resolve) => { answer = resolve; }),
+  });
+  initSavedPlans();
+  const pending = remove.trigger();
+  assert.deepEqual(list.rows, []);
+  assert.equal(counter.textContent, "1");
+  answer({ ok: false, status: 409, json: async () => ({ error: "Rencana berubah di tab lain." }) });
+  await pending;
+  assert.deepEqual(list.rows, [row]);
+  assert.equal(counter.textContent, "2");
+  assert.equal(feedback.textContent, "Rencana berubah di tab lain.");
 });
