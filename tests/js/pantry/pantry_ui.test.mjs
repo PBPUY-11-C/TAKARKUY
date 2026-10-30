@@ -47,6 +47,79 @@ function setup({scan = false} = {}) {
   return {row, requests, get, context, response: (ok, data) => {next = {ok, data};}};
 }
 
+function setupExpiryFilter(expiryDates) {
+  const filter = {
+    value: "all",
+    listeners: {},
+    addEventListener(name, fn) {
+      this.listeners[name] = fn;
+    },
+    async trigger(name = "change") {
+      return this.listeners[name]?.({ currentTarget: this });
+    },
+  };
+
+  const result = { textContent: "" };
+
+  const items = expiryDates.map((expiryDate) => ({
+    dataset: expiryDate === undefined
+      ? {}
+      : { expiryDate },
+    hidden: false,
+  }));
+
+  const context = {
+    Date,
+    document: {
+      readyState: "complete",
+      getElementById(id) {
+        if (id === "expiry-filter") return filter;
+        if (id === "expiry-filter-result") return result;
+        return null;
+      },
+      querySelectorAll() {
+        return items;
+      },
+      addEventListener() {},
+    },
+  };
+
+  const start = script.indexOf(
+    "(() => {\n  function initExpiryFilter()"
+  );
+
+  if (start === -1) {
+    throw new Error("IIFE filter kedaluwarsa tidak ditemukan di pantry.js");
+  }
+
+  const closing = "\n})();";
+  const end = script.indexOf(closing, start);
+
+  if (end === -1) {
+    throw new Error("Penutup IIFE filter kedaluwarsa tidak ditemukan");
+  }
+
+  runInNewContext(
+    script.slice(start, end + closing.length),
+    context
+  );
+
+  return { filter, result, items };
+}
+
+function expiryDateOffset(days) {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + days);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+
 test("combined photo rows do not request name suggestions and keep raw for consent", () => {
   const app = setup();
   app.context.showDraftItems([{raw: "BYM", name: "Bayam", quantity: 1, unit: "g", ingredient_code: "ING-BAYAM", method: "ai_foto_perlu_periksa"}], {photoAttempted: true, photoSucceeded: true});
@@ -179,4 +252,111 @@ test("editing a suggested name clears old consent and sends actual edit metadata
   assert.equal(item.user_edited, true);
   assert.equal(item.accepted, false);
   assert.equal(item.ingredient_code, undefined);
+});
+
+test("expiry filter shows only expired items", () => {
+  const { filter, items, result } = setupExpiryFilter([
+    expiryDateOffset(-2),
+    expiryDateOffset(0),
+    expiryDateOffset(5),
+    undefined,
+  ]);
+
+  assert.equal(items.every((item) => !item.hidden), true);
+  assert.equal(result.textContent, "Menampilkan 4 dari 4 bahan.");
+});
+
+test("expiry filter shows items expiring within seven days", async () => {
+  const { filter, items, result } = setupExpiryFilter([
+    expiryDateOffset(-2),
+    expiryDateOffset(0),
+    expiryDateOffset(5),
+    undefined,
+  ]);
+
+  filter.value = "expired";
+  await filter.trigger();
+
+  assert.deepEqual(
+    items.map((item) => item.hidden),
+    [false, true, true, true]
+  );
+  assert.equal(result.textContent, "Menampilkan 1 dari 4 bahan.");
+});
+
+test("expiry filter shows items with unknown expiry dates", async () => {
+  const { filter, items, result } = setupExpiryFilter([
+    expiryDateOffset(-1),
+    expiryDateOffset(0),
+    expiryDateOffset(7),
+    expiryDateOffset(8),
+  ]);
+
+  filter.value = "next7";
+  await filter.trigger();
+
+  assert.deepEqual(
+    items.map((item) => item.hidden),
+    [true, false, false, true]
+  );
+  assert.equal(result.textContent, "Menampilkan 2 dari 4 bahan.");
+});
+
+test("expiry filter updates when the selection changes", async () => {
+  const { filter, items, result } = setupExpiryFilter([
+    expiryDateOffset(3),
+    undefined,
+    "",
+    "2026-02-30",
+  ]);
+
+  filter.value = "unknown";
+  await filter.trigger();
+
+  assert.deepEqual(
+    items.map((item) => item.hidden),
+    [true, false, false, false]
+  );
+  assert.equal(result.textContent, "Menampilkan 3 dari 4 bahan.");
+});
+
+test("expiry filter updates when the selection changes", async () => {
+  const { filter, items, result } = setupExpiryFilter([
+    expiryDateOffset(-1),
+    expiryDateOffset(3),
+    undefined,
+  ]);
+
+  filter.value = "expired";
+  await filter.trigger();
+
+  assert.deepEqual(
+    items.map((item) => item.hidden),
+    [false, true, true]
+  );
+
+  filter.value = "all";
+  await filter.trigger();
+
+  assert.deepEqual(
+    items.map((item) => item.hidden),
+    [false, false, false]
+  );
+  assert.equal(result.textContent, "Menampilkan 3 dari 3 bahan.");
+});
+
+test("expiry filter shows zero when no items match", async () => {
+  const { filter, items, result } = setupExpiryFilter([
+    expiryDateOffset(3),
+    expiryDateOffset(8),
+  ]);
+
+  filter.value = "expired";
+  await filter.trigger();
+
+  assert.deepEqual(
+    items.map((item) => item.hidden),
+    [true, true]
+  );
+  assert.equal(result.textContent, "Menampilkan 0 dari 2 bahan.");
 });
