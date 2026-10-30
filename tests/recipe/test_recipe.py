@@ -402,7 +402,7 @@ class CookingTests(TestCase):
         response = self.client.get(reverse("modul4"))
         self.assertContains(response, "Sup bayam")
         self.assertNotContains(response, "Rebus air.")
-        self.assertContains(response, "1 resep belum memiliki panduan memasak")
+        self.assertContains(response, "1 recipe does not have a cooking guide yet")
         filtered = self.client.get(reverse("modul4"), {"guidance": "1"})
         self.assertNotContains(filtered, "Sup bayam")
         response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
@@ -418,7 +418,9 @@ class CookingTests(TestCase):
         self.ingredient.allergens = ["kacang_pohon"]
         self.ingredient.save()
         self.assertFalse(recipe_query(self.user).exists())
-        self.assertContains(self.client.get(reverse("modul4")), "1 karena alergen")
+        self.assertContains(
+            self.client.get(reverse("modul4")), "1 hidden by your allergen preferences"
+        )
         self.ingredient.allergens = []
         self.ingredient.save()
         self.assertTrue(recipe_query(self.user).exists())
@@ -593,7 +595,7 @@ class CookingTests(TestCase):
 
     def test_best_stock_filter_explains_when_pantry_has_no_matching_stock(self):
         response = self.client.get(reverse("modul4"), {"stock": "best"})
-        self.assertContains(response, "Belum ada kecocokan dengan Pantry")
+        self.assertContains(response, "No Pantry matches yet")
         self.assertEqual(response.context["recipes"].paginator.count, 0)
     def test_stock_matches_counts_unknown_expiry_and_flags_it(self):
         self.batch(estimated_expires_on=None, expiry_source="unknown")

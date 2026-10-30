@@ -48,7 +48,8 @@ class MaintenanceMiddleware:
         except Resolver404:
             name = ""
         return (
-            name.startswith(("modul1-", "modul2-", "modul4-", "modul5-"))
+            (name.startswith(("modul1-", "modul2-", "modul4-", "modul5-"))
+             and not name.endswith("-legacy"))
             or request.content_type == "application/json"
             or (request.accepts("application/json") and not request.accepts("text/html"))
         )

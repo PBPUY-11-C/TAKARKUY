@@ -95,7 +95,7 @@
                   {% if not active_filters %}<p class="helper">No search or category filters are active.</p>{% endif %}
                   <p class="helper">Only active recipes ready to use and marked halal are listed. Candidates that have not been reviewed and promoted are not included. Profile preferences and allergens still apply.</p>
                   {% if max_price and price_unavailable_count %}<p class="helper price-availability-note">{{ price_unavailable_count }} of {{ price_candidate_count }} recipes have no reference price, so they cannot be compared and are hidden by the price limit. This count is calculated before the Pantry stock filter.</p>{% endif %}
-                  {% if held_count and not guidance_only %}<p class="helper">{{ held_count }} recipes do not have a cooking guide yet. They remain listed and their details explain what is missing.</p>{% endif %}
+                  {% if held_count and not guidance_only %}<p class="helper">{{ held_count }} recipe{% if held_count != 1 %}s{% endif %} {% if held_count == 1 %}does{% else %}do{% endif %} not have a cooking guide yet. They remain listed and their details explain what is missing.</p>{% endif %}
                 </div>
               </details>
 
