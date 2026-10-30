@@ -154,11 +154,9 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body.page-modul1 .budget-increase input { border: 1px solid #3c4248; }
 :root[data-theme="dark"] body.page-modul1 .dialog-foot { border-top: 1px solid #383e44; background: #1e2723; }
 
-:root[data-theme="dark"] body.page-modul2 { color: #dee5e2; background: #121419; }
 :root[data-theme="dark"] body.page-modul2 .site-header { background: #1e2723; }
 :root[data-theme="dark"] body.page-modul2 .brand { color: #dde5e2; }
 :root[data-theme="dark"] body.page-modul2 .back-link { color: #d8e0de; }
-:root[data-theme="dark"] body.page-modul2 .eyebrow { color: #d8e0de; }
 :root[data-theme="dark"] body.page-modul2 .panel { border: 1px solid #363c44; background: #1e2723; }
 :root[data-theme="dark"] body.page-modul2 .icon { background: #121719; color: #88c7dd; }
 :root[data-theme="dark"] body.page-modul2 .icon.green { background: #27322e; color: #d8e0de; }
@@ -205,7 +203,6 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body.page-modul2 .button.danger { border-color: #4c3838; color: #da8b8b; }
 :root[data-theme="dark"] body.page-modul2 .row-feedback { color: #dde5e2; }
 :root[data-theme="dark"] body.page-modul2 .row-feedback.error { color: #db928a; }
-:root[data-theme="dark"] body.page-modul2 .stock-table thead th { border-bottom: 1px solid #3b463f; }
 :root[data-theme="dark"] body.page-modul2 .stock-table tbody th,:root[data-theme="dark"] body.page-modul2 .stock-table tbody td { background: #1e2723; color: #dee5e2; }
 :root[data-theme="dark"] body.page-modul2 .stock-table tbody + tbody { border-top: 1px solid #3b463f; }
 :root[data-theme="dark"] body.page-modul2 .sum-sub { color: #b9c7c0; }
@@ -232,7 +229,6 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body.page-modul2 .guide-tip { background: #26332b; color: #88ddc1; }
 @media (max-width: 820px) {
   :root[data-theme="dark"] body.page-modul2 .stock-table tbody { border: 1px solid #3b463f; background: #1e2723; }
-  :root[data-theme="dark"] body.page-modul2 .stock-table tbody + tbody { border-top: 1px solid #3b463f; }
   :root[data-theme="dark"] body.page-modul2 .stock-table td[data-label]::before { color: #b9c7c0; }
 }
 
