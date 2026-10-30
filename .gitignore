@@ -16,7 +16,7 @@ staticfiles/
 .DS_Store
 .ruff_cache/
 .verification/
-/docs/MODUL3_CONTEXT.json
 
 extract-modul3/
 modul3.zip
+.coverage

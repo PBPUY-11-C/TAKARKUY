@@ -43,6 +43,7 @@ def map_sel(s):
         if not rest: return [f'[data-theme="{m.group(1)}"] .book-shell', f'[data-theme="{m.group(1)}"] #cooking-dialog']
         return [f'[data-theme="{m.group(1)}"] ' + x for x in map_sel(rest)]
     if s in (':root', 'body'): return ['.book-shell', '#cooking-dialog']
+    if s.startswith('.modal__'): return ['#cooking-dialog ' + s]
     if s.startswith('.modal'): return ['#cooking-dialog' + s]
     return [f'{SC} {s}']
 
@@ -87,4 +88,8 @@ head = """/*
 with open(OUT, 'w', encoding='utf-8', newline='\n') as output:
     output.write(head + '\n/* ===== BAGIAN I–III · dari takarkuy-modul4-lengkap.css (terlingkup) ===== */\n' + body +
                   '\n\n/* ===== BAGIAN IV · ADAPTER untuk markup & JavaScript Recipe Book ===== */\n' + adapter)
-print('keyframes:', len(KEYFRAMES), 'output bytes:', len(open(OUT, encoding='utf-8').read().encode('utf-8')))
+with open(OUT, encoding='utf-8') as generated_file:
+    generated = '\n'.join(line.rstrip() for line in generated_file.read().splitlines()) + '\n'
+with open(OUT, 'w', encoding='utf-8', newline='\n') as generated_file:
+    generated_file.write(generated)
+print('keyframes:', len(KEYFRAMES), 'output bytes:', len(generated.encode('utf-8')))

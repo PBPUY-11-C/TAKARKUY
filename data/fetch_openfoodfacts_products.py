@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch a bounded, review-only Indonesian packaged-food snapshot from Open Food Facts.
-
-The public search API is rate-limited and intended for small snapshots. For a full
-catalogue, use Open Food Facts' bulk export instead of increasing --pages.
-"""
+"""Fetch a bounded, review-only Indonesian packaged-food snapshot from Open Food Facts."""
 
 import argparse
 import csv
@@ -137,7 +133,7 @@ def main():
     source_counts = {}
     for index, (brand, page) in enumerate(batches):
         if index:
-            time.sleep(7)  # Open Food Facts allows at most 10 search requests/min/IP.
+            time.sleep(7)
         data = get_page(page, args.page_size, brand)
         if not isinstance(data.get("products"), list):
             raise ValueError("Open Food Facts returned no product list")

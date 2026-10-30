@@ -43,11 +43,10 @@ def recipe_images_for(recipe_codes):
     if not missing_codes:
         return images
 
-    # Import lazily to keep catalog image metadata independent of app startup.
     from django.urls import reverse
 
-    from apps.recipe_book.models import RecipeReview
-    from apps.recipe_book.reviews import public_username, review_photo_url
+    from apps.recipe.models import RecipeReview
+    from apps.recipe.reviews import public_username, review_photo_url
 
     source_base = reverse("modul4")
     reviews = (
@@ -77,4 +76,3 @@ def recipe_images_for(recipe_codes):
             "file_title": f"Foto komunitas: {review.recipe.name}",
         }
     return images
-

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <script>
+    try {
+      const saved = localStorage.getItem("takarkuy-theme");
+      const theme = saved === "dark" || saved === "light" ? saved : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = theme;
+    } catch (error) { document.documentElement.dataset.theme = "light"; }
+  </script>
+  {% include "partials/head.html" %}
+  <title>{% block title %}TAKARKUY{% endblock %}</title>
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="page-{{ request.resolver_match.url_name|default:"app" }} {% block body_class %}{% endblock %}">
+  {% block header %}{% include "partials/app_header.html" %}{% endblock %}
+  {% block content %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -26,7 +26,6 @@ class Command(BaseCommand):
             if item.user_id and not storage_options(item.ingredient_id, item.name):
                 key = shelf_key(item.ingredient_id, item.name)
                 by_user.setdefault(item.user, []).append((key, item.name, item.ingredient_id))
-        # Each owner's own daily AI quota pays for their items.
         for user, entries in by_user.items():
             estimate_shelf_life(user, entries)
         filled = 0
@@ -38,7 +37,6 @@ class Command(BaseCommand):
             )
             if not estimate["estimated_expires_on"]:
                 continue
-            # Version bump makes any open edit form reload instead of overwriting this date.
             filled += PantryItem.objects.filter(
                 pk=item.pk, version=item.version, estimated_expires_on__isnull=True
             ).update(
@@ -63,7 +61,7 @@ class Command(BaseCommand):
             ingredient_id__in=official,
         ):
             if shelf_key(item.ingredient_id, item.name) not in guessed:
-                continue  # dated from the official reference already
+                continue
             start = item.starting_on or timezone.localdate(item.added_at)
             estimate = expiry_estimate(
                 storage_options(item.ingredient_id, item.name),

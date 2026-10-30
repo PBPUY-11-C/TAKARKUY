@@ -135,9 +135,6 @@ def main():
     if product_path.exists():
         with product_path.open(newline="", encoding="utf-8") as stream:
             for product in csv.DictReader(stream):
-                # An item is only a *candidate* for a generic cooking ingredient.
-                # A packaged product's seasoning and nutrient profile must not be
-                # silently substituted for plain noodles in a meal calculation.
                 name = product["product_name"]
                 looks_like_noodles = bool(re.search(r"\b(mi|mie|noodles?|indomie)\b", name, re.I))
                 if not looks_like_noodles:

@@ -46,8 +46,6 @@ class Command(BaseCommand):
             "catalog.ingredientalias",
             "catalog.unitconversion",
         }
-        # Reject conflicting duplicates BEFORE any database write. Identical
-        # repeated records are harmless and processed once (idempotent import).
         unique = {}
         for item in records:
             if (
@@ -64,8 +62,6 @@ class Command(BaseCommand):
                 raise CommandError(f"ID duplikat dengan data berbeda: {key[0]} / {key[1]}")
             unique.setdefault(key, item)
         records = list(unique.values())
-        # SQLite does not enforce varchar lengths; reject incompatible records
-        # before writing so local imports behave consistently with PostgreSQL.
         for item in records:
             model = apps.get_model(item["model"])
             for name, value in item["fields"].items():
@@ -86,8 +82,6 @@ class Command(BaseCommand):
             model = apps.get_model(label)
             values = item["fields"].copy()
             if label == "catalog.recipe":
-                # Legacy generated fixtures do not contain publication review fields.
-                # Preserve a per-recipe review; only initialize previously absent rows.
                 current = model.objects.filter(pk=item["pk"]).first()
                 if current is None:
                     values.setdefault(
@@ -121,8 +115,6 @@ class Command(BaseCommand):
                 seen_recipes.add(item["pk"])
                 if item["fields"].get("is_plannable") is True:
                     promoted_recipes.add(item["pk"])
-        # Remove ONLY obsolete discovery badges on recipes just promoted by this
-        # fixture. Preserve user tags, unrelated recipes and historical plans.
         tag_model = apps.get_model("catalog.recipetag")
         generated = (
             Q(source__startswith="TAKARKUY")

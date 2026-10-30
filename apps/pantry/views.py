@@ -12,10 +12,10 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
 
-from apps.accounts.access import api_login_required
-from apps.accounts.models import UserProfile
-from apps.accounts.preferences import preferences_for, profile_for
 from apps.catalog.models import Ingredient
+from apps.login.access import api_login_required
+from apps.login.models import UserProfile
+from apps.login.preferences import preferences_for, profile_for
 
 from .ai_usage import collect_usage
 from .forms import PantryDetailsForm, PantryItemForm, PantryOCRItemForm, StaplePreferenceForm
@@ -68,7 +68,6 @@ def _starting_on(item):
 
 
 def _session_id(request):
-    # Compatibility column only: all authorization queries use the user FK.
     scope = session_scope(request.user)
     if request.session.get("pantry_session_id") != scope:
         request.session["pantry_session_id"] = scope
@@ -124,10 +123,9 @@ def pantry_page(request):
         }
     return render(
         request,
-        "modul2.html",
+        "pantry/pantry.html",
         {
             "pantry_items": items,
-            # Used-up batches leave the list but keep their ledger readable for a while.
             "used_up_items": PantryItem.objects.filter(
                 user=request.user,
                 archived_at__isnull=True,
@@ -325,7 +323,6 @@ def save_pantry_items(request):
         (accepted[index][1] if source == "ocr" else None) or local_codes[index]
         for index in range(len(forms))
     ]
-    # Ask Gemini once, before the transaction, about food with no shelf-life reference.
     estimate_shelf_life(
         request.user,
         [
@@ -486,7 +483,6 @@ def update_pantry_details(request, item_id):
                 )
                 estimate = {"message": "Tanggal pengguna/label tidak diubah otomatis."}
             else:
-                # Preserve authoritative dates; estimates can shorten but never extend.
                 estimate = transfer_estimate(item, options, item.location, item.starting_on)
                 item.estimated_expires_on = (
                     date.fromisoformat(estimate["estimated_expires_on"])
@@ -592,7 +588,7 @@ def pantry_movements(request, item_id):
 @require_http_methods(["GET"])
 def pantry_recipe_matches(request):
     """Read-only shortcut into the Recipe Book's own stock matching."""
-    from apps.recipe_book.services import stock_matches
+    from apps.recipe.services import stock_matches
 
     try:
         servings = int(request.GET.get("servings", "1"))

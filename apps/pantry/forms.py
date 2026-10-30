@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from django import forms
 from django.utils import timezone
 
-from apps.recipe_book.staples import STAPLE_GROUPS
+from apps.recipe.staples import STAPLE_GROUPS
 
 from .models import PantryItem
 

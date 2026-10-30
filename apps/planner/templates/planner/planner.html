@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load static planner_format %}
+{% block title %}TAKARKUY{% endblock %}
+{% block body_class %}has-app-nav planner-page{% endblock %}
+{% block extra_head %}
+  <meta name="description" content="Rencana makan TAKARKUY dari budget, katalog resep, dan harga bahan.">
+  <link rel="stylesheet" href="{% static 'planner/planner.css' %}?v=20261029-ganti">
+  {% if remembered_url %}
+  <script>
+    // Reopen the last plan only in a tab that already showed it (sessionStorage ends with the tab).
+    try { if (sessionStorage.getItem("takarkuy-planner")) location.replace("{{ remembered_url|escapejs }}"); } catch (error) {}
+  </script>
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <main id="main" class="page">
+    <div class="page-heading">
+      <h1>Meal Planner</h1>
+      <nav class="plan-nav" aria-label="Navigasi rencana">
+        <button type="button" class="pill-link" data-open-dialog="rencana-saya">Rencana Saya · <span data-saved-count>{{ saved_plans|length }}</span></button>
+        <a class="pill-link pill-dark" href="{% url 'modul1' %}?new=1" data-swap>+ Rencana baru</a>
+      </nav>
+    </div>
+    <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite">{% if plan_missing %}Rencana itu sudah dihapus atau tidak ditemukan.{% endif %}</p>
+
+    <form class="planner-form card" method="post" action="{% url 'modul1' %}#hasil" novalidate>
+      {% csrf_token %}
+      {{ form.allergens }}
+      {% if plan %}<input type="hidden" name="plan_id" value="{{ plan.pk }}"><input type="hidden" name="version" value="{{ plan.version }}">{% else %}<input type="hidden" name="new_plan" value="1">{% endif %}
+      <div class="form-row">
+        <div class="field field-budget">
+          <label for="{{ form.budget.id_for_label }}">Budget</label>
+          <div class="input-box"><span aria-hidden="true">Rp</span>{{ form.budget }}</div>
+        </div>
+        <div class="field">
+          <label for="{{ form.days.id_for_label }}">Hari</label>
+          <div class="stepper" data-stepper><button type="button" data-step="-1" aria-label="Kurangi hari" hidden>−</button>{{ form.days }}<button type="button" data-step="1" aria-label="Tambah hari" hidden>+</button></div>
+        </div>
+        <div class="field">
+          <label for="{{ form.servings.id_for_label }}">Orang</label>
+          <div class="stepper" data-stepper><button type="button" data-step="-1" aria-label="Kurangi orang" hidden>−</button>{{ form.servings }}<button type="button" data-step="1" aria-label="Tambah orang" hidden>+</button></div>
+        </div>
+        <fieldset class="field">
+          <legend>Waktu makan</legend>
+          <div class="chips">{% for choice in form.meal_types %}<label class="choice-chip">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>{% endfor %}</div>
+        </fieldset>
+      </div>
+      <div class="form-row">
+        <fieldset class="field">
+          <legend>Target gizi</legend>
+          <div class="segmented">{% for choice in form.targets %}<label>{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>{% endfor %}</div>
+        </fieldset>
+        <div class="field">
+          <label for="id_rice">Karbohidrat</label>
+          <select id="id_rice" name="rice" class="select-box">{% for value, label in staple_options %}<option value="{{ value }}"{% if value == rice_value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+        </div>
+        <div class="form-spacer"></div>
+        <details class="avoid" data-avoid{% if form.exclude_ingredients.errors %} open{% endif %}>
+          <summary><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>Hindari<span class="count" data-avoid-count{% if not avoid_count %} hidden{% endif %}>{{ avoid_count }}</span></summary>
+          <div class="avoid-panel">
+            <label for="{{ form.exclude_ingredients.id_for_label }}">Bahan yang dihindari</label>
+            <div class="avoid-chips" data-avoid-chips></div>
+            {{ form.exclude_ingredients }}
+          </div>
+        </details>
+        <button type="submit" class="primary-button">{% if plan.status == 'saved' %}Ganti semua menu{% else %}Buat rencana{% endif %}</button>
+      </div>
+      {% if not plan and active_draft %}
+      <input type="hidden" name="replace_draft_id" value="{{ active_draft.pk }}">
+      <input type="hidden" name="replace_draft_version" value="{{ active_draft.version }}">
+      <input type="hidden" name="replace_draft" value="1">
+      {% endif %}
+      {% if form.errors %}<ul class="form-errors" role="alert">{% for field in form %}{% for message in field.errors %}<li>{{ field.label }}: {{ message }}</li>{% endfor %}{% endfor %}{% for message in form.non_field_errors %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+    </form>
+
+    <section id="hasil" class="results" aria-live="polite">
+      {% if halal_warning %}<p class="notice notice-warn">Rencana ini memuat menu yang tidak sesuai preferensi halal terbaru. Ganti menunya atau buat rencana baru.</p>{% endif %}
+      {% if allergy_warning %}<p class="notice notice-warn">Rencana lama memiliki bahan yang tidak sesuai alergi terbaru atau belum ditinjau. Ganti menunya atau buat rencana baru.</p>{% endif %}
+      {% if error %}
+        <p class="notice notice-warn"><strong>Rencana belum bisa dihitung.</strong> {{ error }}</p>
+      {% elif result %}
+        {% if result.missing_meal_labels %}<p class="notice notice-warn">Belum ada menu yang cocok untuk {{ result.missing_meal_labels|join:", " }}.</p>{% endif %}
+        {% if result.unmatched_exclusions %}<p class="notice notice-warn">Tidak ditemukan di resep: {{ result.unmatched_exclusions|join:", " }}.</p>{% endif %}
+        {% if not result.within_budget %}
+        <div class="card infeasible">
+          <h2>Budget belum cukup</h2>
+          <p>Paling hemat {{ result.minimum_budget|rupiah }} untuk {{ form.cleaned_data.days }} hari × {{ form.cleaned_data.servings }} orang (kurang {{ result.difference|rupiah }}).</p>
+          <ul class="suggestions">
+            <li>Naikkan budget ke {{ result.minimum_budget|rupiah }}</li>
+            {% if result.feasible_days %}<li>Atau kurangi jadi {{ result.feasible_days }} hari</li>{% endif %}
+            {% if result.feasible_servings %}<li>Atau kurangi jadi {{ result.feasible_servings }} orang</li>{% endif %}
+          </ul>
+        </div>
+        {% else %}
+        <div class="summary">
+          <div class="card summary-card">
+            <div class="summary-top"><span class="label">Belanja</span><span class="badge">Dalam budget</span></div>
+            <p class="big">{{ result.net_total|rupiah }} <span>/ {{ form.cleaned_data.budget|rupiah }}</span></p>
+            <div class="bar"><span style="width:{% widthratio result.net_total form.cleaned_data.budget 100 %}%"></span></div>
+            <p class="muted">Sisa {{ result.difference|rupiah }}{% if result.stock_used %} · Nilai menu {{ result.total|rupiah }}, sebagian dari Pantry{% elif pantry_saving %} · Stok Pantry bisa menghemat ±{{ pantry_saving|rupiah }}{% endif %}</p>
+          </div>
+          <div class="card summary-card">
+            <span class="label">Gizi per hari</span>
+            <div class="nutrition">
+              {% for ring in nutrition_rings %}
+              <div class="nutrient nutrient-{{ ring.key }}">
+                <svg class="ring" viewBox="0 0 56 56" role="img" aria-label="{{ ring.value }} {{ ring.label }}, {{ ring.percent }}% dari acuan label gizi {{ ring.reference }}">
+                  <circle class="ring-track" cx="28" cy="28" r="24" pathLength="100"/>
+                  <circle class="ring-fill" cx="28" cy="28" r="24" pathLength="100" stroke-dasharray="{{ ring.percent }} 100"/>
+                  <g class="ring-icon" transform="translate(18 18)">
+                    {% if ring.key == "energy" %}<path d="M10 2c1 3 4 4.5 4 8.5a4 4 0 0 1-8 0c0-2 1-3 2-4 0 1.5.8 2.5 2 2.5 0-2.5-1.5-4.5 0-7Z"/>
+                    {% elif ring.key == "protein" %}<path d="M13.5 3.5a3.5 3.5 0 0 1 0 5l-4 4-3-3 4-4a3.5 3.5 0 0 1 3-2Z"/><path d="M6.5 9.5 3 13a1.5 1.5 0 1 0 2 2l.5-.5a1.5 1.5 0 1 0 2-2L10.5 9"/>
+                    {% elif ring.key == "carbs" %}<path d="M10 18V6"/><path d="M10 6c-2-1-3-3-3-5 2 0 3 1.5 3 3.5 0-2 1-3.5 3-3.5 0 2-1 4-3 5Z"/><path d="M10 11c-2-.5-3.5-2-3.5-4 2 0 3.5 1.5 3.5 3.5 0-2 1.5-3.5 3.5-3.5 0 2-1.5 3.5-3.5 4Z"/>
+                    {% else %}<path d="M10 2.5S4.5 8.5 4.5 12a5.5 5.5 0 0 0 11 0C15.5 8.5 10 2.5 10 2.5Z"/>{% endif %}
+                  </g>
+                </svg>
+                <strong>{{ ring.value }}</strong>
+                <span>{{ ring.label }}</span>
+              </div>
+              {% endfor %}
+            </div>
+            {% if result.protein_floor or result.calorie_cap %}<p class="muted">Target {% if result.protein_floor %}≥ {{ result.protein_floor }} g protein{% endif %}{% if result.protein_floor and result.calorie_cap %} · {% endif %}{% if result.calorie_cap %}≤ {{ result.calorie_cap }} kkal{% endif %}</p>{% endif %}
+          </div>
+          {% if plan %}
+          <form class="card summary-card plan-save" data-save-plan data-url="{% url 'modul1-plan-save' plan.pk %}" data-version="{{ plan.version }}">
+            <label for="plan-title" class="label">Judul rencana <span class="status">· {% if plan.status == 'draft' %}Draft{% else %}Tersimpan{% endif %}</span></label>
+            <input id="plan-title" name="title" maxlength="100" required value="{{ plan.title }}">
+            <div class="plan-save-row">
+              <div class="plan-date">
+                <label for="plan-start" class="label">Mulai</label>
+                <input id="plan-start" name="starts_on" type="date" value="{{ start_value|date:'Y-m-d' }}" min="{{ start_min|date:'Y-m-d' }}" max="{{ start_max|date:'Y-m-d' }}"{% if date_locked %} disabled title="Sudah ada menu yang dimasak"{% endif %}>
+              </div>
+              <button class="primary-button" type="submit">{% if plan.status == 'draft' %}Simpan Rencana{% else %}Simpan Perubahan{% endif %}</button>
+            </div>
+            <p class="save-error" role="alert" data-save-error hidden></p>
+            {% if plan.status == 'draft' and plan.source_plan_id %}<button class="link-button" type="submit" name="replace_original" value="yes">Simpan ke rencana asal</button>{% endif %}
+          </form>
+          {% endif %}
+        </div>
+
+        <div class="result-grid">
+          <section class="card" aria-labelledby="jadwal-title">
+            <div class="card-head">
+              <h2 id="jadwal-title">Jadwal masak</h2>
+              <div class="day-tabs" data-day-tabs hidden>{% for day in display_schedule %}<button type="button" data-day-tab="{{ day.number }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">Hari {{ day.number }}</button>{% endfor %}</div>
+            </div>
+            <div class="day-panels">
+            {% for day in display_schedule %}
+            <div class="day" data-day-panel="{{ day.number }}">
+              <h3 class="day-title"><span class="day-name">Hari {{ day.number }}</span>{% if day.date %} <span class="day-date">{{ day.date|date:'l, d M Y' }}</span>{% endif %}{% if result.protein_floor or result.calorie_cap %} <span class="day-nutrition">· {{ day.protein }} g protein · {{ day.calories }} kkal / orang</span>{% endif %}</h3>
+              {% for meal in day.meals %}
+              <article class="meal">
+                {% if meal.photo %}<img class="meal-photo" src="{{ meal.photo.image_url }}" alt="" title="Foto: {{ meal.photo.creator }} ({{ meal.photo.license_name }})" loading="lazy">{% else %}<div class="meal-photo meal-photo-empty" aria-hidden="true">♨</div>{% endif %}
+                <div class="meal-body">
+                  <span class="meal-label">{{ meal.label }}</span>
+                  <h4>{{ meal.name }}{% if meal.with_rice %} + Nasi{% elif meal.staple %} + {{ meal.staple.label }}{% endif %}{% if meal.cooked %} <span class="meal-status">Sudah masak</span>{% elif meal.skipped %} <span class="meal-status">Dilewati</span>{% endif %}</h4>
+                  <p>{{ meal.cost|rupiah }} · {{ meal.calories }} kkal/porsi{% if meal.expiring_stock %} · <span class="pantry-note">Pakai stok: {{ meal.expiring_stock|join:", " }}</span>{% endif %}</p>
+                </div>
+                <div class="meal-actions">
+                  <a class="link-button" href="{% url 'modul4' %}?{% if meal.planned_meal_id %}slot={{ meal.planned_meal_id }}{% else %}recipe={{ meal.recipe_code|urlencode }}{% endif %}">Resep</a>
+                  {% if plan and not meal.cooked %}<button class="secondary-button" type="button" data-replace-menu data-day="{{ day.number }}" data-meal="{{ meal.type }}" data-label="{{ meal.label }}" data-name="{{ meal.name }}" data-total="{{ result.net_total }}" data-budget="{{ form.cleaned_data.budget }}" data-alternatives-url="{% url 'modul1-plan-alternatives' plan.pk %}" data-preview-url="{% url 'modul1-plan-preview' plan.pk %}" data-version="{{ plan.version }}">Ganti</button>{% endif %}
+                </div>
+              </article>
+              {% endfor %}
+            </div>
+            {% endfor %}
+            </div>
+          </section>
+
+          <section class="card shopping-card" aria-labelledby="belanja-title">
+            <h2 id="belanja-title">Daftar belanja</h2>
+            <p class="muted">{{ item_count }} bahan · {{ form.cleaned_data.days }} hari</p>
+            <ul class="shop-summary">
+              {% for row in shopping_summary %}
+              <li>
+                <span class="shop-icon shop-icon-{{ row.key }}" aria-hidden="true"><svg viewBox="0 0 24 24">{% if row.key == "protein" %}<path d="M15.5 4.5a4 4 0 0 1 0 5.7l-5 5-4.2-4.2 5-5a4 4 0 0 1 4.2-1.5Z"/><path d="M8.3 13.3 4.5 17a1.8 1.8 0 1 0 2.5 2.5l3.8-3.7"/>{% elif row.key == "karbohidrat" %}<path d="M12 21V8"/><path d="M12 8c-2.5-1-4-3.4-4-6 2.6 0 4 2 4 4.5C12 4 13.4 2 16 2c0 2.6-1.5 5-4 6Z"/><path d="M12 14c-2.5-.6-4.5-2.6-4.5-5 2.5 0 4.5 2 4.5 4.5 0-2.5 2-4.5 4.5-4.5 0 2.4-2 4.4-4.5 5Z"/>{% elif row.key == "sayur" %}<path d="M5 19c0-8 5-14 15-15-1 10-7 15-15 15Z"/><path d="M5 19 14 10"/>{% elif row.key == "buah" %}<path d="M12 8c-4-2-8 1-7 6s4 8 7 6c3 2 6-1 7-6s-3-8-7-6Z"/><path d="M12 8c0-2 1-4 3-5"/>{% else %}<path d="M4 12h16a8 8 0 0 1-16 0Z"/><path d="M9 8c0-2 2-2 2-4M14 8c0-2 2-2 2-4"/>{% endif %}</svg></span>
+                <span class="shop-name">{{ row.label }}<span class="muted">{{ row.count }} bahan</span></span>
+                <strong>{{ row.subtotal|rupiah }}</strong>
+              </li>
+              {% endfor %}
+            </ul>
+            <p class="shop-total"><span>Total</span><span>{{ result.total|rupiah }}</span></p>
+            <p class="muted">Total belanja sudah melewati pembulatan.</p>
+            <div class="shop-actions">
+              {% if plan %}<a class="secondary-button download-button" href="{% url 'modul1-plan-pdf' plan.pk %}" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download detail (PDF)</a>{% endif %}
+              {% if plan.status == 'saved' and pantry_items %}<button type="button" class="link-button" data-open-dialog="pantry-dialog">Sudah belanja? Masukkan ke Pantry</button>{% endif %}
+            </div>
+          </section>
+        </div>
+
+        {% endif %}
+      {% elif not form.errors %}
+        <div class="card empty-state">
+          <h2>Rencanamu akan muncul di sini</h2>
+          <p class="muted">Atur budget dan waktu makan, lalu tekan Buat rencana.</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <dialog id="rencana-saya" class="plan-dialog" aria-labelledby="saved-plans-title">
+      <div class="dialog-head">
+        <div><h2 id="saved-plans-title">Rencana Saya</h2><p class="muted"><span data-saved-count>{{ saved_plans|length }}</span> rencana tersimpan</p></div>
+        <button type="button" class="icon-button" data-close-dialog aria-label="Tutup">×</button>
+      </div>
+      <div class="dialog-body">
+        <ul class="saved-list">
+          {% for saved in saved_plans %}
+          <li>
+            <a class="saved-open" href="{% url 'modul1' %}?plan={{ saved.pk }}#hasil" data-swap>
+              <strong>{{ saved.title }}</strong>
+              <span class="muted">{{ saved.starts_on|date:'d M Y' }} · {{ saved.inputs.days }} hari · {{ saved.inputs.servings }} orang · {{ saved.net_total|rupiah }}</span>
+            </a>
+            <button class="danger-button" type="button" data-delete-plan data-plan-id="{{ saved.pk }}" data-url="{% url 'modul1-plan-delete' saved.pk %}" data-version="{{ saved.version }}" data-title="{{ saved.title }}">Hapus</button>
+          </li>
+          {% empty %}
+          <li class="muted">Belum ada rencana tersimpan. Buat rencana, lalu tekan Simpan Rencana.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </dialog>
+    {% if plan.status == 'saved' and pantry_items %}
+    <dialog id="pantry-dialog" class="plan-dialog" aria-labelledby="pantry-title">
+      <div class="dialog-head">
+        <div><h2 id="pantry-title">Masukkan ke Pantry</h2><p class="muted">Centang bahan yang sudah dibeli.</p></div>
+        <button type="button" class="icon-button" data-close-dialog aria-label="Tutup">×</button>
+      </div>
+      <div class="dialog-body">
+        <ul class="pantry-list">
+          {% for item in pantry_items %}
+          <li><label><input class="pantry-pick" type="checkbox" data-ingredient="{{ item.ingredient_code }}" data-grams="{% if item.to_buy %}{{ item.to_buy }}{% else %}{{ item.quantity }}{% endif %}"> <span>{{ item.name }}</span> <span class="muted">{% if item.purchase_units %}{{ item.purchase_units }} {{ item.purchase_unit }}{% elif item.in_pantry %}perlu beli {{ item.to_buy }} g{% else %}{{ item.quantity }} g{% endif %}</span></label></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="dialog-foot">
+        <div class="dialog-actions"><button type="button" class="secondary-button" data-close-dialog>Batal</button><button type="button" class="primary-button" id="add-to-pantry" data-url="{% url 'modul1-plan-pantry' plan.pk %}" data-version="{{ plan.version }}">Masukkan ke Pantry</button></div>
+      </div>
+    </dialog>
+    {% endif %}
+    {% include 'planner/preview_dialog.html' %}
+    {% if pending_preview %}{{ pending_preview|json_script:'pending-plan-preview' }}{% endif %}
+  </main>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'planner/plans.js' %}?v=20261029-ganti" defer></script>
+  <script src="{% static 'recipe/image_fallback.js' %}" defer></script>
+{% endblock %}

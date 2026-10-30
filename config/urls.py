@@ -1,30 +1,39 @@
-"""
-URL configuration for config project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+"""URL configuration for config project."""
 
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView
 
-from apps.accounts.forms import EmailOrUsernameAuthenticationForm
-from apps.accounts.views import AccountLoginView, landing_view, profile_view, signup_view
-
-from apps.budget_planner.plan_views import (
+from apps.home.views import (
+    dashboard_page,
+    market_lookup,
+    my_recipe_create,
+    my_recipe_delete,
+    my_recipe_detail,
+    my_recipe_edit,
+)
+from apps.login.forms import EmailOrUsernameAuthenticationForm
+from apps.login.views import (
+    AccountLoginView,
+    food_preferences_view,
+    landing_view,
+    password_change_view,
+    profile_view,
+    signup_view,
+)
+from apps.pantry.views import (
+    delete_pantry_item,
+    fallback_receipt_ocr,
+    pantry_movements,
+    pantry_page,
+    pantry_recipe_matches,
+    save_pantry_items,
+    save_staple_preferences,
+    suggest_receipt_items,
+    update_pantry_details,
+)
+from apps.planner.plan_views import (
     add_plan_purchases,
     apply_plan_preview,
     delete_account_plan,
@@ -33,20 +42,8 @@ from apps.budget_planner.plan_views import (
     save_account_plan,
     shopping_list_download,
 )
-from apps.budget_planner.views import planner_page
-from apps.dashboard.views import dashboard_page, market_lookup
-from apps.pantry.views import (
-    pantry_page,
-    delete_pantry_item,
-    fallback_receipt_ocr,
-    pantry_movements,
-    pantry_recipe_matches,
-    save_staple_preferences,
-    save_pantry_items,
-    suggest_receipt_items,
-    update_pantry_details,
-)
-from apps.recipe_book.views import (
+from apps.planner.views import planner_page
+from apps.recipe.views import (
     book_page,
     cooking_preview,
     estimate_recipe_cost,
@@ -54,16 +51,12 @@ from apps.recipe_book.views import (
     recipe_review_photo,
     recipe_review_photo_delete,
     recipe_review_photo_file,
-    report_recipe_data,
     record_cooking,
+    report_recipe_data,
     save_recipe_note,
     set_favorite,
     set_slot_status,
 )
-
-# Modul 1 and Modul 3 are active. Other module pages remain placeholders;
-# their backend endpoints are reused by the planner.
-kosong = login_required(TemplateView.as_view(template_name="kosong.html"))
 
 urlpatterns = [
     path("", landing_view, name="landing"),
@@ -74,7 +67,10 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", LogoutView.as_view(next_page="landing"), name="logout"),
-    path("modul3/", profile_view, name="modul3"),
+    path("profil/", profile_view, name="modul3"),
+    path("profil/preferensi/", food_preferences_view, name="food-preferences"),
+    path("profil/ganti-kata-sandi/", password_change_view, name="password-change"),
+    path("modul3/", RedirectView.as_view(pattern_name="modul3", query_string=True)),
     path("planner/", planner_page, name="modul1"),
     path("planner/", planner_page, name="planner"),
     path("modul1/", planner_page),
@@ -106,7 +102,9 @@ urlpatterns = [
     path("pantry/recipes/", pantry_recipe_matches, name="modul2-recipes"),
     path("pantry/staples/", save_staple_preferences, name="modul2-staples"),
 
-    path("modul4/", book_page, name="modul4"),
+    path("recipes/", book_page, name="modul4"),
+    path("recipe/", RedirectView.as_view(pattern_name="modul4", query_string=True), name="recipe-legacy"),
+    path("modul4/", RedirectView.as_view(pattern_name="modul4", query_string=True), name="modul4-legacy"),
     path("modul4/favorite/", set_favorite, name="modul4-favorite"),
     path("modul4/note/", save_recipe_note, name="modul4-note"),
     path("modul4/estimate/", estimate_recipe_cost, name="modul4-estimate"),
@@ -119,8 +117,12 @@ urlpatterns = [
     path("modul4/reviews/<int:review_id>/photo/", recipe_review_photo_file, name="modul4-review-photo"),
     path("modul4/slot-status/", set_slot_status, name="modul4-slot-status"),
 
-    path("modul5/", dashboard_page, name="modul5"),
-    path("modul5/places/", market_lookup, name="modul5-places"),
+    path("dashboard/", dashboard_page, name="modul5"),
+    path("dashboard/places/", market_lookup, name="modul5-places"),
+    path("dashboard/resep/tambah/", my_recipe_create, name="modul5-recipe-create"),
+    path("dashboard/resep/<int:pk>/", my_recipe_detail, name="modul5-recipe-detail"),
+    path("dashboard/resep/<int:pk>/edit/", my_recipe_edit, name="modul5-recipe-edit"),
+    path("dashboard/resep/<int:pk>/hapus/", my_recipe_delete, name="modul5-recipe-delete"),
 
     path("admin/", admin.site.urls),
 ]

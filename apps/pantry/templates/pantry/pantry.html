@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% load static l10n %}
+{% block title %}Smart Pantry — TAKARKUY{% endblock %}
+{% block extra_head %}
+  <meta name="description" content="Pindai struk dan catat stok dapur TAKARKUY.">
+  <link rel="stylesheet" href="{% static 'pantry/pantry.css' %}">
+{% endblock %}
+{% block content %}
+  <main class="page">
+    <div class="page-intro">
+      <p class="eyebrow">PANTRY</p>
+      <h1>Stok Dapur</h1>
+      {% if messages %}<ul class="feedback-list" role="status">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+
+    <div class="panel-grid">
+      <section class="panel" aria-labelledby="scan-title">
+        <div class="panel-top">
+          <div class="panel-heading">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v17l-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
+            <div>
+              <h2 id="scan-title">Pindai Struk Belanja Kasir / Pasar</h2>
+              <p class="panel-subtitle">Unggah struk untuk mendeteksi bahan secara otomatis.</p>
+            </div>
+          </div>
+          <span class="preview-badge">Pindai &amp; Periksa</span>
+        </div>
+
+        <div class="receipt-summary">
+          <span class="receipt-icon" aria-hidden="true">▤</span>
+          <div class="receipt-copy">
+            <strong id="receipt-name">Belum ada struk dipilih</strong>
+            <p id="scan-progress">Pilih foto struk yang jelas untuk mulai memindai.</p>
+          </div>
+          <span id="receipt-count" class="receipt-count">0 Item Terdeteksi</span>
+        </div>
+
+        <button id="receipt-guide-open" class="guide-link" type="button" aria-haspopup="dialog" aria-controls="receipt-guide-dialog" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+          Panduan foto struk yang bisa dipindai
+        </button>
+
+        <div class="scan-controls">
+          <input id="receipt-file" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" aria-label="Foto struk belanja" data-gemini-fallback="{{ gemini_receipt_fallback|yesno:'true,false' }}">
+          <label class="button primary" for="receipt-file">
+            <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+              <path d="M0 0h24v24H0z" fill="none" />
+              <g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd">
+                <path d="M8.25 13a3.75 3.75 0 1 1 7.5 0a3.75 3.75 0 0 1-7.5 0M12 10.75a2.25 2.25 0 1 0 0 4.5a2.25 2.25 0 0 0 0-4.5" />
+                <path d="M10.616 5.75a1.89 1.89 0 0 0-1.892 1.892a1.28 1.28 0 0 1-1.175 1.275l-2.23.18a.975.975 0 0 0-.88.792a20.8 20.8 0 0 0-.098 7.181l.097.604c.092.57.561 1.005 1.137 1.052l1.943.158a55.4 55.4 0 0 0 8.964 0l1.942-.158a1.255 1.255 0 0 0 1.138-1.052l.097-.604a20.8 20.8 0 0 0-.099-7.181a.975.975 0 0 0-.88-.791l-2.229-.181a1.28 1.28 0 0 1-1.175-1.275a1.89 1.89 0 0 0-1.892-1.892zM7.23 7.438a3.393 3.393 0 0 1 3.386-3.188h2.768c1.805 0 3.28 1.41 3.386 3.188l2.032.165a2.474 2.474 0 0 1 2.232 2.007c.481 2.54.517 5.145.106 7.698l-.097.605a2.755 2.755 0 0 1-2.497 2.308l-1.942.158a57 57 0 0 1-9.208 0l-1.942-.158a2.755 2.755 0 0 1-2.497-2.308l-.097-.605a22.3 22.3 0 0 1 .106-7.698a2.475 2.475 0 0 1 2.232-2.007z" />
+              </g>
+            </svg>
+            Unggah Struk Belanja
+          </label>
+          <label class="receipt-date" for="receipt-date">Tanggal belanja / mulai simpan (opsional)<input id="receipt-date" type="date" max="{{ today|date:'Y-m-d' }}"></label>
+        </div>
+
+        <img id="receipt-preview" class="receipt-preview" alt="Foto struk yang dipilih" hidden>
+
+        <p id="scan-feedback" class="feedback" role="status" aria-live="polite"></p>
+
+        <div id="draft-empty" class="empty-draft">
+          <span class="empty-draft-icon" aria-hidden="true">▤</span>
+          <p>Belum ada struk yang diunggah.</p>
+        </div>
+
+        <div id="draft-table-wrap" class="table-wrap" hidden>
+          <table class="draft-table">
+            <thead><tr><th scope="col">Nama Bahan</th><th scope="col">Jumlah</th><th scope="col">Satuan</th><th scope="col">Aksi</th></tr></thead>
+            <tbody id="draft-rows"></tbody>
+          </table>
+        </div>
+
+        <p class="sample-note">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M8.19 15.08c.26.36.62 1.38.81 2.05v2.86c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-2.86c.2-.68.56-1.7.82-2.06c.35-.5.72-.93 1.08-1.36c1.03-1.21 2.1-2.46 2.1-4.72c0-3.86-3.14-7-7-7s-7 3.14-7 7c0 2.29 1.07 3.53 2.1 4.73c.36.42.73.85 1.09 1.35ZM11 20v-2h2.02L13 20zm1-16c2.76 0 5 2.24 5 5c0 1.53-.64 2.28-1.62 3.42c-.37.43-.79.93-1.2 1.51c-.37.53-.7 1.42-.92 2.07h-2.52c-.21-.65-.55-1.55-.93-2.08c-.41-.57-.83-1.06-1.2-1.49C7.64 11.3 6.99 10.55 6.99 9c0-2.76 2.24-5 5-5Z" />
+            <path fill="currentColor" d="M12 7V5C9.79 5 8 6.79 8 9h2c0-1.1.9-2 2-2" />
+          </svg>
+          Periksa kembali nama dan jumlah bahan.
+        </p>
+
+        <div class="panel-footer">
+          <div>
+            <span class="total-label">Baris siap diperiksa</span>
+            <strong id="draft-count" class="total-value">0 bahan</strong>
+          </div>
+          <div class="footer-actions">
+            <button id="add-draft-row" class="button secondary" type="button">+ Tambah Baris</button>
+            <button id="save-draft" class="button primary" type="button">Simpan ke Pantry</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel manual-panel" aria-labelledby="manual-title">
+        <div class="panel-top">
+          <div class="panel-heading">
+            <span class="icon green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h10M5 10h10M5 14h7"/><path d="m14 18 5-5 2 2-5 5-3 1z"/></svg></span>
+            <div>
+              <h2 id="manual-title">Input Manual Bahan</h2>
+              <p class="panel-subtitle">Tambah stok bahan secara manual</p>
+            </div>
+          </div>
+          <span class="preview-badge">Tanpa Struk</span>
+        </div>
+
+        <form id="manual-form" novalidate>
+          {% csrf_token %}
+          <div class="manual-fields">
+            <div class="field full"><label for="ingredient-name">Nama Bahan Makanan</label><input id="ingredient-name" name="name" type="text" maxlength="255" placeholder="Contoh: tempe, tomat merah" autocomplete="off" required></div>
+            <div class="field"><label for="ingredient-category">Kategori</label><select id="ingredient-category" name="category" required><option value="">Pilih kategori</option>{% for value, label in category_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="field"><label for="ingredient-quantity">Jumlah</label><input id="ingredient-quantity" name="quantity" type="number" min="0.001" step="0.001" placeholder="2" inputmode="decimal" required></div>
+            <div class="field"><label for="ingredient-unit">Satuan</label><select id="ingredient-unit" name="unit" required><option value="">Pilih satuan</option>{% for value, label in manual_unit_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+          </div>
+          <p id="manual-feedback" class="feedback" role="status" aria-live="polite"></p>
+          <div class="panel-footer">
+            <button class="button primary" type="submit">+ Tambah ke Pantry</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <select id="ocr-unit-options" hidden aria-hidden="true" tabindex="-1"><option value="">Pilih satuan</option>{% for value, label in manual_unit_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+
+    <section class="panel pantry-list" aria-labelledby="pantry-title">
+      <h2 id="pantry-title">Stok Pantry Saat Ini</h2>
+      <div class="pantry-toolbar">
+        <div class="pantry-info">
+          <p class="sample-note">
+            Perkiraan kedaluwarsa mengikuti lokasi simpan dan tanggal belanja.
+          </p>
+
+          <details class="pantry-more">
+            <summary>Catatan penyimpanan</summary>
+            <p class="sample-note">
+              Bahan mudah rusak perlu segera disimpan dingin, memindahkannya ke kulkas tidak membuat bahan kembali segar.
+            </p>
+          </details>
+        </div>
+
+        <div class="pantry-filter">
+          <select id="expiry-filter">
+            <option value="all">Semua stok</option>
+            <option value="expired">Sudah kedaluwarsa</option>
+            <option value="next7">7 hari ke depan</option>
+            <option value="unknown">Tanggal belum diketahui</option>
+          </select>
+
+          <p id="expiry-filter-result" role="status" aria-live="polite"></p>
+        </div>
+        </div>
+      {% if pantry_items %}
+      <div class="table-wrap stock-wrap">
+        <table class="stock-table">
+          <caption class="sr-only">Daftar stok pantry</caption>
+          <colgroup><col style="width:30%"><col style="width:16%"><col style="width:18%"><col style="width:22%"><col style="width:14%"></colgroup>
+          <thead><tr><th scope="col">Bahan</th><th scope="col">Jumlah</th><th scope="col">Lokasi simpan</th><th scope="col">Perkiraan kedaluwarsa</th><th scope="col"><span class="sr-only">Aksi</span></th></tr></thead>
+          {% for item in pantry_items %}
+          <tbody data-pantry-item="{{ item.pk }}" data-version="{{ item.version }}" data-expiry-date="{{ item.estimated_expires_on|date:'Y-m-d' }}">
+            <tr class="pantry-summary">
+              <th scope="row" class="c-name"><strong data-sum-name>{{ item.name }}</strong><span class="sum-sub" data-sum-category{% if not item.category %} hidden{% endif %}>{{ item.get_category_display }}</span></th>
+              <td class="c-qty" data-label="Jumlah"><span data-sum-qty>{{ item.quantity|floatformat:"-3" }} {{ item.get_unit_display }}</span></td>
+              <td class="c-loc" data-label="Lokasi"><span data-sum-location>{% for value, label in location_choices %}{% if item.display_location == value %}{{ label }}{% endif %}{% endfor %}</span></td>
+              <td class="c-exp" data-label="Kedaluwarsa"><span class="exp-badge unknown" data-sum-badge>{{ item.expiry_status|default:"Tanggal belum diketahui" }}</span><span class="sum-sub" data-sum-date hidden></span></td>
+              <td class="c-act"><button type="button" class="button pantry-edit-toggle" aria-expanded="false" aria-controls="pantry-edit-{{ item.pk }}">Ubah</button><span class="row-feedback" data-summary-feedback role="status" aria-live="polite"></span></td>
+            </tr>
+            <tr class="pantry-edit" id="pantry-edit-{{ item.pk }}" hidden>
+              <td colspan="5">
+                <div class="edit-grid">
+                  <div class="field full"><label for="edit-name-{{ item.pk }}">Nama bahan</label><input id="edit-name-{{ item.pk }}" data-edit-name value="{{ item.name }}" maxlength="255"></div>
+                  <div class="field"><label for="edit-qty-{{ item.pk }}">Jumlah</label><input id="edit-qty-{{ item.pk }}" data-edit-quantity inputmode="decimal" value="{{ item.quantity|floatformat:'-6u' }}"></div>
+                  <div class="field"><label for="edit-unit-{{ item.pk }}">Satuan</label><select id="edit-unit-{{ item.pk }}" data-edit-unit>{% for value, label in manual_unit_choices %}<option value="{{ value }}"{% if item.unit == value %} selected{% endif %}>{{ label }}</option>{% endfor %}{% if item.unit == "papan" or item.unit == "kotak" or item.unit == "pak" or item.unit == "bungkus" %}<option value="{{ item.unit }}" selected>{{ item.get_unit_display }}</option>{% endif %}</select></div>
+                  <div class="field"><label for="edit-cat-{{ item.pk }}">Kategori</label><select id="edit-cat-{{ item.pk }}" data-edit-category><option value="">Belum ditentukan</option>{% for value, label in category_choices %}<option value="{{ value }}"{% if item.category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}{% if item.category and item.category not in "sayur_buah,daging_seafood,tahu_tempe_kacang,beras_karbohidrat,bumbu_minyak,lainnya" %}<option value="{{ item.category }}" selected>{{ item.get_category_display }}</option>{% endif %}</select></div>
+                  <div class="field"><label for="edit-loc-{{ item.pk }}">Lokasi simpan</label><select id="edit-loc-{{ item.pk }}" data-pantry-location>{% for value, label in location_choices %}<option value="{{ value }}"{% if item.display_location == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+                  <div class="field"><label for="edit-exp-{{ item.pk }}">Perkiraan kedaluwarsa</label><input id="edit-exp-{{ item.pk }}" type="date" data-pantry-expiry value="{{ item.estimated_expires_on|date:'Y-m-d' }}"></div>
+                  <div class="field"><label for="edit-src-{{ item.pk }}">Sumber tanggal</label><select id="edit-src-{{ item.pk }}" data-expiry-source>{% for value, label in expiry_choices %}<option value="{{ value }}"{% if item.expiry_source == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+                  <div class="field full">
+                    <p class="edit-note" data-storage-feedback>{{ item.storage_message }}</p>
+                    <details class="pantry-more">
+                      <summary>Konversi untuk resep</summary>
+                      <div class="edit-convert">
+                        <div class="field"><label for="edit-ing-{{ item.pk }}">Bahan katalog</label><select id="edit-ing-{{ item.pk }}" data-edit-ingredient><option value="">Belum terhubung</option>{% for ingredient in ingredients %}<option value="{{ ingredient.pk }}"{% if item.ingredient_id == ingredient.pk %} selected{% endif %}>{{ ingredient.name }}</option>{% endfor %}</select></div>
+                        <div class="field"><label for="edit-wt-{{ item.pk }}">Berat per 1 satuan (g, opsional)</label><input id="edit-wt-{{ item.pk }}" data-edit-weight inputmode="decimal" value="{{ item.pack_weight_g|default_if_none:''|unlocalize }}"></div>
+                      </div>
+                      {% if item.conversion_note %}<p class="edit-note">{{ item.conversion_note }}</p>{% endif %}
+                    </details>
+                  </div>
+                </div>
+                <div class="edit-actions">
+                  <button type="button" class="button primary save-pantry-details">Simpan</button>
+                  <button type="button" class="button cancel-pantry-edit">Batal</button>
+                  <button type="button" class="button pantry-history">Riwayat</button>
+                  <button type="button" class="button danger delete-pantry-item" data-item-name="{{ item.name }}">Hapus</button>
+                </div>
+                <div data-history-output hidden></div>
+                <span class="row-feedback" role="status" aria-live="polite"></span>
+              </td>
+            </tr>
+          </tbody>
+          {% endfor %}
+        </table>
+      </div>
+      {% else %}<p class="saved-empty">Belum ada bahan tersimpan.</p>{% endif %}
+
+      {% if used_up_items %}<details class="used-up"><summary>Stok habis (30 hari terakhir) · {{ used_up_items|length }}</summary><ul>{% for item in used_up_items %}<li><strong>{{ item.name }}</strong> · habis {{ item.updated_at|date:"d M Y" }}<ul>{% for move in item.movements.all %}<li>{{ move.created_at|date:"d M Y, H:i" }} · {{ move.get_kind_display }}: {{ move.quantity_before|floatformat:"-2" }} → {{ move.quantity_after|floatformat:"-2" }}</li>{% endfor %}</ul></li>{% endfor %}</ul></details>{% endif %}
+    </section>
+
+    <section class="panel pantry-list" aria-labelledby="staple-preferences-title">
+      <h2 id="staple-preferences-list">Bumbu dapur yang dilacak</h2>
+      <p class="sample-note">Bumbu yang dipilih akan dikurangi saat memasak.</p>
+      <details class="pantry-more">
+        <summary>Cara bumbu dilacak</summary>
+        <p class="sample-note">Bumbu tetap dicantumkan dengan takarannya di resep. Secara default, garam, merica,
+        air, gula, dan penyedap tidak menghalangi ide menu atau konfirmasi masak. Jika sebuah bumbu dipilih, stoknya harus tersedia di Pantry. Minyak goreng dilacak
+        secara default agar aplikasi tidak menganggap semua dapur selalu memilikinya.</p>
+      </details>
+      <form method="post" action="{% url 'modul2-staples' %}" class="staple-preferences-form">
+        {% csrf_token %}
+        <input type="hidden" name="version" value="{{ staple_preferences_form.version.value }}">
+        <div class="staple-choice-list">{% for value, label in staple_preferences_form.fields.tracked_staples.choices %}<label><input type="checkbox" name="tracked_staples" value="{{ value }}"{% if value in staple_preferences_form.tracked_staples.value %} checked{% endif %}><span>{{ label }}</span></label>{% endfor %}</div>
+        <button class="button primary" type="submit">Simpan pilihan bumbu</button>
+      </form>
+    </section>
+
+    <section class="panel pantry-list" aria-labelledby="stock-recipes-title">
+      <h2 id="stock-recipes-title">Ide Menu dari Stok</h2>
+      <p class="sample-note">Menu disarankan dari stok yang belum kedaluwarsa.</p>
+      <details class="pantry-more">
+        <summary>Bagaimana ide menu dipilih</summary>
+        <p class="sample-note">Berdasarkan stok yang terhubung ke katalog, memiliki konversi berat, dan belum
+        kedaluwarsa. Stok dengan tanggal kedaluwarsa yang belum diketahui tetap dihitung
+        dan ditandai. Bumbu yang Anda atur untuk tidak dilacak tidak menjadi syarat stok; minyak goreng
+        dilacak secara default. Ide menu tidak mengurangi stok.</p>
+      </details>
+      <div class="stock-recipe-details">
+        <label for="stock-recipe-servings">Porsi <input id="stock-recipe-servings" type="number" min="1" max="10" inputmode="numeric" value="1"></label>
+        <button class="button secondary" type="button" id="stock-recipes-button">Cari Menu dari Stok</button>
+      </div>
+      <div id="stock-recipes-output" role="status" aria-live="polite"></div>
+    </section>
+
+    {% include 'pantry/partials/receipt_guide.html' %}
+  </main>
+{% endblock %}
+{% block scripts %}
+  {{ pantry_storage|json_script:"pantry-storage-data" }}
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js" integrity="sha384-2BQ3U3OdKOb0Uczxqr41I9UvZkzr4V9Hv8uSzMMZAlmhsFClvdZX5wi5fDCzG+tM" crossorigin="anonymous" defer></script>
+  <script type="module" src="{% static 'pantry/pantry.js' %}"></script>
+  <script src="{% static 'pantry/receipt_guide.js' %}" defer ></script>
+{% endblock %}

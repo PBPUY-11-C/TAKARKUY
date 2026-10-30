@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static planner_format %}
+
+{% block title %}{% if selected and not selection_error %}{{ selected.name }} — {% endif %}Recipe Book — TAKARKUY{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'recipe/modul4.css' %}?v=20261030-layout-fix2">
+  <link rel="stylesheet" href="{% static 'recipe/reviews.css' %}">
+  <script type="module" src="{% static 'recipe/book.js' %}"></script>
+  <script type="module" src="{% static 'recipe/cooking_mode.js' %}"></script>
+  <script type="module" src="{% static 'recipe/quality.js' %}"></script>
+  <script type="module" src="{% static 'recipe/reviews.js' %}"></script>
+  <script type="module" src="{% static 'recipe/notes.js' %}"></script>
+  <script type="module" src="{% static 'recipe/servings.js' %}"></script>
+  <script src="{% static 'recipe/image_fallback.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+  {% include 'recipe/partials/icons.html' %}
+  <main class="book-shell" id="main">
+    <div class="page__body {% if selected and not selection_error %}page--detail{% else %}page--search{% endif %}">
+      <div id="page-message" class="notice notice--error" role="status" hidden></div>
+      <form id="csrf-bootstrap" hidden>{% csrf_token %}</form>
+      {% if selection_error %}
+        <div class="notice notice--error" role="alert">
+          <p class="notice__title"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-warn"/></svg>{{ selection_error }}</p>
+        </div>
+      {% endif %}
+
+      {% if selected and not selection_error %}
+        <div class="detail-view">
+          <nav class="detail-view__nav" aria-label="Recipe navigation">
+            <a class="link back-link" href="?{{ query_params }}&amp;page={{ recipes.number }}#results"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-back"/></svg>Back to results</a>
+            {% if slot %}<a class="link" href="{% url 'modul1' %}">Back to Meal Planner</a>{% endif %}
+          </nav>
+          {% include 'recipe/partials/recipe_detail.html' %}
+          {% include 'recipe/reviews.html' %}
+          <aside class="page__aside detail-view__aside" aria-label="Ingredient status, favorites, and cooking history">
+            {% include 'recipe/partials/status_legend.html' %}
+            {% include 'recipe/partials/favorites_sidebar.html' %}
+            {% include 'recipe/partials/history_sidebar.html' %}
+          </aside>
+        </div>
+      {% else %}
+        <div class="page-title">
+          <div class="page-title__text"><p class="eyebrow">MY KITCHEN</p><h1>Recipe Book &amp; Cooking History</h1></div>
+          <a class="link" href="{% url 'modul2' %}">Manage Pantry<svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>
+        </div>
+
+        <div class="page__layout">
+          <div class="page__main" id="results">
+            <form class="search-panel" method="get" action="{% url 'modul4' %}">
+              <div class="search" role="search">
+                <label class="search__label" for="recipe-search">Search recipes or ingredients</label>
+                <div class="search__field">
+                  <svg class="icon" aria-hidden="true"><use href="#m4-i-search"/></svg>
+                  <input class="search__input" id="recipe-search" name="q" type="search" value="{{ q }}" placeholder="Try tuna, spinach, or tempeh" maxlength="100">
+                  <button class="btn btn--primary" type="submit">Search</button>
+                </div>
+              </div>
+              <fieldset class="filters">
+                <legend class="field-label">Filter recipes</legend>
+                <div class="filters__row">
+                  <label class="chip chip--dropdown chip--select"><span class="chip__label">Meal</span>
+                    <select name="meal"><option value="">All meals</option><option value="sarapan" {% if meal == 'sarapan' %}selected{% endif %}>Breakfast</option><option value="makan_siang" {% if meal == 'makan_siang' %}selected{% endif %}>Lunch</option><option value="makan_malam" {% if meal == 'makan_malam' %}selected{% endif %}>Dinner</option></select>
+                    <svg class="icon icon--sm chip__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg>
+                  </label>
+                  <label class="chip chip--dropdown chip--select"><span class="chip__label">Pantry stock</span>
+                    <select name="stock"><option value="">All recipes</option><option value="best" {% if filters.stock == 'best' %}selected{% endif %}>Best stock match</option><option value="complete" {% if filters.stock == 'complete' %}selected{% endif %}>Main ingredients available</option><option value="soon" {% if filters.stock == 'soon' %}selected{% endif %}>Use soon (2 days)</option></select>
+                    <svg class="icon icon--sm chip__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg>
+                  </label>
+                  <label class="chip chip--dropdown chip--select"><span class="chip__label">Price</span>
+                    <select name="max_price"><option value="">Any price</option>{% for limit in price_limits %}<option value="{{ limit }}" {% if max_price == limit %}selected{% endif %}>Up to {{ limit|rupiah }}</option>{% endfor %}</select>
+                    <svg class="icon icon--sm chip__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg>
+                  </label>
+                  <label class="chip chip--toggle"><input class="chip__input" type="checkbox" name="favorites" value="1" {% if filters.favorites == '1' %}checked{% endif %}><svg class="icon icon--sm chip__check" aria-hidden="true"><use href="#m4-i-check"/></svg>Favorites only</label>
+                  <label class="chip chip--toggle"><input class="chip__input" type="checkbox" name="guidance" value="1" {% if guidance_only %}checked{% endif %}><svg class="icon icon--sm chip__check" aria-hidden="true"><use href="#m4-i-check"/></svg>With cooking guide</label>
+                </div>
+                <p class="filters__hint">Choose filters, then select <strong>Search</strong>.</p>
+              </fieldset>
+            </form>
+
+            <section class="recipe-list" aria-labelledby="recipe-list-title">
+              <div class="results-header">
+                <div class="stack">
+                  <h2 id="recipe-list-title" class="text-h3">{% if filters.stock == 'best' %}Best match for your Pantry{% else %}Recipes{% endif %}</h2>
+                  <p class="recipe-result-summary" role="status"><strong class="result-count">{{ recipes.paginator.count }} matching recipes</strong> from {{ available_recipe_count }} available for your account.</p>
+                </div>
+              </div>
+              {% if active_filters %}<div class="filters__active active-filter-list" aria-label="Active filters"><span>Active:</span>{% for active_filter in active_filters %}<span class="active-filter-chip">{{ active_filter }}</span>{% endfor %}</div>{% endif %}
+              {% if unknown_count or allergen_count %}<p class="notice notice--info"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg><span>{{ unknown_count }} recipes hidden because allergen data is incomplete; {{ allergen_count }} hidden by your allergen preferences. <a class="link" href="{% url 'modul3' %}">Review profile</a></span></p>{% endif %}
+              <details class="disclosure disclosure--quiet results-about">
+                <summary><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg><span class="disclosure__text"><span class="disclosure__title">About these results</span></span><svg class="icon icon--sm disclosure__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg></summary>
+                <div class="disclosure__body">
+                  {% if not active_filters %}<p class="helper">No search or category filters are active.</p>{% endif %}
+                  <p class="helper">Only active recipes ready to use and marked halal are listed. Candidates that have not been reviewed and promoted are not included. Profile preferences and allergens still apply.</p>
+                  {% if max_price and price_unavailable_count %}<p class="helper price-availability-note">{{ price_unavailable_count }} of {{ price_candidate_count }} recipes have no reference price, so they cannot be compared and are hidden by the price limit. This count is calculated before the Pantry stock filter.</p>{% endif %}
+                  {% if held_count and not guidance_only %}<p class="helper">{{ held_count }} recipes do not have a cooking guide yet. They remain listed and their details explain what is missing.</p>{% endif %}
+                </div>
+              </details>
+
+              {% if recipes %}
+                <ul class="recipe-grid recipe-cards">
+                  {% for recipe in recipes %}{% include 'recipe/partials/recipe_card.html' %}{% endfor %}
+                </ul>
+              {% elif filters.stock == 'best' %}
+                <section class="empty-pantry" role="status">
+                  <span class="empty-pantry__icon"><svg class="icon icon--lg" aria-hidden="true"><use href="#m4-i-pot"/></svg></span>
+                  <div class="empty-pantry__text"><h3 class="text-h4">No Pantry matches yet</h3><p>Update your Pantry stock to find recipes that are ready to cook.</p></div>
+                  <a class="btn btn--primary" href="{% url 'modul2' %}">Update Pantry<svg class="icon icon--sm btn__icon" aria-hidden="true"><use href="#m4-i-right"/></svg></a>
+                </section>
+              {% else %}
+                <section class="empty-state" role="status">
+                  <svg class="icon icon--lg" aria-hidden="true"><use href="#m4-i-search"/></svg>
+                  <h3 class="text-h4">No recipes match</h3>
+                  <p>Try another search, remove a filter, or review your profile preferences.</p>
+                </section>
+              {% endif %}
+              <nav class="pagination" aria-label="Recipe pages">{% if recipes.has_previous %}<a class="btn btn--secondary btn--small" href="?{{ query_params }}&amp;page={{ recipes.previous_page_number }}#results"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-back"/></svg>Previous</a>{% endif %}<span>Page {{ recipes.number }} of {{ recipes.paginator.num_pages }}</span>{% if recipes.has_next %}<a class="btn btn--secondary btn--small" href="?{{ query_params }}&amp;page={{ recipes.next_page_number }}#results">Next<svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>{% endif %}</nav>
+            </section>
+          </div>
+          <aside class="page__aside" aria-label="Ingredient status, favorites, and cooking history">
+            {% include 'recipe/partials/status_legend.html' %}
+            {% include 'recipe/partials/favorites_sidebar.html' %}
+            {% include 'recipe/partials/history_sidebar.html' %}
+          </aside>
+        </div>
+      {% endif %}
+    </div>
+  </main>
+  {% include 'recipe/partials/cooking_dialog.html' %}
+{% endblock %}

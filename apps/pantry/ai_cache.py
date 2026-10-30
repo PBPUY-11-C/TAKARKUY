@@ -1,4 +1,4 @@
-"""Leased, catalogue-sensitive name cache. Never promotes AI guesses to aliases."""
+"""Leased, catalogue-sensitive name cache."""
 
 import hashlib
 import json

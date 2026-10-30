@@ -1,4 +1,4 @@
-"""Transactional stock services. User lock precedes operation and batch locks."""
+"""Transactional stock services."""
 
 import hashlib
 import json
@@ -109,7 +109,7 @@ def movement(item, operation, kind, before, *, consumed_grams=None):
 
 
 def operation(user, key, kind, payload):
-    """Must be called inside atomic. Same key + different payload is a conflict."""
+    """Must be called inside atomic."""
     try:
         key = UUID(str(key))
     except (ValueError, TypeError, AttributeError) as exc:
@@ -146,10 +146,7 @@ def eligible_stock(user, *, allow_unknown_expiry=False):
 
 
 def stock_for_planning(user):
-    """[(ingredient_id, grams, expires_on or None)] in FEFO order; undated stock last.
-
-    Read-only input for the meal planner. Nothing is reserved.
-    """
+    """[(ingredient_id, grams, expires_on or None)] in FEFO order; undated stock last."""
     if user is None or not getattr(user, "is_authenticated", False):
         return []
     rows = [
@@ -168,12 +165,7 @@ def stock_for_planning(user):
 def plan_consumption(
     user, requirements, *, manual=None, allow_unknown_expiry=False, lock=False, preview_batches=None
 ):
-    """One allocation algorithm for previews and execution; previews reserve nothing.
-
-    Manual rows identify a batch/version and declare grams per native unit when
-    no conversion exists. Known conversions cannot be overridden. Expired stock
-    is never eligible, even with consent to unknown expiry dates.
-    """
+    """One allocation algorithm for previews and execution; previews reserve nothing."""
     if not isinstance(requirements, dict) or len(requirements) > 100:
         raise StockError("Kebutuhan bahan tidak valid.", 400)
     try:
@@ -244,7 +236,6 @@ def plan_consumption(
         if batch.grams_per_unit and weight != batch.grams_per_unit:
             raise StockError("Konversi katalog tidak boleh ditimpa saat memasak.", 400)
         grams = taken * weight
-        # Permit only the rounding of one native-unit microstep, not arbitrary overuse.
         if grams > needs[batch.ingredient_id] + weight * Decimal("0.000001"):
             raise StockError("Pemakaian manual melebihi kebutuhan resep.", 400)
         needs[batch.ingredient_id] -= grams
@@ -301,7 +292,6 @@ def session_scope(user):
     return uuid5(NAMESPACE_URL, f"takarkuy:pantry-user:{user.pk}").hex
 
 
-# Catalog category -> pantry category, and the storage tried first for it.
 PURCHASE_CATEGORY = {
     "sayur": "sayur_buah",
     "buah": "sayur_buah",
@@ -322,12 +312,7 @@ def purchase_category(ingredient):
 
 
 def add_purchases(user, rows, event):
-    """Create one batch per bought catalog ingredient (grams), like manual input.
-
-    Must be called inside atomic after operation(). Expiry comes from the local
-    shelf-life reference for the first location that has one; fresh food tries
-    the fridge first. Without a reference the date stays unknown, never guessed.
-    """
+    """Create one batch per bought catalog ingredient (grams), like manual input."""
     from .catalog_context import everyday_ingredient_name
     from .storage import DEFAULT_LOCATION, expiry_estimate, shelf_life_duration, storage_options
 

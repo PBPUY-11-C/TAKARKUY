@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% block page_title %}Akun{% endblock %} — TAKARKUY{% endblock %}
+{% block extra_head %}
+  <style>
+    :root { --field: var(--green-soft); }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { min-height: 100vh; display: grid; place-items: center; margin: 0; padding: 28px 16px; background: var(--canvas); color: var(--ink); font-family: var(--font); }
+    a { color: var(--green); text-decoration: none; font-weight: 700; }
+    a:hover { text-decoration: underline; }
+    button, input { font: inherit; }
+    .auth-card { width: min(100%, 510px); padding: 36px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: 0 16px 40px rgba(15, 61, 46, .07); }
+    .back-home { display: inline-block; margin-bottom: 24px; font-size: 13px; }
+    .back-home:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; border-radius: 3px; }
+    .brand { display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 30px; color: var(--ink); font: 800 16px "Plus Jakarta Sans", sans-serif; }
+    .brand:hover { text-decoration: none; }
+    .brand-mark { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 7px; background: var(--green); color: #fff; font-size: 21px; }
+    h1 { max-width: 340px; margin: 0 auto 8px; font: 800 clamp(24px, 5vw, 30px)/1.2 "Plus Jakarta Sans", sans-serif; letter-spacing: -.04em; text-align: center; }
+    .signup h1, .login h1 { margin-bottom: 28px; }
+    .signup h1 span { color: var(--green); }
+    .field { margin-bottom: 16px; }
+    .field-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 6px; }
+    label { color: var(--ink); font-size: 12px; font-weight: 800; }
+    .password-hint { color: var(--muted); font-size: 11px; font-weight: 500; text-align: right; }
+    .input-wrap { position: relative; }
+    .field input { width: 100%; height: 45px; padding: 0 13px; border: 1px solid transparent; border-radius: 8px; outline: none; background: var(--field); color: var(--ink); font-size: 13px; }
+    .field input::placeholder { color: #89969f; }
+    .field input:focus { border-color: #62c69e; box-shadow: 0 0 0 3px #dff8e9; }
+    .input-wrap:has(.toggle-password) input { padding-right: 85px; }
+    .toggle-password { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 6px; border: 0; background: none; color: #426c5b; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .field-errors, .form-errors { margin: 6px 0 0; padding: 0; color: #aa3737; font-size: 12px; list-style: none; }
+    .form-errors { margin-bottom: 15px; padding: 11px 13px; border-radius: 8px; background: #fff1f1; }
+    .remember { display: flex; align-items: center; gap: 8px; margin: 3px 0 20px; color: #4d5c59; font-size: 12px; font-weight: 500; cursor: pointer; }
+    .remember input { width: 16px; height: 16px; accent-color: var(--green); }
+    .submit { width: 100%; min-height: 45px; margin-top: 4px; border: 0; border-radius: 8px; background: var(--green); box-shadow: 0 5px 10px rgba(0, 93, 66, .14); color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; }
+    .submit:hover { background: #005b40; }
+    .brand-mark svg { width: 19px; }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+    .switch-page { margin: 24px 0 0; color: #485854; font-size: 13px; text-align: center; }
+    body:has(> .auth-page-actions) { padding-top: 80px; }
+    .auth-page-actions { position: fixed; top: 16px; right: 16px; z-index: 20; display: flex; align-items: center; gap: 10px; }
+    .auth-page-actions .auth-home-link { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+    .auth-page-actions .auth-home-link:hover { background: var(--soft); text-decoration: none; }
+    .auth-home-link img { width: 28px; height: 34px; object-fit: contain; }
+    .auth-home-link .auth-logo-dark, :root[data-theme="dark"] .auth-home-link .auth-logo-light { display: none; }
+    :root[data-theme="dark"] .auth-home-link .auth-logo-dark { display: block; }
+    .auth-page-actions .theme-switch { min-height: 44px; }
+    .auth-page-actions .theme-switch-track { border-color: var(--line); background: var(--soft); }
+    .auth-page-actions .auth-home-link:focus-visible { outline: 3px solid #64ceac; outline-offset: 3px; }
+    @media (max-width: 480px) { .auth-card { padding: 28px 20px; } }
+  </style>
+  {% block page_head %}{% endblock %}
+{% endblock %}
+{% block header %}
+<nav class="auth-page-actions" aria-label="Navigasi halaman akun">
+  <a class="auth-home-link" href="{% url 'landing' %}" aria-label="Kembali ke beranda" title="Kembali ke beranda">
+    <img class="auth-logo-light" src="{% static 'takarkuy/logo.svg' %}" alt="" width="28" height="34">
+    <img class="auth-logo-dark" src="{% static 'takarkuy/logo-light.svg' %}" alt="" width="28" height="34">
+  </a>
+  {% include "partials/theme_toggle.html" with floating=False %}
+</nav>
+{% endblock %}
+{% block scripts %}
+  <script>
+    document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.passwordToggle);
+        const visible = input.type === "password";
+        input.type = visible ? "text" : "password";
+        button.textContent = visible ? "Sembunyikan" : "Tampilkan";
+        button.setAttribute("aria-label", `${visible ? "Sembunyikan" : "Tampilkan"} kata sandi`);
+      });
+    });
+  </script>
+  {% block page_scripts %}{% endblock %}
+{% endblock %}

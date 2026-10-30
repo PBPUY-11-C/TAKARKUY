@@ -89,9 +89,9 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 
 - **Landing page:** hero, cara kerja, fitur, dan FAQ untuk guest.
 - **Autentikasi:** daftar, masuk (username atau email), dan keluar.
-- **Profil & Preferensi:** nama, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, pilihan halal per pengguna, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
+- **Profil & Preferensi:** nama, pilihan avatar bergaya logo, username, email, ganti kata sandi, target gizi, waktu makan, porsi, alergi, dan bahan yang dihindari. Data ini menjadi nilai awal Modul 1 dan penyaring resep Modul 4.
 - **Data yang dipegang:** `User`, `UserProfile`, `FoodPreference`.
-- **Halaman:** Landing, Daftar, Masuk, serta Profil & Preferensi.
+- **Halaman:** Landing, Daftar, Masuk, Profil (`/profil/`), Preferensi Makanan (`/profil/preferensi/`), serta Ganti Kata Sandi (`/profil/ganti-kata-sandi/`).
 
 **CRUD User Account & Food Preference:**
 
@@ -110,7 +110,7 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 - **Integrasi rencana:** menu dari jadwal Modul 1 bisa dibuka, dimasak, atau dilewati.
 - **Endpoint Modul 4:** `GET /modul4/` menampilkan recipe book; endpoint `POST /modul4/favorite/`, `/modul4/preview/`, `/modul4/cook/`, `/modul4/review/`, `/modul4/review/photo/`, dan `/modul4/slot-status/` menangani aksi pengguna. Foto ulasan dilayani melalui `GET /modul4/reviews/<id>/photo/` setelah izin dan moderasi terpenuhi.
 - **Penyimpanan foto ulasan:** secara default, Django menyimpan foto lokal di `MEDIA_ROOT` (`BASE_DIR / "media"`, lihat `config/settings.py`). Penyimpanan lokal cocok untuk pengembangan. Untuk deployment, gunakan disk persisten yang dicadangkan dan tersedia bagi semua instance, atau konfigurasi `STORAGES["default"]` ke object storage S3-compatible. Jangan simpan media hanya di filesystem container sementara: setelah deploy atau pergantian instance, berkas dapat hilang sementara database masih menyimpan referensinya. Jika memakai worker foto di `Procfile`, jalankan worker sebagai proses terpisah di platform hosting.
-- **Panduan implementasi dan daftar tes Modul 4:** lihat [docs/MODUL4.md](docs/MODUL4.md).
+- **Data, sumber, dan API:** lihat [DATA_API.md](DATA_API.md).
 - **Data yang dipegang:** `RecipeFavorite`, `CookingHistory`, dan `RecipeReview`.
 - **Halaman:** 1 halaman berisi daftar resep, detail resep, favorit, dan riwayat masak.
 
@@ -126,17 +126,17 @@ TAKARKUY bertujuan mendukung pola konsumsi pangan yang terencana, efisien secara
 **PIC:** Aiko Zahwa
 
 - **Dashboard:** kalender menu 7 hari, sisa budget per rencana, bahan yang segera harus dipakai, dan masakan terakhir.
-- **Ulasan resep:** rating 1–5 dan komentar di detail resep, setelah pernah memasak resep itu.
-- **Market locator:** peta dan daftar pasar serta bank sampah dalam popup dari Dashboard.
+- **Resep saya:** fitur tambahan untuk memungkinkan pengguna membuat dan menyimpan resep pribadi. Pengguna dapat menambahkan resep, melihat daftar dan detail resep, mengubah informasi resep, serta menghapus resep miliknya.
+- **Market locator:** popup di Dashboard yang mendeteksi lokasi pengguna lalu menampilkan pasar terdekat di peta dan daftar, diurutkan dari yang paling dekat.
 - **Data yang dipegang:** `RecipeReview`, serta cache dan kuota pencarian peta. Ringkasan Dashboard dibaca dari Modul 1, 2, dan 4.
 - **Halaman:** Dashboard sebagai beranda setelah masuk; peta berupa popup.
 
 **CRUD Dashboard, Ulasan & Market Locator:**
 
-- **Create:** menulis ulasan setelah memasak.
-- **Read:** melihat ringkasan Dashboard, ulasan resep, dan peta pasar/bank sampah.
-- **Update:** mengubah ulasan sendiri.
-- **Delete:** menghapus ulasan sendiri; administrator dapat menyembunyikan ulasan.
+- **Create:** menulis dan menambah resep buatan sendiri.
+- **Read:** melihat ringkasan Dashboard, ulasan resep, dan peta pasar terdekat.
+- **Update:** mengubah resep sendiri.
+- **Delete:** menghapus resep sendiri.
 
 ## Integrasi Antar Modul
 
@@ -165,7 +165,7 @@ Total aplikasi **8 halaman**. Market locator berupa popup di Dashboard, bukan ha
 | [Open-Meteo Forecast API](https://open-meteo.com/en/docs) | Mendukung pertimbangan cuaca dalam estimasi masa simpan bahan sensitif di Virtual Pantry. |
 | [USDA FoodData Central API](https://fdc.nal.usda.gov/api-guide) | Mengambil data gizi generik, seperti kalori, protein, dan serat, untuk bahan mentah sebagai acuan Smart Budget Meal Planner. API key disimpan sebagai environment variable. |
 | [TheMealDB API](https://www.themealdb.com/docs_api_guide.php) | Menjadi pelengkap variasi resep internasional. Database resep internal tetap menjadi sumber utama karena cakupan resep Indonesia pada API ini terbatas. |
-| [OpenStreetMap](https://www.openstreetmap.org/) — Nominatim dan Overpass | Mendukung geocoding serta pencarian pasar tradisional atau bank sampah terdekat. |
+| [OpenStreetMap](https://www.openstreetmap.org/) — Nominatim dan Overpass | Mendukung geocoding serta pencarian pasar tradisional terdekat dari lokasi pengguna, dengan cache server dan cadangan data kurasi. |
 
 ## Teknologi dan Data Pendukung
 
@@ -188,6 +188,10 @@ Total aplikasi **8 halaman**. Market locator berupa popup di Dashboard, bukan ha
 
 ## Status Integrasi
 
-Modul 1 (`/planner/`) dan Modul 3 (landing, daftar, masuk, profil dan preferensi) aktif. Halaman Modul 2, 4, dan 5 masih berupa placeholder mengikuti `main`; endpoint integrasi planner tetap tersedia. Setelah daftar/masuk, pengguna diarahkan ke planner sementara Dashboard belum aktif.
+Seluruh modul memakai view aslinya dan wajib login. Landing, daftar/masuk, dan kalkulator pembagian budget tetap publik. Setelah daftar/masuk, pengguna diarahkan ke planner. Profil menggunakan chip preferensi dan pencarian bahan (maksimal 10 pilihan). Ganti sandi dibatasi 5 percobaan per akun dan 30 per IP dalam jendela 15 menit.
 
 Jalankan `python manage.py migrate --noinput` untuk menerapkan pemisahan `FoodPreference` tanpa menghapus data preferensi lama, lalu `python manage.py collectstatic --noinput` saat deployment.
+
+Planner wajib login, termasuk alias `/modul1/`. Guest hanya dapat membuka landing, daftar/masuk, serta kalkulator pembagian budget di landing; akses planner diarahkan ke `/login/?next=...`.
+
+Avatar akun disimpan di `UserProfile.avatar`. Terapkan migrasi `accounts.0004` melalui `python manage.py migrate --noinput` sebelum menjalankan versi ini; akun lama menggunakan inisial secara otomatis. Pilihan avatar berupa SVG statis dan tidak memerlukan upload berkas.

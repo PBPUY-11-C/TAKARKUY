@@ -130,7 +130,6 @@ def category(s):
     return "sayur"
 
 
-# Product-specific codes are retained for distinct qualities and packaging.
 OVERRIDE = {
     "Beras Medium": "ING-BERAS-MEDIUM",
     "Daging Ayam Broiler": "ING-DAGING-AYAM-BROILER",
@@ -351,8 +350,6 @@ def build_ingredients_prices():
             (RAW / "openfoodfacts_indonesia_sample.json").read_text(encoding="utf-8")
         )["products"]
     }
-    # The Mendeley file adds foods and prices needed by Mendeley recipes; it is
-    # observed on its own date and processed exactly like the first file.
     for source_file in ("recipe_estimation_sources.json", "mendeley_sources.json"):
         supplements = json.loads((MAP / source_file).read_text(encoding="utf-8"))
         for row in supplements["nutrition"]:
@@ -441,8 +438,6 @@ def build_ingredients_prices():
 
 
 def planning_prices(prices):
-    # Reference prices supplement missing Garut ingredients only. Never relabel
-    # national/retail prices as Garut or replace an available local quote.
     local = [
         p
         for p in prices
@@ -458,9 +453,6 @@ def planning_prices(prices):
     return selected
 
 
-# These are TAKARKUY's standardized two-serving variants. Gram quantities are
-# authored for the MVP and are not presented as copied Kaggle measurements.
-# Water used to wash/boil food is a household utility outside grocery cost.
 CURATED = [
     (
         "Nasi telur tomat",
@@ -1231,8 +1223,6 @@ def build_recipes(items, prices):
                         source="TAKARKUY aturan internal",
                     )
                 )
-    # Raw Kaggle recipes are staged for future curation and explicitly excluded
-    # from planning. This keeps the 80-row catalog honest.
     with zipfile.ZipFile(RAW / "indonesian_food_recipes.zip") as z:
         selected = []
         seen = set()
@@ -1277,9 +1267,6 @@ def build_recipes(items, prices):
             )
         )
 
-    # Discovery candidates from TheMealDB are retained in the catalog as
-    # metadata only. The tentative meal slot is a browsing suggestion, not a
-    # claim from the source or a signal that this recipe is safe to plan.
     candidate_paths = (
         ROOT / "scratch" / "themealdb_100_candidates.json",
         ROOT / "scratch" / "themealdb_western_100_candidates.json",
@@ -1295,8 +1282,6 @@ def build_recipes(items, prices):
             if not source_id:
                 raise ValueError(f"Duplikat/id kandidat TheMealDB tidak valid: {source_id!r}")
             if code in seen_candidates:
-                # The Western-focused snapshot can overlap the earlier broad
-                # discovery snapshot. Keep the first full record by stable ID.
                 if seen_candidates[code].get("name", "").strip() == candidate.get("name", "").strip():
                     continue
                 raise ValueError(f"Metadata kandidat TheMealDB berbeda untuk id {source_id!r}")
@@ -1371,8 +1356,6 @@ def build_recipes(items, prices):
                 )
             )
 
-    # API records only enter the planner after explicit, per-row review in the
-    # curation table. Raw API output remains a discovery/review artifact.
     approved = defaultdict(list)
     seen_curation_rows = set()
     for row in read_csv(MAP / "themealdb_recipe_curation.csv"):
@@ -1385,8 +1368,6 @@ def build_recipes(items, prices):
     for source_id, rows in sorted(approved.items()):
         first = rows[0]
         code = "RCP-TMDB-" + slug(source_id)
-        # Promotion replaces discovery metadata at the SAME stable ID. It must
-        # not append a second recipe or leave stale candidate tags behind.
         tags[:] = [row for row in tags if row["recipe_code"] != code]
         links[:] = [row for row in links if row["recipe_code"] != code]
         if (
@@ -1588,7 +1569,7 @@ def build_recipes(items, prices):
     for update in updates:
         code = update["recipe_code"]
         if code.removeprefix("RCP-TMDB-") in approved and code.startswith("RCP-TMDB-"):
-            continue  # Explicit manual review wins over generated estimates.
+            continue
         quantities = update.pop("quantities")
         replace_recipe(recipes, update)
         if update["is_plannable"] != "true":
@@ -1602,8 +1583,6 @@ def build_recipes(items, prices):
                 source="TAKARKUY estimasi v2",
             )
         )
-        # The actual list has been mapped to known foods; this is an ingredient
-        # heuristic only, not a halal certificate for branded products/processes.
         for tag in ("halal", update["meal_type"]):
             tags.append(
                 dict(
@@ -1659,10 +1638,6 @@ def build_recipes(items, prices):
     mendeley = build_mendeley(ROOT, items, price_by_code, [r["name"] for r in recipes])
     for rows, extra in zip((recipes, links, tags, estimates), mendeley[:4]):
         rows.extend(extra)
-    # Keep a review-audit row for every staged TheMealDB/Kaggle recipe, even
-    # when a newer discovery snapshot is not yet in the estimator's input
-    # index. Approved manual TheMealDB mappings replace generated audit rows
-    # with their explicitly reviewed source measures and quantity status.
     manually_approved_codes = {
         "RCP-TMDB-" + slug(source_id) for source_id in approved
     }
@@ -1718,13 +1693,10 @@ def build_recipes(items, prices):
                     rules_version="candidate-review-only",
                 )
             )
-    # Users see one clear name per menu: curated renames first, then standard
-    # spelling and casing. Mendeley rows already went through the same steps.
-    # A "nonaktif" override hides the menu but keeps its code for saved plans.
     overrides = load_overrides(MAP / "recipe_name_overrides.csv")
     for recipe in recipes:
         if recipe["source"] == "TheMealDB API; kurasi TAKARKUY":
-            continue  # A manually reviewed name wins over generated naming rules.
+            continue
         name, _ = overrides.get(recipe["recipe_code"], ("", ""))
         if name == EXCLUDE and not recipe["recipe_code"].startswith("RCP-MDL-"):
             raise ValueError(
@@ -1753,8 +1725,6 @@ def build_recipes(items, prices):
     return recipes, links, tags, estimates
 
 
-# FoodKeeper's English categories are mapped explicitly. The mapping is a
-# reference approximation for Indonesian products, never a local expiry claim.
 FK_MAP = {
     "BERAS": 318,
     "BERAS-KETAN": 318,
@@ -1913,7 +1883,6 @@ def build_aliases(items, price_aliases, bpn):
         if key not in seen:
             rows.append(a)
             seen.add(key)
-    # Familiar recipe spellings are mapped only when their meaning is clear.
     extra = {
         "bayam hijau": "ING-BAYAM",
         "tofu putih": "ING-TAHU-PUTIH",
@@ -2005,8 +1974,6 @@ def build_conversions(items, usda):
                 note="Siung ukuran USDA; perlu timbang bila akurasi penting",
             )
         )
-    # A pack or bunch has no universal mass. Explicit empty rows ensure the
-    # parser blocks it until the exact SKU has a measured package weight.
     for code, unit in [
         ("ING-BAYAM", "ikat"),
         ("ING-KANGKUNG", "ikat"),
@@ -2116,9 +2083,6 @@ def build_all():
             if "allergens" in data:
                 data["allergens"] = json.loads(data["allergens"])
             fixture.append(dict(model=MODEL[rel], pk=row[pk], fields=data))
-    # Keep approved, team-authored Mendeley guidance separate from source recipe
-    # text, then merge it only into the Django fixture. The processed CSV remains
-    # a faithful snapshot of recipe-source data and does not republish raw steps.
     authored_path = ROOT / "authored_instructions.json"
     authored_records = json.loads(authored_path.read_text(encoding="utf-8"))
     authored_by_pk = {
