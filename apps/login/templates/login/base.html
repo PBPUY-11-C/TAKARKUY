@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{% block page_title %}Akun{% endblock %} — TAKARKUY{% endblock %}
 {% block extra_head %}
   <style>
@@ -9,7 +10,6 @@
     a:hover { text-decoration: underline; }
     button, input { font: inherit; }
     .auth-card { width: min(100%, 510px); padding: 36px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: 0 16px 40px rgba(15, 61, 46, .07); }
-    .auth-card.login { max-width: 430px; }
     .back-home { display: inline-block; margin-bottom: 24px; font-size: 13px; }
     .back-home:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; border-radius: 3px; }
     .brand { display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 30px; color: var(--ink); font: 800 16px "Plus Jakarta Sans", sans-serif; }
@@ -37,11 +37,29 @@
     .brand-mark svg { width: 19px; }
     a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
     .switch-page { margin: 24px 0 0; color: #485854; font-size: 13px; text-align: center; }
+    body:has(> .auth-page-actions) { padding-top: 80px; }
+    .auth-page-actions { position: fixed; top: 16px; right: 16px; z-index: 20; display: flex; align-items: center; gap: 10px; }
+    .auth-page-actions .auth-home-link { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+    .auth-page-actions .auth-home-link:hover { background: var(--soft); text-decoration: none; }
+    .auth-home-link img { width: 28px; height: 34px; object-fit: contain; }
+    .auth-home-link .auth-logo-dark, :root[data-theme="dark"] .auth-home-link .auth-logo-light { display: none; }
+    :root[data-theme="dark"] .auth-home-link .auth-logo-dark { display: block; }
+    .auth-page-actions .theme-switch { min-height: 44px; }
+    .auth-page-actions .theme-switch-track { border-color: var(--line); background: var(--soft); }
+    .auth-page-actions .auth-home-link:focus-visible { outline: 3px solid #64ceac; outline-offset: 3px; }
     @media (max-width: 480px) { .auth-card { padding: 28px 20px; } }
   </style>
   {% block page_head %}{% endblock %}
 {% endblock %}
-{% block header %}{% include "partials/theme_toggle.html" with floating=True %}{% endblock %}
+{% block header %}
+<nav class="auth-page-actions" aria-label="Navigasi halaman akun">
+  <a class="auth-home-link" href="{% url 'landing' %}" aria-label="Kembali ke beranda" title="Kembali ke beranda">
+    <img class="auth-logo-light" src="{% static 'takarkuy/logo.svg' %}" alt="" width="28" height="34">
+    <img class="auth-logo-dark" src="{% static 'takarkuy/logo-light.svg' %}" alt="" width="28" height="34">
+  </a>
+  {% include "partials/theme_toggle.html" with floating=False %}
+</nav>
+{% endblock %}
 {% block scripts %}
   <script>
     document.querySelectorAll("[data-password-toggle]").forEach((button) => {

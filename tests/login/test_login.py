@@ -102,7 +102,7 @@ class AccountFlowTests(TestCase):
         signup = self.client.get(reverse("signup"))
         login = self.client.get(reverse("login"))
         self.assertContains(signup, "Mulai Masak Hemat dengan <span>TAKARKUY</span>", html=False)
-        self.assertContains(signup, "Jadi Penakar")
+        self.assertContains(signup, "DaftarKuy")
         self.assertContains(signup, "Min. 8 karakter · kapital, angka, simbol")
         self.assertNotContains(signup, '<ul class="field-errors">')
         self.assertNotContains(signup, "Pendaftaran pengguna")

@@ -56,7 +56,7 @@
         </div>
 
         <img id="receipt-preview" class="receipt-preview" alt="Foto struk yang dipilih" hidden>
-        
+
         <p id="scan-feedback" class="feedback" role="status" aria-live="polite"></p>
 
         <div id="draft-empty" class="empty-draft">
@@ -123,11 +123,31 @@
 
     <section class="panel pantry-list" aria-labelledby="pantry-title">
       <h2 id="pantry-title">Stok Pantry Saat Ini</h2>
-      <p class="sample-note">Perkiraan kedaluwarsa mengikuti lokasi simpan dan tanggal belanja.</p>
-      <details class="pantry-more">
-        <summary>Catatan penyimpanan</summary>
-        <p class="sample-note">Lokasi awal adalah suhu ruang. Bahan mudah rusak perlu segera disimpan dingin, memindahkannya ke kulkas tidak membuat bahan kembali segar.</p>
-      </details>
+      <div class="pantry-toolbar">
+        <div class="pantry-info">
+          <p class="sample-note">
+            Perkiraan kedaluwarsa mengikuti lokasi simpan dan tanggal belanja.
+          </p>
+
+          <details class="pantry-more">
+            <summary>Catatan penyimpanan</summary>
+            <p class="sample-note">
+              Bahan mudah rusak perlu segera disimpan dingin, memindahkannya ke kulkas tidak membuat bahan kembali segar.
+            </p>
+          </details>
+        </div>
+
+        <div class="pantry-filter">
+          <select id="expiry-filter">
+            <option value="all">Semua stok</option>
+            <option value="expired">Sudah kedaluwarsa</option>
+            <option value="next7">7 hari ke depan</option>
+            <option value="unknown">Tanggal belum diketahui</option>
+          </select>
+
+          <p id="expiry-filter-result" role="status" aria-live="polite"></p>
+        </div>
+        </div>
       {% if pantry_items %}
       <div class="table-wrap stock-wrap">
         <table class="stock-table">
@@ -135,7 +155,7 @@
           <colgroup><col style="width:30%"><col style="width:16%"><col style="width:18%"><col style="width:22%"><col style="width:14%"></colgroup>
           <thead><tr><th scope="col">Bahan</th><th scope="col">Jumlah</th><th scope="col">Lokasi simpan</th><th scope="col">Perkiraan kedaluwarsa</th><th scope="col"><span class="sr-only">Aksi</span></th></tr></thead>
           {% for item in pantry_items %}
-          <tbody data-pantry-item="{{ item.pk }}" data-version="{{ item.version }}">
+          <tbody data-pantry-item="{{ item.pk }}" data-version="{{ item.version }}" data-expiry-date="{{ item.estimated_expires_on|date:'Y-m-d' }}">
             <tr class="pantry-summary">
               <th scope="row" class="c-name"><strong data-sum-name>{{ item.name }}</strong><span class="sum-sub" data-sum-category{% if not item.category %} hidden{% endif %}>{{ item.get_category_display }}</span></th>
               <td class="c-qty" data-label="Jumlah"><span data-sum-qty>{{ item.quantity|floatformat:"-3" }} {{ item.get_unit_display }}</span></td>

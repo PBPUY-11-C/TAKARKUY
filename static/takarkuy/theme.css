@@ -386,6 +386,13 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .remember { color: #c2ccca; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .switch-page { color: #c4cfcc; }
 
+:root[data-theme="dark"] body:is(.page-login,.page-signup) .auth-card .submit {
+  background: var(--lime);
+  color: #0b3522;
+  box-shadow: 0 5px 16px rgba(212, 244, 90, .14);
+}
+:root[data-theme="dark"] body:is(.page-login,.page-signup) .auth-card .submit:hover { filter: brightness(1.06); }
+
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-intro { color: #b9c7c0; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-section { border: 1px solid #373b41; background: #1e2723; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-section input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-section select { border: 1px solid #3d4843; background: #26332b; color: #dee5e2; }
@@ -424,14 +431,45 @@ body:has(> .theme-switch-floating) { padding-top: 64px; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .profile-section .avatar-option { border: 1px solid #3b463f; background: #1e2723; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .avatar-initial { background: #26332b; color: #d8e0de; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .avatar-option:has(input:checked) { background: #26332b; }
-:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .unsaved-popup { border: 1px solid #3b463f; background: #1e2723; color: #dee5e2; }
+body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) :is(.auth-error-popup,.unsaved-popup) { border: 2px solid var(--green); }
+:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .unsaved-popup { border: 2px solid #d8e0de; background: #1e2723; color: #dee5e2; box-shadow: 0 0 0 4px rgba(216, 224, 222, .08), 0 24px 80px rgba(0, 0, 0, .5); }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .unsaved-popup h2 { color: #d8e0de; }
 
-:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup { border: 1px solid #3b463f; background: #1e2723; color: #dee5e2; }
+:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup { border: 2px solid #d8e0de; background: #1e2723; color: #dee5e2; box-shadow: 0 0 0 4px rgba(216, 224, 222, .08), 0 24px 80px rgba(0, 0, 0, .5); }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-close { color: #b9c7c0; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-close:hover { background: #26332b; color: #d8e0de; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup h2 { color: #d8e0de; }
 :root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) .auth-error-popup > p { color: #b9c7c0; }
+
+:root[data-theme="dark"] body:is(.page-login,.page-signup,.page-modul3,.page-food-preferences,.page-password-change) :is(.auth-error-popup,.unsaved-popup) button:focus-visible {
+  outline: 3px solid #64ceac;
+  outline-offset: 3px;
+}
+
+/* Profile settings use light accents so actions stand out on dark surfaces. */
+:root[data-theme="dark"] body.profile-page { background: #181e23; }
+:root[data-theme="dark"] body.profile-page .settings-shell {
+  --green: #f1f5f3;
+  --lime: #18211c;
+  --ink: #f1f5f3;
+  --green-soft: #37434c;
+  --green-line: #63717a;
+}
+:root[data-theme="dark"] body.profile-page .settings-shell .settings-panel { background: #262e35; border-color: #53616b; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section select { background: #303b43; border-color: #63717a; color: #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell .settings-nav a[aria-current="page"] { background: #37434c; color: #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell .submit { background: #f1f5f3; color: #18211c; box-shadow: 0 4px 12px rgba(0, 0, 0, .15); }
+:root[data-theme="dark"] body.profile-page .settings-shell .submit:hover { background: #d8e0de; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section :is(.avatar-option,.pref-target-card,.preference-chips label) { background: #303b43; border-color: #63717a; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section :is(.avatar-option,.pref-target-card):has(input:checked) { background: #37434c; border-color: #f1f5f3; box-shadow: 0 0 0 1px #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section .preference-chips label:has(input:checked) { background: #f1f5f3; border-color: #f1f5f3; color: #18211c; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section .preference-chips label:has(input:checked) input { accent-color: #18211c; }
+:root[data-theme="dark"] body.profile-page .settings-shell .pref-chosen button { background: #f1f5f3; color: #18211c; }
+:root[data-theme="dark"] body.profile-page .settings-shell :is(.avatar-intro p,.pref-target-card strong,.pref-text-button,.preference-details summary) { color: #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell :is(.pref-shortcuts a,.pref-number-control button) { background: #37434c; border-color: #63717a; color: #f1f5f3; }
+:root[data-theme="dark"] body.profile-page .settings-shell .profile-section .pref-savebar { background: #303b43; border-color: #63717a; }
+:root[data-theme="dark"] body.profile-page .settings-shell .ingredient-options { border-color: #63717a; }
 
 :root[data-theme="dark"] .toast, :root[data-theme="dark"] .skip-link { border: 1px solid #3d4f45; background: #26332c; color: #f1f5f3; }
 :root[data-theme="dark"] .toast button { color: #c9d6cf; }
