@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.cache import patch_cache_control
 from django.views.decorators.http import require_POST
 
@@ -16,6 +17,7 @@ from .services import dashboard_data
 
 @login_required
 def dashboard_page(request):
+    my_recipes = MyRecipe.objects.filter(user=request.user)
     response = render(
         request,
         "home/home.html",
@@ -24,6 +26,8 @@ def dashboard_page(request):
             "map_places": read_places(),
             "map_config": {"tiles": settings.MAP_TILE_URL, "online": settings.MAP_LOOKUP_ENABLED},
             "my_recipes": MyRecipe.objects.filter(user=request.user)[:5],
+            "my_recipe_count": my_recipes.count(),
+            "recipe_form": MyRecipeForm(),
         },
     )
     patch_cache_control(response, private=True, no_store=True)
@@ -48,7 +52,7 @@ def my_recipe_create(request):
         recipe.user = request.user
         recipe.save()
         messages.success(request, "Resep disimpan.")
-        return redirect("modul5-recipe-detail", pk=recipe.pk)
+        return redirect(reverse("modul5") + "#resep-saya")
     
     return render(request, "home/my_recipe_form.html", {"form": form, "judul": "Tambah resep"})
 
