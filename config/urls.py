@@ -115,12 +115,12 @@ urlpatterns = [
     path("modul4/reviews/<int:review_id>/photo/", recipe_review_photo_file, name="modul4-review-photo"),
     path("modul4/slot-status/", set_slot_status, name="modul4-slot-status"),
 
-    path("modul5/", dashboard_page, name="modul5"),
-    path("modul5/places/", market_lookup, name="modul5-places"),
-    path("modul5/resep/tambah/", my_recipe_create, name="modul5-recipe-create"),
-    path("modul5/resep/<int:pk>/", my_recipe_detail, name="modul5-recipe-detail"),
-    path("modul5/resep/<int:pk>/edit/", my_recipe_edit, name="modul5-recipe-edit"),
-    path("modul5/resep/<int:pk>/hapus/", my_recipe_delete, name="modul5-recipe-delete"),
+    path("dashboard/", dashboard_page, name="modul5"),
+    path("dashboard/places/", market_lookup, name="modul5-places"),
+    path("dashboard/resep/tambah/", my_recipe_create, name="modul5-recipe-create"),
+    path("dashboard/resep/<int:pk>/", my_recipe_detail, name="modul5-recipe-detail"),
+    path("dashboard/resep/<int:pk>/edit/", my_recipe_edit, name="modul5-recipe-edit"),
+    path("dashboard/resep/<int:pk>/hapus/", my_recipe_delete, name="modul5-recipe-delete"),
 
     path("admin/", admin.site.urls),
 ]
