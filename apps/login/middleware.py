@@ -1,5 +1,7 @@
 """Gerbang maintenance untuk seluruh deployment, dijalankan sebelum parsing body dan view aplikasi."""
 
+import json
+
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -14,6 +16,9 @@ AUTH_ACTIONS = {
     "admin:login": "login",
     "login:register": "signup",
     "login:change_password": "password",
+    "auth_api:login": "login",
+    "auth_api:register": "signup",
+    "auth_api:change_password": "password",
 }
 
 
@@ -88,16 +93,34 @@ class AuthRateLimitMiddleware:
         if action == "password" and request.user.is_authenticated:
             identity = f"account:{request.user.pk}"
         elif action in {"login", "signup"}:
-            identity = request.POST.get("username" if action == "login" else "email", "")
+            identity = self.auth_data(request).get("username" if action == "login" else "email", "")
         else:
             return None
         try:
             reserve_auth_attempt(request, action, identity)
         except AuthLimited as error:
-            response = render(
-                request, "login/rate_limited.html", {"error": str(error)}, status=429
-            )
+            if MaintenanceMiddleware.wants_json(request):
+                response = JsonResponse(
+                    {"status": False, "message": str(error), "retry_after": error.retry_after},
+                    status=429,
+                )
+            else:
+                response = render(
+                    request, "login/rate_limited.html", {"error": str(error)}, status=429
+                )
             response["Retry-After"] = str(error.retry_after)
             patch_cache_control(response, private=True, no_store=True)
             return response
         return None
+
+    @staticmethod
+    def auth_data(request):
+        """Data POST form, atau objek JSON untuk API mobile; tanpa ini semua pendaftaran JSON berbagi
+        satu kuota identitas kosong."""
+        if request.content_type != "application/json":
+            return request.POST
+        try:
+            data = json.loads(request.body)
+        except ValueError:
+            return {}
+        return data if isinstance(data, dict) else {}
