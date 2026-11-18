@@ -11,4 +11,8 @@ urlpatterns = [
     path("recipes/", include("apps.recipe.urls")),
     path("dashboard/", include("apps.home.urls")),
     path("api/planner/", include("apps.planner.api_urls")),
+    path("api/auth/", include("apps.login.api_urls")),
+    path("api/pantry/", include("apps.pantry.api_urls")),
+    path("api/recipes/", include("apps.recipe.api_urls")),
+    path("api/dashboard/", include("apps.home.api_urls")),
 ]
