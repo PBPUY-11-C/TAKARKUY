@@ -89,6 +89,11 @@ class MaintenanceTests(TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()["code"], "maintenance")
 
+    def test_rest_api_returns_json_even_without_accept_header(self):
+        response = self.client.get("/api/planner/plans/")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["code"], "maintenance")
+
     def test_planner_write_is_closed_with_json_without_creating_a_plan(self):
         count = BudgetPlan.objects.count()
         self.client.force_login(self.user)
