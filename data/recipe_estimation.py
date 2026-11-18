@@ -1,4 +1,4 @@
-"""Auditable, offline estimates."""
+"""Estimasi takaran resep yang bisa diaudit dan berjalan offline."""
 
 import csv
 import io
@@ -18,6 +18,7 @@ MACROS = ("calories", "protein", "carbs", "fat")
 
 
 def normalize(text):
+    """Menormalkan teks: casefold, pecahan unicode jadi a/b, NFKC, dan spasi dirapikan."""
     text = str(text).casefold().replace("½", " 1/2").replace("¼", " 1/4").replace("¾", " 3/4")
     text = unicodedata.normalize("NFKC", text).replace("⁄", "/")
     return re.sub(r"\s+", " ", text).strip()
@@ -294,6 +295,9 @@ INDONESIAN = (
 
 
 def resolve_ingredient(raw, language):
+    """Memetakan teks bahan ke kode ING-; Inggris lewat alias persis, Indonesia lewat pola regex.
+    None untuk bahan olahan yang sengaja tidak dipetakan atau bila cocok ke lebih dari satu kode.
+    """
     text = normalize(raw)
     if language == "en":
         short = ENGLISH.get(text)
@@ -332,6 +336,9 @@ def resolve_ingredient(raw, language):
 
 
 def number_at_start(text):
+    """Membaca angka, pecahan, atau rentang di awal teks; rentang memakai batas atas.
+    Mengembalikan (nilai atau None, sisa teks, catatan).
+    """
     match = re.match(
         r"^(\d+\s+\d+/\d+|\d+/\d+|\d+(?:[.,]\d+)?)(?:\s*[-–]\s*(\d+(?:[.,]\d+)?))?", text
     )
@@ -346,6 +353,9 @@ def number_at_start(text):
 
 
 def estimate_quantity(raw_measure, code, language="en", instructions=""):
+    """Mengubah takaran sumber menjadi gram via massa, volume, unit, atau default per bahan.
+    Mengembalikan (gram atau None, catatan asumsi, URL referensi).
+    """
     text = normalize(raw_measure)
     short = code.removeprefix("ING-")
     piece, cup, default = PROFILES.get(short, (0, 0, 0))
@@ -497,6 +507,9 @@ def estimate_quantity(raw_measure, code, language="en", instructions=""):
 
 
 def source_candidates(root):
+    """Menghasilkan kandidat resep: 60 resep unik Kaggle/Cookpad dari ZIP lokal, lalu snapshot
+    TheMealDB; ID TheMealDB ganda dengan isi berbeda ditolak.
+    """
     with zipfile.ZipFile(root / "raw/indonesian_food_recipes.zip") as archive:
         seen = set()
         for member in sorted(archive.namelist()):
@@ -548,6 +561,7 @@ def source_candidates(root):
 
 
 def is_section_heading(raw):
+    """Mendeteksi baris judul bagian (misal "bumbu halus", "pelengkap") yang bukan bahan."""
     text = re.sub(r"[^\w\s]", " ", normalize(raw))
     text = re.sub(r"\s+", " ", text).strip()
     return bool(
@@ -561,7 +575,9 @@ def is_section_heading(raw):
 
 
 def ingredient_components(raw, measure, language):
-    """Split explicit lists, never duplicate a shared numeric amount across foods."""
+    """Memecah daftar bahan eksplisit (dan, &, koma) menjadi komponen; satu angka bersama
+    tidak pernah digandakan ke beberapa bahan.
+    """
     if language != "id" or is_section_heading(raw):
         return [(raw, measure, "")]
     text = normalize(raw)
@@ -610,7 +626,9 @@ def ingredient_components(raw, measure, language):
 
 
 def estimate_candidates(root, items, prices):
-    """Return recipe updates plus a complete ingredient audit, including blockers."""
+    """Mengembalikan update resep beserta audit lengkap tiap bahan, termasuk penyebab blokir.
+    Resep hanya plannable bila semua bahan terpetakan, bergram, bergizi lengkap, dan berharga.
+    """
     updates, audit = [], []
     for candidate in source_candidates(root):
         code, lang = candidate["code"], candidate["language"]
@@ -776,6 +794,7 @@ def estimate_candidates(root, items, prices):
 
 
 def authored_steps(name):
+    """Memilih langkah masak generik tulisan TAKARKUY sesuai teknik di judul (bakar, sup, goreng)."""
     title = normalize(name)
     if "bakar" in title or "panggang" in title or "oven" in title:
         return "Siapkan bahan sesuai takaran estimasi. Haluskan bumbu dan lumuri ayam; masak hingga matang, lalu panggang hingga bumbu meresap. Pastikan bagian terdalam ayam matang."
@@ -787,7 +806,7 @@ def authored_steps(name):
 
 
 def unique_rows(rows, key):
-    """Collapse identical copies only; conflicting IDs must be corrected, not lost."""
+    """Hanya menggabungkan salinan identik; ID kosong atau ID bentrok dengan isi beda ditolak."""
     seen = {}
     for row in rows:
         pk = row[key]
@@ -800,6 +819,7 @@ def unique_rows(rows, key):
 
 
 def replace_recipe(recipes, replacement):
+    """Mengganti resep berkode sama di tempat, atau menambahkannya; kode ganda ditolak."""
     code = replacement["recipe_code"]
     matching = [i for i, row in enumerate(recipes) if row["recipe_code"] == code]
     if len(matching) > 1:

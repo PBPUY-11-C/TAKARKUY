@@ -1,9 +1,11 @@
-"""Publication guard, including snapshots made before a catalog refresh."""
+"""Penjaga publikasi panduan resep, termasuk snapshot yang dibuat sebelum katalog diperbarui."""
 
 MENDELEY_URL = "https://data.mendeley.com/datasets/8b4ztns76h/3"
 
 
 def protect_recipe_instructions(meal):
+    """Mengosongkan panduan yang ditahan atau resep Mendeley belum ditinjau (dict diubah langsung);
+    resep Mendeley selalu diberi URL sumber dan atribusi CC BY 4.0."""
     code = meal.get("recipe_code", "")
     mendeley = isinstance(code, str) and code.startswith("RCP-MDL-")
     reviewed = (
@@ -21,6 +23,8 @@ def protect_recipe_instructions(meal):
 
 
 def protect_plan_instructions(result):
+    """Menerapkan protect_recipe_instructions ke setiap menu di jadwal rencana; jika ada yang ditahan,
+    rencana ditandai instructions_pending_review beserta URL sumber Mendeley."""
     held = False
     if isinstance(result, dict):
         for day in result.get("schedule", []):

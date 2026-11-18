@@ -32,8 +32,8 @@ if not SECRET_KEY:
 DEBUG = not PRODUCTION
 SESSION_COOKIE_SECURE = PRODUCTION
 CSRF_COOKIE_SECURE = PRODUCTION
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "modul5"
+LOGIN_URL = "login:login"
+LOGIN_REDIRECT_URL = "home:show_dashboard"
 AUTHENTICATION_BACKENDS = ["apps.login.backends.UsernameOrEmailBackend"]
 AUTH_TRUSTED_PROXY_CIDRS = [
     value.strip() for value in os.getenv("AUTH_TRUSTED_PROXY_CIDRS", "").split(",") if value.strip()

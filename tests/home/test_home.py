@@ -76,7 +76,7 @@ class DashboardTests(TestCase):
 
     @override_settings(MAINTENANCE_MODE=True)
     def test_api_maintenance_response_is_json(self):
-        response = self.client.get(reverse("modul5-places"))
+        response = self.client.get(reverse("home:market_lookup"))
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()["code"], "maintenance")
 

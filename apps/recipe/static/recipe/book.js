@@ -5,6 +5,7 @@ const csrf = document.querySelector('#csrf-bootstrap [name=csrfmiddlewaretoken]'
   || document.querySelector('[name=csrfmiddlewaretoken]')?.value
   || '';
 const message = document.querySelector('#page-message');
+// Mengirim POST JSON dengan token CSRF; respons non-OK dilempar sebagai Error berisi pesan server.
 async function post(url, payload) {
   const response = await fetch(url, {method: 'POST', credentials: 'same-origin',
     headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf}, body: JSON.stringify(payload)});
@@ -12,6 +13,7 @@ async function post(url, payload) {
   if (!response.ok) throw new Error(data.error || 'Permintaan gagal.');
   return data;
 }
+// Menampilkan pesan error di area pesan halaman.
 function showError(error) { message.textContent = error.message; message.hidden = false; }
 for (const button of document.querySelectorAll('[data-remove-favorite]')) {
   button.addEventListener('click', async () => {
@@ -43,6 +45,7 @@ if (detail) {
   let sequence = 0;
   let sending = false;
   const externalIngredients = new Map();
+  // Membatalkan pratinjau yang disetujui saat form berubah; centang bahan luar Pantry ikut disinkronkan.
   function invalidate(event) {
     sequence += 1; approved = null; operationKey = null; confirm.disabled = true;
     if (event?.target?.matches?.('[data-external-ingredient]')) {

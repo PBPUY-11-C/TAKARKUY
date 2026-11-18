@@ -16,7 +16,7 @@ from tests.pantry.test_helpers import authenticate
 class PantryFlowTests(TestCase):
     def setUp(self):
         self.user = authenticate(self.client)
-        self.client.get(reverse("modul2"))
+        self.client.get(reverse("pantry:show_pantry"))
         self.item = {
             "name": "  Bayam   Hijau ",
             "category": "sayuran",
@@ -28,7 +28,7 @@ class PantryFlowTests(TestCase):
 
     def post_items(self, items, source="ocr", client=None):
         return (client or self.client).post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             data=json.dumps({"source": source, "operation_key": str(uuid4()), "items": items}),
             content_type="application/json",
         )
@@ -53,10 +53,10 @@ class PantryFlowTests(TestCase):
     def test_staple_preferences_are_saved_through_shared_module(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
         response = self.client.post(
-            reverse("modul2-staples"),
+            reverse("pantry:save_staples"),
             {"tracked_staples": ["salt", "sugar"], "version": profile.version},
         )
-        self.assertRedirects(response, reverse("modul2"))
+        self.assertRedirects(response, reverse("pantry:show_pantry"))
         profile.refresh_from_db()
         preferences = FoodPreference.objects.get(user=self.user)
         self.assertEqual(preferences.tracked_staples, ["salt", "sugar"])
@@ -66,7 +66,7 @@ class PantryFlowTests(TestCase):
         self.post_items([self.item])
         item = PantryItem.objects.get()
         response = self.client.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             data=json.dumps(
                 {
                     "version": item.version,
@@ -87,7 +87,7 @@ class PantryFlowTests(TestCase):
         other_client = Client()
         authenticate(other_client, "other")
         response = other_client.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             data=json.dumps(
                 {
                     "version": item.version,
@@ -104,7 +104,7 @@ class PantryFlowTests(TestCase):
         self.post_items([self.item])
         item = PantryItem.objects.get()
         response = self.client.delete(
-            reverse("modul2-item-delete", args=[item.pk]),
+            reverse("pantry:delete_item", args=[item.pk]),
             data=json.dumps({"version": item.version, "operation_key": str(uuid4())}),
             content_type="application/json",
         )
@@ -117,7 +117,7 @@ class PantryFlowTests(TestCase):
         item = PantryItem.objects.get()
         other = Client()
         authenticate(other, "other")
-        response = other.delete(reverse("modul2-item-delete", args=[item.pk]))
+        response = other.delete(reverse("pantry:delete_item", args=[item.pk]))
         self.assertEqual(response.status_code, 404)
         self.assertTrue(PantryItem.objects.filter(pk=item.pk).exists())
 
@@ -131,7 +131,7 @@ class PantryFlowTests(TestCase):
         self.post_items([self.item])
         other_client = Client()
         authenticate(other_client, "other")
-        response = other_client.get(reverse("modul2"))
+        response = other_client.get(reverse("pantry:show_pantry"))
         self.assertNotContains(response, "Bayam Hijau")
         self.assertEqual(self.post_items([self.item], client=other_client).status_code, 201)
         self.assertEqual(PantryItem.objects.count(), 2)
@@ -139,7 +139,7 @@ class PantryFlowTests(TestCase):
     def test_csrf_is_required_for_save(self):
         client = Client(enforce_csrf_checks=True)
         client.force_login(self.user)
-        client.get(reverse("modul2"))
+        client.get(reverse("pantry:show_pantry"))
         response = self.post_items([self.item], client=client)
         self.assertEqual(response.status_code, 403)
 
@@ -149,7 +149,7 @@ class PantryFlowTests(TestCase):
         client = Client(enforce_csrf_checks=True)
         client.cookies = self.client.cookies.copy()
         response = client.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             data=json.dumps(
                 {
                     "version": item.version,
@@ -162,13 +162,13 @@ class PantryFlowTests(TestCase):
         )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(
-            client.delete(reverse("modul2-item-delete", args=[item.pk])).status_code, 403
+            client.delete(reverse("pantry:delete_item", args=[item.pk])).status_code, 403
         )
 
     def test_get_and_wrong_content_type_cannot_save(self):
-        self.assertEqual(self.client.get(reverse("modul2-items")).status_code, 405)
+        self.assertEqual(self.client.get(reverse("pantry:save_items")).status_code, 405)
         self.assertEqual(
-            self.client.post(reverse("modul2-items"), data={"items": []}).status_code, 415
+            self.client.post(reverse("pantry:save_items"), data={"items": []}).status_code, 415
         )
 
     def test_ocr_rows_are_saved_only_after_explicit_post(self):
@@ -183,11 +183,11 @@ class PantryFlowTests(TestCase):
             item.estimated_expires_on,
             timezone.localdate(timezone=ZoneInfo("Asia/Jakarta")) + timedelta(days=3),
         )
-        self.assertContains(self.client.get(reverse("modul2")), "Bayam Hijau")
+        self.assertContains(self.client.get(reverse("pantry:show_pantry")), "Bayam Hijau")
 
     def test_inventory_hides_source_and_places_small_information_under_expiry(self):
         self.post_items([self.item], source="manual")
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         self.assertNotContains(page, '<th scope="col">Sumber</th>')
         self.assertContains(page, 'class="edit-actions"')
         self.assertContains(page, 'data-storage-feedback')
@@ -205,14 +205,14 @@ class PantryFlowTests(TestCase):
         self.assertEqual(item.location, "suhu_ruang")
         self.assertIsNone(item.shelf_life_days)
         self.assertIsNone(item.estimated_expires_on)
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         self.assertContains(page, "Tahu Putih")
         self.assertContains(page, "Belum ditentukan")
         self.assertContains(page, "data-pantry-location")
         self.assertContains(page, "data-pantry-expiry")
 
     def test_manual_pack_unit_is_accepted_and_legacy_ocr_units_remain(self):
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         manual_select = (
             page.content.decode()
             .split('<select id="ingredient-unit"', 1)[1]
@@ -244,7 +244,7 @@ class PantryFlowTests(TestCase):
         self.assertEqual(PantryItem.objects.get().unit, "pack")
 
     def test_manual_category_dropdown_has_six_clear_options(self):
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         category_select = (
             page.content.decode()
             .split('<select id="ingredient-category"', 1)[1]
@@ -278,7 +278,7 @@ class PantryFlowTests(TestCase):
         self.post_items([{"name": "Tahu Putih", "quantity": "2", "unit": "kotak"}])
         item = PantryItem.objects.get()
         response = self.client.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             data=json.dumps(
                 {
                     "version": item.version,
@@ -294,10 +294,10 @@ class PantryFlowTests(TestCase):
         item.refresh_from_db()
         self.assertEqual(item.location, "chiller")
         self.assertEqual(item.estimated_expires_on.isoformat(), "2026-10-02")
-        self.assertContains(self.client.get(reverse("modul2")), 'value="2026-10-02"')
+        self.assertContains(self.client.get(reverse("pantry:show_pantry")), 'value="2026-10-02"')
 
     def test_pantry_page_renders_receipt_guide_modal(self):
-        response = self.client.get(reverse("modul2"))
+        response = self.client.get(reverse("pantry:show_pantry"))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "pantry/pantry.html")
@@ -306,7 +306,7 @@ class PantryFlowTests(TestCase):
         self.assertContains(response, "Panduan Foto Struk")
     
     def test_pantry_toolbar_renders_information_and_expiry_filter(self):
-        response = self.client.get(reverse("modul2"))
+        response = self.client.get(reverse("pantry:show_pantry"))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'class="pantry-toolbar"')

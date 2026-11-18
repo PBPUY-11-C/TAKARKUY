@@ -57,6 +57,7 @@ from .storage import (
 
 
 def _local_codes(names, session_id, user):
+    """Mencocokkan nama ke kode bahan katalog tanpa LLM; urutan hasil sama dengan names."""
     if not names:
         return []
     suggestions, _ = resolve_names(names, session_id, user=user, allow_llm=False)
@@ -64,10 +65,12 @@ def _local_codes(names, session_id, user):
 
 
 def _starting_on(item):
+    """Tanggal mulai simpan item; bila kosong memakai tanggal item ditambahkan (WIB)."""
     return item.starting_on or timezone.localdate(item.added_at, timezone=ZoneInfo("Asia/Jakarta"))
 
 
 def _session_id(request):
+    """Mengambil session_id pantry turunan user dan menyimpannya ke session bila berbeda."""
     scope = session_scope(request.user)
     if request.session.get("pantry_session_id") != scope:
         request.session["pantry_session_id"] = scope
@@ -76,6 +79,10 @@ def _session_id(request):
 
 @login_required
 def pantry_page(request):
+    """Merender halaman pantry: stok aktif dengan estimasi per lokasi, stok habis 30 hari terakhir.
+
+    Juga menyiapkan pilihan form, katalog bahan, dan preferensi bahan pokok.
+    """
     profile = profile_for(request.user)
     preferences = preferences_for(request.user)
     session_id = _session_id(request)
@@ -157,10 +164,11 @@ def pantry_page(request):
 @login_required
 @require_POST
 def save_staple_preferences(request):
+    """Menyimpan bahan pokok yang dilacak; ditolak bila version profil sudah berubah di tab lain."""
     form = StaplePreferenceForm(request.POST)
     if not form.is_valid():
         messages.error(request, "Pilihan bumbu dapur tidak valid. Muat ulang dan coba lagi.")
-        return redirect("modul2")
+        return redirect("pantry:show_pantry")
     try:
         with transaction.atomic():
             get_user_model().objects.select_for_update().get(pk=request.user.pk)
@@ -171,7 +179,7 @@ def save_staple_preferences(request):
                     request,
                     "Preferensi berubah di tab lain. Muat ulang halaman sebelum menyimpan lagi.",
                 )
-                return redirect("modul2")
+                return redirect("pantry:show_pantry")
             preferences = preferences_for(request.user)
             preferences.tracked_staples = form.cleaned_data["tracked_staples"]
             preferences.save(update_fields=["tracked_staples"])
@@ -179,14 +187,18 @@ def save_staple_preferences(request):
             profile.save(update_fields=["version"])
     except (TypeError, ValueError):
         messages.error(request, "Pilihan bumbu dapur tidak dapat disimpan.")
-        return redirect("modul2")
+        return redirect("pantry:show_pantry")
     messages.success(request, "Preferensi stok bumbu dapur berhasil disimpan.")
-    return redirect("modul2")
+    return redirect("pantry:show_pantry")
 
 
 @api_login_required
 @require_POST
 def fallback_receipt_ocr(request):
+    """Endpoint OCR cadangan: membaca foto struk (maks 10 MB) via Gemini dengan kuota harian.
+
+    Mengembalikan item beserta ai_usage; foto hanya dibaca di memori dan tidak disimpan.
+    """
     if not gemini_ready():
         return JsonResponse({"error": "Pemindaian cadangan belum tersedia."}, status=503)
     upload = request.FILES.get("image")
@@ -226,6 +238,7 @@ def fallback_receipt_ocr(request):
 @api_login_required
 @require_POST
 def suggest_receipt_items(request):
+    """Endpoint JSON yang menyarankan bahan katalog untuk 1 s.d. 30 nama struk; LLM opsional."""
     if request.content_type != "application/json":
         return JsonResponse({"error": "Kirim data sebagai JSON."}, status=415)
     if len(request.body) > 8000:
@@ -255,6 +268,10 @@ def suggest_receipt_items(request):
 @api_login_required
 @require_POST
 def save_pantry_items(request):
+    """Menyimpan 1 s.d. 30 item dari OCR atau input manual secara atomik dan idempoten.
+
+    Tanggal kedaluwarsa diisi dari label, input manual, atau estimasi; koreksi nama OCR diingat.
+    """
     if request.content_type != "application/json":
         return JsonResponse({"error": "Kirim data sebagai JSON."}, status=415)
     if len(request.body) > 50000:
@@ -404,6 +421,10 @@ def save_pantry_items(request):
 @api_login_required
 @require_http_methods(["PATCH"])
 def update_pantry_details(request, item_id):
+    """PATCH detail item dengan cek version; kedaluwarsa dihitung ulang kecuali diisi manual.
+
+    Dicatat sebagai movement "move" bila hanya lokasi berubah, selain itu "correction".
+    """
     if request.content_type != "application/json":
         return JsonResponse({"error": "Kirim data sebagai JSON."}, status=415)
     if len(request.body) > 2000:
@@ -528,6 +549,7 @@ def update_pantry_details(request, item_id):
 @api_login_required
 @require_http_methods(["DELETE"])
 def delete_pantry_item(request, item_id):
+    """Membuang item: jumlah jadi 0 dan diarsipkan (tidak dihapus dari DB), dicatat "discard"."""
     if not PantryItem.objects.filter(pk=item_id, user=request.user).exists():
         return JsonResponse({"error": "Stok tidak ditemukan."}, status=404)
     if len(request.body) > 2000:
@@ -565,6 +587,7 @@ def delete_pantry_item(request, item_id):
 @api_login_required
 @require_http_methods(["GET"])
 def pantry_movements(request, item_id):
+    """Mengembalikan maksimal 100 riwayat movement terbaru milik item user dalam JSON."""
     item = PantryItem.objects.filter(pk=item_id, user=request.user).first()
     if item is None:
         return JsonResponse({"error": "Stok tidak ditemukan."}, status=404)
@@ -587,7 +610,7 @@ def pantry_movements(request, item_id):
 @api_login_required
 @require_http_methods(["GET"])
 def pantry_recipe_matches(request):
-    """Read-only shortcut into the Recipe Book's own stock matching."""
+    """Pintasan baca-saja ke pencocokan stok Recipe Book; porsi 1 s.d. 10, maksimal 20 resep."""
     from apps.recipe.services import stock_matches
 
     try:

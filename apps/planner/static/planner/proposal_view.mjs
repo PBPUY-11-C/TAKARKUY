@@ -1,11 +1,13 @@
 import { element, rupiah } from "./dom.mjs";
 
+// Chip info (hari/orang); jika nilainya berubah, ditampilkan "lama → baru" dengan class changed.
 function changeChip(before, after, unit) {
   const changed = before !== undefined && before !== null && Number(before) !== Number(after);
   return element("span", changed ? "proposal-chip changed" : "proposal-chip",
     changed ? `${before} → ${after} ${unit}` : `${after} ${unit}`);
 }
 
+// Menampilkan menu satu hari di preview dan menandai tabnya; catatan gizi hanya jika target gizi dipilih.
 function showDay(data, index) {
   const day = data.schedule[index];
   const tabs = document.getElementById("preview-day-tabs").children;
@@ -20,7 +22,7 @@ function showDay(data, index) {
     ? `Hari ${day.number}: ${day.protein} g protein · ${day.calories} kkal / orang` : "";
 }
 
-// Fill the preview dialog with a server proposal: cost, budget, nutrition, days, and shopping.
+// Mengisi dialog preview dengan proposal server: biaya, budget, gizi, tab hari, dan daftar belanja.
 export function renderProposal(data) {
   document.getElementById("preview-result").hidden = false;
   document.getElementById("request-preview").hidden = true;

@@ -1,4 +1,4 @@
-"""Shelf-life guesses from Gemini for food without an official reference."""
+"""Perkiraan masa simpan dari Gemini untuk bahan yang belum punya acuan resmi."""
 
 import json
 import os
@@ -24,11 +24,15 @@ PROMPT = (
 
 
 def _days(value):
+    """Mengembalikan jumlah hari bila berupa int 1 s.d. 3650; selain itu None."""
     return value if type(value) is int and 1 <= value <= 3650 else None
 
 
 def estimate_shelf_life(user, entries):
-    """entries: [(key, name, ingredient_code)]."""
+    """Mengambil perkiraan masa simpan per lokasi untuk entries [(key, name, ingredient_code)].
+
+    Maksimal 30 key yang belum ada ditanyakan ke Gemini (memakai kuota LLM user), lalu disimpan.
+    """
     entries = list({key: (key, name, code) for key, name, code in entries if key}.values())
     found = {e.pk: e for e in ShelfLifeEstimate.objects.filter(pk__in=[k for k, _, _ in entries])}
     missing = [entry for entry in entries if entry[0] not in found][:30]

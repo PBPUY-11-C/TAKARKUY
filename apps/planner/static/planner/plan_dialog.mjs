@@ -3,6 +3,7 @@ import { rupiah } from "./dom.mjs";
 import { visit } from "./navigation.mjs";
 import { renderProposal } from "./proposal_view.mjs";
 
+// Membuat satu pilihan radio resep pengganti beserta label selisih harganya (lebih murah/mahal/sama).
 function replacementOption(recipe, checked) {
   const delta = Number(recipe.delta) || 0;
   const option = document.createElement("label");
@@ -24,7 +25,7 @@ function replacementOption(recipe, checked) {
   return option;
 }
 
-// "Ganti menu" and "Ganti semua menu": pick, preview the server quote, then apply it to the draft.
+// "Ganti menu" dan "Ganti semua menu": pilih, lihat preview hitungan server, lalu terapkan ke draft.
 export function initPlanDialog() {
   const dialog = document.getElementById("plan-dialog");
   const picker = document.getElementById("replacement-picker");
@@ -38,10 +39,11 @@ export function initPlanDialog() {
   let replacement = null;
   let deltas = {};
   let proposal = null;
-  // Bumped on every reset/close so a late response from an older request is ignored.
+  // Dinaikkan setiap reset/tutup agar respons terlambat dari request lama diabaikan.
   let dialogGeneration = 0;
   dialog.addEventListener("close", () => { dialogGeneration += 1; proposal = null; });
 
+  // Mengosongkan state dan tampilan dialog, mengganti judul, lalu membukanya; request lama ikut dibatalkan.
   function resetDialog(title = "Pratinjau menu", subtitle = "") {
     dialogGeneration += 1;
     proposal = null;
@@ -61,11 +63,13 @@ export function initPlanDialog() {
     if (!dialog.open) dialog.showModal();
   }
 
+  // Menampilkan perkiraan total belanja jika resep yang sedang dipilih dipakai, dibanding budget.
   function showPickedTotal() {
     if (!replacement || !(selector.value in deltas)) return;
     pickerTotal.textContent = `Total belanja jadi ${rupiah(replacement.total + deltas[selector.value])} / ${rupiah(replacement.budget)}`;
   }
 
+  // Menyimpan proposal dari server sebagai yang aktif lalu merendernya di dialog.
   function showProposal(data) {
     proposal = data;
     renderProposal(data);
@@ -114,6 +118,7 @@ export function initPlanDialog() {
     showPickedTotal();
   });
 
+  // Mengirim persetujuan preview ke server, lalu pindah ke draft hasilnya dengan pesan toast.
   async function applyProposal(data, body) {
     const result = await request(data.apply_url, body);
     await visit(result.url, "Menu diganti di draft. Simpan untuk memakainya.");

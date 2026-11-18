@@ -1,4 +1,4 @@
-"""Main protein source per recipe, used to keep menus from repeating one protein."""
+"""Sumber protein utama per resep, dipakai agar menu tidak mengulang protein yang sama."""
 
 PROTEIN_GROUPS = {
     "ayam": (
@@ -64,7 +64,8 @@ GROUP_BY_CODE = {code: group for group, codes in PROTEIN_GROUPS.items() for code
 
 
 def main_protein_group(links):
-    """Return the group of the heaviest protein ingredient in a recipe."""
+    """Mengembalikan kelompok protein dengan total gram terberat di resep, atau "lainnya" jika
+    tidak ada; seri diputus urutan abjad."""
     grams = {}
     for link in links:
         group = GROUP_BY_CODE.get(link.ingredient_id)

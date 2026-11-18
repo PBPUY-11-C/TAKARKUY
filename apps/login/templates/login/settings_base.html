@@ -9,10 +9,10 @@
   <h1>Pengaturan profil</h1>
   <div class="settings-layout">
     <nav class="settings-nav" aria-label="Pengaturan profil">
-      {% with current=request.resolver_match.url_name %}
-      <a href="{% url 'modul3' %}"{% if current == 'modul3' %} aria-current="page"{% endif %}>Akun</a>
-      <a href="{% url 'password-change' %}"{% if current == 'password-change' %} aria-current="page"{% endif %}>Keamanan akun</a>
-      <a href="{% url 'food-preferences' %}"{% if current == 'food-preferences' %} aria-current="page"{% endif %}>Preferensi makanan</a>
+      {% with current=request.resolver_match.view_name %}
+      <a href="{% url 'login:show_profile' %}"{% if current == 'login:show_profile' %} aria-current="page"{% endif %}>Akun</a>
+      <a href="{% url 'login:change_password' %}"{% if current == 'login:change_password' %} aria-current="page"{% endif %}>Keamanan akun</a>
+      <a href="{% url 'login:food_preferences' %}"{% if current == 'login:food_preferences' %} aria-current="page"{% endif %}>Preferensi makanan</a>
       {% endwith %}
     </nav>
     <section class="profile-section settings-panel" aria-labelledby="settings-panel-title">

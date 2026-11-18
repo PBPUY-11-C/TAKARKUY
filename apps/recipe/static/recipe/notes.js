@@ -4,6 +4,7 @@ if (form) {
   const status = document.querySelector('#recipe-note-status');
   const buttons = [...form.querySelectorAll('button')];
 
+  // Mengirim catatan pribadi ke server; isi kosong berarti catatan dihapus.
   async function save(content) {
     buttons.forEach(button => { button.disabled = true; });
     status.textContent = '';

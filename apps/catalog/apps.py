@@ -2,11 +2,14 @@ from django.apps import AppConfig
 
 
 class CatalogConfig(AppConfig):
+    """Konfigurasi app katalog resep dan bahan."""
+
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.catalog"
     label = "catalog"
 
     def ready(self):
+        """Menyambungkan signal save/delete model katalog ke rebuild indeks alergen resep."""
         from django.db.models.signals import post_delete, post_save
 
         from .aggregation import changed

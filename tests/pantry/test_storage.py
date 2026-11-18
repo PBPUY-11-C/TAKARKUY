@@ -39,11 +39,11 @@ class PantryStorageTests(TestCase):
     def setUp(self):
         self.user = authenticate(self.client)
         self.today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
-        self.client.get(reverse("modul2"))
+        self.client.get(reverse("pantry:show_pantry"))
 
     def add(self, source="manual", **changes):
         return self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             content_type="application/json",
             data=json.dumps(
                 {
@@ -64,7 +64,7 @@ class PantryStorageTests(TestCase):
 
     def update(self, item, **changes):
         return self.client.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             content_type="application/json",
             data=json.dumps({**changes, "version": item.version, "operation_key": str(uuid4())}),
         )
@@ -199,7 +199,7 @@ class PantryStorageTests(TestCase):
         other = Client()
         authenticate(other, "other")
         response = other.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             content_type="application/json",
             data=json.dumps(
                 {
@@ -228,7 +228,7 @@ class PantryStorageTests(TestCase):
         self.update(item, location="chiller", expiry_mode="auto")
         item.refresh_from_db()
         self.assertEqual(item.estimated_expires_on, self.today + timedelta(days=6))
-        self.assertContains(self.client.get(reverse("modul2")), "Perkiraan AI")
+        self.assertContains(self.client.get(reverse("pantry:show_pantry")), "Perkiraan AI")
         call.assert_called_once()
 
     def test_unknown_ingredient_is_saved_without_invented_expiry(self):
@@ -237,7 +237,7 @@ class PantryStorageTests(TestCase):
         self.assertEqual(item.location, "suhu_ruang")
         self.assertIsNone(item.ingredient_id)
         self.assertIsNone(item.estimated_expires_on)
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         self.assertContains(page, "Acuan masa simpan untuk lokasi ini belum tersedia")
 
     def test_legacy_item_uses_added_date_without_writing_on_get(self):
@@ -254,7 +254,7 @@ class PantryStorageTests(TestCase):
         )
         start = self.today - timedelta(days=4)
         PantryItem.objects.filter(pk=item.pk).update(added_at=timezone.now() - timedelta(days=4))
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         self.assertContains(page, "pantry-storage-data")
         preview = page.context["pantry_storage"][str(item.pk)]
         self.assertEqual(preview["location"], "suhu_ruang")
@@ -285,7 +285,7 @@ class PantryStorageTests(TestCase):
             ],
         )
         self.add()
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         self.assertContains(page, '<option value="chiller">Kulkas</option>')
         self.assertNotContains(page, "Lemari Kering")
         self.assertNotContains(page, "Kulkas Bawah")
@@ -297,7 +297,7 @@ class PantryStorageCatalogTests(TestCase):
         client = Client()
         authenticate(client)
         response = client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             content_type="application/json",
             data=json.dumps(
                 {
@@ -320,7 +320,7 @@ class PantryStorageCatalogTests(TestCase):
         self.assertEqual(item.location, "suhu_ruang")
         self.assertIsNone(item.estimated_expires_on)
         response = client.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             content_type="application/json",
             data=json.dumps(
                 {

@@ -55,7 +55,7 @@ class BatchTests(TestCase):
             ],
         }
         return self.client.post(
-            reverse("modul2-items"), data=json.dumps(payload), content_type="application/json"
+            reverse("pantry:save_items"), data=json.dumps(payload), content_type="application/json"
         ), payload
 
     def batch(self, **changes):
@@ -75,7 +75,7 @@ class BatchTests(TestCase):
 
     def edit(self, item, **changes):
         return self.client.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             data=json.dumps({"operation_key": str(uuid4()), "version": item.version, **changes}),
             content_type="application/json",
         )
@@ -84,7 +84,7 @@ class BatchTests(TestCase):
         response, payload = self.create()
         self.assertEqual(response.status_code, 201)
         again = self.client.post(
-            reverse("modul2-items"), data=json.dumps(payload), content_type="application/json"
+            reverse("pantry:save_items"), data=json.dumps(payload), content_type="application/json"
         )
         self.assertEqual(again.json(), response.json())
         self.assertEqual(PantryItem.objects.count(), 1)
@@ -92,14 +92,14 @@ class BatchTests(TestCase):
         payload["items"][0]["quantity"] = "200"
         self.assertEqual(
             self.client.post(
-                reverse("modul2-items"), data=json.dumps(payload), content_type="application/json"
+                reverse("pantry:save_items"), data=json.dumps(payload), content_type="application/json"
             ).status_code,
             409,
         )
 
     def test_create_requires_operation_key(self):
         response = self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             data=json.dumps(
                 {
                     "source": "manual",
@@ -115,7 +115,7 @@ class BatchTests(TestCase):
 
     def test_numeric_ocr_name_cannot_crash(self):
         response = self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             data=json.dumps(
                 {
                     "operation_key": str(uuid4()),
@@ -219,7 +219,7 @@ class BatchTests(TestCase):
         response, _ = self.create()
         item = PantryItem.objects.get(pk=response.json()["ids"][0])
         payload = {"operation_key": str(uuid4()), "version": 1}
-        url = reverse("modul2-item-delete", args=[item.pk])
+        url = reverse("pantry:delete_item", args=[item.pk])
         for _ in range(2):
             self.assertEqual(
                 self.client.delete(
@@ -231,7 +231,7 @@ class BatchTests(TestCase):
         self.assertEqual(item.quantity, 0)
         self.assertIsNotNone(item.archived_at)
         self.assertEqual(item.movements.count(), 2)
-        history = reverse("modul2-item-movements", args=[item.pk])
+        history = reverse("pantry:item_movements", args=[item.pk])
         self.assertEqual(len(self.client.get(history).json()["movements"]), 2)
         other = Client()
         authenticate(other, "other")
@@ -381,20 +381,20 @@ class BatchTests(TestCase):
         )
 
         def matches(servings):
-            response = self.client.get(reverse("modul2-recipes"), {"servings": servings})
+            response = self.client.get(reverse("pantry:recipe_matches"), {"servings": servings})
             return response.json()["recipes"]
 
         self.assertTrue(matches(1)[0]["complete"])
         self.assertFalse(matches(2)[0]["complete"])
         self.assertEqual(matches(1)[0]["recipe_code"], "RCP-TEST")
         self.assertEqual(
-            self.client.get(reverse("modul2-recipes"), {"servings": 12}).status_code, 400
+            self.client.get(reverse("pantry:recipe_matches"), {"servings": 12}).status_code, 400
         )
         self.assertEqual(PantryItem.objects.get().quantity, 100)
         self.assertFalse(PantryMovement.objects.exists())
-        self.assertEqual(Client().get(reverse("modul2-recipes")).status_code, 401)
+        self.assertEqual(Client().get(reverse("pantry:recipe_matches")).status_code, 401)
         self.assertEqual(
-            self.client.get(reverse("modul2-recipes"), {"servings": "nan"}).status_code, 400
+            self.client.get(reverse("pantry:recipe_matches"), {"servings": "nan"}).status_code, 400
         )
 
     def test_young_accounts_cannot_promote_shared_corrections(self):
@@ -440,7 +440,7 @@ class BatchTests(TestCase):
         item = self.batch()
         self.edit(item, quantity="0.5")
         PantryItem.objects.filter(pk=item.pk).update(name="Bayam Habis", quantity=0)
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         self.assertNotIn(item.pk, [row.pk for row in page.context["pantry_items"]])
         self.assertEqual([row.pk for row in page.context["used_up_items"]], [item.pk])
         self.assertContains(page, "Stok habis (30 hari terakhir)")

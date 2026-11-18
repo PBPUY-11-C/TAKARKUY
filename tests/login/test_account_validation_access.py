@@ -11,7 +11,7 @@ from apps.login.preferences import preferences_for, profile_for
 
 class AccountValidationAccessTests(TestCase):
     password = "Validation!827"
-    settings_routes = ("modul3", "food-preferences", "password-change")
+    settings_routes = ("login:show_profile", "login:food_preferences", "login:change_password")
 
     def setUp(self):
         self.owner = get_user_model().objects.create_user(
@@ -62,18 +62,18 @@ class AccountValidationAccessTests(TestCase):
             for method in ("get", "post"):
                 with self.subTest(route=route, method=method):
                     response = getattr(guest, method)(url, {"user_id": self.owner.pk} if method == "post" else {})
-                    self.assertRedirects(response, f"{reverse('login')}?next={url}",
+                    self.assertRedirects(response, f"{reverse('login:login')}?next={url}",
                                          fetch_redirect_response=False)
         self.assertEqual(self.state(self.owner), before)
         self.assertNotIn(SESSION_KEY, guest.session)
 
     def test_forged_account_owner_and_admin_flags_cannot_change_another_user(self):
         other_before = self.state(self.other)
-        response = self.client.post(reverse("modul3"), self.account_data(
+        response = self.client.post(reverse("login:show_profile"), self.account_data(
             user_id=self.other.pk, profile_id=profile_for(self.other).pk,
             is_staff="true", is_superuser="true",
         ))
-        self.assertRedirects(response, reverse("modul3"), fetch_redirect_response=False)
+        self.assertRedirects(response, reverse("login:show_profile"), fetch_redirect_response=False)
         self.assertEqual(self.state(self.other), other_before)
         self.owner.refresh_from_db()
         self.assertEqual(self.owner.get_full_name(), "Nama Diperbarui")
@@ -83,21 +83,21 @@ class AccountValidationAccessTests(TestCase):
 
     def test_forged_preference_owner_cannot_change_another_users_choices(self):
         other_before = self.state(self.other)
-        response = self.client.post(reverse("food-preferences"), self.preference_data(
+        response = self.client.post(reverse("login:food_preferences"), self.preference_data(
             user_id=self.other.pk, preference_id=preferences_for(self.other).pk,
         ))
-        self.assertRedirects(response, reverse("food-preferences"), fetch_redirect_response=False)
+        self.assertRedirects(response, reverse("login:food_preferences"), fetch_redirect_response=False)
         self.assertEqual(self.state(self.other), other_before)
         self.assertEqual(preferences_for(self.owner).servings, 4)
         self.assertEqual(preferences_for(self.owner).allergens, ["telur"])
 
     def test_forged_password_owner_changes_only_the_authenticated_account(self):
         other_before = self.state(self.other)
-        response = self.client.post(reverse("password-change"), {
+        response = self.client.post(reverse("login:change_password"), {
             "user_id": self.other.pk, "old_password": self.password,
             "new_password1": "Updated!938", "new_password2": "Updated!938",
         })
-        self.assertRedirects(response, reverse("modul3"), fetch_redirect_response=False)
+        self.assertRedirects(response, reverse("login:show_profile"), fetch_redirect_response=False)
         self.assertEqual(self.state(self.other), other_before)
         self.owner.refresh_from_db()
         self.assertTrue(self.owner.check_password("Updated!938"))
@@ -107,14 +107,14 @@ class AccountValidationAccessTests(TestCase):
         before = self.state(self.owner)
         for field, value in (("full_name", "   "), ("email", "invalid-email")):
             with self.subTest(field=field):
-                response = self.client.post(reverse("modul3"), self.account_data(**{field: value}))
+                response = self.client.post(reverse("login:show_profile"), self.account_data(**{field: value}))
                 self.assertEqual(response.status_code, 400)
                 self.assertIn(field, response.context["account_form"].errors)
                 self.assertEqual(self.state(self.owner), before)
 
     def test_unknown_ingredient_does_not_partially_save_preferences_or_clear_existing_choices(self):
         before = self.state(self.owner)
-        response = self.client.post(reverse("food-preferences"), self.preference_data(
+        response = self.client.post(reverse("login:food_preferences"), self.preference_data(
             avoided_ingredients=[self.ingredient.pk, "DOES-NOT-EXIST"],
         ))
         self.assertEqual(response.status_code, 400)
@@ -124,8 +124,8 @@ class AccountValidationAccessTests(TestCase):
     def test_missing_version_rejects_account_and_preference_writes_without_mutation(self):
         before = self.state(self.owner)
         for route, data, form_name in (
-            ("modul3", self.account_data(), "account_form"),
-            ("food-preferences", self.preference_data(), "preference_form"),
+            ("login:show_profile", self.account_data(), "account_form"),
+            ("login:food_preferences", self.preference_data(), "preference_form"),
         ):
             with self.subTest(route=route):
                 data.pop("version")
@@ -138,7 +138,7 @@ class AccountValidationAccessTests(TestCase):
         secure_client = Client(enforce_csrf_checks=True)
         secure_client.force_login(self.owner)
         before = self.state(self.owner)
-        response = secure_client.post(reverse("food-preferences"), self.preference_data())
+        response = secure_client.post(reverse("login:food_preferences"), self.preference_data())
         self.assertEqual(response.status_code, 403)
         self.assertEqual(self.state(self.owner), before)
 
@@ -153,17 +153,17 @@ class AccountValidationAccessTests(TestCase):
         self.assertEqual(self.state(self.owner), before)
 
     def test_logout_revokes_settings_access_for_the_same_browser(self):
-        self.client.post(reverse("logout"))
+        self.client.post(reverse("login:logout"))
         self.assertNotIn(SESSION_KEY, self.client.session)
         for route in self.settings_routes:
             with self.subTest(route=route):
                 url = reverse(route)
-                self.assertRedirects(self.client.get(url), f"{reverse('login')}?next={url}",
+                self.assertRedirects(self.client.get(url), f"{reverse('login:login')}?next={url}",
                                      fetch_redirect_response=False)
 
     def test_signup_cannot_assign_privileged_flags_from_posted_fields(self):
         guest = Client()
-        response = guest.post(reverse("signup"), {
+        response = guest.post(reverse("login:register"), {
             "full_name": "Pengguna Baru", "username": "pendaftar-baru",
             "email": "new@example.com", "password1": self.password,
             "password2": self.password, "is_staff": "true", "is_superuser": "true",

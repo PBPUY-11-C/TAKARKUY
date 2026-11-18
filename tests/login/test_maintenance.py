@@ -31,12 +31,12 @@ class MaintenanceTests(TestCase):
             "/login/",
             "/signup/",
             "/planner/",
-            "/modul2/",
+            "/pantry/",
             "/profil/",
             "/profil/preferensi/",
             "/profil/ganti-kata-sandi/",
-            "/modul4/",
-            "/modul5/",
+            "/recipes/",
+            "/dashboard/",
             "/unknown/",
             "/admin-other/",
         ):
@@ -49,13 +49,13 @@ class MaintenanceTests(TestCase):
 
     def test_existing_user_session_does_not_bypass_maintenance(self):
         self.client.force_login(self.user)
-        self.assertEqual(self.client.get(reverse("modul5")).status_code, 503)
+        self.assertEqual(self.client.get(reverse("home:show_dashboard")).status_code, 503)
         self.assertEqual(self.client.session["_auth_user_id"], str(self.user.pk))
 
     def test_signup_post_is_rejected_without_creating_accounts(self):
         client = Client(enforce_csrf_checks=True)
         count = get_user_model().objects.count()
-        response = client.post(reverse("signup"), {"email": "new@example.com"})
+        response = client.post(reverse("login:register"), {"email": "new@example.com"})
         self.assertEqual(response.status_code, 503)
         self.assertEqual(get_user_model().objects.count(), count)
 
@@ -63,19 +63,19 @@ class MaintenanceTests(TestCase):
         client = Client(enforce_csrf_checks=True)
         with patch("apps.pantry.receipt_ocr.generate_json") as generate:
             response = client.post(
-                reverse("modul2-suggestions"), data="invalid-json", content_type="application/json"
+                reverse("pantry:suggest_items"), data="invalid-json", content_type="application/json"
             )
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()["code"], "maintenance")
         generate.assert_not_called()
 
     def test_json_accept_header_returns_json_for_api_get(self):
-        response = self.client.get(reverse("modul2-recipes"), HTTP_ACCEPT="application/json")
+        response = self.client.get(reverse("pantry:recipe_matches"), HTTP_ACCEPT="application/json")
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()["retry_after"], 3600)
 
     def test_multipart_upload_is_rejected_without_reading_body(self):
-        request = RequestFactory().post(reverse("modul2-ocr-fallback"), {"photo": "unread"})
+        request = RequestFactory().post(reverse("pantry:ocr_fallback"), {"photo": "unread"})
         request.user = AnonymousUser()
         downstream = Mock(return_value=HttpResponse("unexpected"))
         response = MaintenanceMiddleware(downstream)(request)
@@ -85,7 +85,7 @@ class MaintenanceTests(TestCase):
         downstream.assert_not_called()
 
     def test_named_api_get_returns_json_even_without_accept_header(self):
-        response = self.client.get(reverse("modul2-recipes"))
+        response = self.client.get(reverse("pantry:recipe_matches"))
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()["code"], "maintenance")
 
@@ -98,7 +98,7 @@ class MaintenanceTests(TestCase):
         count = BudgetPlan.objects.count()
         self.client.force_login(self.user)
         response = self.client.post(
-            reverse("modul1-plan-save", args=[uuid4()]), {"title": "Blocked"}
+            reverse("planner:save_plan", args=[uuid4()]), {"title": "Blocked"}
         )
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.json()["code"], "maintenance")
@@ -116,7 +116,7 @@ class MaintenanceTests(TestCase):
             },
         )
         self.assertRedirects(response, reverse("admin:index"))
-        self.assertEqual(self.client.get(reverse("modul5")).status_code, 200)
+        self.assertEqual(self.client.get(reverse("home:show_dashboard")).status_code, 200)
 
     def test_admin_login_keeps_csrf_protection(self):
         response = Client(enforce_csrf_checks=True).post(
@@ -131,15 +131,15 @@ class MaintenanceTests(TestCase):
     def test_staff_can_test_application_but_still_needs_csrf_for_writes(self):
         client = Client(enforce_csrf_checks=True)
         client.force_login(self.staff)
-        response = client.get(reverse("modul5"))
+        response = client.get(reverse("home:show_dashboard"))
         self.assertEqual(response.status_code, 200)
         self.assertIn("no-store", response["Cache-Control"])
         self.assertIn("Cookie", response["Vary"])
-        response = client.post(reverse("modul2-items"), "{}", content_type="application/json")
+        response = client.post(reverse("pantry:save_items"), "{}", content_type="application/json")
         self.assertEqual(response.status_code, 403)
 
     def test_inactive_staff_cannot_bypass(self):
-        request = RequestFactory().get("/modul5/")
+        request = RequestFactory().get("/dashboard/")
         request.user = self.inactive_staff
         downstream = Mock()
         self.assertEqual(MaintenanceMiddleware(downstream)(request).status_code, 503)
@@ -156,9 +156,9 @@ class MaintenanceTests(TestCase):
 
     @override_settings(MAINTENANCE_MODE=False)
     def test_switching_off_restores_normal_pages_and_authorization(self):
-        for name in ("landing", "login", "signup"):
+        for name in ("login:show_landing", "login:login", "login:register"):
             self.assertEqual(self.client.get(reverse(name)).status_code, 200)
-        self.assertEqual(self.client.get(reverse("modul1")).status_code, 302)
-        self.assertEqual(self.client.get(reverse("modul5")).status_code, 302)
+        self.assertEqual(self.client.get(reverse("planner:show_planner")).status_code, 302)
+        self.assertEqual(self.client.get(reverse("home:show_dashboard")).status_code, 302)
         self.client.force_login(self.user)
-        self.assertEqual(self.client.get(reverse("modul5")).status_code, 200)
+        self.assertEqual(self.client.get(reverse("home:show_dashboard")).status_code, 200)

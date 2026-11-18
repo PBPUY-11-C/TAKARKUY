@@ -4,17 +4,23 @@ from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag
 
 
 class IngredientInline(admin.TabularInline):
+    """Tabel inline bahan resep (RecipeIngredient) di halaman admin resep."""
+
     model = RecipeIngredient
     extra = 0
 
 
 class TagInline(admin.TabularInline):
+    """Tabel inline tag resep (RecipeTag) di halaman admin resep."""
+
     model = RecipeTag
     extra = 0
 
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
+    """Admin resep: status panduan dan alergen, plus ringkasan read-only takaran dan foto."""
+
     list_display = (
         "name",
         "meal_type",
@@ -29,6 +35,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(description="Kualitas takaran bahan")
     def ingredient_quality(self, obj):
+        """Meringkas kelengkapan takaran: porsi dasar, takaran kosong/tanpa satuan, dan estimasi."""
         if obj is None:
             return "Simpan resep untuk melihat status takaran."
         links = list(obj.recipeingredient_set.all())
@@ -49,6 +56,8 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(description="Status foto")
     def photo_quality(self, obj):
+        """Status foto resep: foto kurasi lebih dulu, lalu foto ulasan komunitas
+        yang sudah diberi izin dan tidak disembunyikan."""
         if obj is None:
             return "Simpan resep untuk melihat status foto."
         from .recipe_images import recipe_image_index
@@ -71,5 +80,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
+    """Admin bahan dengan kolom status alergen dan pencarian nama/kode."""
+
     list_display = ("name", "allergen_status")
     search_fields = ("name", "ingredient_code")

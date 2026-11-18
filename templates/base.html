@@ -12,7 +12,7 @@
   <title>{% block title %}TAKARKUY{% endblock %}</title>
   {% block extra_head %}{% endblock %}
 </head>
-<body class="page-{{ request.resolver_match.url_name|default:"app" }} {% block body_class %}{% endblock %}">
+<body class="page-{{ request.resolver_match.namespace|default:"app" }} view-{{ request.resolver_match.url_name|default:"app" }} {% block body_class %}{% endblock %}">
   {% block header %}{% include "partials/app_header.html" %}{% endblock %}
   {% block content %}{% endblock %}
   {% block scripts %}{% endblock %}

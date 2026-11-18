@@ -3,6 +3,8 @@ from django.db import models
 
 
 class Ingredient(models.Model):
+    """Bahan makanan: gizi per 100 g beserta sumbernya, dan status tinjauan alergen."""
+
     ingredient_code = models.CharField(max_length=100, primary_key=True)
     name = models.CharField(max_length=255)
     category = models.CharField(max_length=40)
@@ -26,6 +28,7 @@ class Ingredient(models.Model):
     allergen_note = models.TextField(blank=True)
 
     def clean(self):
+        """Alergen harus daftar kunci yang dikenal; status reviewed wajib punya URL sumber tinjauan."""
         from apps.login.choices import ALLERGEN_KEYS
 
         if not isinstance(self.allergens, list) or any(
@@ -37,6 +40,8 @@ class Ingredient(models.Model):
 
 
 class IngredientPrice(models.Model):
+    """Catatan harga bahan per wilayah dan tanggal, lengkap dengan sumber dan lisensinya."""
+
     price_code = models.CharField(max_length=100, primary_key=True)
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.PROTECT, db_column="ingredient_code"
@@ -54,10 +59,14 @@ class IngredientPrice(models.Model):
     price_status = models.CharField(max_length=50)
 
     class Meta:
-        indexes = [models.Index(fields=["ingredient", "region", "recorded_at"])]
+        """Indeks gabungan (bahan, wilayah, tanggal catat) untuk mempercepat pencarian harga."""
+
+        indexes =[models.Index(fields=["ingredient", "region", "recorded_at"])]
 
 
 class IngredientShelfLife(models.Model):
+    """Perkiraan daya simpan bahan per lokasi penyimpanan (hari minimum, maksimum, peringatan)."""
+
     shelf_life_code = models.CharField(max_length=100, primary_key=True)
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.PROTECT, db_column="ingredient_code"
@@ -79,6 +88,8 @@ class IngredientShelfLife(models.Model):
 
 
 class Recipe(models.Model):
+    """Resep katalog dengan status tinjauan panduan memasak dan penanda alergen sudah ditinjau."""
+
     recipe_code = models.CharField(max_length=100, primary_key=True)
     name = models.CharField(max_length=255)
     base_servings = models.PositiveIntegerField(null=True, blank=True)
@@ -105,6 +116,8 @@ class Recipe(models.Model):
     allergen_reviewed = models.BooleanField(default=False, db_index=True)
 
     def clean(self):
+        """Panduan yang tidak ditahan wajib punya teks dan catatan tinjauan; panduan tim dan resep
+        Mendeley yang dipublikasikan wajib punya tanggal tinjauan."""
         if self.instruction_status != "withheld" and (
             not self.instructions.strip() or not self.instruction_review_note.strip()
         ):
@@ -121,16 +134,22 @@ class Recipe(models.Model):
 
 
 class RecipeAllergen(models.Model):
+    """Kelompok alergen turunan per resep; diisi ulang oleh rebuild_allergens, bukan manual."""
+
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="allergen_groups")
     group = models.CharField(max_length=30, db_index=True)
 
     class Meta:
+        """Satu kelompok alergen hanya boleh tercatat sekali per resep."""
+
         constraints = [
             models.UniqueConstraint(fields=["recipe", "group"], name="recipe_allergen_unique")
         ]
 
 
 class RecipeIngredient(models.Model):
+    """Bahan dalam resep beserta takaran, satuan, status takaran, dan teks mentahnya."""
+
     recipe_ingredient_code = models.CharField(max_length=100, primary_key=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column="recipe_code")
     ingredient = models.ForeignKey(
@@ -145,6 +164,8 @@ class RecipeIngredient(models.Model):
 
 
 class RecipeTag(models.Model):
+    """Tag resep (misal slot saran atau bumbu minor) beserta sumber pembuatnya."""
+
     recipe_tag_code = models.CharField(max_length=100, primary_key=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column="recipe_code")
     tag = models.CharField(max_length=100)
@@ -152,6 +173,8 @@ class RecipeTag(models.Model):
 
 
 class IngredientAlias(models.Model):
+    """Pemetaan nama bahan mentah dari suatu sumber ke bahan katalog."""
+
     alias_code = models.CharField(max_length=100, primary_key=True)
     source = models.CharField(max_length=255)
     raw_name = models.CharField(max_length=255)
@@ -162,6 +185,8 @@ class IngredientAlias(models.Model):
 
 
 class UnitConversion(models.Model):
+    """Konversi satuan bahan ke ekuivalen gram, dengan sumber dan status konversinya."""
+
     conversion_code = models.CharField(max_length=100, primary_key=True)
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.PROTECT, db_column="ingredient_code"

@@ -30,7 +30,7 @@ class SingleScanTests(TestCase):
 
     def photo(self):
         return self.client.post(
-            reverse("modul2-ocr-fallback"),
+            reverse("pantry:ocr_fallback"),
             {
                 "image": SimpleUploadedFile(
                     "receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg"
@@ -84,7 +84,7 @@ class SingleScanTests(TestCase):
         }
         self.assertEqual(
             self.client.post(
-                reverse("modul2-items"), data=json.dumps(payload), content_type="application/json"
+                reverse("pantry:save_items"), data=json.dumps(payload), content_type="application/json"
             ).status_code,
             201,
         )
@@ -147,7 +147,7 @@ class SingleScanTests(TestCase):
         photo_ai.side_effect = GeminiUnavailable("Unavailable")
         self.assertEqual(self.photo().status_code, 502)
         response = self.client.post(
-            reverse("modul2-suggestions"),
+            reverse("pantry:suggest_items"),
             data=json.dumps({"names": ["bayam hj"], "allow_llm": False}),
             content_type="application/json",
         )
@@ -237,7 +237,7 @@ class SingleScanTests(TestCase):
             source="manual",
             pack_weight_g="250.5",
         )
-        page = self.client.get(reverse("modul2"))
+        page = self.client.get(reverse("pantry:show_pantry"))
         html = page.content.decode()
         quantity = re.search(r'data-edit-quantity[^>]*value="([^"]*)"', html).group(1)
         weight = re.search(r'data-edit-weight[^>]*value="([^"]*)"', html).group(1)

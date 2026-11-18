@@ -1,4 +1,4 @@
-"""Report missing, orphaned, and queued recipe review photo files."""
+"""Melaporkan file foto ulasan resep yang hilang, yatim, dan masih menunggu penghapusan."""
 
 import logging
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def _stored_review_photos(storage, directory="recipe-reviews"):
-    """Yield names recursively; return None when the backend cannot list files."""
+    """Mengumpulkan nama file foto secara rekursif; None bila backend storage tidak bisa listing."""
     try:
         directories, files = storage.listdir(directory)
     except FileNotFoundError:
@@ -34,13 +34,17 @@ def _stored_review_photos(storage, directory="recipe-reviews"):
 
 
 class Command(BaseCommand):
+    """Command audit konsistensi antara foto ulasan di database, storage, dan antrean pembersihan."""
     help = "Report missing and orphaned community review photos and pending deletions."
 
     def add_arguments(self, parser):
+        """Menambah opsi --fail-on-issues dan batas menit antrean basi --stale-minutes."""
         parser.add_argument("--fail-on-issues", action="store_true")
         parser.add_argument("--stale-minutes", type=int, default=30)
 
     def handle(self, *args, **options):
+        """Menghitung foto hilang, yatim, error cek, dan antrean basi, lalu mencetak ringkasannya.
+        Dengan --fail-on-issues, temuan apa pun membuat command gagal."""
         if options["stale_minutes"] < 0:
             raise CommandError("--stale-minutes tidak boleh negatif.")
         referenced = set(

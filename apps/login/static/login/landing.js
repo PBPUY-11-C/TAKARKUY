@@ -1,7 +1,9 @@
 (() => {
   const form = document.getElementById('budget-calculator');
   if (!form) return;
+  // Singkatan document.getElementById.
   const $ = (id) => document.getElementById(id);
+  // Format angka jadi rupiah bulat dengan pemisah ribuan lokal Indonesia.
   const rupiah = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID');
   const budget = $('trial-budget');
   const range = $('trial-range');
@@ -13,19 +15,25 @@
   let tick = 0;
   let meal = 0;
 
+  // Putar ulang animasi CSS: lepas class, paksa reflow, lalu pasang lagi.
   const pop = (el, name = 'pop') => {
     el.classList.remove(name);
     void el.offsetWidth;
     el.classList.add(name);
   };
+  // True bila input terisi dan lolos validasi bawaan browser.
   const valid = (input) => input.value !== '' && input.checkValidity();
+  // Nilai budget sebagai angka, mengabaikan titik pemisah ribuan.
   const amount = () => Number(budget.value.replace(/\D/g, ''));
+  // Tulis ulang isi kolom budget: hanya digit, tanpa nol di depan, dengan titik tiap tiga digit.
   const showAmount = (value) => {
     const digits = String(value).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
     budget.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
+  // True bila budget berada di antara data-min dan data-max kolom budget.
   const budgetValid = () => amount() >= Number(budget.dataset.min) && amount() <= Number(budget.dataset.max);
 
+  // Isi contoh menu dari resep yang muat budget per makan (bergilir per tick), atau resep termurah.
   function renderMenu() {
     const list = $('menu-list');
     const meals = freq === 2 ? ['makan_siang', 'makan_malam'] : ['sarapan', 'makan_siang', 'makan_malam'];
@@ -60,6 +68,7 @@
     $('menu-sum').textContent = rupiah(total);
   }
 
+  // Hitung budget per orang per hari dan per makan lalu perbarui tampilan, atau tampilkan error.
   function calculate() {
     const ok = budgetValid() && valid(days) && valid(servings);
     $('budget-error').hidden = ok;

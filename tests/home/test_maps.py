@@ -31,14 +31,14 @@ class MapTests(TestCase):
 
     def post(self, **changes):
         return self.client.post(
-            reverse("modul5-places"),
+            reverse("home:market_lookup"),
             json.dumps({"region": "Garut", **changes}),
             content_type="application/json",
         )
 
     def post_point(self, lat=-7.2012, lon=107.9049):
         return self.client.post(
-            reverse("modul5-places"),
+            reverse("home:market_lookup"),
             json.dumps({"lat": lat, "lon": lon}),
             content_type="application/json",
         )
@@ -82,7 +82,7 @@ class MapTests(TestCase):
         ):
             with self.subTest(data=data):
                 response = self.client.post(
-                    reverse("modul5-places"), json.dumps(data), content_type="application/json"
+                    reverse("home:market_lookup"), json.dumps(data), content_type="application/json"
                 )
                 self.assertEqual(response.status_code, 400)
         self.assertEqual(MapLookupCache.objects.count(), 0)
@@ -102,15 +102,15 @@ class MapTests(TestCase):
     def test_login_method_and_csrf(self):
         self.assertEqual(
             Client()
-            .post(reverse("modul5-places"), "{}", content_type="application/json")
+            .post(reverse("home:market_lookup"), "{}", content_type="application/json")
             .status_code,
             403,
         )
-        self.assertEqual(self.client.get(reverse("modul5-places")).status_code, 405)
+        self.assertEqual(self.client.get(reverse("home:market_lookup")).status_code, 405)
         csrf = Client(enforce_csrf_checks=True)
         csrf.force_login(self.user)
         self.assertEqual(
-            csrf.post(reverse("modul5-places"), "{}", content_type="application/json").status_code,
+            csrf.post(reverse("home:market_lookup"), "{}", content_type="application/json").status_code,
             403,
         )
 
@@ -174,7 +174,7 @@ class MapTests(TestCase):
         client = Client()
         client.force_login(self.user)
         response = client.post(
-            reverse("modul5-places"),
+            reverse("home:market_lookup"),
             json.dumps({"region": "Garut"}),
             content_type="application/json",
         )

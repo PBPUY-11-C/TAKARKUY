@@ -239,7 +239,7 @@ class PlanPantryTests(TestCase):
     def add(self, items, version=None, plan=None):
         plan = plan or self.plan
         return self.client.post(
-            reverse("modul1-plan-pantry", args=[plan.pk]),
+            reverse("planner:add_to_pantry", args=[plan.pk]),
             json.dumps({"version": plan.version if version is None else version, "items": items}),
             content_type="application/json",
         )
@@ -287,14 +287,14 @@ class PlanPantryTests(TestCase):
         item = self.batch(RICE_CODE, 50, None)
         item.expiry_source = "unknown"
         item.save()
-        response = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
+        response = self.client.get(reverse("planner:show_planner") + f"?plan={self.plan.pk}")
         rice = self.item(response, RICE_CODE)
         self.assertEqual((rice["in_pantry"], rice["to_buy"]), (50, 30))
         self.assertTrue(rice["unknown_expiry"])
 
     def test_plan_page_shows_pantry_stock_and_rice(self):
         self.batch(RICE_CODE, 50, 30)
-        response = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
+        response = self.client.get(reverse("planner:show_planner") + f"?plan={self.plan.pk}")
         rice = self.item(response, RICE_CODE)
         self.assertEqual((rice["in_pantry"], rice["to_buy"]), (50, 30))
         self.assertContains(response, "+ Nasi")
@@ -340,18 +340,18 @@ class PlanPantryTests(TestCase):
         )
         plan = save_plan(self.user, draft.pk, draft.version, "Dua hari")
         self.batch(RICE_CODE, 500, 0)
-        response = self.client.get(reverse("modul1") + f"?plan={plan.pk}")
+        response = self.client.get(reverse("planner:show_planner") + f"?plan={plan.pk}")
         rice = self.item(response, RICE_CODE)
         self.assertEqual((rice["in_pantry"], rice["to_buy"]), (80, 80))
         self.assertContains(response, f'data-ingredient="{RICE_CODE}"')
 
     def test_shopping_list_downloads_as_pdf_for_its_owner_only(self):
-        url = reverse("modul1-plan-pdf", args=[self.plan.pk])
+        url = reverse("planner:download_shopping_list", args=[self.plan.pk])
         response = self.client.get(url)
         self.assertEqual(response["Content-Type"], "application/pdf")
         self.assertEqual(response["Content-Disposition"], 'attachment; filename="belanja-belanja.pdf"')
         self.assertTrue(response.content.startswith(b"%PDF"))
-        page = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
+        page = self.client.get(reverse("planner:show_planner") + f"?plan={self.plan.pk}")
         self.assertContains(page, f'href="{url}"')
         summary = page.context["shopping_summary"]
         self.assertEqual(sum(row["count"] for row in summary), page.context["item_count"])
@@ -361,5 +361,5 @@ class PlanPantryTests(TestCase):
 
     def test_item_fully_covered_by_pantry_cannot_be_added_again(self):
         self.batch(RICE_CODE, 500, 30)
-        response = self.client.get(reverse("modul1") + f"?plan={self.plan.pk}")
+        response = self.client.get(reverse("planner:show_planner") + f"?plan={self.plan.pk}")
         self.assertNotContains(response, f'data-ingredient="{RICE_CODE}"')

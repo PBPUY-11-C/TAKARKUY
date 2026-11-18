@@ -1,9 +1,11 @@
-"""Conservative ingredient-based screening, not an allergen-free guarantee."""
+"""Penyaringan konservatif berbasis bahan, bukan jaminan bebas alergen."""
 
 from apps.login.choices import ALLERGEN_KEYS
 
 
 def recipe_allowed(recipe, links, allergens):
+    """Cek apakah resep aman untuk alergi pengguna; data bahan yang belum ditinjau, tidak valid,
+    atau tidak lengkap selalu dianggap tidak aman."""
     groups = set(allergens)
     if not groups:
         return True
@@ -27,6 +29,7 @@ def recipe_allowed(recipe, links, allergens):
 
 
 def unsafe_schedule(schedule, allergens):
+    """True jika ada resep di jadwal yang tidak lolos recipe_allowed atau kodenya tidak ditemukan."""
     from .models import Recipe
 
     if not allergens:

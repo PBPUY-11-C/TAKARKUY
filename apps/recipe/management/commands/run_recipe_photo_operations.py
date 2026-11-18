@@ -1,4 +1,4 @@
-"""Continuously retry and audit community photo storage in a deployment worker."""
+"""Menjalankan pembersihan dan audit storage foto komunitas secara berkala di worker deployment."""
 
 import logging
 import time
@@ -10,14 +10,18 @@ logger = logging.getLogger("apps.recipe.operations")
 
 
 class Command(BaseCommand):
+    """Command worker yang menjadwalkan job pembersihan dan audit foto ulasan resep."""
     help = "Run scheduled cleanup and audit jobs for community recipe photos."
 
     def add_arguments(self, parser):
+        """Menambah opsi interval pembersihan dan audit (detik) serta mode --once."""
         parser.add_argument("--cleanup-seconds", type=int, default=900)
         parser.add_argument("--audit-seconds", type=int, default=3600)
         parser.add_argument("--once", action="store_true", help="Run both jobs once and exit.")
 
     def handle(self, *args, **options):
+        """Loop yang menjalankan pembersihan dan audit sesuai intervalnya masing-masing.
+        Mode --once menjalankan keduanya sekali dan gagal bila salah satu job gagal."""
         cleanup_seconds = options["cleanup_seconds"]
         audit_seconds = options["audit_seconds"]
         if cleanup_seconds < 1 or audit_seconds < 1:
@@ -47,6 +51,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def _run_job(label, command, **options):
+        """Menjalankan satu management command dan mencatat log; False bila command melempar error."""
         try:
             call_command(command, **options)
         except Exception:

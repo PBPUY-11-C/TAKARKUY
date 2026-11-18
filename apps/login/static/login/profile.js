@@ -7,13 +7,17 @@
   const count = picker.querySelector('#ingredient-count');
   const ingredients = [...picker.querySelectorAll('input[type="checkbox"]')];
   const limit = Number(picker.dataset.limit);
+  // Daftar input tercentang dengan atribut name tertentu.
   const checked = name => [...form.querySelectorAll(`input[name="${name}"]:checked`)];
+  // Teks label sebuah pilihan: isi <strong> bila ada, selain itu seluruh teks label.
   const label = input => (input.closest('label').querySelector('strong') || input.closest('label')).textContent.trim();
+  // Serialisasi nilai form (tanpa CSRF dan version) untuk mendeteksi perubahan yang belum disimpan.
   const snapshot = () => JSON.stringify([...form.querySelectorAll('input[name]')]
     .filter(input => !['csrfmiddlewaretoken', 'version'].includes(input.name))
     .map(input => [input.name, input.type === 'checkbox' ? input.checked : input.value]));
   const original = snapshot();
 
+  // Saring bahan sesuai pencarian (8 teratas tanpa query), kunci saat batas penuh, render chip terpilih.
   function updatePicker() {
     const selected = ingredients.filter(input => input.checked);
     const query = search.value.trim().toLocaleLowerCase('id-ID');
@@ -47,6 +51,7 @@
     empty.textContent = alreadySelected && query ? 'Bahan ini sudah dipilih.' : 'Bahan tidak ditemukan. Coba nama lain.';
   }
 
+  // Segarkan picker bahan, tombol porsi (batas 1 sampai 10), dan status simpan.
   function update() {
     updatePicker();
     form.querySelector('[data-servings-change="-1"]').disabled = Number(servings.value) <= 1;
@@ -54,6 +59,7 @@
     form.querySelector('[data-pref-save-status]').textContent = snapshot() === original
       ? 'Simpan setelah selesai mengubah pilihan.' : 'Perubahan belum disimpan.';
   }
+  // Sembunyikan pesan validasi di blok preferensi tempat input berada.
   function clearNotice(input) {
     const notice = input.closest('.pref-block')?.querySelector('[data-pref-notice]');
     if (notice) notice.hidden = true;

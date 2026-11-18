@@ -17,7 +17,7 @@ from .preferences import preferences_for, profile_for
 
 
 def landing_menu():
-    """Halal recipes with a one-serving price, grouped per meal for the landing preview."""
+    """Resep halal aktif beserta harga satu porsi, dikelompokkan per waktu makan untuk landing page."""
     from apps.catalog.models import Recipe
     from apps.recipe.services import recipe_costs
 
@@ -35,6 +35,7 @@ def landing_menu():
 
 
 def landing_view(request):
+    """Landing page untuk tamu (user login dialihkan); menu contoh di-cache selama satu jam."""
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
     from apps.catalog.models import Recipe
@@ -47,6 +48,8 @@ def landing_view(request):
 
 @require_http_methods(["GET", "POST"])
 def signup_view(request):
+    """Daftar akun baru beserta profil dan preferensi dalam satu transaksi, lalu login otomatis;
+    parameter next hanya dipakai bila mengarah ke host yang sama."""
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
     form = SignUpForm(request.POST if request.method == "POST" else None)
@@ -70,9 +73,13 @@ def signup_view(request):
 
 
 class AccountLoginView(LoginView):
+    """Halaman login dengan opsi "ingat saya"."""
+
     template_name = "login/login.html"
 
     def form_valid(self, form):
+        """Login lalu atur umur session: default bila "ingat saya" dicentang, selain itu habis saat
+        browser ditutup."""
         response = super().form_valid(form)
         self.request.session.set_expiry(None if self.request.POST.get("remember_me") else 0)
         return response
@@ -81,6 +88,8 @@ class AccountLoginView(LoginView):
 @login_required
 @require_http_methods(["GET", "POST"])
 def profile_view(request):
+    """Tampilkan dan simpan detail akun; baris user dan profil dikunci, version dicek (409 bila
+    berubah di tab lain), dan ganti email wajib kata sandi saat ini."""
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
     account = AccountDetailsForm(
         user=request.user,
@@ -117,7 +126,7 @@ def profile_view(request):
                         current.version += 1
                         current.save(update_fields=["version", "avatar"])
                     messages.success(request, "Perubahan berhasil disimpan.")
-                    return redirect("modul3")
+                    return redirect("login:show_profile")
                 except IntegrityError:
                     account.add_error(None, "Username atau email sudah dipakai. Periksa kembali.")
                     status = 400
@@ -136,6 +145,8 @@ def profile_view(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 def food_preferences_view(request):
+    """Tampilkan dan simpan preferensi makan dengan cek version (409 bila bentrok);
+    halal_only selalu disetel True saat menyimpan."""
     profile = profile_for(request.user)
     food = preferences_for(request.user)
     form = PreferenceForm(
@@ -167,7 +178,7 @@ def food_preferences_view(request):
                     current.version += 1
                     current.save(update_fields=["version"])
                 messages.success(request, "Perubahan berhasil disimpan.")
-                return redirect("food-preferences")
+                return redirect("login:food_preferences")
             except IntegrityError:
                 form.add_error(None, "Preferensi belum bisa disimpan. Muat ulang dan coba kembali.")
                 status = 400
@@ -186,6 +197,8 @@ def food_preferences_view(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 def password_change_view(request):
+    """Ganti kata sandi dengan baris user terkunci, naikkan version profil, dan pertahankan session
+    aktif lewat update_session_auth_hash."""
     form = PasswordChangeForm(request.user)
     status = 200
     if request.method == "POST":
@@ -202,7 +215,7 @@ def password_change_view(request):
         if status == 200:
             update_session_auth_hash(request, user)
             messages.success(request, "Kata sandi berhasil diperbarui.")
-            return redirect("modul3")
+            return redirect("login:show_profile")
     response = render(request, "login/password_change.html", {"password_form": form}, status=status)
     patch_cache_control(response, private=True, no_store=True)
     return response

@@ -53,7 +53,7 @@
 {% endblock %}
 {% block header %}
 <nav class="auth-page-actions" aria-label="Navigasi halaman akun">
-  <a class="auth-home-link" href="{% url 'landing' %}" aria-label="Kembali ke beranda" title="Kembali ke beranda">
+  <a class="auth-home-link" href="{% url 'login:show_landing' %}" aria-label="Kembali ke beranda" title="Kembali ke beranda">
     <img class="auth-logo-light" src="{% static 'takarkuy/logo.svg' %}" alt="" width="28" height="34">
     <img class="auth-logo-dark" src="{% static 'takarkuy/logo-light.svg' %}" alt="" width="28" height="34">
   </a>

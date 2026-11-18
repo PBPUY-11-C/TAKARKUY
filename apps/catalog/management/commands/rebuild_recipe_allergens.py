@@ -5,12 +5,17 @@ from apps.catalog.models import Recipe
 
 
 class Command(BaseCommand):
+    """Command rebuild_recipe_allergens: bangun ulang alergen resep atau cek konsistensinya."""
+
     help = "Rebuild derived recipe allergens, or --check for drift after bulk writes/loaddata."
 
     def add_arguments(self, parser):
+        """Opsi --check: hanya memeriksa selisih tanpa menulis ulang data."""
         parser.add_argument("--check", action="store_true")
 
     def handle(self, *args, **options):
+        """Rebuild (kecuali --check), lalu gagal dengan CommandError jika ada resep yang agregasinya
+        tidak cocok dengan perhitungan dari bahan."""
         if not options["check"]:
             rebuild_allergens()
         for recipe in Recipe.objects.prefetch_related(

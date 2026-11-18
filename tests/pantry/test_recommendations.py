@@ -50,7 +50,7 @@ class PantryRecommendationTests(TestCase):
 
     def post_suggestions(self, names):
         return self.client.post(
-            reverse("modul2-suggestions"),
+            reverse("pantry:suggest_items"),
             data=json.dumps({"names": names}),
             content_type="application/json",
         )
@@ -79,7 +79,7 @@ class PantryRecommendationTests(TestCase):
         llm.assert_not_called()
 
         response = self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             data=json.dumps(
                 {
                     "source": "ocr",
@@ -124,9 +124,9 @@ class PantryRecommendationTests(TestCase):
 
     @patch("apps.pantry.recommendations._gemini_choices")
     def test_accepted_correction_is_reused_without_llm(self, llm):
-        self.client.get(reverse("modul2"))
+        self.client.get(reverse("pantry:show_pantry"))
         response = self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             data=json.dumps(
                 {
                     "source": "ocr",
@@ -205,7 +205,7 @@ class PantryRecommendationTests(TestCase):
 
     def test_estimated_date_uses_supplied_purchase_date(self):
         response = self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             data=json.dumps(
                 {
                     "source": "ocr",
@@ -232,9 +232,9 @@ class PantryRecommendationTests(TestCase):
     def test_suggestions_require_csrf(self):
         client = Client(enforce_csrf_checks=True)
         client.force_login(self.user)
-        client.get(reverse("modul2"))
+        client.get(reverse("pantry:show_pantry"))
         response = client.post(
-            reverse("modul2-suggestions"),
+            reverse("pantry:suggest_items"),
             data=json.dumps({"names": ["Bayam"]}),
             content_type="application/json",
         )
@@ -246,7 +246,7 @@ class PantryRecommendationTests(TestCase):
 
     @patch("apps.pantry.recommendations._gemini_choices", return_value={})
     def test_other_account_does_not_get_private_correction(self, llm):
-        self.client.get(reverse("modul2"))
+        self.client.get(reverse("pantry:show_pantry"))
         session_id = self.client.session["pantry_session_id"]
         PantryNameCorrection.objects.create(
             user=self.user,
@@ -261,7 +261,7 @@ class PantryRecommendationTests(TestCase):
         other = Client()
         authenticate(other, "other")
         response = other.post(
-            reverse("modul2-suggestions"),
+            reverse("pantry:suggest_items"),
             data=json.dumps({"names": ["BXYM"]}),
             content_type="application/json",
         )

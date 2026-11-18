@@ -1,4 +1,4 @@
-"""Recipe Book queries and transactional cooking."""
+"""Query Buku Resep dan pencatatan masak secara transaksional."""
 
 from datetime import date, timedelta
 from decimal import ROUND_FLOOR, Decimal, InvalidOperation
@@ -31,7 +31,9 @@ JAKARTA = ZoneInfo("Asia/Jakarta")
 
 
 class RecipeBookRateLimit(StockError):
+    """Error 429 saat kuota 60 pemeriksaan Buku Resep per 10 menit habis."""
     def __init__(self, retry_after):
+        """Menyimpan retry_after minimal 1 detik dan menyertakannya dalam pesan error."""
         self.retry_after = max(1, retry_after)
         super().__init__(
             f"Batas 60 pemeriksaan resep per 10 menit tercapai. Coba lagi dalam {self.retry_after} detik.",
@@ -41,7 +43,7 @@ class RecipeBookRateLimit(StockError):
 
 @transaction.atomic
 def reserve_recipe_book_preview(user, *, now=None):
-    """Throttle Recipe Book work independently from Planner preview requests."""
+    """Membatasi pemeriksaan Buku Resep (60 per 10 menit) terpisah dari kuota preview Planner."""
     now = now or timezone.now()
     get_user_model().objects.select_for_update().get(pk=user.pk)
     quota, _ = RecipeBookPreviewQuota.objects.get_or_create(
@@ -58,7 +60,8 @@ def reserve_recipe_book_preview(user, *, now=None):
 
 
 def estimated_recipe_cost(recipe, servings):
-    """Use the planner's basket quote, including whole-fruit rounding."""
+    """Estimasi biaya satu resep memakai kuotasi keranjang Planner, termasuk pembulatan buah utuh.
+    Mengembalikan None bila kuotasi gagal."""
     from apps.planner.planner import _load_candidates, quote_schedule
 
     try:
@@ -72,7 +75,7 @@ def estimated_recipe_cost(recipe, servings):
 
 
 def recipe_costs(servings, codes):
-    """Basket quote per recipe for many recipes with one catalog load."""
+    """Kuotasi keranjang per resep untuk banyak resep sekaligus dengan satu kali memuat katalog."""
     from apps.planner.planner import MEALS, _load_candidates, quote_schedule
 
     try:
@@ -93,6 +96,8 @@ def recipe_costs(servings, codes):
 
 
 def recipe_query(user, *, allergens=None, preference=None, avoided_ingredient_ids=None):
+    """Queryset resep aktif yang sesuai preferensi halal, alergi, dan bahan yang dihindari pengguna.
+    Bila ada alergi, hanya resep yang alergennya sudah ditinjau yang lolos."""
     preference = preference or preferences_for(user)
     query = Recipe.objects.filter(
         is_active=True, is_plannable=True
@@ -114,10 +119,13 @@ def recipe_query(user, *, allergens=None, preference=None, avoided_ingredient_id
 
 
 def with_guidance(query):
+    """Menyaring queryset ke resep yang panduan memasaknya layak ditampilkan."""
     return query.filter(guidance_condition())
 
 
 def guidance_condition():
+    """Kondisi Q untuk panduan layak: status sumber valid atau sudah ditinjau dan instruksi terisi.
+    Resep RCP-MDL- dan panduan buatan tim wajib punya catatan atau tanggal tinjauan."""
     return (
         Q(instruction_status__in=["source_ok", "authored_reviewed"])
         & ~Q(instructions="")
@@ -128,7 +136,8 @@ def guidance_condition():
 
 
 def stock_matches(user, servings, *, query=None):
-    """Recipes the user's pantry covers; one rule for Modul 2 and Modul 4."""
+    """Resep yang sebagian atau seluruh bahannya tercukupi pantry; satu aturan untuk Modul 2 dan 4.
+    Diurutkan dari cakupan stok tertinggi, berisi bahan tersedia, kurang, dan porsi maksimal."""
     if type(servings) is not int or not 1 <= servings <= 10:
         raise StockError("Porsi harus bilangan bulat 1–10.", 400)
     inventory = sorted(
@@ -229,6 +238,8 @@ def stock_matches(user, servings, *, query=None):
 
 
 def get_recipe(user, code, *, inputs=None):
+    """Mengambil resep yang boleh untuk pengguna sesuai preferensi dan alergi efektif.
+    Gagal bila resep tidak tersedia atau data alergennya berubah atau belum lengkap."""
     groups = effective_allergens(user, inputs or {})
     recipe = (
         recipe_query(user, allergens=groups)
@@ -244,7 +255,8 @@ def get_recipe(user, code, *, inputs=None):
 
 
 def recipe_requirements(recipe, servings, *, tracked_staples=(), staple=None):
-    """Stock needs per ingredient; selected staple groups are managed like other stock."""
+    """Kebutuhan stok (gram) per bahan, daftar bahan, dan gizi untuk porsi yang diminta.
+    Bumbu dasar hanya dihitung bila grupnya dipilih untuk dilacak; makanan pokok slot ikut dihitung."""
     if type(servings) is not int or not 1 <= servings <= 10:
         raise StockError("Porsi harus bilangan bulat 1–10.", 400)
     if not recipe.base_servings:
@@ -310,6 +322,8 @@ def recipe_requirements(recipe, servings, *, tracked_staples=(), staple=None):
 
 
 def cooking_inputs(user, payload, *, lock=False):
+    """Memvalidasi payload masak (slot rencana, version, resep, porsi) lalu menghitung kebutuhannya.
+    Slot harus berasal dari rencana tersimpan yang belum dimasak; lock=True mengunci baris."""
     slot_id = payload.get("planned_meal")
     slot = None
     if slot_id is not None:
@@ -349,11 +363,13 @@ def cooking_inputs(user, payload, *, lock=False):
 
 
 def slot_staple(slot):
+    """Makanan pokok pendamping dari snapshot slot rencana, atau None bila tanpa slot."""
     return meal_staple(slot.snapshot) if slot else None
 
 
 def _apply_external_ingredients(payload, needs, ingredients, allocation):
-    """Accept only ingredient amounts that are currently missing from Pantry."""
+    """Menerima bahan dari luar Pantry hanya sebanyak kekurangan stok saat ini.
+    Mengurangi daftar missing pada alokasi dan mengembalikan daftar bahan luar yang sah."""
     raw = payload.get("external_ingredients", [])
     if not isinstance(raw, list) or len(raw) > 100:
         raise StockError("Daftar bahan di luar Pantry tidak valid.", 400)
@@ -398,7 +414,8 @@ def _apply_external_ingredients(payload, needs, ingredients, allocation):
 
 
 def advance_plan_version(user, plan):
-    """Bump a saved plan after a slot status change, and its clean draft mirror."""
+    """Menaikkan version rencana tersimpan setelah status slot berubah.
+    Draft cerminannya ikut dinaikkan bila isinya masih identik."""
     mirror = (
         BudgetPlan.objects.select_for_update()
         .filter(user=user, status="draft", source_plan=plan, source_version=plan.version)
@@ -414,7 +431,7 @@ def advance_plan_version(user, plan):
 
 @transaction.atomic
 def set_slot_status(user, payload):
-    """Skip a planned menu or undo the skip."""
+    """Melewati menu rencana atau membatalkan lewati, dengan cek version rencana tersimpan."""
     from django.contrib.auth import get_user_model
 
     slot_id, status = payload.get("planned_meal"), payload.get("status")
@@ -442,6 +459,8 @@ def set_slot_status(user, payload):
 
 
 def preview_cooking(user, payload):
+    """Pratinjau Sudah Masak tanpa mengubah data: bahan, gizi, batch pantry yang akan dipakai,
+    kekurangan, dan batch yang bisa dipilih manual."""
     recipe, slot, needs, ingredients, nutrition = cooking_inputs(user, payload)
     allocation = plan_consumption(
         user,
@@ -486,6 +505,8 @@ def preview_cooking(user, payload):
 
 @transaction.atomic
 def cook(user, payload):
+    """Mencatat Sudah Masak lalu mengurangi stok pantry dalam satu transaksi.
+    operation_key mencegah pencatatan ganda; slot rencana ditandai cooked."""
     event, replay = operation(
         user,
         payload.get("operation_key"),

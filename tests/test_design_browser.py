@@ -82,7 +82,7 @@ class DesignBrowserTests(StaticLiveServerTestCase):
                 [{"name": "sessionid", "value": self.session, "url": self.live_server_url}]
             )
             page = context.new_page()
-            page.goto(self.live_server_url + reverse("modul5"))
+            page.goto(self.live_server_url + reverse("home:show_dashboard"))
             self.assertEqual(page.evaluate("document.documentElement.dataset.theme"), "light")
             page.click("[data-theme-toggle]")
             self.assertEqual(page.evaluate("document.documentElement.dataset.theme"), "dark")

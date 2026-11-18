@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check that the catalog counts in DATA_API.md match the build output."""
+"""Memeriksa bahwa angka katalog di DATA_API.md sama dengan hasil build."""
 
 import json
 import re
@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parent
 
 
 def validate_documents():
+    """Mencocokkan jumlah baris CSV, objek fixture, resep siap hitung, dan resep Mendeley
+    dengan angka yang tertulis di DATA_API.md; gagal lewat assert bila ada yang beda.
+    """
     counts = json.loads((ROOT / "dataset_counts.json").read_text(encoding="utf-8"))
     fixture = json.loads((ROOT / "fixtures/catalog_seed.json").read_text(encoding="utf-8"))
     fixture_count = len(fixture)

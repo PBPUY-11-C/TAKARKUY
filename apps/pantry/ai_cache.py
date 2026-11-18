@@ -1,4 +1,4 @@
-"""Leased, catalogue-sensitive name cache."""
+"""Cache resolusi nama bahan dengan lease, terikat pada versi katalog."""
 
 import hashlib
 import json
@@ -14,6 +14,10 @@ from .models import NameResolution
 
 
 def cache_key(name, catalog_version):
+    """Membuat key SHA-256 dari nama, versi katalog, provider, dan model LLM.
+
+    Ganti katalog atau model otomatis membuat key baru; versi katalog wajib string fingerprint.
+    """
     if not isinstance(catalog_version, str):
         raise ValueError("catalog_version must be a catalogue fingerprint")
     return hashlib.sha256(
@@ -31,12 +35,17 @@ def cache_key(name, catalog_version):
 
 
 def lookup(name, catalog_version):
+    """Mengambil hasil cache yang sudah selesai (tanpa lease aktif) dan belum kedaluwarsa."""
     return NameResolution.objects.filter(
         pk=cache_key(name, catalog_version), lease__isnull=True, expires_at__gt=timezone.now()
     ).first()
 
 
 def claim(name, catalog_version, *, allowed_codes=None):
+    """Mencoba mengambil lease 45 detik atas key nama; mengembalikan (record, dimiliki).
+
+    Record lama diambil alih bila sudah kedaluwarsa atau kodenya di luar allowed_codes.
+    """
     key = cache_key(name, catalog_version)
     now = timezone.now()
     lease = uuid4()
@@ -67,6 +76,10 @@ def claim(name, catalog_version, *, allowed_codes=None):
 
 
 def finish(record, code, *, failed=False):
+    """Menyimpan kode hasil dan melepas lease; TTL 5 menit jika gagal, 30 hari jika ada kode.
+
+    Hasil tanpa kode disimpan 1 jam. Hanya berlaku bila lease masih milik pemanggil.
+    """
     NameResolution.objects.filter(pk=record.pk, lease=record.lease).update(
         ingredient_id=code,
         lease=None,
@@ -76,13 +89,20 @@ def finish(record, code, *, failed=False):
 
 
 def release(record):
-    """An account quota miss must not suppress other accounts' cache attempts."""
+    """Melepas lease dan langsung mengedaluwarsakan record yang masih dipegang.
+
+    Kuota satu akun yang habis tidak boleh menghalangi akun lain mencoba cache yang sama.
+    """
     NameResolution.objects.filter(pk=record.pk, lease=record.lease).update(
         lease=None, expires_at=timezone.now()
     )
 
 
 def remember_photo(items, snapshot):
+    """Menyimpan pasangan nama mentah dan kode bahan hasil OCR foto ke cache nama.
+
+    Hanya item dengan kode yang ada di katalog snapshot yang disimpan.
+    """
     from .catalog_context import normalize_name
 
     for item in items:

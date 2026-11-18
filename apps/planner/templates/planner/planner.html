@@ -18,12 +18,12 @@
       <h1>Meal Planner</h1>
       <nav class="plan-nav" aria-label="Navigasi rencana">
         <button type="button" class="pill-link" data-open-dialog="rencana-saya">Rencana Saya · <span data-saved-count>{{ saved_plans|length }}</span></button>
-        <a class="pill-link pill-dark" href="{% url 'modul1' %}?new=1" data-swap>+ Rencana baru</a>
+        <a class="pill-link pill-dark" href="{% url 'planner:show_planner' %}?new=1" data-swap>+ Rencana baru</a>
       </nav>
     </div>
     <p id="plan-feedback" class="plan-feedback" role="status" aria-live="polite">{% if plan_missing %}Rencana itu sudah dihapus atau tidak ditemukan.{% endif %}</p>
 
-    <form class="planner-form card" method="post" action="{% url 'modul1' %}#hasil" novalidate>
+    <form class="planner-form card" method="post" action="{% url 'planner:show_planner' %}#hasil" novalidate>
       {% csrf_token %}
       {{ form.allergens }}
       {% if plan %}<input type="hidden" name="plan_id" value="{{ plan.pk }}"><input type="hidden" name="version" value="{{ plan.version }}">{% else %}<input type="hidden" name="new_plan" value="1">{% endif %}
@@ -122,7 +122,7 @@
             {% if result.protein_floor or result.calorie_cap %}<p class="muted">Target {% if result.protein_floor %}≥ {{ result.protein_floor }} g protein{% endif %}{% if result.protein_floor and result.calorie_cap %} · {% endif %}{% if result.calorie_cap %}≤ {{ result.calorie_cap }} kkal{% endif %}</p>{% endif %}
           </div>
           {% if plan %}
-          <form class="card summary-card plan-save" data-save-plan data-url="{% url 'modul1-plan-save' plan.pk %}" data-version="{{ plan.version }}">
+          <form class="card summary-card plan-save" data-save-plan data-url="{% url 'planner:save_plan' plan.pk %}" data-version="{{ plan.version }}">
             <label for="plan-title" class="label">Judul rencana <span class="status">· {% if plan.status == 'draft' %}Draft{% else %}Tersimpan{% endif %}</span></label>
             <input id="plan-title" name="title" maxlength="100" required value="{{ plan.title }}">
             <div class="plan-save-row">
@@ -157,8 +157,8 @@
                   <p>{{ meal.cost|rupiah }} · {{ meal.calories }} kkal/porsi{% if meal.expiring_stock %} · <span class="pantry-note">Pakai stok: {{ meal.expiring_stock|join:", " }}</span>{% endif %}</p>
                 </div>
                 <div class="meal-actions">
-                  <a class="link-button" href="{% url 'modul4' %}?{% if meal.planned_meal_id %}slot={{ meal.planned_meal_id }}{% else %}recipe={{ meal.recipe_code|urlencode }}{% endif %}">Resep</a>
-                  {% if plan and not meal.cooked %}<button class="secondary-button" type="button" data-replace-menu data-day="{{ day.number }}" data-meal="{{ meal.type }}" data-label="{{ meal.label }}" data-name="{{ meal.name }}" data-total="{{ result.net_total }}" data-budget="{{ form.cleaned_data.budget }}" data-alternatives-url="{% url 'modul1-plan-alternatives' plan.pk %}" data-preview-url="{% url 'modul1-plan-preview' plan.pk %}" data-version="{{ plan.version }}">Ganti</button>{% endif %}
+                  <a class="link-button" href="{% url 'recipe:show_recipes' %}?{% if meal.planned_meal_id %}slot={{ meal.planned_meal_id }}{% else %}recipe={{ meal.recipe_code|urlencode }}{% endif %}">Resep</a>
+                  {% if plan and not meal.cooked %}<button class="secondary-button" type="button" data-replace-menu data-day="{{ day.number }}" data-meal="{{ meal.type }}" data-label="{{ meal.label }}" data-name="{{ meal.name }}" data-total="{{ result.net_total }}" data-budget="{{ form.cleaned_data.budget }}" data-alternatives-url="{% url 'planner:recipe_alternatives' plan.pk %}" data-preview-url="{% url 'planner:preview_plan' plan.pk %}" data-version="{{ plan.version }}">Ganti</button>{% endif %}
                 </div>
               </article>
               {% endfor %}
@@ -182,7 +182,7 @@
             <p class="shop-total"><span>Total</span><span>{{ result.total|rupiah }}</span></p>
             <p class="muted">Total belanja sudah melewati pembulatan.</p>
             <div class="shop-actions">
-              {% if plan %}<a class="secondary-button download-button" href="{% url 'modul1-plan-pdf' plan.pk %}" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download detail (PDF)</a>{% endif %}
+              {% if plan %}<a class="secondary-button download-button" href="{% url 'planner:download_shopping_list' plan.pk %}" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download detail (PDF)</a>{% endif %}
               {% if plan.status == 'saved' and pantry_items %}<button type="button" class="link-button" data-open-dialog="pantry-dialog">Sudah belanja? Masukkan ke Pantry</button>{% endif %}
             </div>
           </section>
@@ -206,11 +206,11 @@
         <ul class="saved-list">
           {% for saved in saved_plans %}
           <li>
-            <a class="saved-open" href="{% url 'modul1' %}?plan={{ saved.pk }}#hasil" data-swap>
+            <a class="saved-open" href="{% url 'planner:show_planner' %}?plan={{ saved.pk }}#hasil" data-swap>
               <strong>{{ saved.title }}</strong>
               <span class="muted">{{ saved.starts_on|date:'d M Y' }} · {{ saved.inputs.days }} hari · {{ saved.inputs.servings }} orang · {{ saved.net_total|rupiah }}</span>
             </a>
-            <button class="danger-button" type="button" data-delete-plan data-plan-id="{{ saved.pk }}" data-url="{% url 'modul1-plan-delete' saved.pk %}" data-version="{{ saved.version }}" data-title="{{ saved.title }}">Hapus</button>
+            <button class="danger-button" type="button" data-delete-plan data-plan-id="{{ saved.pk }}" data-url="{% url 'planner:delete_plan' saved.pk %}" data-version="{{ saved.version }}" data-title="{{ saved.title }}">Hapus</button>
           </li>
           {% empty %}
           <li class="muted">Belum ada rencana tersimpan. Buat rencana, lalu tekan Simpan Rencana.</li>
@@ -232,7 +232,7 @@
         </ul>
       </div>
       <div class="dialog-foot">
-        <div class="dialog-actions"><button type="button" class="secondary-button" data-close-dialog>Batal</button><button type="button" class="primary-button" id="add-to-pantry" data-url="{% url 'modul1-plan-pantry' plan.pk %}" data-version="{{ plan.version }}">Masukkan ke Pantry</button></div>
+        <div class="dialog-actions"><button type="button" class="secondary-button" data-close-dialog>Batal</button><button type="button" class="primary-button" id="add-to-pantry" data-url="{% url 'planner:add_to_pantry' plan.pk %}" data-version="{{ plan.version }}">Masukkan ke Pantry</button></div>
       </div>
     </dialog>
     {% endif %}

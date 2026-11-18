@@ -1,3 +1,4 @@
+// Menyusun payload pratinjau/masak; slot dan version rencana hanya disertakan bila ada slot.
 export function cookingPayload(dataset, fields, manual, externalIngredients = []) {
   const payload = {recipe_code: dataset.code, servings: Number(fields.servings.value),
     allow_unknown_expiry: fields.allow_unknown_expiry.checked, manual};
@@ -5,6 +6,7 @@ export function cookingPayload(dataset, fields, manual, externalIngredients = []
   if (dataset.slot) { payload.planned_meal = Number(dataset.slot); payload.version = Number(dataset.version); }
   return payload;
 }
+// Mengambil isian batch manual; baris kosong dilewati, baris setengah terisi melempar Error.
 export function manualValues(container) {
   return [...container.children].flatMap(row => {
     const quantity = row.querySelector('[data-field=quantity]').value;

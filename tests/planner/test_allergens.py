@@ -118,7 +118,7 @@ class AllergenPlannerTests(TestCase):
         self.profile.save()
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("modul1-plan-alternatives", args=[plan.pk]),
+            reverse("planner:recipe_alternatives", args=[plan.pk]),
             {"day": 1, "meal": "sarapan"},
         )
         self.assertEqual(response.status_code, 200)
@@ -138,12 +138,12 @@ class AllergenPlannerTests(TestCase):
     def test_account_halal_choice_cannot_be_overridden_by_planner_payload(self):
         RecipeTag.objects.exclude(tag="bumbu_minor_tidak_dihitung").delete()
         self.client.force_login(self.user)
-        response = self.client.post(reverse("modul1"), {**self.inputs, "halal_only": False})
+        response = self.client.post(reverse("planner:show_planner"), {**self.inputs, "halal_only": False})
         self.assertEqual(response.status_code, 400)
         self.assertFalse(BudgetPlan.objects.filter(user=self.user).exists())
         self.profile.halal_only = False
         self.profile.save()
-        response = self.client.post(reverse("modul1"), self.inputs)
+        response = self.client.post(reverse("planner:show_planner"), self.inputs)
         self.assertEqual(response.status_code, 302)
         self.assertFalse(BudgetPlan.objects.get(user=self.user).inputs["halal_only"])
 
@@ -237,7 +237,7 @@ class AllergenPlannerTests(TestCase):
         self.profile.allergens = ["telur"]
         self.profile.save()
         self.client.force_login(self.user)
-        response = self.client.get(reverse("modul1"), {"plan": str(draft.pk)})
+        response = self.client.get(reverse("planner:show_planner"), {"plan": str(draft.pk)})
         self.assertContains(response, "Rencana lama memiliki bahan")
         draft.refresh_from_db()
         self.assertEqual(draft.snapshot, before)
@@ -249,19 +249,19 @@ class AllergenPlannerTests(TestCase):
         self.profile.save()
         self.profile.avoided_ingredients.add(Ingredient.objects.get(pk="UNKNOWN"))
         self.client.force_login(self.user)
-        response = self.client.get(reverse("modul1"), {"new": "1"})
+        response = self.client.get(reverse("planner:show_planner"), {"new": "1"})
         self.assertEqual(response.context["form"].initial["servings"], 4)
         self.assertEqual(response.context["form"].initial["targets"], ["rendah_kalori"])
         self.assertEqual(response.context["form"].initial["exclude_ingredients"], "UNKNOWN")
         draft = self.draft()
-        response = self.client.get(reverse("modul1"), {"plan": str(draft.pk)})
+        response = self.client.get(reverse("planner:show_planner"), {"plan": str(draft.pk)})
         self.assertEqual(response.context["form"].initial["servings"], 1)
 
     def test_post_cannot_omit_profile_allergies_to_generate_unsafe_draft(self):
         self.profile.allergens = ["telur"]
         self.profile.save()
         self.client.force_login(self.user)
-        response = self.client.post(reverse("modul1"), self.inputs)
+        response = self.client.post(reverse("planner:show_planner"), self.inputs)
         self.assertEqual(response.status_code, 302)
         draft = BudgetPlan.objects.get(user=self.user)
         self.assertEqual(draft.inputs["allergens"], ["telur"])

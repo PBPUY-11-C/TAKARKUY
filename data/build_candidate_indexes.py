@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Index licensed local recipe candidates without promoting them into the planner."""
+"""Mengindeks kandidat resep berlisensi dari snapshot lokal tanpa memasukkannya ke planner."""
 
 import csv
 import json
@@ -46,6 +46,7 @@ PRODUCT_MAPPING_FIELDS = (
 
 
 def write_csv(path, fieldnames, rows):
+    """Menulis baris ke CSV dengan header, membuat folder staging/ bila belum ada."""
     STAGING.mkdir(exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=fieldnames)
@@ -54,6 +55,9 @@ def write_csv(path, fieldnames, rows):
 
 
 def main():
+    """Membuat indeks review di staging/: kandidat resep Mendeley dan TheMealDB, istilah bahan
+    Mendeley yang tak cocok, serta usulan mapping produk OFF bernama mi ke ING-MIE-INSTAN.
+    """
     mendeley = json.loads(
         (ROOT / "scratch" / "mendeley_indonesian_recipe_nutrition_v3.json").read_text(
             encoding="utf-8"

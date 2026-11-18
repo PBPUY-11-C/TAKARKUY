@@ -22,7 +22,7 @@ function setup(){
   get('#map-places').textContent=JSON.stringify({places:[place]});
   get('#map-config').textContent=JSON.stringify({tiles:'https://tile.openstreetmap.org/{z}/{x}/{y}.png'});
   get('#market-form').elements={region:{value:'Garut'}};
-  get('#market-dialog').dataset.url='/modul5/places/';
+  get('#market-dialog').dataset.url='/dashboard/places/';
   let gps=0, callback, denied, next={places:[place],source:'curated'}, malformed=false, requests=[];
   runInNewContext(script,{validPoint,rankedPlaces,regionPayload,pointPayload,safeURL,placeLink,URL,JSON,
     document:{querySelector:get,createElement:()=>new Element(),head:new Element()},window:{},

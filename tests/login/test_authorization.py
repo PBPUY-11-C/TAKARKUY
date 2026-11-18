@@ -33,11 +33,11 @@ class AuthorizationTests(TestCase):
     @patch("apps.pantry.views.resolve_names")
     def test_every_pantry_api_rejects_guest_before_processing(self, resolver, gemini):
         calls = [
-            ("post", reverse("modul2-items")),
-            ("post", reverse("modul2-suggestions")),
-            ("post", reverse("modul2-ocr-fallback")),
-            ("patch", reverse("modul2-item-details", args=[self.item.pk])),
-            ("delete", reverse("modul2-item-delete", args=[self.item.pk])),
+            ("post", reverse("pantry:save_items")),
+            ("post", reverse("pantry:suggest_items")),
+            ("post", reverse("pantry:ocr_fallback")),
+            ("patch", reverse("pantry:update_item", args=[self.item.pk])),
+            ("delete", reverse("pantry:delete_item", args=[self.item.pk])),
         ]
         for method, url in calls:
             with self.subTest(url=url):
@@ -56,15 +56,15 @@ class AuthorizationTests(TestCase):
         session = self.client.session
         session["pantry_session_id"] = self.item.session_id
         session.save()
-        self.assertNotContains(self.client.get(reverse("modul2")), self.item.name)
+        self.assertNotContains(self.client.get(reverse("pantry:show_pantry")), self.item.name)
         response = self.client.patch(
-            reverse("modul2-item-details", args=[self.item.pk]),
+            reverse("pantry:update_item", args=[self.item.pk]),
             data=json.dumps({"location": "freezer", "expiry_mode": "auto"}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 404)
         self.assertEqual(
-            self.client.delete(reverse("modul2-item-delete", args=[self.item.pk])).status_code, 404
+            self.client.delete(reverse("pantry:delete_item", args=[self.item.pk])).status_code, 404
         )
         self.item.refresh_from_db()
         self.assertEqual(self.item.location, "suhu_ruang")
@@ -80,9 +80,9 @@ class AuthorizationTests(TestCase):
         session = self.client.session
         session["pantry_session_id"] = "legacy"
         session.save()
-        self.assertNotContains(self.client.get(reverse("modul2")), legacy.name)
+        self.assertNotContains(self.client.get(reverse("pantry:show_pantry")), legacy.name)
         self.assertEqual(
-            self.client.delete(reverse("modul2-item-delete", args=[legacy.pk])).status_code, 404
+            self.client.delete(reverse("pantry:delete_item", args=[legacy.pk])).status_code, 404
         )
         legacy.refresh_from_db()
         correction.refresh_from_db()
@@ -92,7 +92,7 @@ class AuthorizationTests(TestCase):
     def test_saving_stock_uses_logged_in_owner_not_payload_owner(self):
         self.client.force_login(self.owner)
         response = self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             content_type="application/json",
             data=json.dumps(
                 {
@@ -130,7 +130,7 @@ class AuthorizationTests(TestCase):
             client = Client()
             client.force_login(user)
             response = client.post(
-                reverse("modul2-suggestions"),
+                reverse("pantry:suggest_items"),
                 content_type="application/json",
                 data=json.dumps({"names": ["BXYM"]}),
             )
@@ -147,7 +147,7 @@ class AuthorizationTests(TestCase):
             )
         self.client.force_login(self.other)
         response = self.client.post(
-            reverse("modul2-suggestions"),
+            reverse("pantry:suggest_items"),
             content_type="application/json",
             data=json.dumps({"names": ["BXYM"]}),
         )
@@ -161,38 +161,38 @@ class AuthorizationTests(TestCase):
         self.client.force_login(self.other)
         self.assertEqual(self.client.get(reverse("admin:index")).status_code, 200)
         self.assertEqual(
-            self.client.delete(reverse("modul2-item-delete", args=[self.item.pk])).status_code, 404
+            self.client.delete(reverse("pantry:delete_item", args=[self.item.pk])).status_code, 404
         )
 
     def test_guest_can_only_open_public_pages(self):
-        for name in ("landing", "signup", "login"):
+        for name in ("login:show_landing", "login:register", "login:login"):
             with self.subTest(page=name):
                 self.assertEqual(self.client.get(reverse(name)).status_code, 200)
-        for name in ("modul1", "modul2", "modul3", "modul4", "modul5"):
+        for name in ("planner:show_planner", "pantry:show_pantry", "login:show_profile", "recipe:show_recipes", "home:show_dashboard"):
             with self.subTest(page=name):
                 self.assertRedirects(
-                    self.client.get(reverse(name)), f"{reverse('login')}?next={reverse(name)}"
+                    self.client.get(reverse(name)), f"{reverse('login:login')}?next={reverse(name)}"
                 )
 
     def test_login_next_returns_to_requested_module_and_rejects_external_redirect(self):
         self.owner.set_password("Demodemo1.")
         self.owner.save()
         response = self.client.post(
-            reverse("login"),
+            reverse("login:login"),
             {
                 "username": "owner",
                 "password": "Demodemo1.",
-                "next": reverse("modul2"),
+                "next": reverse("pantry:show_pantry"),
             },
         )
-        self.assertRedirects(response, reverse("modul2"))
-        self.client.post(reverse("logout"))
+        self.assertRedirects(response, reverse("pantry:show_pantry"))
+        self.client.post(reverse("login:logout"))
         response = self.client.post(
-            reverse("login"),
+            reverse("login:login"),
             {
                 "username": "owner",
                 "password": "Demodemo1.",
                 "next": "https://example.org/evil",
             },
         )
-        self.assertRedirects(response, reverse("modul5"))
+        self.assertRedirects(response, reverse("home:show_dashboard"))

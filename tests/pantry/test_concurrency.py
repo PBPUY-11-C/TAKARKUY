@@ -82,7 +82,7 @@ class PantryConcurrencyTests(TransactionTestCase):
             client = Client()
             client.force_login(self.user)
             response = client.post(
-                reverse("modul2-items"), data=json.dumps(payload), content_type="application/json"
+                reverse("pantry:save_items"), data=json.dumps(payload), content_type="application/json"
             )
             return response.status_code, response.json()
 
@@ -97,7 +97,7 @@ class PantryConcurrencyTests(TransactionTestCase):
             client = Client()
             client.force_login(self.user)
             response = client.patch(
-                reverse("modul2-item-details", args=[self.item.pk]),
+                reverse("pantry:update_item", args=[self.item.pk]),
                 data=json.dumps({"operation_key": str(uuid4()), "version": 1, "quantity": 50}),
                 content_type="application/json",
             )

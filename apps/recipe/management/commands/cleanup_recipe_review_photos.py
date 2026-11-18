@@ -9,9 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
+    """Command untuk mengulang penghapusan foto ulasan yang tertahan di antrean pembersihan."""
     help = "Retry deletion of recipe review photos that failed to remove from storage."
 
     def handle(self, *args, **options):
+        """Mencoba ulang semua job pembersihan lalu melaporkan jumlah yang terhapus dan yang tersisa."""
         cleanup_ids = list(RecipePhotoCleanup.objects.values_list("pk", flat=True))
         removed = sum(attempt_recipe_photo_cleanup(cleanup_id) for cleanup_id in cleanup_ids)
         remaining = RecipePhotoCleanup.objects.count()

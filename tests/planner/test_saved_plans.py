@@ -112,7 +112,7 @@ class SavedPlanTests(TestCase):
         today = timezone.localdate(timezone=JAKARTA)
         later = today + timedelta(days=3)
         response = self.api(
-            "modul1-plan-save",
+            "planner:save_plan",
             self.draft.pk,
             {"version": self.draft.version, "title": "Minggu Depan", "starts_on": later.isoformat()},
         )
@@ -132,10 +132,10 @@ class SavedPlanTests(TestCase):
         today = timezone.localdate(timezone=JAKARTA)
         stale = today - timedelta(days=2)
         BudgetPlan.objects.filter(pk=self.draft.pk).update(starts_on=stale)
-        page = self.client.get(reverse("modul1") + f"?plan={self.draft.pk}")
+        page = self.client.get(reverse("planner:show_planner") + f"?plan={self.draft.pk}")
         self.assertContains(page, f'value="{today:%Y-%m-%d}"')
         response = self.api(
-            "modul1-plan-save",
+            "planner:save_plan",
             self.draft.pk,
             {"version": self.draft.version, "title": "Lama", "starts_on": stale.isoformat()},
         )
@@ -144,8 +144,8 @@ class SavedPlanTests(TestCase):
 
     def test_deleted_plan_link_returns_to_planner_with_notice(self):
         saved = self.saved()
-        url = reverse("modul1")
-        self.api("modul1-plan-delete", saved.pk, {"version": saved.version})
+        url = reverse("planner:show_planner")
+        self.api("planner:delete_plan", saved.pk, {"version": saved.version})
         for response in (
             self.client.get(url, {"plan": str(saved.pk)}),
             self.client.post(url, {**self.inputs, "plan_id": str(saved.pk), "version": 1}),
@@ -159,14 +159,14 @@ class SavedPlanTests(TestCase):
         for bad in (today - timedelta(days=1), today + timedelta(days=MAX_START_DAYS + 1)):
             with self.subTest(day=bad):
                 response = self.api(
-                    "modul1-plan-save",
+                    "planner:save_plan",
                     self.draft.pk,
                     {"version": self.draft.version, "title": "X", "starts_on": bad.isoformat()},
                 )
                 self.assertEqual(response.status_code, 400)
                 self.assertIn("Tanggal mulai harus", response.json()["error"])
         response = self.api(
-            "modul1-plan-save",
+            "planner:save_plan",
             self.draft.pk,
             {"version": self.draft.version, "title": "X", "starts_on": "besok"},
         )
@@ -184,11 +184,11 @@ class SavedPlanTests(TestCase):
         later = timezone.localdate(timezone=JAKARTA) + timedelta(days=2)
         with self.assertRaises(PlanConflict):
             save_plan(self.user, saved.pk, saved.version, saved.title, later)
-        page = self.client.get(reverse("modul1") + f"?plan={saved.pk}")
+        page = self.client.get(reverse("planner:show_planner") + f"?plan={saved.pk}")
         self.assertContains(page, 'title="Sudah ada menu yang dimasak"')
 
     def test_generate_auto_persists_one_draft_and_no_saved_plan(self):
-        response = self.client.post(reverse("modul1"), self.generation_data(), follow=True)
+        response = self.client.post(reverse("planner:show_planner"), self.generation_data(), follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(BudgetPlan.objects.filter(user=self.user, status="draft").count(), 1)
         self.assertFalse(BudgetPlan.objects.filter(status="saved").exists())
@@ -200,10 +200,10 @@ class SavedPlanTests(TestCase):
         self.assertContains(response, "Simpan Rencana")
 
     def test_planner_alias_reads_and_updates_the_same_owned_draft(self):
-        response = self.client.get(reverse("planner"), {"plan": str(self.draft.pk)})
+        response = self.client.get(reverse("planner:show_planner"), {"plan": str(self.draft.pk)})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["plan"].pk, self.draft.pk)
-        response = self.client.post(reverse("planner"), self.generation_data(), follow=True)
+        response = self.client.post(reverse("planner:show_planner"), self.generation_data(), follow=True)
         self.assertEqual(response.status_code, 200)
         self.draft.refresh_from_db()
         self.assertEqual(self.draft.version, 2)
@@ -211,7 +211,7 @@ class SavedPlanTests(TestCase):
 
     def test_generate_again_rejects_stale_version(self):
         response = self.client.post(
-            reverse("modul1"), {**self.inputs, "plan_id": str(self.draft.pk), "version": 0}
+            reverse("planner:show_planner"), {**self.inputs, "plan_id": str(self.draft.pk), "version": 0}
         )
         self.assertEqual(response.status_code, 409)
         self.draft.refresh_from_db()
@@ -224,33 +224,33 @@ class SavedPlanTests(TestCase):
             if value is not None:
                 data["version"] = value
             with self.subTest(version=value):
-                self.assertEqual(self.client.post(reverse("modul1"), data).status_code, 400)
-        self.assertEqual(self.client.post(reverse("modul1"), self.inputs).status_code, 409)
+                self.assertEqual(self.client.post(reverse("planner:show_planner"), data).status_code, 400)
+        self.assertEqual(self.client.post(reverse("planner:show_planner"), self.inputs).status_code, 409)
         self.draft.refresh_from_db()
         self.assertEqual(self.draft.version, 1)
         self.assertEqual(self.draft.snapshot, before)
 
     def test_new_plan_requires_explicit_consent_and_matching_draft_identity_version(self):
         data = {**self.inputs, "new_plan": "1"}
-        self.assertEqual(self.client.post(reverse("modul1"), data).status_code, 409)
+        self.assertEqual(self.client.post(reverse("planner:show_planner"), data).status_code, 409)
         data.update(replace_draft_id=str(self.draft.pk), replace_draft_version=1)
-        self.assertEqual(self.client.post(reverse("modul1"), data).status_code, 409)
+        self.assertEqual(self.client.post(reverse("planner:show_planner"), data).status_code, 409)
         data["replace_draft"] = "1"
         self.update_draft()
-        self.assertEqual(self.client.post(reverse("modul1"), data).status_code, 409)
+        self.assertEqual(self.client.post(reverse("planner:show_planner"), data).status_code, 409)
         self.draft.refresh_from_db()
         self.assertEqual(self.draft.version, 2)
-        page = self.client.get(reverse("modul1") + "?new=1")
+        page = self.client.get(reverse("planner:show_planner") + "?new=1")
         self.assertContains(page, 'name="replace_draft"')
         self.assertContains(page, 'name="replace_draft_id"')
 
     def test_planner_opens_empty_and_a_new_plan_replaces_the_scratch_draft(self):
-        page = self.client.get(reverse("modul1"))
+        page = self.client.get(reverse("planner:show_planner"))
         self.assertIsNone(page.context["plan"])
         self.assertNotContains(page, "Draft terakhir")
         self.assertContains(page, '<input type="hidden" name="replace_draft" value="1">')
         response = self.client.post(
-            reverse("modul1"),
+            reverse("planner:show_planner"),
             {
                 **self.inputs,
                 "new_plan": "1",
@@ -263,14 +263,14 @@ class SavedPlanTests(TestCase):
         self.assertEqual(BudgetPlan.objects.filter(user=self.user, status="draft").count(), 1)
 
     def test_last_plan_is_offered_until_logout_or_new_plan(self):
-        planner = reverse("modul1")
+        planner = reverse("planner:show_planner")
         opened = planner + f"?plan={self.draft.pk}#hasil"
         self.client.get(planner, {"plan": str(self.draft.pk)})
         page = self.client.get(planner)
         self.assertIsNone(page.context["plan"])
         self.assertEqual(page.context["remembered_url"], opened)
         self.assertContains(page, 'sessionStorage.getItem("takarkuy-planner")')
-        self.client.post(reverse("logout"))
+        self.client.post(reverse("login:logout"))
         self.client.force_login(self.user)
         self.assertEqual(self.client.get(planner).context["remembered_url"], "")
         self.client.get(planner, {"plan": str(self.draft.pk)})
@@ -279,7 +279,7 @@ class SavedPlanTests(TestCase):
 
     def test_first_draft_can_be_created_without_version_when_none_exists(self):
         self.client.force_login(self.other)
-        response = self.client.post(reverse("modul1"), {**self.inputs, "new_plan": "1"})
+        response = self.client.post(reverse("planner:show_planner"), {**self.inputs, "new_plan": "1"})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(BudgetPlan.objects.get(user=self.other, status="draft").version, 1)
 
@@ -300,10 +300,10 @@ class SavedPlanTests(TestCase):
                 payload.update(day=1, meal="sarapan", recipe=self.quotes[-1][1])
             else:
                 payload.update(inputs=self.inputs)
-            response = self.api("modul1-plan-preview", saved.pk, payload)
+            response = self.api("planner:preview_plan", saved.pk, payload)
             self.assertEqual(response.status_code, 200)
             preview = PlanPreview.objects.get(pk=response.json()["id"])
-            rejected = self.api("modul1-preview-apply", preview.pk, {})
+            rejected = self.api("planner:apply_preview", preview.pk, {})
             self.assertEqual(rejected.status_code, 409)
             preview.refresh_from_db()
             self.assertIsNone(preview.used_at)
@@ -335,7 +335,7 @@ class SavedPlanTests(TestCase):
 
     def test_save_without_date_starts_today(self):
         response = self.api(
-            "modul1-plan-save", self.draft.pk, {"version": self.draft.version, "title": "Plan"}
+            "planner:save_plan", self.draft.pk, {"version": self.draft.version, "title": "Plan"}
         )
         self.assertEqual(response.status_code, 200)
         saved = BudgetPlan.objects.get(status="saved")
@@ -404,7 +404,7 @@ class SavedPlanTests(TestCase):
     def test_stock_saving_note_not_repeated_under_net_cost(self):
         draft, stock = self.stocked_draft()
         self.add_pantry(stock)
-        page = self.client.get(reverse("modul1") + f"?plan={draft.pk}")
+        page = self.client.get(reverse("planner:show_planner") + f"?plan={draft.pk}")
         self.assertContains(page, "Nilai menu")
         self.assertNotContains(page, "belanja bisa berkurang")
 
@@ -458,7 +458,7 @@ class SavedPlanTests(TestCase):
     def test_pages_show_net_shopping_cost_not_full_menu_value(self):
         draft, stock = self.stocked_draft()
         net = thaw(draft.snapshot)["net_total"]
-        page = self.client.get(reverse("modul1") + f"?plan={draft.pk}")
+        page = self.client.get(reverse("planner:show_planner") + f"?plan={draft.pk}")
         self.assertContains(page, f'<p class="big">Rp {net:,} <span>'.replace(",", "."))
         preview = preview_data(self.replacement(draft, code=self.quotes[0][1]))
         self.assertEqual(preview["before"], net)
@@ -493,9 +493,9 @@ class SavedPlanTests(TestCase):
 
     def test_missing_versions_rejected_for_all_plan_mutation_apis(self):
         requests = (
-            ("modul1-plan-preview", {"action": "parameters", "inputs": self.inputs}),
-            ("modul1-plan-save", {"title": "Judul", "starts_on": "2026-10-05"}),
-            ("modul1-plan-delete", {}),
+            ("planner:preview_plan", {"action": "parameters", "inputs": self.inputs}),
+            ("planner:save_plan", {"title": "Judul", "starts_on": "2026-10-05"}),
+            ("planner:delete_plan", {}),
         )
         for endpoint, data in requests:
             self.assertEqual(self.api(endpoint, self.draft.pk, data).status_code, 409)
@@ -505,9 +505,9 @@ class SavedPlanTests(TestCase):
     def test_new_plan_clears_saved_source_without_modifying_saved_plan(self):
         saved = self.saved()
         self.draft.refresh_from_db()
-        self.assertIsNone(self.client.get(reverse("modul1") + "?new=1").context["plan"])
+        self.assertIsNone(self.client.get(reverse("planner:show_planner") + "?new=1").context["plan"])
         response = self.client.post(
-            reverse("modul1"),
+            reverse("planner:show_planner"),
             {
                 **self.inputs,
                 "new_plan": "1",
@@ -525,12 +525,12 @@ class SavedPlanTests(TestCase):
         self.assertEqual(saved.title, "Minggu Ini")
 
     def test_numeric_budget_rejects_non_decimal_unicode_without_crashing(self):
-        response = self.client.post(reverse("modul1"), {**self.inputs, "budget": "²"})
+        response = self.client.post(reverse("planner:show_planner"), {**self.inputs, "budget": "²"})
         self.assertEqual(response.status_code, 200)
         self.assertIn("budget", response.context["form"].errors)
 
     def test_success_redirects_and_reload_preserves_generated_draft(self):
-        response = self.client.post(reverse("modul1"), self.generation_data())
+        response = self.client.post(reverse("planner:show_planner"), self.generation_data())
         self.assertEqual(response.status_code, 302)
         self.draft.refresh_from_db()
         before = deepcopy(self.draft.snapshot)
@@ -554,7 +554,7 @@ class SavedPlanTests(TestCase):
 
     def test_failed_generation_keeps_previous_draft(self):
         original = self.draft.snapshot
-        response = self.client.post(reverse("modul1"), self.generation_data(budget="1"))
+        response = self.client.post(reverse("planner:show_planner"), self.generation_data(budget="1"))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["result"]["within_budget"])
         self.draft.refresh_from_db()
@@ -563,15 +563,15 @@ class SavedPlanTests(TestCase):
     def test_draft_is_available_in_second_browser_only_to_owner(self):
         second = Client()
         second.force_login(self.user)
-        self.assertIsNone(second.get(reverse("modul1")).context["plan"])
-        response = second.get(reverse("modul1") + f"?plan={self.draft.pk}")
+        self.assertIsNone(second.get(reverse("planner:show_planner")).context["plan"])
+        response = second.get(reverse("planner:show_planner") + f"?plan={self.draft.pk}")
         self.assertEqual(response.context["plan"].pk, self.draft.pk)
         second.force_login(self.other)
         self.assertRedirects(
-            second.get(reverse("modul1") + f"?plan={self.draft.pk}"),
-            reverse("modul1") + "?hilang=1",
+            second.get(reverse("planner:show_planner") + f"?plan={self.draft.pk}"),
+            reverse("planner:show_planner") + "?hilang=1",
         )
-        self.assertIsNone(second.get(reverse("modul1")).context["plan"])
+        self.assertIsNone(second.get(reverse("planner:show_planner")).context["plan"])
         self.assertIn("no-store", response["Cache-Control"])
 
     def test_unique_draft_constraint(self):
@@ -611,17 +611,17 @@ class SavedPlanTests(TestCase):
         saved = self.saved()
         before = deepcopy(saved.snapshot)
         Recipe.objects.filter(pk=self.quotes[0][1]).update(name="Nama berubah")
-        self.client.post(reverse("modul1"), self.generation_data())
+        self.client.post(reverse("planner:show_planner"), self.generation_data())
         saved.refresh_from_db()
         self.assertEqual(saved.snapshot, before)
-        response = self.client.get(reverse("modul1") + f"?plan={saved.pk}")
+        response = self.client.get(reverse("planner:show_planner") + f"?plan={saved.pk}")
         self.assertEqual(response.context["result"], thaw(before))
         self.assertContains(response, "Minggu Ini")
 
     def test_save_metadata_and_delete_with_ownership_and_versions(self):
         saved = self.saved()
         response = self.api(
-            "modul1-plan-save",
+            "planner:save_plan",
             saved.pk,
             {"version": 1, "title": "  Bekal   Kantor "},
         )
@@ -629,43 +629,43 @@ class SavedPlanTests(TestCase):
         saved.refresh_from_db()
         self.assertEqual(saved.title, "Bekal Kantor")
         self.assertEqual(saved.meals.get().scheduled_on, timezone.localdate(timezone=JAKARTA))
-        self.assertEqual(self.api("modul1-plan-delete", saved.pk, {"version": 1}).status_code, 409)
-        self.assertEqual(self.api("modul1-plan-delete", saved.pk, {"version": 2}).status_code, 200)
+        self.assertEqual(self.api("planner:delete_plan", saved.pk, {"version": 1}).status_code, 409)
+        self.assertEqual(self.api("planner:delete_plan", saved.pk, {"version": 2}).status_code, 200)
         self.assertFalse(PlannedMeal.objects.filter(plan_id=saved.pk).exists())
         self.assertFalse(ShoppingListItem.objects.filter(plan_id=saved.pk).exists())
         self.assertTrue(Recipe.objects.filter(pk=self.quotes[0][1]).exists())
 
     def test_guests_cannot_access_mutations_or_alternatives(self):
         guest = Client()
-        for name in ("modul1-plan-save", "modul1-plan-delete", "modul1-plan-preview"):
+        for name in ("planner:save_plan", "planner:delete_plan", "planner:preview_plan"):
             self.assertEqual(self.api(name, self.draft.pk, {}, guest).status_code, 401)
         self.assertEqual(
-            guest.get(reverse("modul1-plan-alternatives", args=[self.draft.pk])).status_code, 401
+            guest.get(reverse("planner:recipe_alternatives", args=[self.draft.pk])).status_code, 401
         )
         preview = self.replacement()
-        self.assertEqual(self.api("modul1-preview-apply", preview.pk, {}, guest).status_code, 401)
+        self.assertEqual(self.api("planner:apply_preview", preview.pk, {}, guest).status_code, 401)
 
     def test_foreign_owner_cannot_read_modify_delete_or_apply(self):
         other = Client()
         other.force_login(self.other)
-        for name in ("modul1-plan-save", "modul1-plan-delete", "modul1-plan-preview"):
+        for name in ("planner:save_plan", "planner:delete_plan", "planner:preview_plan"):
             self.assertEqual(self.api(name, self.draft.pk, {"version": 1}, other).status_code, 404)
         self.assertEqual(
-            other.get(reverse("modul1-plan-alternatives", args=[self.draft.pk])).status_code, 404
+            other.get(reverse("planner:recipe_alternatives", args=[self.draft.pk])).status_code, 404
         )
         preview = self.replacement()
-        self.assertEqual(self.api("modul1-preview-apply", preview.pk, {}, other).status_code, 404)
+        self.assertEqual(self.api("planner:apply_preview", preview.pk, {}, other).status_code, 404)
         self.assertTrue(BudgetPlan.objects.filter(pk=self.draft.pk).exists())
 
     def test_csrf_required(self):
         guarded = Client(enforce_csrf_checks=True)
         guarded.force_login(self.user)
         self.assertEqual(
-            self.api("modul1-plan-delete", self.draft.pk, {"version": 1}, guarded).status_code, 403
+            self.api("planner:delete_plan", self.draft.pk, {"version": 1}, guarded).status_code, 403
         )
 
     def test_method_json_and_payload_validation(self):
-        url = reverse("modul1-plan-preview", args=[self.draft.pk])
+        url = reverse("planner:preview_plan", args=[self.draft.pk])
         self.assertEqual(self.client.get(url).status_code, 405)
         self.assertEqual(self.client.post(url, {}).status_code, 415)
         for body in ("{", "[]", '"string"'):
@@ -682,12 +682,12 @@ class SavedPlanTests(TestCase):
             {"version": 1, "action": "replace", "day": 1, "meal": [], "recipe": "fake"},
         ):
             self.assertIn(
-                self.api("modul1-plan-preview", self.draft.pk, payload).status_code, (400, 409)
+                self.api("planner:preview_plan", self.draft.pk, payload).status_code, (400, 409)
             )
 
     def test_malformed_draft_id_shows_friendly_conflict(self):
         response = self.client.post(
-            reverse("modul1"),
+            reverse("planner:show_planner"),
             {
                 **self.inputs,
                 "new_plan": "1",
@@ -706,7 +706,7 @@ class SavedPlanTests(TestCase):
             {"title": {}},
         ):
             response = self.api(
-                "modul1-plan-save",
+                "planner:save_plan",
                 self.draft.pk,
                 {"version": 1, "title": "Plan", "starts_on": "2026-10-05", **changes},
             )
@@ -714,7 +714,7 @@ class SavedPlanTests(TestCase):
 
     def test_alternatives_same_meal_and_exclude_current(self):
         response = self.client.get(
-            reverse("modul1-plan-alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
+            reverse("planner:recipe_alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
         )
         self.assertEqual(response.status_code, 200)
         codes = {row["recipe_code"] for row in response.json()["recipes"]}
@@ -725,10 +725,10 @@ class SavedPlanTests(TestCase):
     def test_missing_plan_returns_json_not_html(self):
         missing = "00000000-0000-0000-0000-000000000000"
         alternatives = self.client.get(
-            reverse("modul1-plan-alternatives", args=[missing]), {"day": 1, "meal": "sarapan"}
+            reverse("planner:recipe_alternatives", args=[missing]), {"day": 1, "meal": "sarapan"}
         )
         preview = self.api(
-            "modul1-plan-preview",
+            "planner:preview_plan",
             missing,
             {"action": "parameters", "inputs": self.inputs, "version": 1},
         )
@@ -738,7 +738,7 @@ class SavedPlanTests(TestCase):
 
     def test_alternatives_include_price_difference(self):
         response = self.client.get(
-            reverse("modul1-plan-alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
+            reverse("planner:recipe_alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
         )
         rows = response.json()["recipes"]
         self.assertTrue(rows)
@@ -752,14 +752,14 @@ class SavedPlanTests(TestCase):
     def test_generate_uses_the_preview_quota(self):
         self.exhaust_quota()
         with patch("apps.planner.views.build_plan") as builder:
-            response = self.client.post(reverse("modul1"), self.generation_data())
+            response = self.client.post(reverse("planner:show_planner"), self.generation_data())
         self.assertEqual(response.status_code, 429)
         builder.assert_not_called()
 
     def test_alternatives_use_the_preview_quota(self):
         self.exhaust_quota()
         response = self.client.get(
-            reverse("modul1-plan-alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
+            reverse("planner:recipe_alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
         )
         self.assertEqual(response.status_code, 429)
         self.assertIn("Retry-After", response)
@@ -772,7 +772,7 @@ class SavedPlanTests(TestCase):
         draft.snapshot = freeze(snapshot)
         draft.save()
         response = self.client.get(
-            reverse("modul1-plan-alternatives", args=[draft.pk]), {"day": 1, "meal": "sarapan"}
+            reverse("planner:recipe_alternatives", args=[draft.pk]), {"day": 1, "meal": "sarapan"}
         )
         live = build_plan(
             **clean_inputs(draft.inputs).cleaned_data,
@@ -793,7 +793,7 @@ class SavedPlanTests(TestCase):
         hidden = self.quotes[-1][1]
         RecipeTag.objects.filter(recipe_id=hidden, tag="halal").delete()
         response = self.client.get(
-            reverse("modul1-plan-alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
+            reverse("planner:recipe_alternatives", args=[self.draft.pk]), {"day": 1, "meal": "sarapan"}
         )
         codes = [row["recipe_code"] for row in response.json()["recipes"]]
         self.assertNotIn(hidden, codes)
@@ -802,7 +802,7 @@ class SavedPlanTests(TestCase):
     def test_preview_is_non_mutating_and_server_calculated(self):
         original = deepcopy(self.draft.snapshot)
         response = self.api(
-            "modul1-plan-preview",
+            "planner:preview_plan",
             self.draft.pk,
             {
                 "version": 1,
@@ -981,7 +981,7 @@ class SavedPlanTests(TestCase):
     def test_saved_parameter_post_only_previews_changes(self):
         saved = self.saved()
         response = self.client.post(
-            reverse("modul1"),
+            reverse("planner:show_planner"),
             {**self.inputs, "days": 2, "plan_id": str(saved.pk), "version": saved.version},
         )
         self.assertEqual(response.status_code, 200)
@@ -1003,7 +1003,7 @@ class SavedPlanTests(TestCase):
         with self.assertRaises(PlanConflict):
             self.replacement()
         self.assertEqual(
-            self.api("modul1-plan-delete", self.draft.pk, {"version": 1}).status_code, 200
+            self.api("planner:delete_plan", self.draft.pk, {"version": 1}).status_code, 200
         )
         self.assertFalse(BudgetPlan.objects.filter(pk=self.draft.pk).exists())
 

@@ -12,12 +12,17 @@ from .models import AuthRateBucket
 
 
 class AuthLimited(ValueError):
+    """Dilempar saat batas percobaan auth terlampaui; membawa retry_after dalam detik."""
+
     def __init__(self, retry_after):
+        """Simpan retry_after (minimal 1 detik) dan pesan error berbahasa Indonesia."""
         self.retry_after = max(1, retry_after)
         super().__init__("Terlalu banyak percobaan. Silakan coba lagi nanti.")
 
 
 def client_ip(request):
+    """IP klien: X-Forwarded-For hanya dipercaya bila REMOTE_ADDR adalah proxy tepercaya;
+    ambil alamat pertama dari kanan yang bukan proxy, "unknown" bila REMOTE_ADDR tidak valid."""
     peer = request.META.get("REMOTE_ADDR", "")
     try:
         address = ipaddress.ip_address(peer)
@@ -40,6 +45,8 @@ def client_ip(request):
 
 @transaction.atomic
 def reserve_auth_attempt(request, action, identity, *, now=None):
+    """Tambah hitungan percobaan per identitas/akun dan per IP dalam jendela 15 menit;
+    lempar AuthLimited bila batas tercapai, lalu hapus bucket yang kedaluwarsa lebih dari sehari."""
     now = now or datetime.now(timezone.utc)
     window = 900
     start = int(now.timestamp()) // window * window

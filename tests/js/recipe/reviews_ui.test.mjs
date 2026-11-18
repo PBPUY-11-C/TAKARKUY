@@ -13,7 +13,7 @@ class Element{
 }
 function setup(){
   const rows=new Map(),get=k=>{if(!rows.has(k))rows.set(k,new Element());return rows.get(k);};
-  get('#review-form').dataset={code:'TEST',url:'/modul4/review/',photoDeleteUrl:'/modul4/review/photo/delete/',version:'2'};
+  get('#review-form').dataset={code:'TEST',url:'/recipes/review/',photoDeleteUrl:'/recipes/review/photo/delete/',version:'2'};
   const elements={rating:{value:'5'},comment:{value:'<script>user text</script>'},
     photo:Object.assign(new Element(),{files:[]}),photo_permission:{checked:false}};
   elements.namedItem=name=>elements[name]??null;

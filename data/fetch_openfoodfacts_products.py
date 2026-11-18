@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch a bounded, review-only Indonesian packaged-food snapshot from Open Food Facts."""
+"""Mengambil snapshot terbatas produk kemasan Indonesia dari Open Food Facts, hanya untuk review."""
 
 import argparse
 import csv
@@ -55,6 +55,9 @@ CSV_FIELDS = (
 
 
 def get_page(page, page_size, brand=None):
+    """Mengambil satu halaman produk populer Indonesia (opsional per merek) dari API OFF.
+    Mencoba ulang hingga 3 kali dengan jeda bertambah untuk error jaringan, 429, atau 5xx.
+    """
     params = {
         "countries_tags_en": "indonesia",
         "page": page,
@@ -79,12 +82,16 @@ def get_page(page, page_size, brand=None):
 
 
 def number(value):
+    """Mengembalikan nilai bila berupa angka (bukan bool); selain itu string kosong."""
     if isinstance(value, (int, float)) and not isinstance(value, bool):
         return value
     return ""
 
 
 def stage(product):
+    """Meratakan satu produk OFF menjadi baris CSV staging: gizi per 100 g, flag kelengkapan
+    gizi, jumlah error kualitas data, dan status candidate_not_for_planner.
+    """
     nutriments = product.get("nutriments") or {}
     energy = number(nutriments.get("energy-kcal_100g"))
     protein = number(nutriments.get("proteins_100g"))
@@ -118,6 +125,9 @@ def stage(product):
 
 
 def main():
+    """Mengambil 1-3 halaman produk populer plus satu halaman merek, menyaring barcode valid,
+    lalu menulis snapshot mentah JSON di raw/ dan CSV review di staging/.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pages", type=int, default=2, help="Popular Indonesia pages, at most 3")
     parser.add_argument("--page-size", type=int, default=100, help="Products per page, at most 100")

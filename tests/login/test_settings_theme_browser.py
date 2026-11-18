@@ -52,13 +52,13 @@ class SettingsThemeBrowserTests(StaticLiveServerTestCase):
             }])
             page = context.new_page()
             page.on("pageerror", lambda error: errors.append(str(error)))
-            for route in ("modul3", "food-preferences", "password-change"):
+            for route in ("login:show_profile", "login:food_preferences", "login:change_password"):
                 response = page.goto(self.live_server_url + reverse(route))
                 self.assertEqual(response.status, 200)
                 expect(page.locator("html")).to_have_attribute("data-theme", "dark")
                 expect(page.get_by_role("heading", name="Pengaturan profil", exact=True)).to_be_visible()
                 problems.extend({"page": route, **row} for row in page.evaluate(CONTRAST_AUDIT))
-                if route == "food-preferences":
+                if route == "login:food_preferences":
                     # Audit selected allergy/ingredient controls, not just empty defaults.
                     expect(page.locator('[name="allergens"][value="telur"]')).to_be_checked()
                     expect(page.locator("[data-selected-ingredients]")).to_contain_text("Bahan uji")

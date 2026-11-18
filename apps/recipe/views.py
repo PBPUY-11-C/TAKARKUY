@@ -53,8 +53,11 @@ FILTER_SLOW_MS = 500
 
 
 def api(view):
+    """Decorator endpoint JSON: wajib login, POST, body JSON objek maks 40 KB.
+    Error domain diubah jadi respons JSON berstatus sesuai dan hasilnya tidak di-cache."""
     @wraps(view)
     def wrapped(request):
+        """Memvalidasi request, memanggil view dengan data JSON, lalu memetakan error ke status HTTP."""
         if not request.user.is_authenticated:
             return JsonResponse({"error": "Silakan masuk kembali."}, status=403)
         if request.method != "POST":
@@ -92,6 +95,7 @@ def api(view):
 @api
 @transaction.atomic
 def set_favorite(request, data):
+    """Menandai atau melepas favorit; menandai hanya untuk resep yang lolos preferensi dan alergi."""
     from django.contrib.auth import get_user_model
 
     if not isinstance(data.get("recipe_code"), str) or type(data.get("favorite")) is not bool:
@@ -111,6 +115,7 @@ def set_favorite(request, data):
 @api
 @transaction.atomic
 def save_recipe_note(request, data):
+    """Menyimpan catatan pribadi resep maks 2000 karakter; catatan kosong berarti menghapusnya."""
     from django.contrib.auth import get_user_model
 
     code = data.get("recipe_code")
@@ -133,6 +138,7 @@ def save_recipe_note(request, data):
 
 @api
 def estimate_recipe_cost(request, data):
+    """Endpoint estimasi biaya resep untuk 1 sampai 10 porsi; memakai kuota Buku Resep."""
     code = data.get("recipe_code")
     servings = data.get("servings")
     if not isinstance(code, str) or not 1 <= len(code) <= 100:
@@ -146,23 +152,27 @@ def estimate_recipe_cost(request, data):
 
 @api
 def cooking_preview(request, data):
+    """Endpoint pratinjau pemakaian stok sebelum Sudah Masak; memakai kuota Buku Resep."""
     reserve_recipe_book_preview(request.user)
     return JsonResponse(preview_cooking(request.user, data))
 
 
 @api
 def record_cooking(request, data):
+    """Endpoint Sudah Masak: mencatat riwayat dan mengurangi stok, membalas status 201."""
     return JsonResponse(cook(request.user, data), status=201)
 
 
 @api
 def set_slot_status(request, data):
+    """Endpoint untuk melewati menu rencana atau membatalkan lewati."""
     return JsonResponse(change_slot_status(request.user, data))
 
 
 @api
 @transaction.atomic
 def report_recipe_data(request, data):
+    """Membuat laporan data resep (detail 5 sampai 1000 karakter), dibatasi 5 laporan per jam."""
     from django.contrib.auth import get_user_model
 
     get_user_model().objects.select_for_update().get(pk=request.user.pk)
@@ -190,11 +200,13 @@ def report_recipe_data(request, data):
 
 @api
 def recipe_review(request, data):
+    """Endpoint menyimpan atau menghapus ulasan resep milik pengguna."""
     return JsonResponse(write_review(request.user, data))
 
 
 @api
 def recipe_review_photo_delete(request, data):
+    """Endpoint melepas foto dari ulasan milik pengguna dengan cek version."""
     return JsonResponse(
         delete_review_photo(request.user, data.get("recipe_code"), data.get("version"))
     )
@@ -203,6 +215,8 @@ def recipe_review_photo_delete(request, data):
 @login_required
 @require_POST
 def recipe_review_photo(request):
+    """Endpoint multipart unggah foto ulasan; menolak request di atas 7 MB sebelum file diproses.
+    Foto baru tersimpan dalam status menunggu moderation."""
     try:
         request_size = int(request.META.get("CONTENT_LENGTH") or 0)
     except ValueError:
@@ -236,6 +250,8 @@ def recipe_review_photo(request):
 
 @login_required
 def recipe_review_photo_file(request, review_id):
+    """Mengirim file foto ulasan; foto belum lolos moderation hanya untuk pemilik dan staf.
+    Version usang ditolak, dan hanya foto publik yang boleh di-cache."""
     review = get_object_or_404(RecipeReview, pk=review_id)
     requested_version = request.GET.get("v")
     if requested_version is not None and requested_version != str(review.version):
@@ -272,6 +288,8 @@ def recipe_review_photo_file(request, review_id):
 
 @login_required
 def book_page(request):
+    """Halaman Buku Resep: daftar resep dengan filter cari, waktu makan, harga, stok, dan favorit,
+    plus detail resep terpilih atau slot rencana, riwayat masak, dan ulasan."""
     profile = preferences_for(request.user)
     groups = effective_allergens(request.user, preference=profile)
     avoided_ingredient_ids = list(

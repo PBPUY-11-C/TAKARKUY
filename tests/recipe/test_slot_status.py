@@ -21,7 +21,7 @@ class SlotStatusTests(TestCase):
 
     def status(self, slot, status, version=None):
         return self.post(
-            "modul4-slot-status",
+            "recipe:set_slot_status",
             {
                 "planned_meal": slot.pk,
                 "status": status,
@@ -82,7 +82,7 @@ class SlotStatusTests(TestCase):
         self.assertEqual(needs[rice.pk], 160)
         self.assertIn("nasi pendamping", ingredients[0]["name"])
         self.assertEqual(nutrition["calories"], "590.0")
-        response = self.client.get(reverse("modul4") + f"?slot={slot.pk}")
+        response = self.client.get(reverse("recipe:show_recipes") + f"?slot={slot.pk}")
         self.assertContains(response, "dengan nasi dari rencana")
         self.assertEqual(response.context["detail"]["servings"], slot.servings)
         self.assertEqual(response.context["staple"]["label"], "Nasi")
@@ -93,15 +93,15 @@ class SlotStatusTests(TestCase):
 
     def test_page_offers_skip_only_for_planned_slots(self):
         slot = self.slot()
-        response = self.client.get(reverse("modul4") + f"?slot={slot.pk}")
+        response = self.client.get(reverse("recipe:show_recipes") + f"?slot={slot.pk}")
         self.assertContains(response, "Lewati menu ini")
         slot.status = "skipped"
         slot.save()
-        response = self.client.get(reverse("modul4") + f"?slot={slot.pk}")
+        response = self.client.get(reverse("recipe:show_recipes") + f"?slot={slot.pk}")
         self.assertContains(response, "Batalkan lewati")
 
     def test_missing_slot_shows_error_instead_of_first_recipe(self):
-        response = self.client.get(reverse("modul4") + "?slot=999999")
+        response = self.client.get(reverse("recipe:show_recipes") + "?slot=999999")
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Menu rencana tidak ditemukan.")
@@ -111,7 +111,7 @@ class SlotStatusTests(TestCase):
         slot = self.slot()
         Recipe.objects.filter(pk=self.recipe.pk).update(is_active=False)
 
-        response = self.client.get(reverse("modul4") + f"?slot={slot.pk}")
+        response = self.client.get(reverse("recipe:show_recipes") + f"?slot={slot.pk}")
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Resep tidak tersedia atau tidak sesuai preferensi/alergi.")
@@ -119,17 +119,17 @@ class SlotStatusTests(TestCase):
 
     def test_price_filter_hides_recipes_above_limit(self):
         with patch("apps.recipe.views.recipe_costs", return_value={"TEST-SUP": 12000}):
-            cheap = self.client.get(reverse("modul4") + "?max_price=10000")
-            fits = self.client.get(reverse("modul4") + "?max_price=15000")
+            cheap = self.client.get(reverse("recipe:show_recipes") + "?max_price=10000")
+            fits = self.client.get(reverse("recipe:show_recipes") + "?max_price=15000")
         self.assertEqual(cheap.context["recipes"].paginator.count, 0)
         self.assertEqual(fits.context["recipes"].paginator.count, 1)
-        other = self.client.get(reverse("modul4") + "?max_price=123")
+        other = self.client.get(reverse("recipe:show_recipes") + "?max_price=123")
         self.assertIsNone(other.context["max_price"])
 
     def test_recipe_filter_logs_candidate_count_and_duration(self):
         self.batch()
         with self.assertLogs("apps.recipe.views", level="INFO") as logs:
-            response = self.client.get(reverse("modul4") + "?stock=complete")
+            response = self.client.get(reverse("recipe:show_recipes") + "?stock=complete")
         self.assertEqual(response.status_code, 200)
         self.assertTrue(any(
             "filter=stock_complete" in row
@@ -178,7 +178,7 @@ class SlotStatusTests(TestCase):
         now = datetime(2026, 10, 8, 18, 0, tzinfo=dt_timezone.utc)
         self.batch(estimated_expires_on=date(2026, 10, 11))
         with patch("django.utils.timezone.now", return_value=now):
-            response = self.client.get(reverse("modul4") + "?stock=soon")
+            response = self.client.get(reverse("recipe:show_recipes") + "?stock=soon")
         self.assertEqual(response.context["recipes"].paginator.count, 1)
 
     def test_recipe_costs_skips_recipes_without_prices(self):

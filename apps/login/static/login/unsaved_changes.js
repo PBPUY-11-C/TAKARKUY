@@ -3,9 +3,11 @@
   const forms = [...document.querySelectorAll('.settings-panel form')];
   if (!popup || !forms.length) return;
 
+  // Serialisasi isi semua form pengaturan (tanpa CSRF, version, action) untuk dibandingkan.
   const snapshot = () => JSON.stringify(forms.map(form => [...new FormData(form)]
     .filter(([name]) => !['csrfmiddlewaretoken', 'version', 'action'].includes(name))));
   const original = snapshot();
+  // True bila server menandai form kotor sejak awal atau isi form berubah dari snapshot awal.
   const dirty = () => popup.dataset.initialDirty === 'true' || snapshot() !== original;
   let leaving = false;
   let pending;
@@ -22,6 +24,7 @@
       (event.shiftKey ? last : first).focus();
     }
   });
+  // Minta konfirmasi sebelum meninggalkan halaman; dialog modal, atau window.confirm sebagai cadangan.
   function confirmLeave(action) {
     if (typeof popup.showModal !== 'function') {
       if (window.confirm('Perubahan belum disimpan. Tinggalkan?')) {

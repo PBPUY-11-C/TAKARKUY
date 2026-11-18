@@ -17,6 +17,7 @@ from .services import dashboard_data
 
 @login_required
 def dashboard_page(request):
+    """Halaman beranda: data dashboard, peta pasar, dan 5 resep pribadi terbaru; tidak di-cache."""
     my_recipes = MyRecipe.objects.filter(user=request.user)
     response = render(
         request,
@@ -37,6 +38,7 @@ def dashboard_page(request):
 
 @api
 def market_lookup(request, data):
+    """Endpoint JSON pencarian pasar; kuota pencarian yang habis dibalas 429 dengan Retry-After."""
     try:
         return JsonResponse(lookup_places(request.user, data))
     except MapLimited as exc:
@@ -46,36 +48,40 @@ def market_lookup(request, data):
 
 @login_required
 def my_recipe_create(request):
+    """Form tambah resep pribadi; setelah tersimpan kembali ke bagian resep saya di beranda."""
     form = MyRecipeForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         recipe = form.save(commit=False)
         recipe.user = request.user
         recipe.save()
         messages.success(request, "Resep disimpan.")
-        return redirect(reverse("modul5") + "#resep-saya")
+        return redirect(reverse("home:show_dashboard") + "#resep-saya")
     
     return render(request, "home/my_recipe_form.html", {"form": form, "judul": "Tambah resep"})
 
 @login_required
 def my_recipe_detail(request, pk):
+    """Detail resep pribadi; 404 jika resep bukan milik pengguna yang login."""
     recipe = get_object_or_404(MyRecipe, pk=pk, user=request.user)
     return render(request, "home/my_recipe_detail.html", {"recipe": recipe})
 
 @login_required
 def my_recipe_edit(request, pk):
+    """Form edit resep pribadi milik pengguna; setelah tersimpan diarahkan ke halaman detailnya."""
     recipe = get_object_or_404(MyRecipe, pk=pk, user=request.user)
     form = MyRecipeForm(request.POST or None, instance=recipe)
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, "Resep diperbarui.")
-        return redirect("modul5-recipe-detail", pk=recipe.pk)
+        return redirect("home:show_recipe", pk=recipe.pk)
     return render(request, "home/my_recipe_form.html", {"form": form, "judul": "Edit resep", "recipe": recipe})
 
 
 @login_required
 @require_POST
 def my_recipe_delete(request, pk):
+    """Menghapus resep pribadi milik pengguna (hanya POST), lalu kembali ke beranda."""
     recipe = get_object_or_404(MyRecipe, pk=pk, user=request.user)
     recipe.delete()
     messages.success(request, "Resep dihapus.")
-    return redirect("modul5")
+    return redirect("home:show_dashboard")

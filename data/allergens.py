@@ -1,4 +1,4 @@
-"""Reviewed ID mapping; no runtime guessing from ingredient names."""
+"""Mapping alergen per ID bahan yang sudah ditinjau; tidak menebak dari nama bahan saat runtime."""
 
 import csv
 import json
@@ -20,6 +20,9 @@ KEYS = {
 
 
 def build_allergens(items):
+    """Menempelkan data alergen dari mapping CSV ke tiap bahan dan mengembalikan baris tabelnya.
+    Bahan tanpa mapping ditandai unknown; mapping duplikat, kelompok asing, atau status salah ditolak.
+    """
     path = Path(__file__).resolve().parent / "mapping/ingredient_allergens.csv"
     with path.open(encoding="utf-8", newline="") as stream:
         rows = list(csv.DictReader(stream))

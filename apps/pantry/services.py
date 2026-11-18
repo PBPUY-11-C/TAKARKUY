@@ -1,4 +1,4 @@
-"""Transactional stock services."""
+"""Layanan stok pantry yang berjalan di dalam transaksi database."""
 
 import hashlib
 import json
@@ -18,13 +18,19 @@ from .models import PantryItem, PantryLLMUsage, PantryMovement, PantryOperation
 
 
 class StockError(Exception):
+    """Error operasi stok yang membawa pesan untuk pengguna dan kode status HTTP (default 409)."""
+
     def __init__(self, message, status=409):
+        """Menyimpan pesan error dan status HTTP yang akan dikirim view."""
         super().__init__(message)
         self.status = status
 
 
 def reserve_llm(user, kind):
-    """Count paid attempts, including errors, across devices before making the call."""
+    """Mencatat satu percobaan AI berbayar sebelum panggilan dilakukan, termasuk yang nanti gagal.
+
+    Dihitung lintas perangkat per hari WIB; lebih dari 10 per jenis memicu StockError 429.
+    """
     if user is None or kind not in {"photo", "names", "shelf"}:
         raise StockError("Akun diperlukan untuk AI.", 400)
     with transaction.atomic():
@@ -40,6 +46,10 @@ def reserve_llm(user, kind):
 
 
 def conversion(unit, ingredient_id, pack_weight_g=None):
+    """Menentukan (satuan dasar, gram per unit, catatan) dari satuan, berat kemasan, atau katalog.
+
+    Konversi katalog hanya dipakai bila statusnya terverifikasi; jika tidak ada, gram per unit None.
+    """
     base = "g" if unit in {"g", "kg"} else "ml" if unit in {"ml", "liter"} else "pcs"
     if unit in {"g", "kg"}:
         return base, Decimal(1 if unit == "g" else 1000), "Satuan berat."
@@ -67,12 +77,14 @@ def conversion(unit, ingredient_id, pack_weight_g=None):
 
 
 def refresh_conversion(item):
+    """Mengisi ulang base_unit, grams_per_unit, dan conversion_note item (belum disimpan)."""
     item.base_unit, item.grams_per_unit, item.conversion_note = conversion(
         item.unit, item.ingredient_id, item.pack_weight_g
     )
 
 
 def snapshot(item):
+    """Salinan field penting item sebagai string untuk riwayat movement; None jadi ""."""
     return {
         field: str(getattr(item, field)) if getattr(item, field) is not None else ""
         for field in (
@@ -97,6 +109,7 @@ def snapshot(item):
 
 
 def movement(item, operation, kind, before, *, consumed_grams=None):
+    """Mencatat PantryMovement dengan jumlah sebelum/sesudah serta snapshot kondisi item."""
     PantryMovement.objects.create(
         batch=item,
         operation=operation,
@@ -109,7 +122,10 @@ def movement(item, operation, kind, before, *, consumed_grams=None):
 
 
 def operation(user, key, kind, payload):
-    """Must be called inside atomic."""
+    """Mendaftarkan idempotency key aksi; mengembalikan (operation, sudah_pernah_ada).
+
+    Wajib dipanggil di dalam atomic; key sama dengan payload berbeda ditolak.
+    """
     try:
         key = UUID(str(key))
     except (ValueError, TypeError, AttributeError) as exc:
@@ -125,6 +141,7 @@ def operation(user, key, kind, payload):
 
 
 def check_version(item, version):
+    """Menolak edit bila version bukan int positif (400) atau sudah berbeda dari item (409)."""
     if type(version) is not int or version < 1:
         raise StockError("version wajib diisi sebagai bilangan bulat.", 400)
     if item.version != version:
@@ -132,6 +149,10 @@ def check_version(item, version):
 
 
 def eligible_stock(user, *, allow_unknown_expiry=False):
+    """Query stok aktif user yang tertaut katalog, punya konversi gram, dan belum kedaluwarsa.
+
+    Tanpa allow_unknown_expiry, stok dengan tanggal kedaluwarsa tidak diketahui ikut dikecualikan.
+    """
     today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
     query = PantryItem.objects.filter(
         user=user,
@@ -146,7 +167,7 @@ def eligible_stock(user, *, allow_unknown_expiry=False):
 
 
 def stock_for_planning(user):
-    """[(ingredient_id, grams, expires_on or None)] in FEFO order; undated stock last."""
+    """Daftar [(ingredient_id, gram, expires_on/None)] urut FEFO; stok tanpa tanggal di akhir."""
     if user is None or not getattr(user, "is_authenticated", False):
         return []
     rows = [
@@ -165,7 +186,10 @@ def stock_for_planning(user):
 def plan_consumption(
     user, requirements, *, manual=None, allow_unknown_expiry=False, lock=False, preview_batches=None
 ):
-    """One allocation algorithm for previews and execution; previews reserve nothing."""
+    """Satu algoritme alokasi untuk preview dan eksekusi; preview tidak memesan stok apa pun.
+
+    Pilihan batch manual diproses dulu, sisa kebutuhan diambil FEFO; hasil memuat stok yang kurang.
+    """
     if not isinstance(requirements, dict) or len(requirements) > 100:
         raise StockError("Kebutuhan bahan tidak valid.", 400)
     try:
@@ -262,7 +286,10 @@ def plan_consumption(
 def execute_consumption(
     user, requirements, event, *, manual=None, allow_unknown_expiry=False, planned=None
 ):
-    """Caller holds the account lock and transaction, then we lock FEFO batches."""
+    """Mengurangi stok sesuai rencana alokasi dan mencatat movement "consume" per batch.
+
+    Pemanggil memegang lock akun dan transaksi; batch FEFO dikunci di sini. Stok kurang ditolak.
+    """
     plan = planned or plan_consumption(
         user, requirements, manual=manual, allow_unknown_expiry=allow_unknown_expiry, lock=True
     )
@@ -288,7 +315,7 @@ def execute_consumption(
 
 
 def session_scope(user):
-    """Compatibility session column for a user's batches; authorization uses the FK."""
+    """Nilai session_id deterministik untuk batch milik user; otorisasi tetap memakai FK user."""
     return uuid5(NAMESPACE_URL, f"takarkuy:pantry-user:{user.pk}").hex
 
 
@@ -303,6 +330,7 @@ FRESH_LOCATIONS = ("chiller", "freezer", "suhu_ruang")
 
 
 def purchase_category(ingredient):
+    """Memetakan kategori bahan katalog ke kategori pantry; protein dipilah dari kode bahannya."""
     if ingredient.category == "protein":
         code = ingredient.pk
         if any(word in code for word in ("TAHU", "TEMPE", "KACANG")):
@@ -312,7 +340,10 @@ def purchase_category(ingredient):
 
 
 def add_purchases(user, rows, event):
-    """Create one batch per bought catalog ingredient (grams), like manual input."""
+    """Membuat satu batch (dalam gram) per bahan katalog yang dibeli, seperti input manual.
+
+    Lokasi dipilih dari acuan masa simpan yang tersedia; bahan segar mengutamakan kulkas.
+    """
     from .catalog_context import everyday_ingredient_name
     from .storage import DEFAULT_LOCATION, expiry_estimate, shelf_life_duration, storage_options
 

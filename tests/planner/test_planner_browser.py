@@ -28,7 +28,7 @@ class PlannerBrowserTests(StaticLiveServerTestCase):
             )
             page = context.new_page()
             page.on("dialog", lambda dialog: dialog.accept())
-            page.goto(self.live_server_url + reverse("modul1"))
+            page.goto(self.live_server_url + reverse("planner:show_planner"))
             page.evaluate("window.__samePage = true")
             stayed = "() => window.__samePage === true"
 

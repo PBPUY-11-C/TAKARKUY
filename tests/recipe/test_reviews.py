@@ -61,7 +61,7 @@ class ReviewTests(TestCase):
     def post_review(self, **changes):
         payload = {"recipe_code": self.recipe.pk, "rating": 5, "comment": "Enak!", **changes}
         return self.client.post(
-            reverse("modul4-review"), json.dumps(payload), content_type="application/json"
+            reverse("recipe:save_review"), json.dumps(payload), content_type="application/json"
         )
 
     def cooked(self):
@@ -73,14 +73,14 @@ class ReviewTests(TestCase):
             reviewer = get_user_model().objects.create_user(f"reviewer{index}")
             RecipeReview.objects.create(user=reviewer, recipe=self.recipe, rating=5)
         slot = self.slot()
-        response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk, "slot": slot.pk})
+        response = self.client.get(reverse("recipe:show_recipes"), {"recipe": self.recipe.pk, "slot": slot.pk})
         self.assertRegex(
             response.content.decode(),
             rf'href="\?[^"]*slot={slot.pk}[^"]*review_page=2#recipe-reviews"',
         )
 
     def test_empty_results_still_render_shared_csrf_token(self):
-        response = self.client.get(reverse("modul4"), {"q": "no-such-recipe"})
+        response = self.client.get(reverse("recipe:show_recipes"), {"q": "no-such-recipe"})
 
         self.assertNotContains(response, 'id="recipe-detail"')
         self.assertContains(response, 'id="csrf-bootstrap"')
@@ -126,7 +126,7 @@ class ReviewTests(TestCase):
         review.version = 2
         review.save()
 
-        url = reverse("modul4-review-photo-delete")
+        url = reverse("recipe:delete_review_photo")
         stale = self.client.post(
             url,
             json.dumps({"recipe_code": self.recipe.pk, "version": 0}),
@@ -216,8 +216,8 @@ class ReviewTests(TestCase):
         self.cooked()
         self.post_review()
         review = RecipeReview.objects.get(user=self.user, recipe=self.recipe)
-        upload_url = reverse("modul4-review-photo-upload")
-        photo_url = reverse("modul4-review-photo", args=[review.pk])
+        upload_url = reverse("recipe:upload_review_photo")
+        photo_url = reverse("recipe:show_review_photo", args=[review.pk])
 
         def photo_response(user, version=None):
             url = photo_url if version is None else f"{photo_url}?v={version}"
@@ -324,7 +324,7 @@ class ReviewTests(TestCase):
         self.cooked()
         self.post_review()
         review = RecipeReview.objects.get(user=self.user, recipe=self.recipe)
-        url = reverse("modul4-review-photo-upload")
+        url = reverse("recipe:upload_review_photo")
 
         invalid = self.client.post(url, {
             "recipe_code": self.recipe.pk,
@@ -359,7 +359,7 @@ class ReviewTests(TestCase):
         self.assertFalse(review.photo)
 
     def test_photo_upload_endpoint_requires_login_history_review_and_valid_method(self):
-        upload_url = reverse("modul4-review-photo-upload")
+        upload_url = reverse("recipe:upload_review_photo")
         anonymous = Client()
         self.assertEqual(anonymous.post(upload_url).status_code, 302)
         self.assertEqual(self.client.get(upload_url).status_code, 405)
@@ -445,7 +445,7 @@ class ReviewTests(TestCase):
             self.assertEqual(self.post_review(comment=value).status_code, 400)
         self.assertEqual(
             self.client.post(
-                reverse("modul4-review"),
+                reverse("recipe:save_review"),
                 "[" * 1200 + "0" + "]" * 1200,
                 content_type="application/json",
             ).status_code,
@@ -488,7 +488,7 @@ class ReviewTests(TestCase):
         fresh = Client()
         fresh.force_login(self.user)
         response = fresh.post(
-            reverse("modul4-review"),
+            reverse("recipe:save_review"),
             json.dumps({"recipe_code": self.recipe.pk, "rating": 5}),
             content_type="application/json",
         )
@@ -501,15 +501,15 @@ class ReviewTests(TestCase):
     def test_guest_method_and_csrf_protection(self):
         self.assertEqual(
             Client()
-            .post(reverse("modul4-review"), "{}", content_type="application/json")
+            .post(reverse("recipe:save_review"), "{}", content_type="application/json")
             .status_code,
             403,
         )
-        self.assertEqual(self.client.get(reverse("modul4-review")).status_code, 405)
+        self.assertEqual(self.client.get(reverse("recipe:save_review")).status_code, 405)
         csrf = Client(enforce_csrf_checks=True)
         csrf.force_login(self.user)
         self.assertEqual(
-            csrf.post(reverse("modul4-review"), "{}", content_type="application/json").status_code,
+            csrf.post(reverse("recipe:save_review"), "{}", content_type="application/json").status_code,
             403,
         )
 

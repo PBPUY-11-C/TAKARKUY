@@ -1,14 +1,16 @@
-"""Bound nesting as well as bytes; parse errors never become HTML 500s."""
+"""Membatasi kedalaman JSON selain ukurannya; error parsing tidak boleh berujung HTML 500."""
 
 import json
 import math
 
 
 def _reject_constant(value):
+    """Menolak konstanta NaN/Infinity saat json.loads dengan ValueError."""
     raise ValueError("Non-finite JSON constant")
 
 
 def load_payload(raw):
+    """Mem-parse JSON request; ValueError bila bersarang lebih dari 8 level atau memuat NaN/Inf."""
     try:
         payload = json.loads(raw, parse_constant=_reject_constant)
     except RecursionError as exc:

@@ -1,11 +1,12 @@
 (() => {
   let stack;
+  // Tampilkan toast (maks 3 sekaligus), hilang otomatis setelah 4,5 detik atau 8 detik untuk error.
   function toast(message, tone = "success") {
     if (!message) return;
     if (!stack) {
       stack = document.createElement("div");
       stack.className = "toast-stack";
-      stack.setAttribute("aria-hidden", "true"); // the page's own live region announces the text
+      stack.setAttribute("aria-hidden", "true"); // live region milik halaman yang membacakan teksnya
       document.body.append(stack);
     }
     const item = document.createElement("div");
@@ -23,12 +24,14 @@
     setTimeout(() => item.remove(), tone === "error" ? 8000 : 4500);
   }
 
+  // Simpan pesan ke sessionStorage agar muncul sebagai toast setelah halaman berikutnya dimuat.
   function flash(message, tone = "success") {
     try { sessionStorage.setItem("takarkuy-flash", JSON.stringify({ message, tone })); } catch {  }
   }
 
   window.TakarKuy = { toast, flash };
 
+  // Samakan aria-checked semua tombol tema dengan tema aktif di <html>.
   function syncThemeButtons() {
     const dark = document.documentElement.dataset.theme === "dark";
     document.querySelectorAll("[data-theme-toggle]").forEach((button) => {

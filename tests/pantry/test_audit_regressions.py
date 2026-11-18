@@ -27,7 +27,7 @@ class AuditRegressionTests(TestCase):
 
     def create(self, **changes):
         return self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             data=json.dumps(
                 {
                     "source": "ocr",
@@ -49,7 +49,7 @@ class AuditRegressionTests(TestCase):
 
     def edit(self, item, **changes):
         return self.client.patch(
-            reverse("modul2-item-details", args=[item.pk]),
+            reverse("pantry:update_item", args=[item.pk]),
             data=json.dumps(
                 {
                     "operation_key": str(uuid4()),
@@ -109,10 +109,10 @@ class AuditRegressionTests(TestCase):
         for body in ("[" * 1200 + "0" + "]" * 1200, "[" * 30 + "0" + "]" * 30):
             short_body = body if len(body) <= 2000 else "[" * 950 + "0" + "]" * 950
             cases = (
-                (self.client.post, reverse("modul2-items"), body),
-                (self.client.post, reverse("modul2-suggestions"), body),
-                (self.client.patch, reverse("modul2-item-details", args=[item.pk]), short_body),
-                (self.client.delete, reverse("modul2-item-delete", args=[item.pk]), short_body),
+                (self.client.post, reverse("pantry:save_items"), body),
+                (self.client.post, reverse("pantry:suggest_items"), body),
+                (self.client.patch, reverse("pantry:update_item", args=[item.pk]), short_body),
+                (self.client.delete, reverse("pantry:delete_item", args=[item.pk]), short_body),
             )
             for request, url, raw in cases:
                 with self.subTest(url=url, levels=len(raw)):
@@ -123,7 +123,7 @@ class AuditRegressionTests(TestCase):
     def test_non_finite_json_constants_are_rejected(self):
         for constant in ("NaN", "Infinity", "-Infinity", "1e999"):
             response = self.client.post(
-                reverse("modul2-items"),
+                reverse("pantry:save_items"),
                 data='{"items":' + constant + "}",
                 content_type="application/json",
             )
@@ -156,7 +156,7 @@ class AuditRegressionTests(TestCase):
 
     def test_invalid_source_is_json_400_not_type_error(self):
         response = self.client.post(
-            reverse("modul2-items"),
+            reverse("pantry:save_items"),
             data=json.dumps({"source": {}, "items": [{}]}),
             content_type="application/json",
         )
@@ -169,7 +169,7 @@ class AuditRegressionTests(TestCase):
             if pk == item.pk:
                 item.user = get_user_model().objects.create_user("other")
                 item.save()
-            response = self.client.get(reverse("modul2-item-movements", args=[pk]))
+            response = self.client.get(reverse("pantry:item_movements", args=[pk]))
             self.assertEqual(response.status_code, 404)
             self.assertIn("error", response.json())
 

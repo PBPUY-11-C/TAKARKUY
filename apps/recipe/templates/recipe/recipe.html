@@ -31,7 +31,7 @@
         <div class="detail-view">
           <nav class="detail-view__nav" aria-label="Recipe navigation">
             <a class="link back-link" href="?{{ query_params }}&amp;page={{ recipes.number }}#results"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-back"/></svg>Back to results</a>
-            {% if slot %}<a class="link" href="{% url 'modul1' %}">Back to Meal Planner</a>{% endif %}
+            {% if slot %}<a class="link" href="{% url 'planner:show_planner' %}">Back to Meal Planner</a>{% endif %}
           </nav>
           {% include 'recipe/partials/recipe_detail.html' %}
           {% include 'recipe/reviews.html' %}
@@ -44,12 +44,12 @@
       {% else %}
         <div class="page-title">
           <div class="page-title__text"><p class="eyebrow">MY KITCHEN</p><h1>Recipe Book &amp; Cooking History</h1></div>
-          <a class="link" href="{% url 'modul2' %}">Manage Pantry<svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>
+          <a class="link" href="{% url 'pantry:show_pantry' %}">Manage Pantry<svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>
         </div>
 
         <div class="page__layout">
           <div class="page__main" id="results">
-            <form class="search-panel" method="get" action="{% url 'modul4' %}">
+            <form class="search-panel" method="get" action="{% url 'recipe:show_recipes' %}">
               <div class="search" role="search">
                 <label class="search__label" for="recipe-search">Search recipes or ingredients</label>
                 <div class="search__field">
@@ -88,7 +88,7 @@
                 </div>
               </div>
               {% if active_filters %}<div class="filters__active active-filter-list" aria-label="Active filters"><span>Active:</span>{% for active_filter in active_filters %}<span class="active-filter-chip">{{ active_filter }}</span>{% endfor %}</div>{% endif %}
-              {% if unknown_count or allergen_count %}<p class="notice notice--info"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg><span>{{ unknown_count }} recipes hidden because allergen data is incomplete; {{ allergen_count }} hidden by your allergen preferences. <a class="link" href="{% url 'modul3' %}">Review profile</a></span></p>{% endif %}
+              {% if unknown_count or allergen_count %}<p class="notice notice--info"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg><span>{{ unknown_count }} recipes hidden because allergen data is incomplete; {{ allergen_count }} hidden by your allergen preferences. <a class="link" href="{% url 'login:show_profile' %}">Review profile</a></span></p>{% endif %}
               <details class="disclosure disclosure--quiet results-about">
                 <summary><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-info"/></svg><span class="disclosure__text"><span class="disclosure__title">About these results</span></span><svg class="icon icon--sm disclosure__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg></summary>
                 <div class="disclosure__body">
@@ -107,7 +107,7 @@
                 <section class="empty-pantry" role="status">
                   <span class="empty-pantry__icon"><svg class="icon icon--lg" aria-hidden="true"><use href="#m4-i-pot"/></svg></span>
                   <div class="empty-pantry__text"><h3 class="text-h4">No Pantry matches yet</h3><p>Update your Pantry stock to find recipes that are ready to cook.</p></div>
-                  <a class="btn btn--primary" href="{% url 'modul2' %}">Update Pantry<svg class="icon icon--sm btn__icon" aria-hidden="true"><use href="#m4-i-right"/></svg></a>
+                  <a class="btn btn--primary" href="{% url 'pantry:show_pantry' %}">Update Pantry<svg class="icon icon--sm btn__icon" aria-hidden="true"><use href="#m4-i-right"/></svg></a>
                 </section>
               {% else %}
                 <section class="empty-state" role="status">

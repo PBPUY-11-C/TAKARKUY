@@ -6,9 +6,13 @@ from apps.login.choices import ALLERGEN_CHOICES
 
 
 class PlannerForm(forms.Form):
+    """Form input planner: budget, hari, orang, waktu makan, target gizi, alergen, bahan dihindari,
+    dan karbohidrat."""
     halal_only = forms.BooleanField(required=False, initial=True, widget=forms.HiddenInput)
 
     def clean_halal_only(self):
+        """Kalau field tidak dikirim sama sekali, filter halal tetap aktif (True); jika dikirim,
+        nilainya dipakai."""
         return self.cleaned_data["halal_only"] if "halal_only" in self.data else True
 
     allergens = forms.MultipleChoiceField(
@@ -94,15 +98,18 @@ class PlannerForm(forms.Form):
     )
 
     def clean_rice(self):
+        """Pilihan karbohidrat yang kosong dianggap "no" (tanpa makanan pokok)."""
         return self.cleaned_data["rice"] or "no"
 
     def clean_targets(self):
+        """Menolak kombinasi "seimbang" dengan target gizi lain."""
         targets = self.cleaned_data["targets"]
         if "seimbang" in targets and len(targets) > 1:
             raise forms.ValidationError("Seimbang tidak bisa digabung dengan target gizi lain.")
         return targets
 
     def clean_exclude_ingredients(self):
+        """Memecah teks per koma jadi daftar nama bahan (huruf kecil, tanpa duplikat), maksimal 10."""
         terms = [
             part.strip().casefold() for part in self.cleaned_data["exclude_ingredients"].split(",")
         ]
@@ -112,6 +119,8 @@ class PlannerForm(forms.Form):
         return terms
 
     def clean_budget(self):
+        """Mengubah teks rupiah ("Rp 150.000") jadi Decimal; koma/sen ditolak, batas Rp1 sampai
+        Rp100.000.000."""
         raw = str(self.cleaned_data["budget"]).strip()
         if "," in raw:
             raise forms.ValidationError("Tulis tanpa koma atau sen, misalnya 150.000.")
@@ -127,7 +136,8 @@ class PlannerForm(forms.Form):
 
 
 class PlanMetadataForm(forms.Form):
-    """Title and start date chosen when saving; a missing date keeps the current one."""
+    """Judul dan tanggal mulai yang dipilih saat menyimpan; tanggal kosong berarti tanggal mulai
+    rencana yang lama dipertahankan."""
 
     title = forms.CharField(
         label="Judul",
@@ -144,4 +154,5 @@ class PlanMetadataForm(forms.Form):
     )
 
     def clean_title(self):
+        """Merapikan judul: spasi berlebih dan baris baru diringkas jadi satu spasi."""
         return " ".join(self.cleaned_data["title"].split())

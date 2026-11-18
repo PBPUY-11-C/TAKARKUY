@@ -5,10 +5,12 @@ from django.db import models
 
 
 def recipe_review_photo_path(instance, filename):
+    """Membuat path acak per resep untuk foto ulasan; nama asli diabaikan karena file selalu JPEG."""
     return f"recipe-reviews/{instance.recipe_id}/{uuid4().hex}.jpg"
 
 
 class RecipeFavorite(models.Model):
+    """Resep yang ditandai favorit oleh pengguna; satu baris per pasangan pengguna dan resep."""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -20,6 +22,7 @@ class RecipeFavorite(models.Model):
 
 
 class RecipeNote(models.Model):
+    """Catatan pribadi pengguna untuk sebuah resep, maksimal satu catatan per resep."""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE)
     content = models.TextField(max_length=2000)
@@ -33,6 +36,8 @@ class RecipeNote(models.Model):
 
 
 class CookingHistory(models.Model):
+    """Riwayat Sudah Masak beserta snapshot resep dan operasi pantry yang mengurangi stok.
+    Satu menu rencana hanya boleh dicatat masak sekali."""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     recipe = models.ForeignKey("catalog.Recipe", null=True, on_delete=models.SET_NULL)
     planned_meal = models.ForeignKey(
@@ -59,6 +64,8 @@ class CookingHistory(models.Model):
 
 
 class RecipeReview(models.Model):
+    """Ulasan publik satu pengguna per resep; foto tersembunyi sampai dimoderasi.
+    Field version dipakai untuk optimistic locking."""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     recipe = models.ForeignKey("catalog.Recipe", on_delete=models.CASCADE, related_name="reviews")
     rating = models.PositiveSmallIntegerField()
@@ -91,6 +98,7 @@ class RecipeReview(models.Model):
 
 
 class RecipePhotoCleanup(models.Model):
+    """Antrean file foto ulasan yang harus dihapus dari storage, beserta jumlah percobaan dan error."""
     storage_name = models.CharField(max_length=255, unique=True)
     attempts = models.PositiveIntegerField(default=0)
     last_error = models.CharField(max_length=500, blank=True)
@@ -101,6 +109,7 @@ class RecipePhotoCleanup(models.Model):
 
 
 class ReviewQuota(models.Model):
+    """Kuota upaya ulasan per akun: maksimal 10 upaya dalam jendela 10 menit."""
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True
     )
@@ -114,7 +123,7 @@ class ReviewQuota(models.Model):
 
 
 class RecipeBookPreviewQuota(models.Model):
-    """Recipe Book estimates/previews use their own account quota, separate from Planner."""
+    """Kuota estimasi dan preview Buku Resep per akun, terpisah dari kuota Planner."""
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True
@@ -131,6 +140,7 @@ class RecipeBookPreviewQuota(models.Model):
 
 
 class RecipeDataReport(models.Model):
+    """Laporan pengguna tentang data resep yang salah, ditindaklanjuti staf lewat admin."""
     CATEGORY_CHOICES = [
         ("ingredients", "Bahan atau takaran"),
         ("instructions", "Panduan memasak"),
@@ -168,6 +178,8 @@ class RecipeDataReport(models.Model):
         ordering = ["status", "-created_at"]
 
     def clean(self):
+        """Status ditinjau wajib punya penanggung jawab dan jadwal tindak lanjut.
+        Status selesai atau ditolak wajib punya catatan keputusan."""
         from django.core.exceptions import ValidationError
 
         super().clean()

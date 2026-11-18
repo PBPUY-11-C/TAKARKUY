@@ -1,12 +1,14 @@
 import { request } from "./api.mjs";
 import { visit } from "./navigation.mjs";
 
+// Menambah atau mengurangi angka jumlah rencana tersimpan di semua penghitung, minimal 0.
 function changeSavedCount(delta) {
   document.querySelectorAll("[data-saved-count]").forEach((counter) => {
     counter.textContent = String(Math.max(0, Number(counter.textContent) + delta));
   });
 }
 
+// Baris pengganti saat daftar "Rencana Saya" kosong setelah rencana terakhir dihapus.
 function emptySavedRow() {
   const row = document.createElement("li");
   row.className = "muted";
@@ -14,7 +16,7 @@ function emptySavedRow() {
   return row;
 }
 
-// Save a draft to "Rencana Saya", and delete saved plans optimistically with rollback on failure.
+// Menyimpan draft ke "Rencana Saya" dan menghapus rencana secara optimistis, dikembalikan jika server menolak.
 export function initSavedPlans() {
   const feedback = document.getElementById("plan-feedback");
 

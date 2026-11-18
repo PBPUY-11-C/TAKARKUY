@@ -3,8 +3,16 @@ from django.contrib.staticfiles import finders
 from django.test import TestCase
 from django.urls import reverse
 
-GUEST_PAGES = ["landing", "login", "signup"]
-USER_PAGES = ["modul1", "modul2", "modul3", "modul4", "modul5", "food-preferences", "password-change"]
+GUEST_PAGES = ["login:show_landing", "login:login", "login:register"]
+USER_PAGES = [
+    "planner:show_planner",
+    "pantry:show_pantry",
+    "login:show_profile",
+    "recipe:show_recipes",
+    "home:show_dashboard",
+    "login:food_preferences",
+    "login:change_password",
+]
 
 
 class SharedBaseTemplateTests(TestCase):

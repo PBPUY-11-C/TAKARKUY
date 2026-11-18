@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect 100 TheMealDB recipe references into scratch; do not plan from them."""
+"""Mengumpulkan 100 referensi resep TheMealDB ke scratch/; tidak boleh dipakai untuk planner."""
 
 import csv
 import json
@@ -16,6 +16,7 @@ SOURCE = "TheMealDB API (unverified recipe candidate; attribution required)"
 
 
 def get_json(path, params=None):
+    """Memanggil endpoint API TheMealDB dengan query opsional dan mengembalikan JSON-nya."""
     url = f"{BASE}/{path}"
     if params:
         url += "?" + urlencode(params)
@@ -25,6 +26,9 @@ def get_json(path, params=None):
 
 
 def pick_balanced(pool, limit):
+    """Memilih kandidat secara round-robin antar kategori sampai limit, melewati ID duplikat,
+    agar satu kategori tidak mendominasi hasil.
+    """
     categories = list(pool)
     selected = []
     seen_ids = set()
@@ -46,6 +50,7 @@ def pick_balanced(pool, limit):
 
 
 def get_ingredients(meal):
+    """Mengambil pasangan bahan dan takaran dari kolom strIngredient1-20 yang terisi."""
     ingredients = []
     for index in range(1, 21):
         name = (meal.get(f"strIngredient{index}") or "").strip()
@@ -56,6 +61,9 @@ def get_ingredients(meal):
 
 
 def main():
+    """Memilih 20 resep sarapan dan 80 resep gurih seimbang per kategori, mengambil detailnya,
+    lalu menulis snapshot JSON dan CSV ke scratch/ dengan slot makan yang masih tentatif.
+    """
     breakfast_list = get_json("filter.php", {"c": "Breakfast"}).get("meals") or []
     breakfast_ids = {str(meal["idMeal"]) for meal in breakfast_list}
     breakfast_pool = {"Breakfast": [(str(m["idMeal"]), "Breakfast") for m in breakfast_list]}

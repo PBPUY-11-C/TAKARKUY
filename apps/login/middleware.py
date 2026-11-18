@@ -1,4 +1,4 @@
-"""Deployment-wide maintenance gate, before body parsing and application views."""
+"""Gerbang maintenance untuk seluruh deployment, dijalankan sebelum parsing body dan view aplikasi."""
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -8,12 +8,24 @@ from django.utils.cache import patch_cache_control, patch_vary_headers
 
 from .rate_limits import AuthLimited, reserve_auth_attempt
 
+JSON_APPS = {"planner", "pantry", "recipe", "home"}
+AUTH_ACTIONS = {
+    "login:login": "login",
+    "admin:login": "login",
+    "login:register": "signup",
+    "login:change_password": "password",
+}
+
 
 class MaintenanceMiddleware:
+    """Saat MAINTENANCE_MODE aktif, tutup situs untuk semua kecuali halaman admin dan staf aktif."""
+
     def __init__(self, get_response):
+        """Simpan handler berikutnya dalam rantai middleware."""
         self.get_response = get_response
 
     def __call__(self, request):
+        """Loloskan admin dan staf (respons no-store); lainnya dapat 503 HTML/JSON + Retry-After 3600."""
         if not settings.MAINTENANCE_MODE:
             return self.get_response(request)
 
@@ -43,31 +55,36 @@ class MaintenanceMiddleware:
 
     @staticmethod
     def wants_json(request):
+        """True bila request ke endpoint API (app JSON selain view show_*), mengirim JSON,
+        atau hanya menerima JSON; menentukan format halaman maintenance."""
         try:
-            name = resolve(request.path_info).url_name or ""
+            match = resolve(request.path_info)
         except Resolver404:
-            name = ""
+            match = None
         return (
-            (name.startswith(("modul1-", "modul2-", "modul4-", "modul5-"))
-             and not name.endswith("-legacy"))
+            (match is not None and match.namespace in JSON_APPS and not match.url_name.startswith("show_"))
             or request.content_type == "application/json"
             or (request.accepts("application/json") and not request.accepts("text/html"))
         )
 
 
 class AuthRateLimitMiddleware:
+    """Rate limit untuk POST login, daftar, dan ganti kata sandi, dicek sebelum view berjalan."""
+
     def __init__(self, get_response):
+        """Simpan handler berikutnya dalam rantai middleware."""
         self.get_response = get_response
 
     def __call__(self, request):
+        """Teruskan request apa adanya; pembatasan dilakukan di process_view."""
         return self.get_response(request)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
+        """Catat percobaan POST per akun/identitas dan per IP; balas 429 + Retry-After bila lewat batas."""
         if request.method != "POST":
             return None
-        action = request.resolver_match.url_name
-        if action == "password-change" and request.user.is_authenticated:
-            action = "password"
+        action = AUTH_ACTIONS.get(request.resolver_match.view_name)
+        if action == "password" and request.user.is_authenticated:
             identity = f"account:{request.user.pk}"
         elif action in {"login", "signup"}:
             identity = request.POST.get("username" if action == "login" else "email", "")

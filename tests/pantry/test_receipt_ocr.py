@@ -115,7 +115,7 @@ class ReceiptOCRFallbackTests(TestCase):
     )
     def test_image_fallback_returns_draft_without_saving(self, gemini):
         upload = SimpleUploadedFile("receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg")
-        response = self.client.post(reverse("modul2-ocr-fallback"), {"image": upload})
+        response = self.client.post(reverse("pantry:ocr_fallback"), {"image": upload})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["items"][0]["name"], "Bayam")
         gemini.assert_called_once_with(b"\xff\xd8\xfftest", "image/jpeg")
@@ -125,7 +125,7 @@ class ReceiptOCRFallbackTests(TestCase):
     @patch("apps.pantry.views.gemini_read_receipt")
     def test_invalid_image_never_calls_gemini(self, gemini):
         upload = SimpleUploadedFile("fake.jpg", b"not an image", content_type="image/jpeg")
-        response = self.client.post(reverse("modul2-ocr-fallback"), {"image": upload})
+        response = self.client.post(reverse("pantry:ocr_fallback"), {"image": upload})
         self.assertEqual(response.status_code, 400)
         gemini.assert_not_called()
 
@@ -137,18 +137,18 @@ class ReceiptOCRFallbackTests(TestCase):
                 "receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg"
             )
             self.assertEqual(
-                self.client.post(reverse("modul2-ocr-fallback"), {"image": upload}).status_code, 200
+                self.client.post(reverse("pantry:ocr_fallback"), {"image": upload}).status_code, 200
             )
         upload = SimpleUploadedFile("receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg")
         self.assertEqual(
-            self.client.post(reverse("modul2-ocr-fallback"), {"image": upload}).status_code, 429
+            self.client.post(reverse("pantry:ocr_fallback"), {"image": upload}).status_code, 429
         )
         self.assertEqual(gemini.call_count, 10)
         device = Client()
         device.force_login(self.user)
         upload = SimpleUploadedFile("receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg")
         self.assertEqual(
-            device.post(reverse("modul2-ocr-fallback"), {"image": upload}).status_code, 429
+            device.post(reverse("pantry:ocr_fallback"), {"image": upload}).status_code, 429
         )
         self.assertEqual(gemini.call_count, 10)
 
@@ -161,7 +161,7 @@ class ReceiptOCRFallbackTests(TestCase):
             upload = SimpleUploadedFile(
                 "receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg"
             )
-            response = self.client.post(reverse("modul2-ocr-fallback"), {"image": upload})
+            response = self.client.post(reverse("pantry:ocr_fallback"), {"image": upload})
         self.assertEqual(response.status_code, 200)
         received = response.wsgi_request.FILES["image"]
         self.assertIsInstance(received, InMemoryUploadedFile)
@@ -177,7 +177,7 @@ class ReceiptOCRFallbackTests(TestCase):
                 "receipt.jpg", b"\xff\xd8\xff" + b"x" * size, content_type="image/jpeg"
             )
             self.assertEqual(
-                self.client.post(reverse("modul2-ocr-fallback"), {"image": upload}).status_code, 413
+                self.client.post(reverse("pantry:ocr_fallback"), {"image": upload}).status_code, 413
             )
         gemini.assert_not_called()
 
@@ -192,7 +192,7 @@ class ReceiptOCRFallbackTests(TestCase):
         )
         self.assertEqual(
             self.client.post(
-                reverse("modul2-ocr-fallback"), {"image": first, "extra": extra}
+                reverse("pantry:ocr_fallback"), {"image": first, "extra": extra}
             ).status_code,
             413,
         )
@@ -202,8 +202,8 @@ class ReceiptOCRFallbackTests(TestCase):
     def test_fallback_requires_csrf(self):
         client = Client(enforce_csrf_checks=True)
         client.force_login(self.user)
-        client.get(reverse("modul2"))
+        client.get(reverse("pantry:show_pantry"))
         upload = SimpleUploadedFile("receipt.jpg", b"\xff\xd8\xfftest", content_type="image/jpeg")
         self.assertEqual(
-            client.post(reverse("modul2-ocr-fallback"), {"image": upload}).status_code, 403
+            client.post(reverse("pantry:ocr_fallback"), {"image": upload}).status_code, 403
         )

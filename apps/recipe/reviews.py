@@ -1,4 +1,4 @@
-"""Public reviews only after cooking; account-wide quota and optimistic locking."""
+"""Ulasan publik hanya setelah memasak; kuota per akun dan optimistic locking."""
 
 from datetime import timedelta
 from io import BytesIO
@@ -25,12 +25,15 @@ MAX_REVIEW_PHOTO_PIXELS = 16_000_000
 
 
 class ReviewLimited(PreviewRateLimit):
+    """Error saat kuota 10 upaya ulasan per 10 menit habis; membawa nilai retry_after."""
     def __init__(self, retry_after):
+        """Menyimpan retry_after minimal 1 detik dan menyiapkan pesan batas kuota ulasan."""
         self.retry_after = max(1, retry_after)
         ValueError.__init__(self, "Batas 10 upaya ulasan per 10 menit tercapai. Coba lagi nanti.")
 
 
 def public_username(user):
+    """Nama penulis ulasan untuk publik; username yang mirip email diganti alias HMAC Penakar #."""
     if "@" in user.username or (user.email and user.username.casefold() == user.email.casefold()):
         alias = salted_hmac("recipe-review-public-author-v1", str(user.pk)).hexdigest()[:12]
         return f"Penakar #{alias}"
@@ -38,13 +41,14 @@ def public_username(user):
 
 
 def review_photo_url(review):
-    """Version photo URLs so moderation and consent changes bypass stale caches."""
-    path = reverse("modul4-review-photo", args=[review.pk])
+    """URL foto ulasan diberi parameter version agar perubahan moderasi dan izin melewati cache lama."""
+    path = reverse("recipe:show_review_photo", args=[review.pk])
     return f"{path}?{urlencode({'v': review.version})}"
 
 
 @transaction.atomic
 def reserve_review(user):
+    """Memakai satu jatah kuota ulasan pengguna; melempar ReviewLimited bila 10 upaya/10 menit habis."""
     get_user_model().objects.select_for_update().get(pk=user.pk)
     now = timezone.now()
     quota, _ = ReviewQuota.objects.get_or_create(user=user, defaults={"window_started_at": now})
@@ -60,6 +64,8 @@ def reserve_review(user):
 
 
 def write_review(user, data):
+    """Menyimpan atau menghapus ulasan dengan cek version; menyimpan hanya boleh setelah resep dimasak.
+    Setiap upaya memakai kuota ulasan."""
     code, action = data.get("recipe_code"), data.get("action", "save")
     version = data.get("version")
     if not isinstance(code, str) or not 1 <= len(code) <= 100 or action not in {"save", "delete"}:
@@ -105,6 +111,8 @@ def write_review(user, data):
 
 
 def normalize_review_photo(upload):
+    """Memvalidasi foto JPG/PNG/WebP maksimal 6 MB, lalu mengubahnya jadi JPEG maks 1600 px.
+    Orientasi EXIF diterapkan dan transparansi diganti latar putih."""
     if upload is None or upload.size < 1 or upload.size > MAX_REVIEW_PHOTO_BYTES:
         raise ValueError("Pilih foto JPG, PNG, atau WebP maksimal 6 MB.")
     raw = upload.read(MAX_REVIEW_PHOTO_BYTES + 1)
@@ -138,6 +146,8 @@ def normalize_review_photo(upload):
 
 
 def attach_review_photo(user, code, version, upload, *, permission_granted=False):
+    """Memasang foto baru ke ulasan dengan izin wajib; foto kembali menunggu moderasi.
+    Foto lama diantrekan untuk dihapus, file baru dibuang bila transaksi gagal."""
     if not isinstance(code, str) or not 1 <= len(code) <= 100:
         raise ValueError("Kode resep tidak valid.")
     if not isinstance(version, int) or version < 1:
@@ -186,6 +196,7 @@ def attach_review_photo(user, code, version, upload, *, permission_granted=False
 
 
 def delete_review_photo(user, code, version):
+    """Melepas foto dari ulasan, mereset izin dan moderasi, lalu mengantrekan penghapusan file."""
     if not isinstance(code, str) or not 1 <= len(code) <= 100:
         raise ValueError("Kode resep tidak valid.")
     if type(version) is not int or version < 1:
@@ -221,6 +232,8 @@ def delete_review_photo(user, code, version):
 
 
 def review_context(user, recipe, page=1):
+    """Menyiapkan statistik, halaman ulasan (5 per halaman), ulasan milik pengguna, dan izin mengulas.
+    URL foto orang lain hanya diisi bila foto berizin dan sudah lolos moderasi."""
     from django.core.paginator import Paginator
 
     visible = RecipeReview.objects.filter(recipe=recipe, is_hidden=False)
