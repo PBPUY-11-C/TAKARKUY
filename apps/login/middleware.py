@@ -62,7 +62,8 @@ class MaintenanceMiddleware:
         except Resolver404:
             match = None
         return (
-            (match is not None and match.namespace in JSON_APPS and not match.url_name.startswith("show_"))
+            request.path_info.startswith("/api/")
+            or (match is not None and match.namespace in JSON_APPS and not match.url_name.startswith("show_"))
             or request.content_type == "application/json"
             or (request.accepts("application/json") and not request.accepts("text/html"))
         )
