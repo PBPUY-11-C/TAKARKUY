@@ -1,3 +1,4 @@
+// Estimasi masa simpan lokasi terpilih (default suhu ruang); bila tak ada acuan, pesan isi manual.
 export function storagePreview(storage, location) {
   const selected = location || "suhu_ruang";
   return storage?.options?.[selected] || {

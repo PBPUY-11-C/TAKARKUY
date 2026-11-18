@@ -11,7 +11,7 @@
         <small>Tidak tersedia / tidak sesuai preferensi</small>
       {% endif %}
       </div>
-      <button type="button" class="btn btn--secondary btn--small btn--quiet" data-remove-favorite="{{ favorite.recipe_id }}" data-url="{% url 'modul4-favorite' %}" aria-label="Hapus {{ favorite.recipe.name }} dari favorit">Hapus</button>
+      <button type="button" class="btn btn--secondary btn--small btn--quiet" data-remove-favorite="{{ favorite.recipe_id }}" data-url="{% url 'recipe:set_favorite' %}" aria-label="Hapus {{ favorite.recipe.name }} dari favorit">Hapus</button>
     </li>
   {% empty %}
     <li class="side-list__empty">Simpan resep lewat tombol <svg class="icon icon--sm icon--inline" aria-hidden="true"><use href="#m4-i-heart"/></svg><span class="sr-only">favorit</span> di halaman resep.</li>

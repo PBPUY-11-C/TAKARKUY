@@ -1,4 +1,4 @@
-"""Optional Gemini transport with a killable wall-clock deadline."""
+"""Transport Gemini opsional dengan batas waktu wall-clock yang bisa mematikan proses."""
 
 import json
 import subprocess
@@ -11,6 +11,10 @@ from .gemini_transport import GeminiUnavailable, gemini_ready
 
 
 def generate_json(parts, *, timeout, generation_config=None):
+    """Memanggil Gemini lewat subprocess terpisah agar bisa di-kill saat melewati timeout.
+
+    Gagal apa pun jadi GeminiUnavailable; setiap panggilan dicatat ke telemetri.
+    """
     started = time.monotonic()
     deadline = started + timeout
     if not gemini_ready():

@@ -22,10 +22,10 @@ function setup({emptyPage = false, missingCsrf = false} = {}) {
   const elements = new Map();
   const get = selector => { if (!elements.has(selector)) elements.set(selector, new Element()); return elements.get(selector); };
   if (!emptyPage) {
-    get('#recipe-detail').dataset = {code: 'TEST', servings: '2', previewUrl: '/modul4/preview/', cookUrl: '/modul4/cook/'};
+    get('#recipe-detail').dataset = {code: 'TEST', servings: '2', previewUrl: '/recipes/preview/', cookUrl: '/recipes/cook/'};
   }
   const favoriteRemove = new Element();
-  favoriteRemove.dataset = {removeFavorite: 'RECIPE', url: '/modul4/favorite/'};
+  favoriteRemove.dataset = {removeFavorite: 'RECIPE', url: '/recipes/favorite/'};
   get('#cooking-form').elements = {servings: {value: '2'}, allow_unknown_expiry: {checked: false}};
   let next = {complete: true, ingredients: [], missing: [], batches: [], manual_batches: []};
   const requests = [];
@@ -89,8 +89,8 @@ test('recipe and stock names render as plain text', async () => {
 test('skip button sends the slot, plan version and target status', async () => {
   const ui = setup();
   Object.assign(ui.get('#recipe-detail').dataset, {slot: '7', version: '3'});
-  ui.get('#slot-status').dataset = {url: '/modul4/slot-status/', status: 'skipped'};
+  ui.get('#slot-status').dataset = {url: '/recipes/slot-status/', status: 'skipped'};
   await ui.get('#slot-status').trigger();
-  assert.deepEqual(ui.requests.at(-1), {url: '/modul4/slot-status/', payload: {planned_meal: 7, version: 3, status: 'skipped'}});
+  assert.deepEqual(ui.requests.at(-1), {url: '/recipes/slot-status/', payload: {planned_meal: 7, version: 3, status: 'skipped'}});
   assert.equal(ui.reloads(), 1);
 });

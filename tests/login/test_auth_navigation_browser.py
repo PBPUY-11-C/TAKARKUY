@@ -24,7 +24,7 @@ class AuthNavigationBrowserTests(StaticLiveServerTestCase):
                 context.route("https://**/*", lambda route: route.abort())
                 page = context.new_page()
                 card_sizes = {}
-                for route in ("login", "signup"):
+                for route in ("login:login", "login:register"):
                     for width in (320, 1280):
                         page.set_viewport_size({"width": width, "height": 900})
                         response = page.goto(self.live_server_url + reverse(route))
@@ -49,7 +49,7 @@ class AuthNavigationBrowserTests(StaticLiveServerTestCase):
                         home = navigation.get_by_role("link", name="Kembali ke beranda", exact=True)
                         switch = navigation.get_by_role("switch", name="Mode gelap")
                         expect(home).to_be_visible()
-                        expect(home).to_have_attribute("href", reverse("landing"))
+                        expect(home).to_have_attribute("href", reverse("login:show_landing"))
                         logo = home.locator(".auth-logo-dark" if theme == "dark" else ".auth-logo-light")
                         expect(logo).to_be_visible()
                         self.assertTrue(logo.evaluate("img => img.complete && img.naturalWidth > 0"))
@@ -68,6 +68,6 @@ class AuthNavigationBrowserTests(StaticLiveServerTestCase):
                         page.keyboard.press("Shift+Tab")
                         expect(home).to_be_focused()
                         page.keyboard.press("Enter")
-                        expect(page).to_have_url(self.live_server_url + reverse("landing"))
+                        expect(page).to_have_url(self.live_server_url + reverse("login:show_landing"))
                 context.close()
             browser.close()

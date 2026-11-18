@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect and rank 100 Western home-style TheMealDB recipe candidates."""
+"""Mengumpulkan dan memeringkat 100 kandidat resep rumahan Barat dari TheMealDB."""
 
 import argparse
 import csv
@@ -46,6 +46,9 @@ RESTRICTED_TERMS = {
 
 
 def get_json(path, params=None):
+    """Memanggil API TheMealDB dengan 4 kali percobaan untuk error jaringan, 429, atau 5xx;
+    gagal total dibungkus RuntimeError.
+    """
     url = f"{BASE}/{path}"
     if params:
         url += "?" + urlencode(params)
@@ -66,6 +69,7 @@ def get_json(path, params=None):
 
 
 def meal_ingredients(meal):
+    """Mengambil pasangan bahan dan takaran dari kolom strIngredient1-20 yang terisi."""
     rows = []
     for index in range(1, 21):
         ingredient = (meal.get(f"strIngredient{index}") or "").strip()
@@ -76,10 +80,14 @@ def meal_ingredients(meal):
 
 
 def area_key(value):
+    """Menormalkan nama area (casefold, spasi dirapikan) untuk dicocokkan dengan WESTERN_AREAS."""
     return " ".join((value or "").casefold().split())
 
 
 def evaluate_local_fit(meal, ingredients):
+    """Menilai kecocokan lokal: cakupan bahan yang punya padanan alias, dikurangi 0,35 bila ada
+    bahan atau langkah non-halal/alkohol; mengembalikan skor beserta catatan review.
+    """
     mapped = []
     unmapped = []
     restricted = []
@@ -115,7 +123,7 @@ def evaluate_local_fit(meal, ingredients):
 
 
 def write_csv(recipes):
-    """Write the compact review index without re-fetching API data."""
+    """Menulis indeks review CSV yang ringkas tanpa mengambil ulang data dari API."""
     SCRATCH.mkdir(parents=True, exist_ok=True)
     with CSV_PATH.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(
@@ -135,6 +143,9 @@ def write_csv(recipes):
 
 
 def main():
+    """Mengumpulkan resep area Barat dan kategori rumahan yang belum pernah diambil, memeringkat
+    dengan local_fit_score, lalu menulis 100 teratas; --export-existing hanya menulis ulang CSV.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--export-existing",

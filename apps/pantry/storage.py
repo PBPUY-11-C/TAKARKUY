@@ -1,4 +1,4 @@
-"""Location-specific estimates; a location change never resets the item's age."""
+"""Estimasi kedaluwarsa per lokasi simpan; pindah lokasi tidak pernah mereset umur item."""
 
 from datetime import date, timedelta
 from zoneinfo import ZoneInfo
@@ -22,7 +22,7 @@ AI_LOCATIONS = ("suhu_ruang", "chiller", "freezer")
 
 
 def shelf_key(ingredient_code, name):
-    """Cache key for an AI estimate: per catalog ingredient, else per normalized name."""
+    """Key cache perkiraan AI: per kode bahan katalog, jika tidak ada per nama ternormalisasi."""
     from .catalog_context import normalize_name
 
     if ingredient_code:
@@ -32,6 +32,10 @@ def shelf_key(ingredient_code, name):
 
 
 def storage_options(ingredient_code, name=None):
+    """Mengumpulkan acuan masa simpan resmi per lokasi untuk bahan; data tidak valid dilewati.
+
+    Bila tidak ada acuan resmi, memakai perkiraan AI yang tersimpan.
+    """
     if not ingredient_code:
         return _ai_options(None, name)
     options = {}
@@ -60,6 +64,7 @@ def storage_options(ingredient_code, name=None):
 
 
 def _ai_options(ingredient_code, name):
+    """Mengubah ShelfLifeEstimate tersimpan jadi opsi lokasi berformat sama dengan acuan resmi."""
     key = shelf_key(ingredient_code, name)
     estimate = ShelfLifeEstimate.objects.filter(pk=key).first() if key else None
     if estimate is None:
@@ -80,6 +85,10 @@ def _ai_options(ingredient_code, name):
 
 
 def expiry_estimate(options, location, starting_on):
+    """Menghitung tanggal kedaluwarsa dari batas bawah (min_days) acuan lokasi beserta pesannya.
+
+    Bila lokasi tidak punya acuan, tanggal dikosongkan dan pengguna diminta mengisi manual.
+    """
     reference = options.get(location)
     if reference is None:
         return {
@@ -101,11 +110,16 @@ def expiry_estimate(options, location, starting_on):
 
 
 def shelf_life_duration(starting_on, expires_on):
+    """Selisih hari antara dua tanggal; None bila salah satu kosong atau di luar 0 s.d. 3650."""
     days = (expires_on - starting_on).days if expires_on and starting_on else -1
     return days if 0 <= days <= 3650 else None
 
 
 def transfer_estimate(item, options, location, starting_on):
+    """Estimasi kedaluwarsa saat item pindah lokasi; tanggal label/manual/lama dipertahankan.
+
+    Kecuali item baru ditaruh hari ini, hasil tidak boleh lebih lama dari estimasi sebelumnya.
+    """
     if item.expiry_source in {"label", "manual", "legacy", "unknown"} and item.estimated_expires_on:
         return {
             "estimated_expires_on": item.estimated_expires_on.isoformat(),

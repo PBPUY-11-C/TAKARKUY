@@ -1,5 +1,5 @@
 {% load planner_format %}
-<article class="recipe-detail" id="recipe-detail" aria-labelledby="recipe-title" data-code="{{ selected.pk }}" data-servings="{{ detail.servings }}" data-slot="{% if slot %}{{ slot.pk }}{% endif %}" data-version="{% if slot %}{{ slot.plan.version }}{% endif %}" data-preview-url="{% url 'modul4-preview' %}" data-cook-url="{% url 'modul4-cook' %}" data-estimate-url="{% url 'modul4-estimate' %}" data-favorite-url="{% url 'modul4-favorite' %}">
+<article class="recipe-detail" id="recipe-detail" aria-labelledby="recipe-title" data-code="{{ selected.pk }}" data-servings="{{ detail.servings }}" data-slot="{% if slot %}{{ slot.pk }}{% endif %}" data-version="{% if slot %}{{ slot.plan.version }}{% endif %}" data-preview-url="{% url 'recipe:cooking_preview' %}" data-cook-url="{% url 'recipe:record_cooking' %}" data-estimate-url="{% url 'recipe:estimate_cost' %}" data-favorite-url="{% url 'recipe:set_favorite' %}">
   <header class="recipe-hero detail-heading">
     <div class="recipe-hero__text">
       <div class="recipe-hero__chips">
@@ -132,7 +132,7 @@
           <summary><svg class="icon" aria-hidden="true"><use href="#m4-i-note"/></svg><span class="disclosure__text"><span class="disclosure__title">Catatan pribadi</span><span class="disclosure__hint">Hanya terlihat oleh akun Anda</span></span><svg class="icon icon--sm disclosure__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg></summary>
           <div class="disclosure__body">
             <p class="helper">Simpan tingkat pedas, perubahan bahan, atau hasil percobaan.</p>
-            <form id="recipe-note-form" class="form-stack" data-url="{% url 'modul4-note' %}" data-code="{{ selected.pk }}">
+            <form id="recipe-note-form" class="form-stack" data-url="{% url 'recipe:save_note' %}" data-code="{{ selected.pk }}">
               <label class="field-label" for="recipe-note-content">Catatan untuk resep ini</label>
               <textarea class="field" id="recipe-note-content" name="content" maxlength="2000" rows="4" placeholder="Contoh: kurangi cabai menjadi 1 sdt">{{ personal_note.content }}</textarea>
               <div class="note-actions">
@@ -146,7 +146,7 @@
         <details class="disclosure report-recipe">
           <summary><svg class="icon" aria-hidden="true"><use href="#m4-i-flag"/></svg><span class="disclosure__text"><span class="disclosure__title">Laporkan informasi yang keliru</span><span class="disclosure__hint">Bahan, panduan, foto, atau gizi</span></span><svg class="icon icon--sm disclosure__chevron" aria-hidden="true"><use href="#m4-i-chevron"/></svg></summary>
           <div class="disclosure__body">
-            <form id="recipe-data-report" class="form-stack" data-url="{% url 'modul4-report-data' %}" data-code="{{ selected.pk }}">
+            <form id="recipe-data-report" class="form-stack" data-url="{% url 'recipe:report_data' %}" data-code="{{ selected.pk }}">
               <label class="field-label" for="report-category">Bagian yang perlu diperiksa</label>
               <select class="control" id="report-category" name="category" required>
                 <option value="">Pilih bagian</option>
@@ -169,9 +169,9 @@
     <div class="cook-bar cook-bar--sticky">
       <div class="cook-bar__text"><strong>Sudah selesai memasak?</strong><p>Stok baru dikurangi setelah konfirmasi.</p></div>
       {% if slot and slot.status == 'planned' %}
-      <button id="slot-status" class="btn btn--secondary" type="button" data-url="{% url 'modul4-slot-status' %}" data-status="skipped">Lewati menu ini</button>
+      <button id="slot-status" class="btn btn--secondary" type="button" data-url="{% url 'recipe:set_slot_status' %}" data-status="skipped">Lewati menu ini</button>
       {% elif slot and slot.status == 'skipped' %}
-      <button id="slot-status" class="btn btn--secondary" type="button" data-url="{% url 'modul4-slot-status' %}" data-status="planned">Batalkan lewati</button>
+      <button id="slot-status" class="btn btn--secondary" type="button" data-url="{% url 'recipe:set_slot_status' %}" data-status="planned">Batalkan lewati</button>
       {% endif %}
       <button id="open-cooking" class="btn btn--primary" type="button" aria-haspopup="dialog" aria-controls="cooking-dialog" {% if slot and slot.status != 'planned' %}disabled{% endif %}>Sudah Masak<svg class="icon icon--sm btn__icon" aria-hidden="true"><use href="#m4-i-right"/></svg></button>
     </div>

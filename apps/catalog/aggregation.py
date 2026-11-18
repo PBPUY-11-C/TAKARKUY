@@ -1,4 +1,4 @@
-"""Derived allergen index."""
+"""Indeks alergen turunan per resep."""
 
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -14,6 +14,7 @@ _suspended = ContextVar("catalog_aggregation_suspended", default=False)
 
 @contextmanager
 def suspend_aggregation():
+    """Menonaktifkan rebuild alergen otomatis dari signal selama blok berjalan (misal saat impor)."""
     token = _suspended.set(True)
     try:
         yield
@@ -22,6 +23,8 @@ def suspend_aggregation():
 
 
 def expected_allergens(recipe):
+    """Menghitung (sudah_ditinjau, kelompok_alergen) resep dari bahannya; dianggap ditinjau hanya
+    jika ada bahan, semua bahan reviewed dan valid, serta tanpa tag bumbu minor tak dihitung."""
     links = list(recipe.recipeingredient_set.all())
     reviewed = bool(links) and not any(
         tag.tag == "bumbu_minor_tidak_dihitung" for tag in recipe.recipetag_set.all()
@@ -41,6 +44,8 @@ def expected_allergens(recipe):
 
 @transaction.atomic
 def rebuild_allergens(codes=None):
+    """Membangun ulang RecipeAllergen dan allergen_reviewed untuk resep terpilih (None = semua),
+    dalam satu transaksi dengan baris resep dikunci."""
     query = Recipe.objects.order_by("pk")
     if codes is not None:
         query = query.filter(pk__in=codes)
@@ -59,6 +64,8 @@ def rebuild_allergens(codes=None):
 
 
 def changed(sender, instance, raw=False, **kwargs):
+    """Handler signal: rebuild alergen resep yang terdampak perubahan model katalog;
+    dilewati saat loaddata (raw) atau saat agregasi sedang ditangguhkan."""
     if raw or _suspended.get():
         return
     if sender._meta.model_name == "ingredient":

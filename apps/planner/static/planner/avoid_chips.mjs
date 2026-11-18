@@ -1,10 +1,11 @@
-// Turn the comma-separated "bahan yang dihindari" field into removable chips with an add box.
+// Mengubah field "bahan yang dihindari" (dipisah koma) menjadi chip yang bisa dihapus plus kotak tambah.
 export function initAvoidChips() {
   document.querySelectorAll("[data-avoid]").forEach((box) => {
     const field = box.querySelector('input[name="exclude_ingredients"]');
     const chips = box.querySelector("[data-avoid-chips]");
     const count = box.querySelector("[data-avoid-count]");
     if (!field || !chips) return;
+    // Daftar bahan dari field tersembunyi, sudah di-trim dan tanpa entri kosong.
     const terms = () => field.value.split(",").map((term) => term.trim()).filter(Boolean);
     const adder = document.createElement("div");
     adder.className = "avoid-add";
@@ -23,6 +24,7 @@ export function initAvoidChips() {
     const label = box.querySelector(`label[for="${field.id}"]`);
     if (label) label.htmlFor = input.id;
 
+    // Menggambar ulang chip dari isi field dan memperbarui badge jumlah bahan.
     const render = () => {
       chips.replaceChildren(...terms().map((term) => {
         const chip = document.createElement("span");
@@ -43,6 +45,7 @@ export function initAvoidChips() {
       count.textContent = String(terms().length);
       count.hidden = !terms().length;
     };
+    // Menambahkan isi kotak input ke field; boleh beberapa dipisah koma, duplikat (abaikan huruf besar) dilewati.
     const push = () => {
       const known = new Set(terms().map((term) => term.toLowerCase()));
       const added = input.value.split(",").map((term) => term.trim()).filter((term) => term && !known.has(term.toLowerCase()));

@@ -6,10 +6,12 @@ const UNIT_ALIASES = {
   bks: "pack", botol: "botol", pack: "pack", pak: "pack",
 };
 
+// Fallback Gemini dipakai bila confidence OCR lokal < 80 atau tidak valid, atau tidak ada item.
 export function needsGeminiFallback(confidence, itemCount) {
   return !Number.isFinite(confidence) || confidence < 80 || itemCount === 0;
 }
 
+// Mengurai teks OCR struk jadi maks 30 item {rawLine, name, quantity, unit}; non-barang dibuang.
 export function parseReceiptText(text) {
   if (typeof text !== "string") return [];
   const result = [];

@@ -1,4 +1,4 @@
-"""Install before CSRF: receipt bytes stay in bounded memory, never temp files."""
+"""Pasang sebelum CSRF: byte foto struk tetap di memori yang dibatasi, tidak pernah ke file temp."""
 
 from django.core.files.uploadhandler import MemoryFileUploadHandler, StopUpload
 from django.http import JsonResponse
@@ -7,11 +7,15 @@ from .receipt_ocr import MAX_IMAGE_BYTES
 
 
 class ReceiptUploadHandler(MemoryFileUploadHandler):
+    """Upload handler foto struk yang selalu menyimpan di memori dan berhenti di batas ukuran."""
+
     def handle_raw_input(self, *args, **kwargs):
+        """Memaksa handler memori aktif berapa pun ukurannya dan mereset hitungan byte."""
         self.activated = True
         self.total_bytes = 0
 
     def receive_data_chunk(self, raw_data, start):
+        """Menghitung byte masuk; lewat MAX_IMAGE_BYTES, request ditandai dan upload dihentikan."""
         self.total_bytes += len(raw_data)
         if self.total_bytes > MAX_IMAGE_BYTES:
             self.request.receipt_too_large = True
@@ -22,10 +26,17 @@ class ReceiptUploadHandler(MemoryFileUploadHandler):
 
 
 class ReceiptUploadMiddleware:
+    """Middleware yang memasang ReceiptUploadHandler khusus untuk POST ke endpoint OCR fallback."""
+
     def __init__(self, get_response):
+        """Menyimpan handler berikutnya dalam rantai middleware."""
         self.get_response = get_response
 
     def __call__(self, request):
+        """Menolak Content-Length tidak valid (400) atau terlalu besar (413) sebelum body dibaca.
+
+        Bila handler menandai foto melebihi batas saat streaming, respons diganti 413.
+        """
         if request.path == "/pantry/ocr-fallback/" and request.method == "POST":
             try:
                 length = int(request.META.get("CONTENT_LENGTH") or 0)

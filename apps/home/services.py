@@ -1,4 +1,4 @@
-"""Eight bounded queries; dashboard reads source data without changing it."""
+"""Delapan query terbatas; dashboard membaca data sumber tanpa mengubahnya."""
 
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation
@@ -19,12 +19,14 @@ MEALS = {"sarapan": "Sarapan", "makan_siang": "Makan siang", "makan_malam": "Mak
 
 
 def staple_suffix(snapshot):
-    """Name suffix such as " + Nasi" when the planner added a staple to this meal."""
+    """Akhiran nama seperti " + Nasi" jika planner menambahkan makanan pokok ke menu ini."""
     staple = meal_staple(snapshot)
     return f" + {staple['label']}" if staple else ""
 
 
 def parse_money(value):
+    """Mengubah nilai uang menjadi Decimal 0 sampai 1e14; None untuk bool, tipe asing,
+    atau nilai yang tidak valid."""
     if isinstance(value, bool) or not isinstance(value, (str, int, float, Decimal)):
         return None
     try:
@@ -35,6 +37,8 @@ def parse_money(value):
 
 
 def dashboard_data(user):
+    """Data dashboard (zona Asia/Jakarta): rencana aktif dan sisa anggaran, menu hari ini dan
+    7 hari ke depan, stok prioritas (maks 3 per grup), riwayat masak, dan draf belum disimpan."""
     today = timezone.localdate(timezone=JAKARTA)
     plans = list(
         BudgetPlan.objects.filter(user=user, status="saved", starts_on__lte=today)

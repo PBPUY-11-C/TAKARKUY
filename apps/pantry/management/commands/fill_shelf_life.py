@@ -1,4 +1,4 @@
-"""Give old pantry items with an unknown expiry a date from a reference or an AI estimate."""
+"""Mengisi tanggal kedaluwarsa stok lama yang belum diketahui dari acuan resmi atau perkiraan AI."""
 
 from django.core.management.base import BaseCommand
 from django.db.models import F
@@ -11,11 +11,17 @@ from apps.pantry.storage import DEFAULT_LOCATION, expiry_estimate, shelf_key, st
 
 
 class Command(BaseCommand):
+    """Management command fill_shelf_life untuk melengkapi tanggal kedaluwarsa stok aktif."""
+
     help = (
         "Isi tanggal kedaluwarsa stok lama yang belum diketahui (acuan resmi, lalu perkiraan AI)."
     )
 
     def handle(self, *args, **options):
+        """Meminta perkiraan AI untuk bahan tanpa acuan, lalu mengisi tanggal stok yang kosong.
+
+        Update memakai cek version agar tidak menimpa perubahan bersamaan dari pengguna.
+        """
         items = list(
             PantryItem.objects.filter(
                 archived_at__isnull=True, quantity__gt=0, estimated_expires_on__isnull=True
@@ -50,7 +56,10 @@ class Command(BaseCommand):
         self.stdout.write(f"{self.refresh_ai_dates()} tanggal perkiraan AI diganti acuan resmi.")
 
     def refresh_ai_dates(self):
-        """Items dated from an AI guess move to an official reference added later."""
+        """Menghitung ulang tanggal stok yang berasal dari perkiraan AI bila kini ada acuan resmi.
+
+        Mengembalikan jumlah item yang diperbarui.
+        """
         official = set(IngredientShelfLife.objects.values_list("ingredient_id", flat=True))
         guessed = set(ShelfLifeEstimate.objects.values_list("pk", flat=True))
         refreshed = 0

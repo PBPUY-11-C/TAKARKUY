@@ -14,6 +14,8 @@ from .choices import ALLERGEN_CHOICES
 
 
 def clean_username(value, *, user=None):
+    """Validasi format username (3-30 karakter, tanpa @) lalu jadikan huruf kecil; username lama
+    milik user boleh tetap, tapi tidak boleh bentrok dengan akun lain tanpa membedakan huruf."""
     value = value.strip()
     if user is None or value != user.username:
         if not re.fullmatch(r"[A-Za-z0-9_.-]{3,30}", value):
@@ -30,6 +32,8 @@ def clean_username(value, *, user=None):
 
 
 def clean_email(value, *, user=None):
+    """Normalisasi email ke huruf kecil ASCII; tolak bila sudah dipakai sebagai email atau username
+    akun lain, karena login menerima keduanya."""
     value = value.strip().lower()
     if not value.isascii():
         raise forms.ValidationError("Gunakan alamat email dengan huruf Latin/ASCII.")
@@ -42,6 +46,8 @@ def clean_email(value, *, user=None):
 
 
 class SignUpForm(forms.Form):
+    """Form pendaftaran akun: nama lengkap, username, email, dan kata sandi dua kali."""
+
     field_order = ["full_name", "username", "email", "password1", "password2"]
 
     username = forms.CharField(
@@ -94,15 +100,20 @@ class SignUpForm(forms.Form):
     )
 
     def clean_full_name(self):
+        """Rapikan nama lengkap: spasi berlebih dipadatkan jadi satu."""
         return " ".join(self.cleaned_data["full_name"].split())
 
     def clean_email(self):
+        """Validasi email baru lewat clean_email modul."""
         return clean_email(self.cleaned_data["email"])
 
     def clean_username(self):
+        """Validasi username baru lewat clean_username modul."""
         return clean_username(self.cleaned_data["username"])
 
     def clean(self):
+        """Pastikan kedua kata sandi sama, lalu jalankan validator kata sandi Django terhadap calon
+        user agar aturan kemiripan dengan username/email/nama ikut dicek."""
         cleaned = super().clean()
         password = cleaned.get("password1")
         if password and cleaned.get("password2") and password != cleaned["password2"]:
@@ -122,6 +133,7 @@ class SignUpForm(forms.Form):
         return cleaned
 
     def save(self):
+        """Buat user baru; nama lengkap dipecah di spasi pertama jadi first_name dan last_name."""
         if not self.is_valid():
             raise ValueError("Formulir pendaftaran belum valid.")
         first_name, _, last_name = self.cleaned_data["full_name"].partition(" ")
@@ -135,6 +147,8 @@ class SignUpForm(forms.Form):
 
 
 class EmailOrUsernameAuthenticationForm(AuthenticationForm):
+    """Form login yang menerima email atau username, dengan pesan error berbahasa Indonesia."""
+
     error_messages = {
         "invalid_login": "Email/username atau kata sandi salah.",
         "inactive": "Akun ini dinonaktifkan.",
@@ -160,11 +174,14 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
     )
 
     def clean_username(self):
+        """Buang spasi tepi; bila berupa email (ada @), jadikan huruf kecil."""
         identifier = self.cleaned_data["username"].strip()
         return identifier.lower() if "@" in identifier else identifier
 
 
 class AccountDetailsForm(forms.Form):
+    """Form ubah detail akun (avatar, nama, username, email) dengan field version untuk cek bentrok."""
+
     avatar = forms.ChoiceField(
         choices=AVATAR_CHOICES, required=False, label="Avatar", widget=forms.RadioSelect
     )
@@ -180,6 +197,7 @@ class AccountDetailsForm(forms.Form):
     version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
 
     def __init__(self, *args, user, **kwargs):
+        """Simpan user yang diedit, pasang id "account-version" pada field version, isi avatar awal."""
         self.user = user
         super().__init__(*args, **kwargs)
         self.fields["version"].widget.attrs["id"] = "account-version"
@@ -187,12 +205,15 @@ class AccountDetailsForm(forms.Form):
         self.fields["avatar"].initial = self.current_avatar
 
     def clean_avatar(self):
+        """Bila avatar tidak dipilih, pertahankan avatar yang sedang dipakai."""
         return self.cleaned_data["avatar"] or self.current_avatar
 
     def clean_username(self):
+        """Validasi username; username lama milik user sendiri tetap diterima."""
         return clean_username(self.cleaned_data["username"], user=self.user)
 
     def clean_email(self):
+        """Validasi email; mengganti email mewajibkan kata sandi saat ini yang benar."""
         email = clean_email(self.cleaned_data["email"], user=self.user)
         if email != self.user.email and not self.user.check_password(
             self.data.get("current_password", "")
@@ -202,12 +223,18 @@ class AccountDetailsForm(forms.Form):
 
 
 class IngredientChoiceField(forms.ModelMultipleChoiceField):
+    """Pilihan banyak bahan yang labelnya hanya nama bahan."""
+
     def label_from_instance(self, ingredient):
+        """Tampilkan nama bahan sebagai label pilihan."""
         return ingredient.name
 
 
 class PreferenceForm(forms.Form):
+    """Form preferensi makan: target, waktu makan, porsi, alergi, dan bahan yang dihindari."""
+
     def __init__(self, *args, **kwargs):
+        """Pasang id "preference-version" pada field version tersembunyi."""
         super().__init__(*args, **kwargs)
         self.fields["version"].widget.attrs["id"] = "preference-version"
 
@@ -238,12 +265,14 @@ class PreferenceForm(forms.Form):
     version = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
 
     def clean_targets(self):
+        """Tolak kombinasi "seimbang" dengan target lain."""
         values = self.cleaned_data["targets"]
         if "seimbang" in values and len(values) > 1:
             raise forms.ValidationError("Seimbang tidak dapat digabung dengan target lain.")
         return values
 
     def clean_avoided_ingredients(self):
+        """Batasi maksimal 10 bahan dan total nama 250 karakter (batas exclude_ingredients planner)."""
         values = self.cleaned_data["avoided_ingredients"]
         if len(values) > 10 or len(", ".join(row.name for row in values)) > 250:
             raise forms.ValidationError(

@@ -5,7 +5,7 @@ import { initPlanDialog } from "./plan_dialog.mjs";
 import { initPlannerForm } from "./planner_form.mjs";
 import { initSavedPlans } from "./saved_plans.mjs";
 
-// Runs on first load and again after every <main> swap.
+// Dijalankan saat halaman pertama dimuat dan setiap kali <main> diganti; dialog rencana hanya diinisialisasi jika ada.
 function init() {
   if (document.getElementById("plan-dialog")) {
     initPlanDialog();

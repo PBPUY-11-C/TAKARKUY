@@ -113,7 +113,7 @@ class PlannerRefinementTests(TestCase):
         self.assertTrue(self.result["spend_floor_relaxed"])
         self.assertIn("60%", self.result["preference_notes"][0])
         response = self.client.post(
-            reverse("modul1-plan-preview", args=[self.draft.pk]),
+            reverse("planner:preview_plan", args=[self.draft.pk]),
             json.dumps(
                 {
                     "version": 1,
@@ -157,7 +157,7 @@ class PlannerRefinementTests(TestCase):
             "apps.planner.views.build_plan", return_value=deepcopy(self.result)
         ) as builder:
             response = browser.post(
-                reverse("modul1"), {**self.inputs, "plan_id": str(self.draft.pk), "version": 2}
+                reverse("planner:show_planner"), {**self.inputs, "plan_id": str(self.draft.pk), "version": 2}
             )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(builder.call_args.kwargs["recent_recipe_codes"], {self.fruit})
@@ -266,7 +266,7 @@ class PlannerRefinementTests(TestCase):
         browser.force_login(self.user)
         with patch("apps.planner.services.build_plan") as expensive:
             response = browser.post(
-                reverse("modul1-plan-preview", args=[self.draft.pk]),
+                reverse("planner:preview_plan", args=[self.draft.pk]),
                 json.dumps(
                     {
                         "version": 1,
@@ -283,7 +283,7 @@ class PlannerRefinementTests(TestCase):
         self.assertGreater(int(response["Retry-After"]), 0)
         saved = self.saved()
         response = browser.post(
-            reverse("modul1"),
+            reverse("planner:show_planner"),
             {**self.inputs, "plan_id": str(saved.pk), "version": saved.version},
         )
         self.assertEqual(response.status_code, 429)

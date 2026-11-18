@@ -62,7 +62,7 @@ NUTRITION_RINGS = (
 
 
 def nutrition_rings(nutrition):
-    """Per-person daily values with their share of the ALG reference, capped at 100%."""
+    """Nilai gizi harian per orang beserta persentasenya terhadap acuan ALG, maksimal 100%."""
     return [
         {
             "key": key,
@@ -85,7 +85,8 @@ SHOPPING_SUMMARY = (
 
 
 def shopping_summary(groups):
-    """Item count and subtotal per summary category, in SHOPPING_SUMMARY order."""
+    """Jumlah item dan subtotal per kategori ringkasan, urut sesuai SHOPPING_SUMMARY; kategori
+    yang tidak dikenal masuk "lainnya"."""
     keys = {key for key, _ in SHOPPING_SUMMARY}
     totals = {}
     for group in groups:
@@ -101,7 +102,7 @@ def shopping_summary(groups):
 
 
 def annotated_groups(user, plan, result, display_schedule):
-    """Shopping groups with live pantry facts and a subtotal each."""
+    """Kelompok belanja dengan info pantry terkini dan subtotal per kelompok, plus total hemat."""
     groups, saving = pantry_annotations(user, plan, result, display_schedule)
     for group in groups:
         group["subtotal"] = sum(Decimal(str(item["cost"])) for item in group["items"])
@@ -112,10 +113,12 @@ NOT_FOUND_MESSAGE = "Rencana tidak ditemukan atau sudah diganti. Muat ulang hala
 
 
 def owned_plan(request, plan_id):
+    """Mengambil rencana milik user yang login; rencana user lain diperlakukan sebagai 404."""
     return get_object_or_404(BudgetPlan, pk=plan_id, user=request.user)
 
 
 def required_version(data, field="version"):
+    """Membaca nomor versi wajib dari data form; harus string angka ASCII, selain itu ValueError."""
     value = data.get(field)
     if not isinstance(value, str) or not value.isascii() or not value.isdecimal():
         raise ValueError("Versi rencana wajib dikirim. Muat ulang halaman sebelum melanjutkan.")
@@ -123,11 +126,13 @@ def required_version(data, field="version"):
 
 
 def preview_data(preview):
+    """Menyusun JSON preview untuk dialog: total sebelum dan sesudah, selisih, kelebihan budget,
+    jadwal, ringkasan belanja, dan gizi."""
     previous, result = thaw(preview.plan.snapshot), thaw(preview.snapshot)
     budget = int(preview.inputs["budget"])
     return {
         "id": str(preview.pk),
-        "apply_url": reverse("modul1-preview-apply", args=[preview.pk]),
+        "apply_url": reverse("planner:apply_preview", args=[preview.pk]),
         "before": int(result.get("previous_net_total", net_total(previous))),
         "after": int(net_total(result)),
         "delta": int(net_total(result) - result.get("previous_net_total", net_total(previous))),
@@ -154,7 +159,8 @@ def preview_data(preview):
 
 
 def pantry_annotations(user, plan, result, display_schedule):
-    """Live pantry facts for display only; never written into the plan snapshot."""
+    """Info pantry terkini (stok terpakai, sisa beli, bahan hampir kedaluwarsa) hanya untuk tampilan;
+    tidak pernah ditulis ke snapshot rencana."""
     from apps.catalog.models import RecipeIngredient
     from apps.pantry.services import stock_for_planning
 
@@ -210,7 +216,8 @@ def pantry_annotations(user, plan, result, display_schedule):
 
 
 def landing_prefill(query):
-    """Budget, days, servings and meals carried from the landing calculator."""
+    """Budget, hari, orang, dan waktu makan yang dibawa dari kalkulator landing page; nilai bukan
+    angka diabaikan."""
     raw = {key: query.get(key, "") for key in ("budget", "days", "servings")}
     raw["budget"] = raw["budget"].replace(".", "")
     values = {key: int(text) for key, text in raw.items() if text.isascii() and text.isdigit()}
@@ -224,6 +231,8 @@ REMEMBERED_PLAN = "planner_plan"
 
 
 def remembered_plan(request):
+    """Rencana terakhir yang dibuka user (dicatat di session), atau None jika tidak ada atau
+    bukan miliknya."""
     plan_id = request.session.get(REMEMBERED_PLAN)
     if not plan_id:
         return None
@@ -231,6 +240,7 @@ def remembered_plan(request):
 
 
 def remember_plan(request, plan):
+    """Mencatat id rencana yang sedang dibuka di session; None menghapus catatan tersebut."""
     if plan is None:
         request.session.pop(REMEMBERED_PLAN, None)
     else:
@@ -238,6 +248,8 @@ def remember_plan(request, plan):
 
 
 def account_page(request, builder):
+    """Halaman utama planner: GET menampilkan rencana, POST membuat draft baru atau preview untuk
+    rencana tersimpan; versi dan draft dicek agar tidak menimpa perubahan lain."""
     plan = None
     prefill = landing_prefill(request.GET) if request.method == "GET" else {}
     requested = request.POST.get("plan_id") if request.method == "POST" else request.GET.get("plan")
@@ -251,7 +263,7 @@ def account_page(request, builder):
         try:
             plan = owned_plan(request, UUID(requested))
         except (ValueError, TypeError, Http404):
-            return redirect(reverse("modul1") + "?hilang=1")
+            return redirect(reverse("planner:show_planner") + "?hilang=1")
     plan_inputs = {"rice": "no", **plan.inputs} if plan else None
     initial = (
         plan_inputs
@@ -343,7 +355,7 @@ def account_page(request, builder):
                         expected_draft_id=draft_id,
                         expected_draft_version=draft_version,
                     )
-                    response = redirect(reverse("modul1") + f"?plan={plan.pk}#hasil")
+                    response = redirect(reverse("planner:show_planner") + f"?plan={plan.pk}#hasil")
                     patch_cache_control(response, private=True, no_store=True)
                     return response
         except PreviewRateLimit as exc:
@@ -409,7 +421,7 @@ def account_page(request, builder):
             else max(today, plan.starts_on if plan else today),
             "start_min": min(today, plan.starts_on) if plan else today,
             "plan_missing": request.GET.get("hilang") == "1",
-            "remembered_url": reverse("modul1") + f"?plan={remembered.pk}#hasil"
+            "remembered_url": reverse("planner:show_planner") + f"?plan={remembered.pk}#hasil"
             if remembered
             else "",
             "start_max": today + timedelta(days=MAX_START_DAYS),
@@ -456,13 +468,17 @@ def account_page(request, builder):
 
 
 def plan_api(view):
+    """Decorator endpoint JSON rencana: wajib login, POST, dan body JSON maks 8000 byte; error
+    layanan diubah jadi respons JSON dengan status yang sesuai."""
     @wraps(view)
     def wrapped(request, *args, **kwargs):
+        """Memvalidasi request, memanggil view dengan payload, lalu memetakan exception ke
+        401/405/415/413/429/409/404/400."""
         if not request.user.is_authenticated:
             return JsonResponse(
                 {
                     "error": "Masuk untuk mengelola rencana makan.",
-                    "login_url": reverse("login") + "?next=" + reverse("modul1"),
+                    "login_url": reverse("login:login") + "?next=" + reverse("planner:show_planner"),
                 },
                 status=401,
             )
@@ -503,6 +519,7 @@ def plan_api(view):
 
 @plan_api
 def preview_plan(request, payload, plan_id):
+    """Endpoint: membuat preview perubahan rencana dari payload dan mengembalikan datanya."""
     plan = owned_plan(request, plan_id)
     preview = make_preview(plan, payload.get("version"), payload)
     return JsonResponse(preview_data(preview))
@@ -510,13 +527,17 @@ def preview_plan(request, payload, plan_id):
 
 @plan_api
 def apply_plan_preview(request, payload, preview_id):
+    """Endpoint: menerapkan preview milik user menjadi draft (opsional dengan budget baru) dan
+    mengembalikan URL draft tersebut."""
     get_object_or_404(PlanPreview, pk=preview_id, plan__user=request.user)
     draft = apply_preview(request.user, preview_id, new_budget=payload.get("new_budget"))
-    return JsonResponse({"url": reverse("modul1") + f"?plan={draft.pk}#hasil"})
+    return JsonResponse({"url": reverse("planner:show_planner") + f"?plan={draft.pk}#hasil"})
 
 
 @plan_api
 def save_account_plan(request, payload, plan_id):
+    """Endpoint: memvalidasi judul dan tanggal mulai lalu menyimpan rencana; `replace_original`
+    menentukan apakah rencana asal ditimpa."""
     owned_plan(request, plan_id)
     if not isinstance(payload.get("title"), str):
         raise ValueError("Judul harus berupa teks.")
@@ -535,20 +556,23 @@ def save_account_plan(request, payload, plan_id):
     plan = save_plan(
         request.user, plan_id, payload.get("version"), **form.cleaned_data, replace_original=replace
     )
-    return JsonResponse({"url": reverse("modul1") + f"?plan={plan.pk}#hasil", "id": str(plan.pk)})
+    return JsonResponse({"url": reverse("planner:show_planner") + f"?plan={plan.pk}#hasil", "id": str(plan.pk)})
 
 
 @plan_api
 def add_plan_purchases(request, payload, plan_id):
+    """Endpoint: memasukkan item belanja yang dipilih ke pantry dan mengembalikan status 201."""
     owned_plan(request, plan_id)
     response = purchases_to_pantry(
         request.user, plan_id, payload.get("version"), payload.get("items")
     )
-    return JsonResponse({**response, "pantry_url": reverse("modul2")}, status=201)
+    return JsonResponse({**response, "pantry_url": reverse("pantry:show_pantry")}, status=201)
 
 
 @plan_api
 def delete_account_plan(request, payload, plan_id):
+    """Endpoint: menghapus rencana setelah versi dicek; baris user dan rencana dikunci agar tidak
+    bentrok dengan request lain."""
     with transaction.atomic():
         get_user_model().objects.select_for_update().get(pk=request.user.pk)
         plan = get_object_or_404(
@@ -556,12 +580,13 @@ def delete_account_plan(request, payload, plan_id):
         )
         check_version(plan, payload.get("version"))
         plan.delete()
-    return JsonResponse({"url": reverse("modul1") + "#rencana-saya"})
+    return JsonResponse({"url": reverse("planner:show_planner") + "#rencana-saya"})
 
 
 @login_required
 @require_GET
 def shopping_list_download(request, plan_id):
+    """Mengunduh daftar belanja rencana sebagai PDF; rencana yang melebihi budget dianggap 404."""
     plan = owned_plan(request, plan_id)
     result = thaw(plan.snapshot)
     if not result.get("within_budget"):
@@ -578,6 +603,8 @@ def shopping_list_download(request, plan_id):
 
 
 def recipe_alternatives(request, plan_id):
+    """Endpoint GET: daftar resep pengganti untuk satu slot menu yang belum dimasak; memakai kuota
+    preview yang sama (rate limit)."""
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Masuk terlebih dahulu."}, status=401)
     if request.method != "GET":

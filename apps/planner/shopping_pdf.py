@@ -1,4 +1,4 @@
-"""Printable shopping list (PDF) for one plan: a checklist per category plus the menu."""
+"""Daftar belanja siap cetak (PDF) untuk satu rencana: checklist per kategori ditambah menu."""
 
 from decimal import Decimal
 from io import BytesIO
@@ -27,7 +27,8 @@ NOTE = ParagraphStyle("note", parent=CELL, fontSize=8, leading=10, textColor=MUT
 
 
 def amount(item):
-    """What to buy: whole fruit count, or grams still needed after pantry stock."""
+    """Teks jumlah yang dibeli: jumlah buah utuh, atau gram yang masih kurang setelah stok pantry;
+    1000 g ke atas ditulis dalam kg."""
     if item.get("purchase_units"):
         return f"{item['purchase_units']} {item['purchase_unit']}"
     grams = Decimal(str(item.get("to_buy") if item.get("in_pantry") else item["quantity"]))
@@ -37,7 +38,8 @@ def amount(item):
 
 
 def shopping_list_pdf(plan, result, groups, schedule):
-    """Return PDF bytes; `groups` are pantry-annotated shopping groups."""
+    """Membuat PDF daftar belanja (tabel per kategori, total, jadwal menu) lalu mengembalikan
+    bytes-nya; `groups` adalah kelompok belanja yang sudah diberi info pantry."""
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -131,5 +133,6 @@ def shopping_list_pdf(plan, result, groups, schedule):
 
 
 def meal_name(meal):
+    """Nama menu untuk PDF, ditambah makanan pokoknya (mis. "+ Nasi") kalau ada."""
     staple = "Nasi" if meal.get("with_rice") else (meal.get("staple") or {}).get("label")
     return meal["name"] + (f" + {staple}" if staple else "")

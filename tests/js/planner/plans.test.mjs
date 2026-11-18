@@ -59,7 +59,7 @@ function setup(overBudget = 5000, { pending = false, notes = [], targetsSet = fa
     fetch: async (url, options) => {
       requests.push({ url: String(url), options });
       return { ok: true, json: async () => options.method
-        ? (String(url) === "/apply/" ? { url: "/modul1/?plan=draft" } : proposal)
+        ? (String(url) === "/apply/" ? { url: "/planner/?plan=draft" } : proposal)
         : { version: 1, recipes: [{ recipe_code: "B", name: "Menu B" }] } };
     },
   };
@@ -86,7 +86,7 @@ test("replacement waits for preview and explicit budget approval before applying
   await app.get("apply-preview").trigger();
   assert.deepEqual(JSON.parse(app.requests[2].options.body), { new_budget: "16000" });
   assert.equal(app.requests[2].options.headers["X-CSRFToken"], "test-csrf");
-  assert.deepEqual(app.redirects, ["/modul1/?plan=draft"]);
+  assert.deepEqual(app.redirects, ["/planner/?plan=draft"]);
 });
 
 test("within-budget saved-plan preview applies without changing the budget", async () => {
@@ -158,12 +158,12 @@ test("within-budget replacement applies the server quote straight away", async (
   assert.deepEqual(JSON.parse(app.requests[1].options.body), { action: "replace", version: 1,
     day: 1, meal: "sarapan", recipe: "B" });
   assert.deepEqual(JSON.parse(app.requests[2].options.body), {});
-  assert.deepEqual(app.redirects, ["/modul1/?plan=draft"]);
+  assert.deepEqual(app.redirects, ["/planner/?plan=draft"]);
 });
 
 test("a destination differing only by #fragment reloads instead of silently staying", async () => {
   const app = setup(0, { pending: true });
-  app.context.window.location.pathname = "/modul1/";
+  app.context.window.location.pathname = "/planner/";
   app.context.window.location.search = "?plan=draft";
   await app.get("apply-preview").trigger();
   assert.deepEqual(app.redirects, ["reload"]);

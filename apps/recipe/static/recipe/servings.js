@@ -34,6 +34,7 @@ if (detail && input) {
       window.setTimeout(() => { delete input.dataset.dir; }, 400);
     });
   }
+  // Menandai tombol - / + sebagai aria-disabled saat porsi menyentuh batas min atau max input.
   const syncStepButtons = () => {
     const value = Number(input.value);
     for (const button of document.querySelectorAll('[data-serving-step]')) {
@@ -61,7 +62,7 @@ if (detail && input) {
     for (const row of ingredientRows) {
       const amount = roundedAmount(scaleServings(row.baseAmount, baseServings, servings));
       if (amount !== null) { row.amount.textContent = `${amount.toFixed(1)} g`; flash(row.amount); }
-      // Stock shortages depend on Pantry contents and are recalculated in the cooking preview.
+      // Kekurangan stok bergantung pada isi Pantry dan dihitung ulang di pratinjau masak.
       const stock = row.row.dataset.stock;
       if (row.status && (stock === 'ok' || stock === 'short' || stock === 'check')) {
         row.row.dataset.stock = 'check';

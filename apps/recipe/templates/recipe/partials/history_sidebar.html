@@ -36,5 +36,5 @@
     <span>{{ history.number }} / {{ history.paginator.num_pages }}</span>
     {% if history.has_next %}<a class="icon-btn" href="?{{ history_params }}&amp;history_page={{ history.next_page_number }}" aria-label="Riwayat berikutnya"><svg class="icon icon--sm" aria-hidden="true"><use href="#m4-i-right"/></svg></a>{% endif %}
   </nav>
-  <p class="helper">Salah input? Koreksi lewat <a class="link" href="{% url 'modul2' %}">Smart Pantry</a>. Koreksi stok tidak menghapus riwayat masak.</p>
+  <p class="helper">Salah input? Koreksi lewat <a class="link" href="{% url 'pantry:show_pantry' %}">Smart Pantry</a>. Koreksi stok tidak menghapus riwayat masak.</p>
 </section>

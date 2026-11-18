@@ -1,4 +1,4 @@
-"""User-configurable common seasonings that need not block recipe cooking."""
+"""Bumbu dasar yang bisa diatur pengguna dan tidak perlu menghalangi memasak resep."""
 
 STAPLE_GROUPS = (
     (
@@ -49,6 +49,7 @@ DEFAULT_TRACKED_STAPLE_GROUPS = ["cooking_oil"]
 
 
 def tracked_staple_codes(user):
+    """Mengembalikan kode bahan dari grup bumbu dasar yang dipilih pengguna untuk tetap dilacak."""
     from apps.login.preferences import preferences_for
 
     selected = preferences_for(user).tracked_staples

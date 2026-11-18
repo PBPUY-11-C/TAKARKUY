@@ -1,4 +1,4 @@
-"""Durable cleanup for recipe review photos stored outside the database."""
+"""Pembersihan tahan gagal untuk foto ulasan resep yang disimpan di luar database."""
 
 import logging
 
@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 def attempt_recipe_photo_cleanup(cleanup_id, using="default"):
+    """Mencoba menghapus file dari storage; gagal menambah attempts, berhasil menghapus job antrean.
+    Mengembalikan True bila file terhapus atau job sudah tidak ada."""
     job = RecipePhotoCleanup.objects.using(using).filter(pk=cleanup_id).first()
     if job is None:
         return True
@@ -33,6 +35,7 @@ def attempt_recipe_photo_cleanup(cleanup_id, using="default"):
 
 
 def enqueue_recipe_photo_cleanup(storage_name, *, using="default"):
+    """Mencatat job pembersihan foto lalu menjadwalkan penghapusannya setelah transaksi commit."""
     if not storage_name:
         return None
     job, _ = RecipePhotoCleanup.objects.using(using).get_or_create(storage_name=storage_name)
@@ -47,7 +50,7 @@ def enqueue_recipe_photo_cleanup(storage_name, *, using="default"):
 
 
 def discard_uncommitted_recipe_photo(storage_name):
-    """Remove an upload whose database transaction failed, or queue its cleanup."""
+    """Menghapus unggahan yang transaksi database-nya gagal; bila gagal, mengantrekan pembersihannya."""
     try:
         default_storage.delete(storage_name)
     except Exception:

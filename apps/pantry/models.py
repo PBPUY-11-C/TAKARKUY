@@ -3,7 +3,7 @@ from django.db import models
 
 
 class PantryItem(models.Model):
-    """One purchase batch."""
+    """Satu batch pembelian bahan di pantry; version dipakai untuk optimistic locking."""
 
     EXPIRY_CHOICES = [
         ("legacy", "Tanggal lama (periksa label)"),
@@ -108,6 +108,8 @@ class PantryItem(models.Model):
 
 
 class PantryOperation(models.Model):
+    """Catatan operasi pantry per idempotency key user, menyimpan hash payload dan respons asli."""
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     key = models.UUIDField()
     kind = models.CharField(max_length=20)
@@ -122,6 +124,8 @@ class PantryOperation(models.Model):
 
 
 class PantryMovement(models.Model):
+    """Riwayat perubahan stok satu batch (masuk, koreksi, pindah, dibuang, dipakai)."""
+
     batch = models.ForeignKey(PantryItem, on_delete=models.CASCADE, related_name="movements")
     operation = models.ForeignKey(PantryOperation, null=True, on_delete=models.RESTRICT)
     kind = models.CharField(
@@ -150,6 +154,8 @@ class PantryMovement(models.Model):
 
 
 class PantryLLMUsage(models.Model):
+    """Hitungan percobaan LLM harian per user dan jenis tugas; dibatasi maksimal 10 per hari."""
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     day = models.DateField()
     kind = models.CharField(
@@ -169,6 +175,8 @@ class PantryLLMUsage(models.Model):
 
 
 class NameResolution(models.Model):
+    """Cache bersama nama ternormalisasi ke bahan katalog; lease menandai resolusi yang berjalan."""
+
     key = models.CharField(max_length=64, primary_key=True)
     normalized_name = models.CharField(max_length=255)
     ingredient = models.ForeignKey("catalog.Ingredient", null=True, on_delete=models.SET_NULL)
@@ -178,7 +186,7 @@ class NameResolution(models.Model):
 
 
 class PantryNameCorrection(models.Model):
-    """An OCR spelling explicitly corrected by one account."""
+    """Ejaan hasil OCR yang dikoreksi secara eksplisit oleh satu akun atau sesi."""
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE
@@ -202,7 +210,7 @@ class PantryNameCorrection(models.Model):
 
 
 class ShelfLifeEstimate(models.Model):
-    """AI shelf-life guess for food without an official reference; shared by all accounts."""
+    """Perkiraan masa simpan dari AI untuk bahan tanpa acuan resmi; dipakai bersama semua akun."""
 
     key = models.CharField(max_length=255, primary_key=True)
     ingredient = models.ForeignKey("catalog.Ingredient", null=True, on_delete=models.CASCADE)

@@ -1,4 +1,4 @@
-"""Conservative whole-fruit shopping quotes over the local per-kg price snapshot."""
+"""Estimasi belanja buah utuh yang konservatif berdasarkan snapshot harga lokal per kg."""
 
 import json
 from decimal import ROUND_CEILING, Decimal
@@ -8,6 +8,8 @@ RULES_PATH = Path(__file__).resolve().parents[2] / "data/mapping/fruit_purchase_
 
 
 def load_fruit_rules():
+    """Membaca aturan satuan beli buah dari JSON per kode bahan; berat atau porsi edible yang
+    tidak masuk akal memicu ValueError."""
     payload = json.loads(RULES_PATH.read_text(encoding="utf-8"))
     rules = {}
     for row in payload["rules"]:
@@ -27,7 +29,8 @@ def load_fruit_rules():
 
 
 def whole_fruit_quote(required_edible_grams, price_per_kg, rule):
-    """Quote all selected servings together, retaining whole-fruit leftovers."""
+    """Menghitung jumlah buah utuh untuk semua porsi sekaligus (dibulatkan ke atas, sisa dicatat);
+    biaya dibulatkan ke atas ke kelipatan Rp100."""
     required = Decimal(str(required_edible_grams))
     if required <= 0:
         return {

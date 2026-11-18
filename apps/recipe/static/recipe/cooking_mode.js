@@ -31,11 +31,13 @@ if (startButton && mode) {
   let timerDeadline = null;
   let timerInterval = null;
 
+  // Durasi timer dari input menit dalam detik; null bila bukan bilangan bulat 1 sampai 240.
   const configuredSeconds = () => {
     const minutes = Number(minutesInput.value);
     return Number.isInteger(minutes) && minutes >= 1 && minutes <= 240 ? minutes * 60 : null;
   };
 
+  // Menulis sisa waktu mm:ss dan menandai state timer (running, done, idle) untuk styling.
   function renderTimer() {
     const minutes = Math.floor(remainingSeconds / 60).toString().padStart(2, '0');
     const seconds = (remainingSeconds % 60).toString().padStart(2, '0');
@@ -43,6 +45,7 @@ if (startButton && mode) {
     timerDisplay.dataset.state = timerInterval !== null ? 'running' : (remainingSeconds === 0 ? 'done' : 'idle');
   }
 
+  // Menghentikan interval timer; reset=true mengembalikan sisa waktu ke durasi input atau 5 menit.
   function stopTimer(reset = false) {
     if (timerInterval !== null) window.clearInterval(timerInterval);
     timerInterval = null;
@@ -52,6 +55,7 @@ if (startButton && mode) {
     renderTimer();
   }
 
+  // Menampilkan langkah aktif, memperbarui tombol navigasi, progress bar, dan status aria.
   function renderStep({focus = false} = {}) {
     stepCount.textContent = `Langkah ${activeStep + 1} dari ${steps.length}`;
     currentStep.textContent = steps[activeStep];
@@ -71,6 +75,7 @@ if (startButton && mode) {
     if (focus) currentStep.focus();
   }
 
+  // Menyimpan langkah dan checklist ke sessionStorage beserta sidik jari resep untuk pemulihan.
   function saveProgress() {
     saveCookingProgress(
       storage,

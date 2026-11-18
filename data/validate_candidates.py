@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check provenance and internal consistency of review-only dataset indexes."""
+"""Memeriksa asal-usul dan konsistensi internal indeks dataset yang khusus untuk review."""
 
 import csv
 import json
@@ -11,16 +11,21 @@ ROOT = Path(__file__).resolve().parent
 
 
 def rows(relative_path):
+    """Membaca CSV relatif terhadap folder data/ sebagai list dict."""
     with (ROOT / relative_path).open(newline="", encoding="utf-8") as stream:
         return list(csv.DictReader(stream))
 
 
 def require(condition, message):
+    """Melempar ValueError dengan pesan tertentu bila kondisi tidak terpenuhi."""
     if not condition:
         raise ValueError(message)
 
 
 def main():
+    """Memvalidasi indeks staging (produk OFF, mapping produk, kandidat resep, istilah tak cocok)
+    terhadap snapshot mentahnya dan memastikan tidak ada yang naik status ke planner.
+    """
     products = rows("staging/openfoodfacts_products.csv")
     product_mappings = rows("staging/product_ingredient_candidates.csv")
     recipes = rows("staging/recipe_candidates.csv")

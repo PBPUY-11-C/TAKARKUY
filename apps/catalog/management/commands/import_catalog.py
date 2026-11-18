@@ -1,4 +1,4 @@
-"""Controlled fixture refresh using stable primary keys."""
+"""Pembaruan katalog terkendali dari fixture dengan primary key yang stabil."""
 
 import json
 from pathlib import Path
@@ -13,9 +13,12 @@ from apps.catalog.aggregation import rebuild_allergens, suspend_aggregation
 
 
 class Command(BaseCommand):
+    """Command import_catalog: upsert baris katalog dari fixture JSON lalu rebuild alergen."""
+
     help = "Update catalog rows from a fixture and optionally deactivate missing recipes."
 
     def add_arguments(self, parser):
+        """Argumen: path fixture, nonaktifkan resep yang hilang, dan sinkron relasi hasil generate."""
         parser.add_argument("fixture", type=Path)
         parser.add_argument("--deactivate-missing-recipes", action="store_true")
         parser.add_argument(
@@ -27,6 +30,8 @@ class Command(BaseCommand):
     @transaction.atomic
     @suspend_aggregation()
     def handle(self, *args, **options):
+        """Validasi fixture lalu upsert dalam satu transaksi; panduan resep yang teksnya berubah ditahan
+        untuk ditinjau ulang, dan alergen di-rebuild sekali di akhir (signal ditangguhkan)."""
         path = options["fixture"]
         if not path.is_file():
             raise CommandError(f"Fixture tidak ditemukan: {path}")

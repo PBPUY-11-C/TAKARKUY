@@ -6,6 +6,7 @@ if (form) {
   const photoPreview = document.querySelector('#review-photo-preview');
   let previewUrl = null;
 
+  // Membaca respons JSON; body bukan JSON atau status non-OK dilempar sebagai Error.
   async function readResponse(response) {
     let data;
     try { data = await response.json(); }
@@ -14,6 +15,7 @@ if (form) {
     return data;
   }
 
+  // Menyimpan atau menghapus ulasan; saat menyimpan, foto diunggah terpisah memakai version terbaru.
   async function submit(action) {
     const buttons = form.querySelectorAll('button');
     buttons.forEach(button => button.disabled = true);

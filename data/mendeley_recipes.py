@@ -1,4 +1,4 @@
-"""Promote Mendeley Indonesian recipes that can be fully priced and costed."""
+"""Mempromosikan resep Indonesia dari Mendeley yang semua bahannya bisa diberi harga dan gizi."""
 
 import csv
 import hashlib
@@ -136,12 +136,15 @@ ANIMAL = ("ING-DAGING-", "ING-IKAN-", "ING-UDANG", "ING-TELUR-", "ING-EBI", "ING
 
 
 def stable(prefix, *parts):
-    """Same ID scheme as build_final.stable."""
+    """Membuat ID stabil prefix + 12 hex SHA1 dari parts; skemanya sama dengan build_final.stable."""
     return prefix + "-" + hashlib.sha1("|".join(map(str, parts)).encode()).hexdigest()[:12].upper()
 
 
 @contextmanager
 def extra_profiles():
+    """Context manager yang sementara menambah EXTRA_PROFILES ke estimation.PROFILES,
+    lalu menghapusnya lagi agar estimasi sumber lain tidak ikut berubah.
+    """
     added = {k: v for k, v in EXTRA_PROFILES.items() if k not in estimation.PROFILES}
     estimation.PROFILES.update(added)
     try:
@@ -152,6 +155,7 @@ def extra_profiles():
 
 
 def load_terms(path):
+    """Memuat aturan istilah bahan dari CSV sebagai (regex, action, ingredient_code, note)."""
     rows = []
     with open(path, encoding="utf-8") as handle:
         for row in csv.DictReader(handle):
@@ -162,19 +166,23 @@ def load_terms(path):
 
 
 def clean_term(text):
+    """Menormalkan teks bahan, membuang isi kurung dan tanda baca di ujung."""
     text = normalize(text)
     text = re.sub(r"\([^)]*\)", "", text)
     return text.strip(" .,-:;*")
 
 
 def clean_title(title):
+    """Membuang nomor urut di depan judul dan simbol aneh, lalu merapikan spasi."""
     title = re.sub(r"^\W*\d+\s*[).]\s*", "", str(title))
     title = re.sub(r"[^\w\s(),.&'/-]", "", title)
     return re.sub(r"\s+", " ", title).strip(" .,-")
 
 
 def display_title(title):
-    """Readable name: drop 'resep', fluff in brackets and trailing remarks."""
+    """Membuat nama yang enak dibaca: membuang awalan 'resep', kata promosi dalam kurung,
+    dan keterangan setelah koma; judul yang dominan huruf kapital diubah ke title case.
+    """
     name = re.sub(r"(?i)^resep\s+(?:masakan\s+)?(?:sehari-hari\s+)?", "", title)
     name = re.sub(
         r"\s*[(\[][^)\]]*(?:masakan|rumahan|simple|simpel|anak kos|mudah|sederhana|praktis|enak|"
@@ -192,12 +200,16 @@ def display_title(title):
 
 
 def title_key(title):
+    """Kunci pembanding judul tanpa kurung, tanda baca, dan kata hiasan (resep, enak, simpel),
+    dipakai untuk mendeteksi resep duplikat.
+    """
     text = normalize(re.sub(r"\([^)]*\)", "", title))
     text = TITLE_NOISE.sub(" ", re.sub(r"[^\w\s]", " ", text))
     return re.sub(r"\s+", " ", text).strip()
 
 
 def clean_instructions(text):
+    """Merapikan langkah masak: koma berulang jadi titik, simbol aneh dibuang, diakhiri titik."""
     text = re.sub(r"\s*,{2,}\s*", ". ", str(text))
     text = re.sub(r"\?{2,}|[^\w\s.,;:()/%&'+-]", " ", text)
     text = re.sub(r"\s+", " ", text).strip(" .,")
@@ -205,7 +217,9 @@ def clean_instructions(text):
 
 
 def meal_type(title, source_id):
-    """Breakfast/dinner by title words; other main dishes alternate lunch/dinner."""
+    """Menentukan slot makan dari kata di judul (sarapan/makan malam); sisanya bergantian
+    makan siang dan makan malam berdasarkan ID sumber genap/ganjil.
+    """
     text = normalize(title)
     if BREAKFAST.search(text):
         return "sarapan"
@@ -215,6 +229,7 @@ def meal_type(title, source_id):
 
 
 def number(value):
+    """Mengubah nilai (koma desimal diterima) menjadi float positif; selain itu None."""
     try:
         number = float(str(value).replace(",", "."))
     except (TypeError, ValueError):
@@ -223,7 +238,9 @@ def number(value):
 
 
 def resolve(raw, terms):
-    """Return (action, ingredient_code, note) for one source ingredient text."""
+    """Mengembalikan (action, ingredient_code, note) untuk satu teks bahan sumber: judul bagian,
+    aturan mendeley_terms.csv dulu, lalu fallback resolve_ingredient.
+    """
     term = clean_term(raw)
     if not term or estimation.is_section_heading(term):
         return "heading", "", "judul bagian, bukan bahan"
@@ -235,6 +252,7 @@ def resolve(raw, terms):
 
 
 def measure_text(row):
+    """Menyusun teks takaran "angka satuan" dari baris komposisi; nilai kosong jadi "secukupnya"."""
     value = row.get("value")
     unit = str(row.get("measurement") or "").strip().casefold()
     if row.get("is_secukupnya") or unit in ("secukupnya", "sesuai selera") or number(value) is None:
@@ -246,7 +264,9 @@ def measure_text(row):
 
 
 def reference_grams(measure, code):
-    """Grams implied by a stated household measure; None for vague amounts."""
+    """Gram yang tersirat dari takaran rumah tangga; None untuk takaran samar, default batch,
+    atau satuan ekor.
+    """
     if re.match(r"^\S+\s*(?:ekor|ekr)\b", measure):
         return None
     grams, note, _ = estimation.estimate_quantity(measure, code, "id")
@@ -256,7 +276,9 @@ def reference_grams(measure, code):
 
 
 def estimate(row, code):
-    """Return (edible_g, purchase_g, note) or (None, None, reason)."""
+    """Mengembalikan (gram termakan, gram beli, catatan) atau (None, None, alasan).
+    Berat sumber x BDD dipakai bila tak ada acuan atau rasionya wajar; jika tidak, pakai estimasi.
+    """
     source_g = number(row.get("weight_in_grams"))
     bdd = number(row.get("BDD"))
     measure = LEAF_UNIT.sub(r"\1 lembar", measure_text(row))
@@ -280,7 +302,7 @@ def estimate(row, code):
 
 
 def household_estimate(measure, code):
-    """Estimate from the household measure alone (no trusted source weight)."""
+    """Mengestimasi gram hanya dari takaran rumah tangga, tanpa berat sumber yang bisa dipercaya."""
     short = code.removeprefix("ING-")
     match = re.match(r"^(\d+(?:[.,]\d+)?)\s*(?:ekor|ekr)\b", measure)
     if match and short in FISH_PER_EKOR:
@@ -309,7 +331,9 @@ def household_estimate(measure, code):
 
 
 def build_mendeley(root, items, price_by_code, existing_names):
-    """Return recipes, links, tags, estimates and a per-recipe audit."""
+    """Mengembalikan recipes, links, tags, estimates, dan audit per resep Mendeley.
+    Resep non-halal, bukan menu utama, duplikat, atau datanya tidak lengkap tidak dipromosikan.
+    """
     data = json.loads(
         (root / "scratch/mendeley_indonesian_recipe_nutrition_v3.json").read_text(encoding="utf-8")
     )["data"]

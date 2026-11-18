@@ -34,7 +34,7 @@ class AccountKeyboardBrowserTests(StaticLiveServerTestCase):
             "value": self.client.cookies[settings.SESSION_COOKIE_NAME].value,
             "url": self.live_server_url,
         }])
-        response = self.page.goto(self.live_server_url + reverse("modul3"))
+        response = self.page.goto(self.live_server_url + reverse("login:show_profile"))
         self.assertEqual(response.status, 200)
 
     def test_avatar_arrows_update_selection_preview_and_tab_leaves_group(self):
@@ -125,7 +125,7 @@ class AccountKeyboardBrowserTests(StaticLiveServerTestCase):
         expect(popup).not_to_be_visible()
         expect(link).to_be_focused()
         expect(name).to_have_value("Nama belum disimpan")
-        expect(page).to_have_url(self.live_server_url + reverse("modul3"))
+        expect(page).to_have_url(self.live_server_url + reverse("login:show_profile"))
         page.keyboard.press("Enter")
         expect(popup).to_be_visible()
         expect(stay).to_be_focused()

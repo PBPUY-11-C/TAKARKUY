@@ -215,7 +215,7 @@ test("stock matches link to the recipe in the Recipe Book and flag undated stock
   app.response(true, {recipes: [{recipe_code: "RCP 1", name: "Sup", complete: true, unknown_expiry: true}]});
   await app.get("stock-recipes-button").trigger();
   const link = app.get("stock-recipes-output").children[0].children[0];
-  assert.equal(link.href, "/modul4/?recipe=RCP%201");
+  assert.equal(link.href, "/recipes/?recipe=RCP%201");
   assert.match(link.textContent, /Sup · Bahan cukup · tanggal stok belum diketahui/);
 });
 

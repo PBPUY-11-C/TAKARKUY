@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the eight deliverable tables and the Django fixture."""
+"""Memvalidasi delapan tabel hasil akhir dan fixture Django."""
 
 import csv
 import json

@@ -4,6 +4,7 @@
   const form = picker.closest('form');
   const image = picker.querySelector('[data-avatar-preview-image]');
   const initial = picker.querySelector('[data-avatar-preview-initial]');
+  // Perbarui pratinjau avatar: gambar pilihan, atau huruf pertama nama/username untuk avatar inisial.
   function update() {
     const selected = picker.querySelector('[name="avatar"]:checked');
     if (!selected) return;

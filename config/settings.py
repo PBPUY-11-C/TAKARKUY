@@ -32,8 +32,8 @@ if not SECRET_KEY:
 DEBUG = not PRODUCTION
 SESSION_COOKIE_SECURE = PRODUCTION
 CSRF_COOKIE_SECURE = PRODUCTION
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "modul5"
+LOGIN_URL = "login:login"
+LOGIN_REDIRECT_URL = "home:show_dashboard"
 AUTHENTICATION_BACKENDS = ["apps.login.backends.UsernameOrEmailBackend"]
 AUTH_TRUSTED_PROXY_CIDRS = [
     value.strip() for value in os.getenv("AUTH_TRUSTED_PROXY_CIDRS", "").split(",") if value.strip()
@@ -71,7 +71,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
 ]
+
+# API untuk aplikasi mobile: wajib login, hanya menerima body JSON.
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["config.api_auth.MobileSessionAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

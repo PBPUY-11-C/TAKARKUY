@@ -33,14 +33,14 @@
 </head>
 <body>
   <main>
-    <a class="brand" href="{% url 'landing' %}" aria-label="TAKARKUY, ke beranda"><img src="{% static 'takarkuy/logo-light.svg' %}" alt="">TAKARKUY</a>
+    <a class="brand" href="{% url 'login:show_landing' %}" aria-label="TAKARKUY, ke beranda"><img src="{% static 'takarkuy/logo-light.svg' %}" alt="">TAKARKUY</a>
     {% block hero %}
     <p class="code" aria-hidden="true">{% block code %}{% endblock %}</p>
     <div class="plate" aria-hidden="true">{% block icon %}{% endblock %}</div>
     {% endblock %}
     <h1>{% block heading %}{% endblock %}</h1>
     <p>{% block message %}{% endblock %}</p>
-    <div class="actions">{% if user.is_authenticated %}<a class="primary" href="{% url 'modul5' %}">Kembali ke Dashboard</a>{% else %}<a class="primary" href="{% url 'landing' %}">Kembali ke beranda</a>{% endif %}</div>
+    <div class="actions">{% if user.is_authenticated %}<a class="primary" href="{% url 'home:show_dashboard' %}">Kembali ke Dashboard</a>{% else %}<a class="primary" href="{% url 'login:show_landing' %}">Kembali ke beranda</a>{% endif %}</div>
   </main>
 </body>
 </html>

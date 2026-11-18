@@ -10,17 +10,17 @@ class ErrorPageTests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertTemplateUsed(response, "404.html")
         self.assertContains(response, "Halaman tidak ditemukan", status_code=404)
-        self.assertContains(response, f'href="{reverse("landing")}"', status_code=404)
+        self.assertContains(response, f'href="{reverse("login:show_landing")}"', status_code=404)
 
     def test_404_links_signed_in_users_to_their_pages(self):
         self.client.force_login(get_user_model().objects.create_user("tersesat"))
         response = self.client.get("/halaman-yang-tidak-ada/")
         self.assertContains(response, "Kembali ke Dashboard", status_code=404)
-        self.assertNotContains(response, f'href="{reverse("modul1")}"', status_code=404)
-        self.assertNotContains(response, f'href="{reverse("login")}"', status_code=404)
+        self.assertNotContains(response, f'href="{reverse("planner:show_planner")}"', status_code=404)
+        self.assertNotContains(response, f'href="{reverse("login:login")}"', status_code=404)
 
     def test_expired_form_uses_csrf_page(self):
-        response = Client(enforce_csrf_checks=True).post(reverse("login"), {})
+        response = Client(enforce_csrf_checks=True).post(reverse("login:login"), {})
         self.assertEqual(response.status_code, 403)
         self.assertTemplateUsed(response, "403_csrf.html")
         self.assertContains(response, "Sesi kedaluwarsa", status_code=403)

@@ -67,12 +67,12 @@ class TheMealDBCurationIntegrationTests(TestCase):
         self.client.force_login(self.user)
 
     def test_recipe_is_searchable_and_detail_shows_estimates_and_photo_placeholder(self):
-        search = self.client.get(reverse("modul4"), {"q": "Sup Daging Sapi"})
+        search = self.client.get(reverse("recipe:show_recipes"), {"q": "Sup Daging Sapi"})
         self.assertEqual(search.status_code, 200)
         self.assertContains(search, self.recipe.name)
         self.assertContains(search, "Foto belum tersedia")
 
-        detail = self.client.get(reverse("modul4"), {"q": "Sup Daging Sapi", "recipe": RECIPE_CODE})
+        detail = self.client.get(reverse("recipe:show_recipes"), {"q": "Sup Daging Sapi", "recipe": RECIPE_CODE})
         self.assertEqual(detail.status_code, 200)
         self.assertEqual(detail.context["selected"].pk, RECIPE_CODE)
         self.assertContains(detail, "Takaran estimasi")
@@ -86,7 +86,7 @@ class TheMealDBCurationIntegrationTests(TestCase):
         )
 
     def test_serving_scale_changes_estimated_recipe_quantities(self):
-        response = self.client.get(reverse("modul4"), {"recipe": RECIPE_CODE, "servings": "2"})
+        response = self.client.get(reverse("recipe:show_recipes"), {"recipe": RECIPE_CODE, "servings": "2"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["detail"]["servings"], 2)
         ingredients = {
@@ -121,14 +121,14 @@ class TheMealDBCurationIntegrationTests(TestCase):
             "operation_key": str(uuid4()),
         }
         preview = self.client.post(
-            reverse("modul4-preview"), json.dumps(payload), content_type="application/json"
+            reverse("recipe:cooking_preview"), json.dumps(payload), content_type="application/json"
         )
         self.assertEqual(preview.status_code, 200, preview.content)
         self.assertTrue(preview.json()["complete"])
         self.assertFalse(PantryMovement.objects.exists())
 
         cooked = self.client.post(
-            reverse("modul4-cook"), json.dumps(payload), content_type="application/json"
+            reverse("recipe:record_cooking"), json.dumps(payload), content_type="application/json"
         )
         self.assertEqual(cooked.status_code, 201, cooked.content)
         self.assertEqual(

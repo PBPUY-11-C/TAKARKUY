@@ -1,4 +1,4 @@
-"""Curated recipe photos and their attribution metadata."""
+"""Foto resep kurasi beserta metadata atribusinya."""
 
 import csv
 from functools import lru_cache
@@ -10,7 +10,8 @@ MAPPING_PATH = Path(__file__).resolve().parents[2] / "data" / "mapping" / "recip
 
 @lru_cache(maxsize=4)
 def _read_recipe_image_index(modified_ns, file_size):
-    """Cache the mapping until its CSV file changes."""
+    """Membaca CSV pemetaan foto (baris ber-image_url) per recipe_code; di-cache sampai
+    mtime atau ukuran berkas berubah."""
     try:
         with MAPPING_PATH.open(encoding="utf-8-sig", newline="") as source:
             return {
@@ -23,6 +24,7 @@ def _read_recipe_image_index(modified_ns, file_size):
 
 
 def recipe_image_index():
+    """Indeks foto kurasi per recipe_code; dict kosong jika berkas pemetaan tidak ada."""
     try:
         stat = MAPPING_PATH.stat()
     except FileNotFoundError:
@@ -31,11 +33,13 @@ def recipe_image_index():
 
 
 def recipe_image_for(recipe_code):
+    """Data foto untuk satu resep, atau None jika belum ada foto kurasi maupun komunitas."""
     return recipe_images_for([recipe_code]).get(recipe_code)
 
 
 def recipe_images_for(recipe_codes):
-    """Return curated images first, then approved community photos as fallback."""
+    """Foto kurasi lebih dulu; resep tanpa foto kurasi memakai foto ulasan komunitas terbaru
+    yang berizin, sudah dimoderasi, dan tidak disembunyikan."""
     codes = set(recipe_codes)
     curated = recipe_image_index()
     images = {code: curated[code] for code in codes if code in curated}
@@ -48,7 +52,7 @@ def recipe_images_for(recipe_codes):
     from apps.recipe.models import RecipeReview
     from apps.recipe.reviews import public_username, review_photo_url
 
-    source_base = reverse("modul4")
+    source_base = reverse("recipe:show_recipes")
     reviews = (
         RecipeReview.objects.filter(
             recipe_id__in=missing_codes,

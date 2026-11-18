@@ -5,6 +5,7 @@
     { selector: '.meal-photo', placeholder: 'meal-photo-placeholder', label: image => image.alt },
   ];
 
+  // Mengganti gambar gagal muat dengan placeholder beraria-label, hanya sekali per gambar.
   function replaceWithPlaceholder(image, className, label) {
     if (image.dataset.fallbackApplied === 'true') return;
     image.dataset.fallbackApplied = 'true';
@@ -24,6 +25,7 @@
     image.replaceWith(placeholder);
   }
 
+  // Memasang fallback ke foto resep dalam root, termasuk gambar yang sudah gagal sebelum skrip jalan.
   function bind(root = document) {
     for (const config of configs) {
       for (const image of root.querySelectorAll(config.selector)) {

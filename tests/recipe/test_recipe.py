@@ -104,15 +104,15 @@ class CookingTests(TestCase):
         self.batch()
         RecipeTag.objects.filter(recipe=self.recipe, tag="halal").delete()
         self.assertFalse(recipe_query(self.user).exists())
-        self.assertEqual(self.post("modul4-preview").status_code, 404)
+        self.assertEqual(self.post("recipe:cooking_preview").status_code, 404)
         preferences = preferences_for(self.user)
         preferences.halal_only = False
         preferences.save()
         self.assertTrue(recipe_query(self.user).exists())
-        self.assertEqual(self.post("modul4-preview").status_code, 200)
+        self.assertEqual(self.post("recipe:cooking_preview").status_code, 200)
         preferences.halal_only = True
         preferences.save()
-        self.assertEqual(self.post("modul4-cook").status_code, 404)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 404)
         self.assertFalse(CookingHistory.objects.exists())
 
     def test_recipe_search_matches_reviewed_ingredient_aliases_only(self):
@@ -131,44 +131,44 @@ class CookingTests(TestCase):
             mapping_status="candidate",
         )
 
-        response = self.client.get(reverse("modul4"), {"q": "bayem"})
+        response = self.client.get(reverse("recipe:show_recipes"), {"q": "bayem"})
         self.assertEqual(response.context["recipes"].paginator.count, 1)
         self.assertContains(response, "Sup bayam")
-        response = self.client.get(reverse("modul4"), {"q": "kangkung"})
+        response = self.client.get(reverse("recipe:show_recipes"), {"q": "kangkung"})
         self.assertEqual(response.context["recipes"].paginator.count, 0)
 
     def test_recipe_notes_are_private_editable_and_deletable(self):
         payload = {"recipe_code": self.recipe.pk, "content": "Kurangi cabai; masak 3 menit lebih lama."}
-        response = self.post("modul4-note", payload)
+        response = self.post("recipe:save_note", payload)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["saved"])
         self.assertEqual(RecipeNote.objects.get(user=self.user).content, payload["content"])
 
-        own_page = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
+        own_page = self.client.get(reverse("recipe:show_recipes"), {"recipe": self.recipe.pk})
         self.assertContains(own_page, payload["content"])
         self.client.force_login(self.other)
-        other_page = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
+        other_page = self.client.get(reverse("recipe:show_recipes"), {"recipe": self.recipe.pk})
         self.assertNotContains(other_page, payload["content"])
 
         self.client.force_login(self.user)
-        response = self.post("modul4-note", {**payload, "content": "Tambahkan jeruk nipis."})
+        response = self.post("recipe:save_note", {**payload, "content": "Tambahkan jeruk nipis."})
         self.assertTrue(response.json()["saved"])
         self.assertEqual(RecipeNote.objects.get(user=self.user).content, "Tambahkan jeruk nipis.")
-        response = self.post("modul4-note", {**payload, "content": "   "})
+        response = self.post("recipe:save_note", {**payload, "content": "   "})
         self.assertFalse(response.json()["saved"])
         self.assertFalse(RecipeNote.objects.exists())
 
     def test_recipe_note_rejects_invalid_content(self):
         for content in (None, 12, "x" * 2001):
             self.assertEqual(
-                self.post("modul4-note", {"recipe_code": self.recipe.pk, "content": content}).status_code,
+                self.post("recipe:save_note", {"recipe_code": self.recipe.pk, "content": content}).status_code,
                 400,
             )
 
     @patch("apps.recipe.views.estimated_recipe_cost", return_value=12345)
     def test_serving_price_estimate_uses_selected_portion_count(self, estimate):
         response = self.post(
-            "modul4-estimate", {"recipe_code": self.recipe.pk, "servings": 4}
+            "recipe:estimate_cost", {"recipe_code": self.recipe.pk, "servings": 4}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"servings": 4, "cost": 12345})
@@ -176,7 +176,7 @@ class CookingTests(TestCase):
         for servings in (True, 0, 11, "4"):
             self.assertEqual(
                 self.post(
-                    "modul4-estimate", {"recipe_code": self.recipe.pk, "servings": servings}
+                    "recipe:estimate_cost", {"recipe_code": self.recipe.pk, "servings": servings}
                 ).status_code,
                 400,
             )
@@ -188,9 +188,9 @@ class CookingTests(TestCase):
         self.batch()
 
         cost_response = self.post(
-            "modul4-estimate", {"recipe_code": self.recipe.pk, "servings": 3}
+            "recipe:estimate_cost", {"recipe_code": self.recipe.pk, "servings": 3}
         )
-        preview_response = self.post("modul4-preview", self.payload)
+        preview_response = self.post("recipe:cooking_preview", self.payload)
 
         self.assertEqual(cost_response.status_code, 200, cost_response.content)
         self.assertEqual(preview_response.status_code, 200, preview_response.content)
@@ -203,13 +203,13 @@ class CookingTests(TestCase):
             quantity=40, estimated_expires_on=timezone.localdate() + timedelta(days=1)
         )
         late = self.batch(quantity=70)
-        preview = self.post("modul4-preview").json()
+        preview = self.post("recipe:cooking_preview").json()
         self.assertTrue(preview["complete"])
         self.assertEqual([b["id"] for b in preview["batches"]], [early.pk, late.pk])
         self.assertFalse(PantryMovement.objects.exists())
-        first = self.post("modul4-cook")
+        first = self.post("recipe:record_cooking")
         self.assertEqual(first.status_code, 201, first.content)
-        self.assertEqual(self.post("modul4-cook").json(), first.json())
+        self.assertEqual(self.post("recipe:record_cooking").json(), first.json())
         self.assertEqual(CookingHistory.objects.count(), 1)
         self.assertEqual(PantryOperation.objects.count(), 1)
         self.assertEqual(PantryMovement.objects.count(), 2)
@@ -219,7 +219,7 @@ class CookingTests(TestCase):
 
     def test_shortage_rolls_back_history_operation_and_stock(self):
         batch = self.batch(quantity=99)
-        self.assertEqual(self.post("modul4-cook").status_code, 409)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 409)
         batch.refresh_from_db()
         self.assertEqual(batch.quantity, 99)
         self.assertFalse(PantryOperation.objects.exists())
@@ -248,7 +248,7 @@ class CookingTests(TestCase):
             }
         ]
         self.assertTrue(preview_cooking(self.user, self.payload)["complete"])
-        self.assertEqual(self.post("modul4-cook").status_code, 201)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 201)
         batch.refresh_from_db()
         self.assertEqual(batch.quantity, 0)
         self.assertIsNone(batch.grams_per_unit)
@@ -259,19 +259,19 @@ class CookingTests(TestCase):
         self.payload["manual"] = [
             {"batch_id": batch.pk, "version": 1, "quantity": "1", "grams_per_unit": "100"}
         ]
-        self.assertEqual(self.post("modul4-cook").status_code, 409)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 409)
 
     def test_foreign_batch_and_foreign_slot_cannot_be_used(self):
         batch = self.batch(user=self.other)
         self.payload["manual"] = [
             {"batch_id": batch.pk, "version": 1, "quantity": "100", "grams_per_unit": "1"}
         ]
-        self.assertEqual(self.post("modul4-cook").status_code, 409)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 409)
         slot = self.slot()
         self.payload.pop("manual")
         self.payload.update(planned_meal=slot.pk, version=1)
         self.client.force_login(self.other)
-        self.assertEqual(self.post("modul4-cook").status_code, 404)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 404)
 
     def test_unknown_expiry_requires_consent_expired_never_allowed(self):
         batch = self.batch(estimated_expires_on=None, expiry_source="unknown")
@@ -286,14 +286,14 @@ class CookingTests(TestCase):
         self.batch(quantity=300)
         slot = self.slot()
         self.payload.update(planned_meal=slot.pk, version=1)
-        self.assertEqual(self.post("modul4-cook").status_code, 201)
-        self.assertEqual(self.post("modul4-cook").status_code, 201)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 201)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 201)
         slot.refresh_from_db()
         slot.plan.refresh_from_db()
         self.assertEqual(slot.status, "cooked")
         self.assertEqual(slot.plan.version, 2)
         self.payload.update(operation_key=str(uuid4()), version=2)
-        self.assertEqual(self.post("modul4-cook").status_code, 409)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 409)
         self.assertEqual(CookingHistory.objects.count(), 1)
 
     def test_slot_cook_rejects_stale_plan_version_without_consuming_stock(self):
@@ -301,7 +301,7 @@ class CookingTests(TestCase):
         slot = self.slot()
         self.payload.update(planned_meal=slot.pk, version=slot.plan.version + 1)
 
-        response = self.post("modul4-cook")
+        response = self.post("recipe:record_cooking")
 
         self.assertEqual(response.status_code, 409)
         batch.refresh_from_db()
@@ -314,7 +314,7 @@ class CookingTests(TestCase):
         slot = self.slot()
         self.payload.update(planned_meal=slot.pk, version=slot.plan.version, servings=1)
 
-        response = self.post("modul4-cook")
+        response = self.post("recipe:record_cooking")
 
         self.assertEqual(response.status_code, 400)
         batch.refresh_from_db()
@@ -326,11 +326,11 @@ class CookingTests(TestCase):
         self.batch()
         slot = self.slot()
         self.payload["planned_meal"] = slot.pk
-        self.assertEqual(self.post("modul4-cook").status_code, 400)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 400)
         slot.plan.status = "draft"
         slot.plan.save()
         self.payload["version"] = 1
-        self.assertEqual(self.post("modul4-cook").status_code, 409)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 409)
 
     def test_history_snapshots_survive_rename_deactivation_and_slot_deletion(self):
         self.batch()
@@ -354,7 +354,7 @@ class CookingTests(TestCase):
         slot = self.slot()
         plan_id = slot.plan_id
         self.payload.update(planned_meal=slot.pk, version=1)
-        self.assertEqual(self.post("modul4-cook").status_code, 201)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 201)
         history = CookingHistory.objects.get()
         history_before = (
             history.recipe_name,
@@ -365,7 +365,7 @@ class CookingTests(TestCase):
         movements_before = list(PantryMovement.objects.order_by("pk").values())
         slot.plan.refresh_from_db()
         response = self.client.post(
-            reverse("modul1-plan-delete", args=[plan_id]),
+            reverse("planner:delete_plan", args=[plan_id]),
             json.dumps({"version": slot.plan.version}),
             content_type="application/json",
         )
@@ -385,27 +385,27 @@ class CookingTests(TestCase):
 
     def test_favorites_are_idempotent_personal_and_inactive_visible(self):
         data = {"recipe_code": self.recipe.pk, "favorite": True}
-        self.assertEqual(self.post("modul4-favorite", data).status_code, 200)
-        self.post("modul4-favorite", data)
+        self.assertEqual(self.post("recipe:set_favorite", data).status_code, 200)
+        self.post("recipe:set_favorite", data)
         self.assertEqual(RecipeFavorite.objects.count(), 1)
         self.recipe.is_active = False
         self.recipe.save()
-        self.assertContains(self.client.get(reverse("modul4")), "Tidak tersedia")
+        self.assertContains(self.client.get(reverse("recipe:show_recipes")), "Tidak tersedia")
         self.client.force_login(self.other)
-        self.assertNotContains(self.client.get(reverse("modul4")), "Sup bayam")
+        self.assertNotContains(self.client.get(reverse("recipe:show_recipes")), "Sup bayam")
         self.client.force_login(self.user)
-        self.assertEqual(self.post("modul4-favorite", {**data, "favorite": False}).status_code, 200)
+        self.assertEqual(self.post("recipe:set_favorite", {**data, "favorite": False}).status_code, 200)
 
     def test_guidance_visible_by_default_with_optional_guidance_filter(self):
         self.recipe.instruction_status = "withheld"
         self.recipe.save()
-        response = self.client.get(reverse("modul4"))
+        response = self.client.get(reverse("recipe:show_recipes"))
         self.assertContains(response, "Sup bayam")
         self.assertNotContains(response, "Rebus air.")
         self.assertContains(response, "1 recipe does not have a cooking guide yet")
-        filtered = self.client.get(reverse("modul4"), {"guidance": "1"})
+        filtered = self.client.get(reverse("recipe:show_recipes"), {"guidance": "1"})
         self.assertNotContains(filtered, "Sup bayam")
-        response = self.client.get(reverse("modul4"), {"recipe": self.recipe.pk})
+        response = self.client.get(reverse("recipe:show_recipes"), {"recipe": self.recipe.pk})
         self.assertContains(response, "Panduan memasak belum tersedia")
         self.assertNotContains(response, "Rebus air")
 
@@ -419,7 +419,7 @@ class CookingTests(TestCase):
         self.ingredient.save()
         self.assertFalse(recipe_query(self.user).exists())
         self.assertContains(
-            self.client.get(reverse("modul4")), "1 hidden by your allergen preferences"
+            self.client.get(reverse("recipe:show_recipes")), "1 hidden by your allergen preferences"
         )
         self.ingredient.allergens = []
         self.ingredient.save()
@@ -440,7 +440,7 @@ class CookingTests(TestCase):
         profile.allergens = ["telur"]
         profile.save()
         Ingredient.objects.filter(pk=self.ingredient.pk).update(allergens=["telur"])
-        self.assertEqual(self.post("modul4-cook").status_code, 409)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 409)
         self.assertFalse(CookingHistory.objects.exists())
         self.assertNotEqual(
             expected_allergens(get_recipe_for_test(self.recipe.pk))[1],
@@ -456,11 +456,11 @@ class CookingTests(TestCase):
             {"recipe_code": {}},
             {"allow_unknown_expiry": "true"},
         ):
-            self.assertEqual(self.post("modul4-cook", {**self.payload, **changes}).status_code, 400)
+            self.assertEqual(self.post("recipe:record_cooking", {**self.payload, **changes}).status_code, 400)
         deep = '{"manual":' + "[" * 1500 + "0" + "]" * 1500 + "}"
         self.assertEqual(
             self.client.post(
-                reverse("modul4-cook"), deep, content_type="application/json"
+                reverse("recipe:record_cooking"), deep, content_type="application/json"
             ).status_code,
             400,
         )
@@ -468,23 +468,23 @@ class CookingTests(TestCase):
         csrf_client.force_login(self.user)
         self.assertEqual(
             csrf_client.post(
-                reverse("modul4-cook"), json.dumps(self.payload), content_type="application/json"
+                reverse("recipe:record_cooking"), json.dumps(self.payload), content_type="application/json"
             ).status_code,
             403,
         )
         self.assertEqual(
             csrf_client.post(
-                reverse("modul4-note"),
+                reverse("recipe:save_note"),
                 json.dumps({"recipe_code": self.recipe.pk, "content": "Catatan"}),
                 content_type="application/json",
             ).status_code,
             403,
         )
         self.client.logout()
-        self.assertEqual(self.client.get(reverse("modul4")).status_code, 302)
-        self.assertEqual(self.post("modul4-cook").status_code, 403)
+        self.assertEqual(self.client.get(reverse("recipe:show_recipes")).status_code, 302)
+        self.assertEqual(self.post("recipe:record_cooking").status_code, 403)
         self.assertEqual(
-            self.post("modul4-note", {"recipe_code": self.recipe.pk, "content": "Catatan"}).status_code,
+            self.post("recipe:save_note", {"recipe_code": self.recipe.pk, "content": "Catatan"}).status_code,
             403,
         )
     def test_manual_overuse_and_invalid_conversion_rejected(self):
@@ -551,12 +551,12 @@ class CookingTests(TestCase):
             quantity=99, estimated_expires_on=timezone.localdate() + timedelta(days=1)
         )
         self.assertNotContains(
-            self.client.get(reverse("modul4"), {"stock": "complete"}), "Sup bayam"
+            self.client.get(reverse("recipe:show_recipes"), {"stock": "complete"}), "Sup bayam"
         )
-        self.assertContains(self.client.get(reverse("modul4"), {"stock": "soon"}), "Sup bayam")
+        self.assertContains(self.client.get(reverse("recipe:show_recipes"), {"stock": "soon"}), "Sup bayam")
         batch.quantity = 100
         batch.save()
-        self.assertContains(self.client.get(reverse("modul4"), {"stock": "complete"}), "Sup bayam")
+        self.assertContains(self.client.get(reverse("recipe:show_recipes"), {"stock": "complete"}), "Sup bayam")
         self.assertFalse(PantryMovement.objects.exists())
 
     def test_best_stock_filter_ranks_recipes_and_explains_missing_ingredients(self):
@@ -583,7 +583,7 @@ class CookingTests(TestCase):
             quantity_status="verified",
         )
 
-        response = self.client.get(reverse("modul4"), {"stock": "best"})
+        response = self.client.get(reverse("recipe:show_recipes"), {"stock": "best"})
         content = response.content.decode()
         self.assertEqual(response.status_code, 200)
         cards = content[content.index('class="recipe-grid recipe-cards"'):]
@@ -594,7 +594,7 @@ class CookingTests(TestCase):
         self.assertFalse(PantryMovement.objects.exists())
 
     def test_best_stock_filter_explains_when_pantry_has_no_matching_stock(self):
-        response = self.client.get(reverse("modul4"), {"stock": "best"})
+        response = self.client.get(reverse("recipe:show_recipes"), {"stock": "best"})
         self.assertContains(response, "No Pantry matches yet")
         self.assertEqual(response.context["recipes"].paginator.count, 0)
     def test_stock_matches_counts_unknown_expiry_and_flags_it(self):

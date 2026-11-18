@@ -1,4 +1,4 @@
-"""Nearest-market search from a rounded location or a region name, with a curated fallback."""
+"""Pencarian pasar terdekat dari lokasi yang dibulatkan atau nama wilayah, dengan cadangan data kurasi."""
 
 import hashlib
 import json
@@ -23,16 +23,22 @@ NEAR_KM = 30
 
 
 class MapUnavailable(ValueError):
+    """Layanan peta tidak bisa dipakai (konfigurasi salah, gagal jaringan, atau hasil tidak valid)."""
+
     pass
 
 
 class MapLimited(ValueError):
+    """Pencarian sedang dibatasi (kuota pengguna atau jeda penyedia); membawa retry_after."""
+
     def __init__(self, retry_after):
+        """Menyimpan retry_after dalam detik, dibulatkan ke atas dan minimal 1."""
         self.retry_after = max(1, math.ceil(retry_after))
         super().__init__("Pencarian sedang dibatasi. Coba lagi sebentar.")
 
 
 def endpoint(value):
+    """Memastikan URL penyedia memakai https, punya host, dan tanpa kredensial atau fragment."""
     parsed = urlsplit(value)
     if (
         parsed.scheme != "https"
@@ -46,10 +52,13 @@ def endpoint(value):
 
 
 def read_places():
+    """Membaca data pasar kurasi dari places.json di folder yang sama."""
     return json.loads(Path(__file__).with_name("places.json").read_text(encoding="utf-8"))
 
 
 def normalized_region(value):
+    """Menormalkan nama kota/kabupaten (huruf kecil, tanpa awalan kota/kabupaten); menolak
+    input yang mirip alamat pribadi atau koordinat."""
     if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z .'-]{2,60}", value):
         raise ValueError("Masukkan nama kota atau kabupaten, bukan alamat pribadi/koordinat.")
     region = " ".join(value.casefold().split())
@@ -62,6 +71,7 @@ def normalized_region(value):
 
 
 def distance_km(a, b):
+    """Jarak garis lurus (haversine) dalam km antara dua titik (lat, lon)."""
     lat1, lon1, lat2, lon2 = map(math.radians, (*a, *b))
     h = (
         math.sin((lat2 - lat1) / 2) ** 2
@@ -71,6 +81,8 @@ def distance_km(a, b):
 
 
 def nearest(places, center, limit=20):
+    """Mengisi distance_km tiap tempat (dict diubah langsung), urut dari terdekat, buang nama
+    duplikat, dan ambil maksimal limit."""
     for place in places:
         place["distance_km"] = round(distance_km(center, (place["lat"], place["lon"])), 2)
     unique, seen = [], set()
@@ -83,6 +95,8 @@ def nearest(places, center, limit=20):
 
 
 def curated(region=None, point=None):
+    """Pasar dari data kurasi: dalam radius NEAR_KM dari titik, atau yang wilayah/alamatnya
+    cocok dengan nama wilayah."""
     data = read_places()
     markets = [place for place in data["places"] if place["kind"] == "market"]
     if point:
@@ -107,6 +121,8 @@ def curated(region=None, point=None):
 
 @transaction.atomic
 def reserve_map(user):
+    """Memakai satu jatah pencarian daring: maks 10 per 10 menit per pengguna, baris user dikunci
+    agar request bersamaan tidak lolos kuota."""
     get_user_model().objects.select_for_update().get(pk=user.pk)
     now = timezone.now()
     quota, _ = MapQuota.objects.get_or_create(user=user, defaults={"window_started_at": now})
@@ -119,6 +135,8 @@ def reserve_map(user):
 
 
 def _http(provider, url, body="", max_wait=0):
+    """Request JSON ke penyedia lewat subprocess map_transport, dengan jeda min 1,1 detik per penyedia
+    (gate + lease di database); MapLimited jika harus menunggu lebih dari max_wait."""
     identity = settings.MAP_USER_AGENT
     if not identity or "TAKARKUY" not in identity or not re.search(r"https://|@", identity):
         raise MapUnavailable("Identitas aplikasi peta belum diatur.")
@@ -176,6 +194,7 @@ def _http(provider, url, body="", max_wait=0):
 
 
 def coordinates(lat, lon):
+    """Tuple (lat, lon) float jika valid dan di dalam kotak wilayah Indonesia, selain itu None."""
     if isinstance(lat, bool) or isinstance(lon, bool):
         return None
     try:
@@ -190,6 +209,7 @@ def coordinates(lat, lon):
 
 
 def geocode_region(region):
+    """Titik pusat wilayah administratif via Nominatim; hasil di-cache 7 hari, hasil kosong 1 hari."""
     key = hashlib.sha256(
         json.dumps(["region-v1", region, settings.MAP_GEOCODER_URL]).encode()
     ).hexdigest()
@@ -240,6 +260,7 @@ def geocode_region(region):
 
 
 def rounded_point(lat, lon):
+    """Memvalidasi titik di Indonesia lalu membulatkannya ke 2 desimal (±1 km) demi privasi lokasi."""
     point = coordinates(lat, lon)
     if point is None:
         raise ValueError("Lokasi di luar Indonesia atau tidak valid.")
@@ -247,7 +268,7 @@ def rounded_point(lat, lon):
 
 
 def osm_markets(center, label, radius=0.05):
-    """Markets around a point from Overpass, or Nominatim when Overpass fails, nearest first."""
+    """Pasar di sekitar titik dari Overpass, atau Nominatim jika Overpass gagal; terdekat lebih dulu."""
     lat, lon = center
     box = (
         max(-11, lat - radius),
@@ -270,6 +291,7 @@ def osm_markets(center, label, radius=0.05):
 
 
 def osm_place(label, osm_type, osm_id, name, point, address):
+    """Membentuk dict tempat dari elemen OpenStreetMap; None jika tipe atau ID OSM tidak valid."""
     if osm_type not in {"node", "way", "relation"} or type(osm_id) is not int or osm_id < 1:
         return None
     return {
@@ -286,6 +308,8 @@ def osm_place(label, osm_type, osm_id, name, point, address):
 
 
 def overpass_markets(label, box):
+    """Mencari amenity=marketplace bernama di dalam kotak via Overpass (maks 40 elemen);
+    hasil yang terpotong (ada remark) dianggap gagal."""
     bbox = ",".join(str(value) for value in box)
     result = _http(
         "overpass",
@@ -331,6 +355,7 @@ def overpass_markets(label, box):
 
 
 def nominatim_markets(label, box):
+    """Cadangan Overpass: marketplace di dalam kotak via Nominatim, menunggu gate maks 1,5 detik."""
     south, west, north, east = box
     params = urlencode(
         {
@@ -364,6 +389,7 @@ def nominatim_markets(label, box):
 
 
 def search_request(data):
+    """Validasi payload: lokasi (lat/lon) atau nama wilayah, tidak keduanya; hasil (wilayah, titik)."""
     if not isinstance(data, dict) or set(data) - {"region", "lat", "lon"}:
         raise ValueError("Kirim lokasi atau nama wilayah saja.")
     if "lat" in data or "lon" in data:
@@ -374,6 +400,8 @@ def search_request(data):
 
 
 def lookup_places(user, data):
+    """Mencari pasar daring (memakai kuota, hasil di-cache 7 hari); jatuh ke data kurasi jika
+    pencarian daring mati, sibuk, gagal, atau kosong."""
     region, point = search_request(data)
     fallback = curated(region, point)
     if not settings.MAP_LOOKUP_ENABLED:

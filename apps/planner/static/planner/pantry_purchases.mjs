@@ -1,7 +1,7 @@
 import { csrfToken } from "./dom.mjs";
 import { visit } from "./navigation.mjs";
 
-// Move the ticked shopping-list items into Pantry after the user has bought them.
+// Memasukkan item daftar belanja yang dicentang ke Pantry setelah user membelinya.
 export function initPantryPurchases() {
   const button = document.getElementById("add-to-pantry");
   if (!button) return;

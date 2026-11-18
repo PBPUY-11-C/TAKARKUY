@@ -1,4 +1,4 @@
-"""Clear, standard recipe names shown to users."""
+"""Nama resep yang jelas dan baku untuk ditampilkan ke pengguna."""
 
 import csv
 import re
@@ -49,7 +49,7 @@ PARENTHETICAL_SOURCE_NOISE = re.compile(
 
 
 def load_overrides(path: str | Path) -> dict[str, tuple[str, str]]:
-    """Load curated names, rejecting malformed or duplicate recipe codes."""
+    """Memuat override nama resep hasil kurasi; menolak kolom kurang, isian kosong, atau kode ganda."""
     with open(path, encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
         required = {"recipe_code", "name", "reason"}
@@ -71,6 +71,7 @@ def load_overrides(path: str | Path) -> dict[str, tuple[str, str]]:
 
 
 def _capitalize(word: str) -> str:
+    """Mengapitalkan tiap bagian kata berhubung tanda minus; akronim dikenal ditulis kapital penuh."""
     return "-".join(
         ACRONYMS.get(part.casefold(), part[:1].upper() + part[1:])
         for part in word.split("-")
@@ -78,7 +79,9 @@ def _capitalize(word: str) -> str:
 
 
 def standard_name(name: str | None) -> str:
-    """Remove leading IDs/count notes and normalize spelling and title case."""
+    """Membuang ID di depan dan catatan jumlah dalam kurung, membakukan ejaan, lalu title case
+    dengan kata tugas tetap huruf kecil.
+    """
     if name is None:
         return ""
     if not isinstance(name, str):

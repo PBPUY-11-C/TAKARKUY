@@ -1,5 +1,6 @@
 import { canSwap, swap } from "./navigation.mjs";
 
+// Submit form planner lewat swap agar tanpa reload; jika swap tidak bisa, form dikirim biasa.
 function bindAsyncSubmit() {
   const plannerForm = document.querySelector(".planner-form");
   plannerForm?.addEventListener("submit", async (event) => {
@@ -13,8 +14,10 @@ function bindAsyncSubmit() {
   });
 }
 
+// Memasang format titik ribuan otomatis pada input rupiah.
 function bindRupiahInputs() {
   document.querySelectorAll(".js-rupiah-input").forEach((input) => {
+    // Menyisakan digit lalu menambah titik ribuan; input yang berisi koma dibiarkan apa adanya.
     const format = () => {
       if (input.value.includes(",")) return;
       input.value = input.value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -24,12 +27,13 @@ function bindRupiahInputs() {
   });
 }
 
-// "Seimbang" and the specific nutrition targets are mutually exclusive.
+// "Seimbang" dan target gizi spesifik saling meniadakan.
 function bindTargets() {
   const targets = Array.from(document.querySelectorAll('input[name="targets"]'));
   const balanced = targets.find((input) => input.value === "seimbang");
   if (!balanced) return;
   const specific = targets.filter((input) => input !== balanced);
+  // Mencentang "Seimbang" menghapus target lain; selain itu "Seimbang" aktif hanya jika tidak ada target spesifik.
   const sync = (changed) => {
     if (changed === balanced && balanced.checked) specific.forEach((input) => { input.checked = false; });
     else balanced.checked = !specific.some((input) => input.checked);
@@ -38,6 +42,7 @@ function bindTargets() {
   sync();
 }
 
+// Menampilkan tombol +/- pada input angka dan menjaga nilainya di antara min dan max.
 function bindSteppers() {
   document.querySelectorAll("[data-stepper]").forEach((box) => {
     const input = box.querySelector("input");
@@ -53,12 +58,14 @@ function bindSteppers() {
   });
 }
 
+// Mengubah daftar hari menjadi tab; hari pertama tampil lebih dulu.
 function bindDayTabs() {
   document.querySelectorAll("[data-day-tabs]").forEach((tabs) => {
     const buttons = Array.from(tabs.querySelectorAll("[data-day-tab]"));
     const section = tabs.closest("section");
     const panels = Array.from(section.querySelectorAll("[data-day-panel]"));
     if (!buttons.length) return;
+    // Menandai tab aktif dan membuat panel hari lain tidak aktif (inert) agar tidak bisa difokus.
     const show = (day) => {
       buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.dayTab === day)));
       panels.forEach((panel) => {
@@ -74,6 +81,7 @@ function bindDayTabs() {
   });
 }
 
+// Memasang semua perilaku form planner; menandai di sessionStorage jika ada rencana yang bisa disimpan.
 export function initPlannerForm() {
   if (document.querySelector("[data-save-plan]")) {
     try { sessionStorage.setItem("takarkuy-planner", "1"); } catch (error) {  }

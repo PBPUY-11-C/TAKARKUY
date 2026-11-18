@@ -4,7 +4,11 @@ from .models import MyRecipe
 
 
 class MyRecipeForm(forms.ModelForm):
+    """Form tambah/edit resep pribadi; bahan dan langkah diisi satu per baris."""
+
     class Meta:
+        """Field, label Indonesia, dan placeholder contoh untuk form resep pribadi."""
+
         model = MyRecipe
         fields = ["nama", "waktu_makan", "porsi", "bahan", "langkah", "estimasi_harga"]
         labels = {

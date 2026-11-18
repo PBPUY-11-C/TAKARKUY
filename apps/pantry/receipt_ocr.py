@@ -1,4 +1,4 @@
-"""Gemini image fallback for low-confidence receipt OCR; never saves the image."""
+"""Fallback Gemini berbasis foto untuk OCR struk yang kurang yakin; foto tidak pernah disimpan."""
 
 import base64
 import re
@@ -32,10 +32,11 @@ PROMPT = (
 
 
 class ReceiptOCRUnavailable(Exception):
-    """The optional OCR provider failed or is not configured."""
+    """Provider OCR opsional gagal atau belum dikonfigurasi."""
 
 
 def image_mime(image):
+    """Menebak MIME dari magic bytes (JPEG, PNG, WebP); None bila format lain."""
     if image.startswith(b"\xff\xd8\xff"):
         return "image/jpeg"
     if image.startswith(b"\x89PNG\r\n\x1a\n"):
@@ -46,6 +47,10 @@ def image_mime(image):
 
 
 def clean_items(payload, catalog=None):
+    """Memvalidasi maksimal 30 item jawaban Gemini; baris non-barang dan nilai tidak valid dibuang.
+
+    Kode di luar katalog jadi None, jumlah yang tidak jelas dikosongkan beserta satuannya.
+    """
     names = (catalog or catalog_snapshot())["names"]
     if not isinstance(payload, dict) or not isinstance(payload.get("items"), list):
         raise ReceiptOCRUnavailable("Invalid Gemini response")
@@ -100,6 +105,10 @@ def clean_items(payload, catalog=None):
 
 
 def gemini_read_receipt(image, mime_type):
+    """Mengirim foto struk dan daftar katalog ke Gemini (timeout 25 detik), lalu membersihkan hasil.
+
+    Kegagalan Gemini diteruskan sebagai ReceiptOCRUnavailable.
+    """
     snapshot = catalog_snapshot()
     try:
         payload = generate_json(
@@ -144,7 +153,10 @@ def gemini_read_receipt(image, mime_type):
 
 
 def complete_photo_items(items, user, session_id):
-    """Finish locally, never a second provider call; cache only vision matches."""
+    """Melengkapi kode bahan hasil foto secara lokal, tanpa panggilan provider kedua.
+
+    Hanya kecocokan dari model vision yang dicache; sisanya dicocokkan via raw lalu nama, tanpa LLM.
+    """
     from .ai_cache import remember_photo
     from .recommendations import resolve_names
 

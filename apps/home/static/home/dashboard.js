@@ -8,14 +8,17 @@ if (dialog) {
   const config = JSON.parse(document.querySelector('#map-config').textContent);
   let places = [], origin = null, sequence = 0, controller = null, map = null, layer = null, leafletPromise = null;
   const locate = document.querySelector('#locate-market');
+  // Membatalkan pencarian yang berjalan dan mengosongkan lokasi serta marker saat dialog ditutup.
   function reset() { sequence++; controller?.abort(); origin = null; layer?.clearLayers(); form.querySelector('[type=submit]').disabled = false; locate.disabled = false; }
   dialog.addEventListener('close', reset);
   document.querySelector('#close-market').addEventListener('click', () => dialog.close());
+  // Menambahkan tautan eksternal (tab baru, noopener) hanya jika URL-nya https yang valid.
   function addLink(parent, label, url) {
     const safe = safeURL(url); if (!safe) return;
     const a = document.createElement('a'); a.textContent = label; a.href = safe;
     a.target = '_blank'; a.rel = 'noopener noreferrer'; parent.append(a);
   }
+  // Menampilkan maks 10 pasar terdekat dari lokasi pengguna, atau pesan kosong jika belum ada hasil.
   function renderList() {
     output.replaceChildren();
     for (const place of rankedPlaces(places, origin).slice(0, 10)) {
@@ -33,6 +36,7 @@ if (dialog) {
       const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'Belum ada pasar yang ditemukan. Coba cari nama kota atau kabupaten.'; output.append(li);
     }
   }
+  // Memuat Leaflet dari unpkg sekali saja (dengan SRI); gagal jika belum siap dalam 7 detik.
   function loadLeaflet() {
     if (window.L) return Promise.resolve(window.L);
     if (!leafletPromise) leafletPromise = new Promise((resolve, reject) => {
@@ -47,6 +51,7 @@ if (dialog) {
     });
     return leafletPromise;
   }
+  // Menggambar marker pasar dan lokasi pengguna; dilewati jika pencarian usang atau dialog tertutup.
   async function drawMap(current) {
     try {
       const L = await loadLeaflet(); if (current !== sequence || !dialog.open) return;
@@ -69,11 +74,13 @@ if (dialog) {
       map.invalidateSize();
     } catch (error) { if (current === sequence && dialog.open) message.textContent = error.message; }
   }
+  // Cadangan saat server gagal: menyaring data kurasi berdasarkan nama wilayah yang diketik.
   function localSearch() {
     const region = form.elements.region.value.trim().toLowerCase().replace(/^(kota|kabupaten)\s+/, '');
     places = region ? curated.places.filter(p => `${p.region} ${p.address}`.toLowerCase().includes(region)) : [];
     renderList();
   }
+  // Cari pasar lewat server (batas 20 detik), hanya hasil terbaru dipakai; wilayah gagal: cari lokal.
   async function search(payload, button) {
     const current = ++sequence; controller?.abort(); const pending = new AbortController(); controller = pending;
     button.disabled = true; message.textContent = 'Mencari pasar terdekat…';
@@ -93,6 +100,7 @@ if (dialog) {
       if ('region' in payload) localSearch(); message.textContent = error.name === 'AbortError' ? 'Pencarian terlalu lama. Coba lagi.' : error.message;
     } finally { clearTimeout(timer); if (current === sequence || !dialog.open) button.disabled = false; }
   }
+  // Meminta lokasi perangkat (akurasi rendah) lalu mencari pasar di sekitar titik yang dibulatkan.
   function findNearby() {
     if (!navigator.geolocation) { message.textContent = 'Lokasi tidak didukung. Cari nama kota atau kabupaten.'; return; }
     const current = ++sequence; locate.disabled = true; message.textContent = 'Mendeteksi lokasi…';

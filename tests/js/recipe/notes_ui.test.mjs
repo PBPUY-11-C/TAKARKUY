@@ -15,7 +15,7 @@ function setup() {
   const elements = new Map();
   const get = selector => { if (!elements.has(selector)) elements.set(selector, new Element()); return elements.get(selector); };
   const form = get('#recipe-note-form');
-  form.dataset = {url: '/modul4/note/', code: 'TEST'};
+  form.dataset = {url: '/recipes/note/', code: 'TEST'};
   form.elements.namedItem = name => name === 'content' ? field : null;
   const field = new Element();
   field.value = 'Tambahkan jeruk nipis';
@@ -25,7 +25,7 @@ function setup() {
     window: {confirm: () => true},
     fetch: async (url, options) => {
       calls += 1;
-      assert.equal(url, '/modul4/note/');
+      assert.equal(url, '/recipes/note/');
       assert.equal(options.headers['X-CSRFToken'], 'csrf-test');
       return {ok: true, json: async () => ({saved: JSON.parse(options.body).content.length > 0})};
     },

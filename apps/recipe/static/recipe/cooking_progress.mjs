@@ -1,3 +1,4 @@
+// Memulihkan progres mode memasak; null bila data rusak, resep berubah, atau jumlahnya tidak cocok.
 export function restoreCookingProgress(storage, key, stepCount, ingredientCount, recipeFingerprint) {
   try {
     const raw = storage.getItem(key);
@@ -13,6 +14,7 @@ export function restoreCookingProgress(storage, key, stepCount, ingredientCount,
   }
 }
 
+// Menyimpan progres ke storage; mengembalikan false bila storage tidak bisa ditulis.
 export function saveCookingProgress(storage, key, step, checked, recipeFingerprint) {
   try {
     storage.setItem(key, JSON.stringify({step, checked, recipeFingerprint}));
@@ -22,6 +24,7 @@ export function saveCookingProgress(storage, key, step, checked, recipeFingerpri
   }
 }
 
+// Menghapus progres tersimpan; error storage diabaikan.
 export function clearCookingProgress(storage, key) {
   try { storage.removeItem(key); }
   catch {  }

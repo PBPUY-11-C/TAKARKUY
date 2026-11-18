@@ -3,15 +3,17 @@ from .models import FoodPreference, UserProfile
 
 
 def profile_for(user):
+    """Ambil UserProfile milik user, membuatnya bila belum ada."""
     return UserProfile.objects.get_or_create(user=user)[0]
 
 
 def preferences_for(user):
+    """Ambil FoodPreference milik user, membuatnya dengan nilai default bila belum ada."""
     return FoodPreference.objects.get_or_create(user=user)[0]
 
 
 def effective_preferences(user, *inputs):
-    """Current halal policy and the union of saved/current allergies, from the account."""
+    """Kebijakan halal akun saat ini dan gabungan alergi tersimpan dengan alergi dari input."""
     return {
         "allergens": effective_allergens(user, *inputs),
         "halal_only": preferences_for(user).halal_only,
@@ -19,6 +21,7 @@ def effective_preferences(user, *inputs):
 
 
 def non_halal_schedule(schedule):
+    """True bila ada kode resep di jadwal (list dict per hari) yang tidak bertag halal."""
     from apps.catalog.models import Recipe
 
     codes = {code for day in schedule for code in day.values()}
@@ -29,6 +32,7 @@ def non_halal_schedule(schedule):
 
 
 def planner_defaults(user):
+    """Nilai awal form planner dari preferensi akun; bahan dihindari digabung jadi teks berkoma."""
     profile = preferences_for(user)
     return {
         "targets": profile.targets,
@@ -44,6 +48,8 @@ def planner_defaults(user):
 
 
 def effective_allergens(user, *inputs, preference=None):
+    """Gabungan terurut alergi tersimpan dan alergi dari tiap input; ValueError bila salah satunya
+    bukan list berisi kunci ALLERGEN_KEYS."""
     groups = set()
     saved_allergens = (preference or preferences_for(user)).allergens
     for values in [saved_allergens, *(data.get("allergens", []) for data in inputs)]:

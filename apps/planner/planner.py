@@ -1,4 +1,4 @@
-"""Seeded planner over the curated local recipe and price catalog."""
+"""Planner ber-seed di atas katalog resep dan harga lokal yang sudah dikurasi."""
 
 import json
 from bisect import bisect_left, bisect_right
@@ -59,7 +59,8 @@ PANTRY_POOL_SLOTS = 8
 
 
 def staple_choice(rice, servings, targets):
-    """Key in STAPLES added to lunch/dinner lauk, or None."""
+    """Kunci STAPLES yang ditambahkan ke lauk siang/malam, atau None; "auto" memberi nasi hanya
+    untuk 1 sampai 2 orang tanpa target rendah kalori."""
     if rice == "yes":
         return "nasi"
     if rice == "auto":
@@ -68,7 +69,8 @@ def staple_choice(rice, servings, targets):
 
 
 def meal_staple(snapshot):
-    """The staple stored on a planned meal snapshot, or None."""
+    """Makanan pokok yang tersimpan di snapshot menu (format lama `with_rice` dianggap nasi),
+    atau None."""
     if not isinstance(snapshot, dict):
         return None
     if snapshot.get("with_rice"):
@@ -78,7 +80,7 @@ def meal_staple(snapshot):
 
 
 class StapleLink:
-    """A recipe-ingredient row for the added staple; never stored in the catalog."""
+    """Baris bahan resep tiruan untuk makanan pokok tambahan; tidak pernah disimpan di katalog."""
 
     unit = "g"
     quantity_status = "curated"
@@ -86,6 +88,7 @@ class StapleLink:
     is_optional = False
 
     def __init__(self, recipe, ingredient, grams):
+        """Membuat baris dengan kode NASI-/POKOK- dan jumlah gram dikali porsi dasar resep."""
         prefix = "NASI" if ingredient.pk == RICE_CODE else "POKOK"
         self.recipe_ingredient_code = f"{prefix}-{recipe.pk}"
         self.ingredient = ingredient
@@ -94,13 +97,15 @@ class StapleLink:
 
 
 def needs_rice(meal_type, ingredients):
+    """True untuk menu siang/malam yang belum punya bahan berkategori karbohidrat."""
     return meal_type in RICE_MEALS and not any(
         link.ingredient.category == "karbohidrat" for link in ingredients
     )
 
 
 def purchase_grams(link):
-    """Price whole chicken by gross mass without counting bones as eaten protein."""
+    """Gram yang dibeli untuk satu bahan: bahan estimasi (mis. ayam utuh) dihitung dari massa kotor
+    agar tulang tidak dianggap protein yang dimakan."""
     edible = Decimal(str(link.quantity))
     if link.quantity_status != "estimated":
         return edible
@@ -133,11 +138,12 @@ def purchase_grams(link):
 
 
 def money(value):
+    """Membulatkan Decimal ke rupiah utuh terdekat (setengah dibulatkan ke atas)."""
     return int(value.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
 def round_up_price(value, multiple):
-    """Round a rupiah estimate up to the next Rp100 or Rp500."""
+    """Membulatkan estimasi rupiah ke atas ke kelipatan `multiple` (Rp100 atau Rp500)."""
     return int(
         (Decimal(value) / Decimal(multiple)).to_integral_value(rounding=ROUND_CEILING) * multiple
     )
@@ -146,7 +152,8 @@ def round_up_price(value, multiple):
 def _recipe_patterns(
     candidates, slots, preferred_tags, recent_codes, prior_slot_codes=(), cost_step=100
 ):
-    """Find each reachable meal cost without enumerating recipe combinations."""
+    """Mencari setiap total biaya yang bisa dicapai satu waktu makan tanpa menjelajah semua
+    kombinasi resep; per biaya disimpan pola dengan skor terbaik."""
     max_uses = max(1, ceil(slots / len(candidates)))
     patterns_by_cost = {}
     if len(candidates) >= slots:
@@ -164,6 +171,8 @@ def _recipe_patterns(
         prior_codes = set(prior_slot_codes)
 
         def rank(state):
+            """Kunci banding state: sedikit resep slot lalu, banyak cocok target, banyak pakai pantry,
+            sedikit protein berulang, lalu sedikit resep yang baru dipakai."""
             return (-state[4], state[1], state[6], -state[5], state[2], -state[3])
 
         groups = [candidate["protein_group"] for candidate in candidates]
@@ -238,7 +247,8 @@ def _recipe_patterns(
 
 
 def _spread(pattern, recent_codes, prior_slot_codes=()):
-    """Arrange a chosen multiset so repeats are separated when possible."""
+    """Mengurutkan resep terpilih per hari agar tidak sama dengan slot rencana lalu; resep yang
+    tidak baru dipakai dan lebih murah didahulukan."""
     counts = Counter(item["recipe"].pk for item in pattern)
     by_code = {item["recipe"].pk: item for item in pattern}
     order = sorted(counts, key=lambda code: (code in recent_codes, by_code[code]["cost"], code))
@@ -261,17 +271,18 @@ def _spread(pattern, recent_codes, prior_slot_codes=()):
 
 
 def spend_floor(budget):
-    """Lowest total a plan aims for: 60% of the budget, rounded down to Rp100."""
+    """Total minimal yang dituju rencana: 60% budget, dibulatkan ke bawah ke Rp100."""
     return int(Decimal(budget) * SPEND_FLOOR_RATIO) // 100 * 100
 
 
 def meal_cost_cap(budget, days, meal_count):
-    """Most one menu may cost: twice the budget's average share per meal slot."""
+    """Biaya maksimal satu menu: dua kali rata-rata jatah budget per slot makan."""
     return int(Decimal(budget) * MEAL_COST_CAP_MULTIPLIER / (days * meal_count))
 
 
 def daily_limits(targets, meals):
-    """Per-person daily protein floor and calorie cap for the chosen meals."""
+    """Batas bawah protein dan batas atas kalori harian per orang sesuai waktu makan terpilih;
+    None jika target terkait tidak dipilih."""
     protein_floor = (
         (HIGH_PROTEIN_GRAMS_PER_DAY * len(meals) / Decimal(len(MEALS))).quantize(
             Decimal("1"), rounding=ROUND_CEILING
@@ -288,7 +299,7 @@ def daily_limits(targets, meals):
 
 
 def _target_fit(items, targets):
-    """Score 0..1 per recipe for how well it suits the chosen nutrition targets."""
+    """Skor 0 sampai 1 per resep (kunci id item) untuk kecocokannya dengan target gizi terpilih."""
     if not items:
         return {}
     keys = []
@@ -306,12 +317,13 @@ def _target_fit(items, targets):
 
 
 def fruit_only(item):
-    """A recipe made only of fruit is a light snack, not a full meal."""
+    """True jika resep hanya berisi buah; dianggap camilan ringan, bukan makanan lengkap."""
     return all(link.ingredient.category == "buah" for link in item["ingredients"])
 
 
 def _candidate_pool(items, size, days, rng, recent_codes, targets):
-    """Pick a varied, price-spread subset of recipes for one meal."""
+    """Memilih subset resep yang bervariasi dan tersebar harganya untuk satu waktu makan; resep
+    termurah dan yang memakai stok pantry diutamakan."""
     if len(items) <= size:
         pool = list(items)
         rng.shuffle(pool)
@@ -347,7 +359,8 @@ def _candidate_pool(items, size, days, rng, recent_codes, targets):
 
 
 def _day_penalty(chosen_by_meal, meals, prior_slot_recipes):
-    """Variety penalty: same protein twice in a day, last plan's slot, back-to-back repeat."""
+    """Penalti variasi: protein sama dalam sehari, resep sama dengan slot rencana lalu, atau resep
+    berulang di hari berurutan."""
     score = 0
     for day in range(len(chosen_by_meal[meals[0]])):
         day_groups = Counter(chosen_by_meal[meal][day]["protein_group"] for meal in meals)
@@ -363,7 +376,8 @@ def _day_penalty(chosen_by_meal, meals, prior_slot_recipes):
 
 
 def _order_days_by_expiry(chosen_by_meal, meals, stock, prior_slot_recipes):
-    """Move whole days so the ones using the soonest-expiring stock come first."""
+    """Memindah hari utuh agar hari yang memakai stok paling cepat kedaluwarsa didahulukan, selama
+    penalti variasi tidak bertambah."""
     soonest = {}
     for code, _, expires in stock:
         if expires:
@@ -373,6 +387,7 @@ def _order_days_by_expiry(chosen_by_meal, meals, stock, prior_slot_recipes):
     days = len(chosen_by_meal[meals[0]])
 
     def day_key(day):
+        """Kunci urut hari: tanggal kedaluwarsa stok terdekat yang dipakai, lalu nomor hari."""
         dates = [
             soonest[link.ingredient_id]
             for meal in meals
@@ -391,12 +406,14 @@ def _order_days_by_expiry(chosen_by_meal, meals, stock, prior_slot_recipes):
 
 
 def _balance_days(chosen_by_meal, meals, prior_slot_recipes):
-    """Reorder each meal's recipes so one day rarely repeats a protein."""
+    """Menukar urutan resep per waktu makan (maks 4 putaran) agar satu hari jarang mengulang
+    protein; list diubah di tempat."""
     if len(meals) < 2:
         return chosen_by_meal
     days = len(chosen_by_meal[meals[0]])
 
     def penalty():
+        """Penalti variasi untuk susunan saat ini."""
         return _day_penalty(chosen_by_meal, meals, prior_slot_recipes)
 
     best = penalty()
@@ -418,7 +435,8 @@ def _balance_days(chosen_by_meal, meals, prior_slot_recipes):
 
 
 def _best_patterns_for_total(meals, meal_patterns, total):
-    """Choose the best meal mixes for an already reachable total cost."""
+    """Memilih kombinasi pola per waktu makan dengan skor terbaik untuk total biaya yang sudah
+    pasti tercapai; pencarian 3 waktu makan dibatasi MAX_TIE_BREAK_CHECKS."""
     groups = [meal_patterns[meal] for meal in meals]
     if len(groups) == 1:
         return {meals[0]: groups[0][total]["items"]}
@@ -478,7 +496,8 @@ def _nutrition_plan(
     prior_slot_recipes,
     rng,
 ):
-    """Choose affordable day bundles; nutritional limits apply to each whole day."""
+    """Memilih paket menu per hari yang terjangkau; batas gizi (protein, kalori) berlaku untuk
+    satu hari penuh."""
     protein_floor, calorie_cap = daily_limits(targets, meals)
     per_person = {
         id(item): (
@@ -558,11 +577,13 @@ def _nutrition_plan(
             cost_band = max(MIN_NUTRITION_COST_BAND, target_cost * NUTRITION_COST_BAND_RATIO)
 
             def rank_options(enforce_repeat_cap):
-                """The NUTRITION_BEAM_WIDTH best-ranked bundles, scanning outward from the target."""
+                """Mengumpulkan paket yang lolos, mulai dari harga terdekat ke biaya target; berhenti
+                setelah pita biaya terisi NUTRITION_BEAM_WIDTH paket."""
 
                 used = uses.__getitem__
 
                 def rank(bundle):
+                    """Kunci urut paket: dekat biaya target, pakai pantry, variasi resep dan protein."""
                     cost, items, day_repeats, groups, tie_break, codes, pantry_hits, recent = bundle
                     return (
                         abs(cost - target_cost) // cost_band,
@@ -577,6 +598,7 @@ def _nutrition_plan(
                     )
 
                 def allowed(bundle):
+                    """False jika batas pengulangan aktif dan ada resep paket yang sudah mencapainya."""
                     return not enforce_repeat_cap or not any(map(ge, map(used, bundle[5]), caps))
 
                 end = bisect_right(costs, remaining_budget)
@@ -639,7 +661,8 @@ STOCK_SWAP_COST_RATIO = Decimal("0.30")
 
 
 def _prefer_stock(chosen_by_meal, candidates, avoid=frozenset()):
-    """Swap a slot for a similar-cost recipe that uses more pantry stock."""
+    """Mengganti menu dengan resep berbiaya mirip (selisih maks 30%) yang lebih banyak memakai stok
+    pantry; None jika tidak ada yang diganti."""
     changed, result = False, {}
     for meal, items in chosen_by_meal.items():
         items = list(items)
@@ -664,7 +687,8 @@ def _prefer_stock(chosen_by_meal, candidates, avoid=frozenset()):
 
 
 def edible_stock(stock, fruit_rules):
-    """Pantry fruit is weighed whole; recipes and fruit quotes count the edible part."""
+    """Mengonversi stok buah di pantry (ditimbang utuh) ke gram bagian yang bisa dimakan, sesuai
+    hitungan resep dan estimasi buah."""
     return [
         (
             code,
@@ -678,7 +702,8 @@ def edible_stock(stock, fruit_rules):
 
 
 def stock_weights(stock, today=None):
-    """Grams in stock per ingredient, and a weight from its soonest expiry."""
+    """Total gram stok per bahan dan bobot prioritasnya dari kedaluwarsa terdekat (3: maks 3 hari,
+    2: maks 7 hari, 1: lainnya)."""
     today = today or timezone.localdate()
     available, weights = defaultdict(Decimal), {}
     for code, grams, expires in stock:
@@ -699,7 +724,8 @@ def _load_candidates(
     stock=(),
     halal_only=True,
 ):
-    """Price and nutrition-complete recipes, optionally restricted to halal labels."""
+    """Memuat resep yang data harga dan gizinya lengkap, sesuai filter halal, alergi, dan bahan
+    dihindari; biaya dan gizi dihitung per jumlah orang."""
     from apps.catalog.allergens import recipe_allowed
 
     snapshot = (
@@ -727,6 +753,7 @@ def _load_candidates(
     available, weights = stock_weights(edible_stock(stock, fruit_rules))
 
     def ingredient_purchase_cost(ingredient_code, edible_grams):
+        """Biaya beli satu bahan: buah dihitung per buah utuh, lainnya per gram dibulatkan ke Rp100."""
         if ingredient_code in fruit_rules:
             return whole_fruit_quote(
                 edible_grams, prices[ingredient_code], fruit_rules[ingredient_code]
@@ -841,7 +868,8 @@ def _load_candidates(
 
 
 def budget_preference_notes(schedule, total, budget):
-    """Explain soft preferences without relaxing the mandatory budget ceiling."""
+    """Catatan untuk user saat preferensi lunak (belanja minimal 60%, biaya per menu) dilonggarkan;
+    batas budget tetap wajib."""
     notes = []
     if total <= budget and total < spend_floor(budget):
         notes.append(
@@ -860,7 +888,8 @@ def budget_preference_notes(schedule, total, budget):
 
 
 def allocate_stock(day_needs, stock, starts_on, frozen_days=frozenset(), by_day=None):
-    """Grams per ingredient taken from pantry stock for the whole plan."""
+    """Gram per bahan yang diambil dari stok pantry untuk seluruh rencana; hari beku dilewati dan
+    batch yang kedaluwarsa sebelum tanggal makan tidak dipakai."""
     remaining = [[code, Decimal(grams), expires] for code, grams, expires in stock]
     used = defaultdict(Decimal)
     for day, needs in enumerate(day_needs, start=1):
@@ -886,7 +915,8 @@ def allocate_stock(day_needs, stock, starts_on, frozen_days=frozenset(), by_day=
 def quote_schedule(
     schedule, *, servings, targets, catalog, stock=(), starts_on=None, frozen_days=frozenset()
 ):
-    """Quote fixed recipe codes without searching or querying the database."""
+    """Menghitung jadwal, daftar belanja, total, dan gizi untuk kode resep yang sudah ditetapkan,
+    tanpa pencarian dan tanpa query database."""
     _, prices, price_records, fruit_rules, _, candidates, _, _ = catalog
     meals_available = tuple(meal for meal in MEALS if candidates.get(meal))
     by_code = {
@@ -1075,7 +1105,8 @@ STOCK_VALUE_SHARE = 2
 
 
 def build_plan(*, stock=(), starts_on=None, frozen_days=frozenset(), **inputs):
-    """Return varied recipes matching preferences whose net cost fits the budget."""
+    """Menyusun rencana menu bervariasi sesuai preferensi dengan biaya bersih dalam budget; jika ada
+    stok pantry, pencarian bisa diperlebar senilai sebagian stok itu."""
     plain = {"stock": stock, "starts_on": starts_on, "frozen_days": frozen_days}
     requested = tuple(meal for meal in MEALS if meal in inputs.get("meal_types", ()))
     if not stock or inputs.get("fixed_schedule") is not None or not requested:
@@ -1102,6 +1133,7 @@ def build_plan(*, stock=(), starts_on=None, frozen_days=frozenset(), **inputs):
     widen = min(int(value) // STOCK_VALUE_SHARE, budget)
 
     def search(**extra):
+        """Satu kali _build_plan memakai katalog yang sudah dimuat, opsional dengan search_budget."""
         return _build_plan(**inputs, **plain, catalog=catalog, **extra)[0]
 
     if widen < 500:
@@ -1137,7 +1169,8 @@ def _build_plan(
     search_budget=None,
     catalog=None,
 ):
-    """One search."""
+    """Satu kali pencarian rencana; mengembalikan (hasil, katalog) agar katalog bisa dipakai ulang
+    oleh pencarian berikutnya."""
     rng = Random(0 if seed is None else seed)
     requested_meals = tuple(meal for meal in MEALS if meal in meal_types)
     if not requested_meals:
@@ -1195,6 +1228,7 @@ def _build_plan(
     cap = meal_cost_cap(limit, days, len(available_meals))
 
     def search_pools(capped):
+        """Pool kandidat per waktu makan; jika `capped`, hanya resep di bawah batas biaya per menu."""
         return {
             meal: _candidate_pool(
                 [item for item in candidates[meal] if not capped or item["cost"] <= cap]
@@ -1211,6 +1245,8 @@ def _build_plan(
     pools = search_pools(capped=True)
 
     def minimum_plan_cost(portions, plan_days):
+        """Biaya termurah yang mungkin untuk jumlah porsi dan hari tertentu, dipakai untuk saran
+        hari, orang, atau budget minimal."""
         total = 0
         for meal in available_meals:
             scaled_costs = []
@@ -1367,12 +1403,14 @@ def _build_plan(
                     break
 
     def codes_of(chosen):
+        """Mengubah resep terpilih per waktu makan jadi list per hari berisi kode resep."""
         return [
             {meal: chosen[meal][day]["recipe"].pk for meal in available_meals}
             for day in range(days)
         ]
 
     def quote_codes(codes):
+        """Menghitung jadwal kode resep dengan katalog, stok, dan tanggal pencarian ini."""
         return quote_schedule(
             codes,
             servings=servings,
@@ -1489,7 +1527,8 @@ def replacement_options(
     starts_on=None,
     frozen_days=frozenset(),
 ):
-    """Quote each full alternative schedule using the preview's shopping rules."""
+    """Menghitung ulang seluruh jadwal untuk tiap resep pengganti satu slot dengan aturan belanja
+    yang sama seperti preview; hanya yang masih dalam budget dikembalikan."""
     requested_meals = tuple(item for item in MEALS if item in meal_types)
     catalog = _load_candidates(
         requested_meals,

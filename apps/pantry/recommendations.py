@@ -1,4 +1,4 @@
-"""Conservative catalogue matching and storage suggestions for receipt items."""
+"""Pencocokan katalog yang konservatif dan saran penyimpanan untuk item struk."""
 
 import json
 from datetime import timedelta
@@ -18,6 +18,10 @@ from .storage import DEFAULT_LOCATION, storage_options
 
 
 def _catalog_entries():
+    """Memetakan nama ternormalisasi ke set kode bahan dari nama katalog dan alias terverifikasi.
+
+    Nama sehari-hari hanya ditambahkan bila belum dipakai nama katalog atau alias.
+    """
     entries = {}
     everyday = {}
     for ingredient in Ingredient.objects.all().only("ingredient_code", "name"):
@@ -35,11 +39,13 @@ def _catalog_entries():
 
 
 def exact_ingredient_code(name):
+    """Kode bahan bila nama cocok persis dengan tepat satu bahan; None bila ambigu/tidak ada."""
     codes = _catalog_entries().get(normalize_name(name), set())
     return next(iter(codes)) if len(codes) == 1 else None
 
 
 def _candidates(name, entries):
+    """Mencari maksimal 5 kode bahan dengan kemiripan ejaan minimal 0,55, beserta skor tiap kode."""
     scored = {}
     for alias, codes in entries.items():
         if not alias:
@@ -53,6 +59,10 @@ def _candidates(name, entries):
 
 
 def _gemini_choices(pending):
+    """Meminta Gemini memilih satu kandidat per baris OCR; hanya kode dari kandidat yang diterima.
+
+    Indeks yang dijawab dua kali dianggap ragu (None); kegagalan Gemini menghasilkan dict kosong.
+    """
     if not gemini_ready():
         return {}
     prompt = (
@@ -115,10 +125,15 @@ def _gemini_choices(pending):
 
 
 def _storage(ingredient_code):
+    """Acuan masa simpan bahan untuk lokasi default (suhu ruang), atau None."""
     return storage_options(ingredient_code).get(DEFAULT_LOCATION)
 
 
 def resolve_names(names, session_id, *, user=None, allow_llm=True):
+    """Mencocokkan nama struk ke katalog: koreksi user, nama persis, koreksi bersama, cache, ejaan.
+
+    Sisanya ke LLM (hanya user login, memakai kuota harian); mengembalikan (hasil, llm_dicoba).
+    """
     entries = _catalog_entries()
     snapshot = catalog_snapshot()
     learned = (

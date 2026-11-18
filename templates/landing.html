@@ -13,11 +13,11 @@
   <section class="hero" aria-labelledby="hero-title">
     <header class="wrap">
       <div class="topbar">
-        <a class="brand" href="{% url 'landing' %}" aria-label="TAKARKUY, ke beranda"><img src="{% static 'takarkuy/logo-light.svg' %}" alt="" width="34" height="40"><span>TAKARKUY</span></a>
+        <a class="brand" href="{% url 'login:show_landing' %}" aria-label="TAKARKUY, ke beranda"><img src="{% static 'takarkuy/logo-light.svg' %}" alt="" width="34" height="40"><span>TAKARKUY</span></a>
         <nav class="topnav" aria-label="Akun">
           {% include "partials/theme_toggle.html" %}
-          <a class="topnav-link" href="{% url 'login' %}">Masuk</a>
-          <a class="topnav-cta" href="{% url 'signup' %}">Daftar</a>
+          <a class="topnav-link" href="{% url 'login:login' %}">Masuk</a>
+          <a class="topnav-cta" href="{% url 'login:register' %}">Daftar</a>
         </nav>
       </div>
     </header>
@@ -29,7 +29,7 @@
 
   <main id="main">
     <section class="calc-wrap" id="calc" aria-labelledby="calc-title">
-      <form class="calc up d3" id="budget-calculator" action="{% url 'planner' %}" method="get" novalidate>
+      <form class="calc up d3" id="budget-calculator" action="{% url 'planner:show_planner' %}" method="get" novalidate>
         <div class="calc-head">
           <div class="calc-title">
             <span class="icon-box" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 11v4"/></svg></span>
@@ -138,7 +138,7 @@
     <section class="wrap cta" aria-labelledby="cta-title">
       <div class="cta-box">
         <h2 id="cta-title">Siap menakar minggu ini?</h2>
-        <a class="pill-btn pill-dark press" href="{% url 'signup' %}">Daftar sekarang</a>
+        <a class="pill-btn pill-dark press" href="{% url 'login:register' %}">Daftar sekarang</a>
       </div>
     </section>
   </main>

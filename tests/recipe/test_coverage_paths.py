@@ -14,15 +14,15 @@ from apps.catalog.models import Recipe
 from apps.pantry.services import StockError
 
 from tests.recipe import test_recipe as cooking_tests
-from .admin import RecipeDataReportAdmin, RecipeReviewAdmin
-from .management.commands.audit_recipe_review_photos import _stored_review_photos
-from .models import RecipeDataReport, RecipePhotoCleanup, RecipeReview
-from .photo_storage import (
+from apps.recipe.admin import RecipeDataReportAdmin, RecipeReviewAdmin
+from apps.recipe.management.commands.audit_recipe_review_photos import _stored_review_photos
+from apps.recipe.models import RecipeDataReport, RecipePhotoCleanup, RecipeReview
+from apps.recipe.photo_storage import (
     attempt_recipe_photo_cleanup,
     discard_uncommitted_recipe_photo,
     enqueue_recipe_photo_cleanup,
 )
-from .services import _apply_external_ingredients, recipe_requirements
+from apps.recipe.services import _apply_external_ingredients, recipe_requirements
 
 
 class PhotoCleanupCoverageTests(TestCase):
@@ -162,7 +162,7 @@ class RecipeBookBranchCoverageTests(TestCase):
         self.assertTrue(rows[0]["tracked"])
 
     def test_report_api_validation_success_and_rate_limit(self):
-        url = reverse("modul4-report-data")
+        url = reverse("recipe:report_data")
         valid = {"recipe_code": self.recipe.pk, "category": "ingredients", "details": "Takaran perlu diperiksa"}
         for payload in (
             {**valid, "recipe_code": 4},
@@ -182,26 +182,26 @@ class RecipeBookBranchCoverageTests(TestCase):
         from apps.recipe.views import recipe_review_photo
 
         factory = RequestFactory()
-        request = factory.post("/modul4/review/photo/", data={"version": "1"})
+        request = factory.post("/recipes/review/photo/", data={"version": "1"})
         request.user = self.user
         request.META["CONTENT_LENGTH"] = "invalid"
         self.assertEqual(recipe_review_photo(request).status_code, 400)
         request = factory.post(
-            "/modul4/review/photo/",
+            "/recipes/review/photo/",
             data={"photo": SimpleUploadedFile("large.jpg", b"x"), "version": "1"},
         )
         request.user = self.user
         request.META["CONTENT_LENGTH"] = str(7 * 1024 * 1024 + 1)
         self.assertEqual(recipe_review_photo(request).status_code, 413)
-        request = factory.post("/modul4/review/photo/")
+        request = factory.post("/recipes/review/photo/")
         request.user = self.user
         self.assertEqual(recipe_review_photo(request).status_code, 400)
-        request = factory.post("/modul4/review/photo/", data={"photo": SimpleUploadedFile("x.jpg", b"x"), "version": "bad"})
+        request = factory.post("/recipes/review/photo/", data={"photo": SimpleUploadedFile("x.jpg", b"x"), "version": "bad"})
         request.user = self.user
         self.assertEqual(recipe_review_photo(request).status_code, 400)
 
     def test_slot_status_validation_and_owner_guard(self):
-        url = reverse("modul4-slot-status")
+        url = reverse("recipe:set_slot_status")
         for payload in ({"planned_meal": 0, "status": "skipped", "version": 1},
                         {"planned_meal": 1, "status": "skipped"},
                         {"planned_meal": 999999, "status": "skipped", "version": 1}):

@@ -10,6 +10,7 @@ from .reviews import review_photo_url
 
 @admin.register(RecipeDataReport)
 class RecipeDataReportAdmin(admin.ModelAdmin):
+    """Admin untuk menindaklanjuti laporan data resep; isi laporan dari pengguna hanya bisa dibaca."""
     list_display = (
         "recipe", "category", "status", "assigned_to", "follow_up_at",
         "reporter", "created_at", "updated_at",
@@ -29,6 +30,7 @@ class RecipeDataReportAdmin(admin.ModelAdmin):
     list_select_related = ("recipe", "reporter", "assigned_to")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Membatasi pilihan penanggung jawab laporan ke akun staf yang aktif, urut username."""
         if db_field.name == "assigned_to":
             kwargs["queryset"] = db_field.remote_field.model.objects.filter(
                 is_active=True, is_staff=True
@@ -36,11 +38,13 @@ class RecipeDataReportAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def has_add_permission(self, request):
+        """Menutup penambahan dari admin; laporan hanya dibuat pengguna lewat halaman resep."""
         return False
 
 
 @admin.register(RecipeReview)
 class RecipeReviewAdmin(admin.ModelAdmin):
+    """Admin moderasi ulasan resep, terutama untuk menyetujui atau menyembunyikan foto ulasan."""
     list_display = (
         "recipe", "user", "rating", "is_hidden", "photo_is_hidden", "photo_consent",
         "photo_moderation", "photo_moderated_at", "photo_moderated_by", "updated_at",
@@ -59,6 +63,7 @@ class RecipeReviewAdmin(admin.ModelAdmin):
 
     @admin.display(description="Foto")
     def photo_moderation(self, obj):
+        """Menampilkan tautan foto ulasan beserta status Menunggu atau Tampil di daftar admin."""
         if not obj.photo:
             return "—"
         return format_html(
@@ -68,14 +73,17 @@ class RecipeReviewAdmin(admin.ModelAdmin):
         )
 
     def has_add_permission(self, request):
+        """Menutup penambahan dari admin; ulasan hanya dibuat pengguna lewat halaman resep."""
         return False
 
     @admin.display(description="Izin foto")
     def photo_consent(self, obj):
+        """Menandai Tercatat hanya bila izin foto diberikan dan waktu persetujuannya tersimpan."""
         return "Tercatat" if obj.photo_permission_granted and obj.photo_consent_at else "Tidak ada"
 
     @admin.action(description="Setujui foto dengan izin yang tercatat")
     def approve_consented_photos(self, request, queryset):
+        """Menampilkan foto terpilih yang punya izin tercatat dan ulasannya tidak disembunyikan."""
         eligible = queryset.filter(
             photo__gt="", photo_permission_granted=True,
             photo_consent_at__isnull=False, is_hidden=False
@@ -88,6 +96,7 @@ class RecipeReviewAdmin(admin.ModelAdmin):
 
     @admin.action(description="Sembunyikan foto terpilih")
     def hide_selected_photos(self, request, queryset):
+        """Menyembunyikan foto pada ulasan terpilih dan mencatat moderator serta waktunya."""
         self._update_moderation(queryset.filter(photo__gt=""), {
             "photo_is_hidden": True,
             "photo_moderated_at": timezone.now(),
@@ -96,6 +105,7 @@ class RecipeReviewAdmin(admin.ModelAdmin):
 
     @staticmethod
     def _update_moderation(queryset, changes):
+        """Mengunci baris lalu menerapkan perubahan moderasi sambil menaikkan version ulasan."""
         with transaction.atomic():
             review_ids = list(
                 queryset.select_for_update().values_list("pk", flat=True)

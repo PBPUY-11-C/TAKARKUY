@@ -1,4 +1,4 @@
-"""Shared Gemini JSON transport; credentials remain on the server."""
+"""Transport JSON Gemini bersama; kredensial tetap di server."""
 
 import json
 import os
@@ -12,16 +12,21 @@ DEFAULT_MODEL = "gemini-2.5-flash-lite"
 
 
 class GeminiUnavailable(Exception):
-    """An optional Gemini request could not return a usable JSON object."""
+    """Request Gemini opsional gagal menghasilkan objek JSON yang bisa dipakai."""
 
 
 def gemini_ready():
+    """True bila PANTRY_LLM_PROVIDER bernilai "gemini" dan GEMINI_API_KEY terisi."""
     return os.getenv("PANTRY_LLM_PROVIDER", "").strip().lower() == "gemini" and bool(
         os.getenv("GEMINI_API_KEY", "").strip()
     )
 
 
 def generate_json(parts, *, timeout, generation_config=None):
+    """Mengirim parts ke endpoint generateContent Gemini dan mem-parse jawabannya sebagai JSON.
+
+    Respons dibatasi 256 KB; bagian "thought" diabaikan; error apa pun jadi GeminiUnavailable.
+    """
     if not gemini_ready():
         raise GeminiUnavailable("Gemini is not configured")
     model = os.getenv("PANTRY_LLM_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL

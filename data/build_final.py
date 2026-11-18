@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the TAKARKUY MVP from frozen source snapshots; standard library only."""
+"""Membangun data MVP TAKARKUY dari snapshot sumber yang dibekukan; hanya standard library."""
 
 import csv
 import hashlib
@@ -35,11 +35,15 @@ NUTRIENTS = ("calories", "protein", "carbs", "fat")
 
 
 def read_csv(path):
+    """Membaca CSV (BOM UTF-8 ditoleransi) sebagai list dict."""
     with open(path, newline="", encoding="utf-8-sig") as f:
         return list(csv.DictReader(f))
 
 
 def clean_text_fields(row):
+    """Menyeragamkan akhir baris jadi \\n dan membuang spasi di ujung tiap baris pada nilai teks,
+    agar CSV hasil build stabil antar platform.
+    """
     return {
         key: "\n".join(
             line.rstrip() for line in value.replace("\r\n", "\n").replace("\r", "\n").split("\n")
@@ -51,6 +55,7 @@ def clean_text_fields(row):
 
 
 def write_csv(path, rows, fields):
+    """Menulis CSV dengan kolom tetap dan akhir baris \\n; kolom di luar fields diabaikan."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fields, extrasaction="ignore", lineterminator="\n")
@@ -59,15 +64,18 @@ def write_csv(path, rows, fields):
 
 
 def slug(s):
+    """Membuat slug ASCII huruf besar dengan pemisah '-', dipakai untuk kode ING-."""
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().upper()
     return re.sub("-+", "-", re.sub("[^A-Z0-9]+", "-", s)).strip("-")
 
 
 def stable(prefix, *parts):
+    """Membuat ID deterministik prefix + 12 hex SHA1 dari parts, agar ID sama di setiap build."""
     return prefix + "-" + hashlib.sha1("|".join(map(str, parts)).encode()).hexdigest()[:12].upper()
 
 
 def fnum(x):
+    """Mengubah nilai ke float; kosong, '-', atau tidak valid menjadi None."""
     try:
         return float(x) if x not in ("", "-") else None
     except (ValueError, TypeError):
@@ -75,10 +83,12 @@ def fnum(x):
 
 
 def fmt(x):
+    """Memformat angka maksimal 2 desimal tanpa nol di belakang; None menjadi string kosong."""
     return "" if x is None else ("%.2f" % x).rstrip("0").rstrip(".")
 
 
 def category(s):
+    """Menebak kategori bahan dari kata kunci nama; yang tidak cocok dianggap sayur."""
     s = s.lower()
     if s in ("kubis", "kol", "kembang kol"):
         return "sayur"
@@ -201,6 +211,9 @@ USDA_EXTRA = {
 
 
 def bpn_nutrition(r, verified):
+    """Menyusun kolom gizi dari baris Badan Pangan; kalori dihitung Atwater 4-4-9,
+    memakai karbohidrat tersedia bila ada.
+    """
     p, f, c = (fnum(r[x]) for x in ("protein_per_100g", "fat_per_100g", "carbs_total_per_100g"))
     available = fnum(r["carbs_available_per_100g"])
     kcal = (
@@ -222,6 +235,7 @@ def bpn_nutrition(r, verified):
 
 
 def usda_nutrition(f):
+    """Menyusun kolom gizi per 100 g dari entri USDA SR Legacy, ditandai belum terverifikasi."""
     n = {x["nutrient"]["id"]: x["amount"] for x in f["foodNutrients"] if "amount" in x}
     return dict(
         calories_per_100g=fmt(n.get(1008)),
@@ -239,6 +253,9 @@ def usda_nutrition(f):
 
 
 def add_product(items, name, code, bpn, usda):
+    """Menambahkan komoditas harga sebagai bahan bila belum ada, dengan gizi dari proksi PROXY,
+    nama BPN yang cocok, atau dikosongkan bila tidak ada sumber.
+    """
     if code in items:
         return
     proxy = PROXY.get(name)
@@ -268,6 +285,9 @@ def add_product(items, name, code, bpn, usda):
 
 
 def build_ingredients_prices():
+    """Membangun bahan dan harga dari BPN, USDA, harga Garut, PIHPS, dan suplemen OFF/TKPI.
+    Mengembalikan (items, prices, aliases, bpn, usda).
+    """
     bpn = {
         r["source_id"]: r
         for r in json.loads((MAP / "bapanas_nutrition_snapshot.json").read_text(encoding="utf-8"))
@@ -438,6 +458,9 @@ def build_ingredients_prices():
 
 
 def planning_prices(prices):
+    """Memilih satu harga per kg per bahan untuk planner: harga Garut terbaru diutamakan,
+    sisanya harga referensi ritel terbaru.
+    """
     local = [
         p
         for p in prices
@@ -1114,6 +1137,9 @@ CURATED = [
 
 
 def build_recipes(items, prices):
+    """Menggabungkan resep kurasi MVP, Kaggle, kandidat dan kurasi TheMealDB, estimasi, serta
+    Mendeley; menghitung biaya, gizi, dan tag, lalu menulis audit takaran ke staging/.
+    """
     price_by_code = planning_prices(prices)
     recipes = []
     links = []
@@ -1810,11 +1836,15 @@ FK_MAP = {
 
 
 def duration_days(number, metric):
+    """Mengubah durasi FoodKeeper ke hari (minggu 7, bulan 30, tahun 365), dibulatkan."""
     mult = {"Days": 1, "Weeks": 7, "Months": 30, "Years": 365}
     return int(round(float(number) * mult[metric]))
 
 
 def build_shelf_life(items):
+    """Membuat baris umur simpan per lokasi penyimpanan dari mirror FoodKeeper via FK_MAP;
+    hari peringatan = 10% batas bawah, dijepit 1 sampai 14.
+    """
     fk = {i: r for i, r in enumerate(read_csv(RAW / "foodkeeper_mirror_2019.csv"), 2)}
     rows = []
     slots = (
@@ -1858,6 +1888,9 @@ def build_shelf_life(items):
 
 
 def build_aliases(items, price_aliases, bpn):
+    """Mengumpulkan alias nama bahan dari sumber harga, BPN, nama katalog, dan daftar kurasi
+    manual; duplikat per (sumber, nama) dibuang.
+    """
     rows = []
     seen = set()
     for a in price_aliases:
@@ -1922,6 +1955,9 @@ def build_aliases(items, price_aliases, bpn):
 
 
 def build_conversions(items, usda):
+    """Membuat konversi satuan: g/kg/ons untuk semua bahan, butir telur dan siung bawang putih,
+    serta ikat/pack yang ditandai unusable sampai bobotnya diukur.
+    """
     rows = []
     for code in sorted(items):
         for unit, grams in (("g", 1), ("kg", 1000), ("ons", 100)):
@@ -2031,6 +2067,9 @@ PK = {
 
 
 def build_all():
+    """Membangun ulang processed/, mapping/, dan fixture catalog_seed.json dari snapshot lokal
+    tanpa akses internet; juga menulis laporan kesiapan resep dan dataset_counts.json.
+    """
     items, prices, price_aliases, bpn, usda = build_ingredients_prices()
     allergen_rows = build_allergens(items)
     recipes, links, tags, estimates = build_recipes(items, prices)

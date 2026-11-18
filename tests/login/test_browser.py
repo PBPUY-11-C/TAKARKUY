@@ -23,7 +23,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
     def test_guest_account_preferences_and_responsive_pages(self):
         from playwright.sync_api import expect, sync_playwright
 
-        artifacts = Path(settings.BASE_DIR) / ".verification" / "modul3"
+        artifacts = Path(settings.BASE_DIR) / ".verification" / "login:show_profile"
         artifacts.mkdir(parents=True, exist_ok=True)
         report = []
         errors = []
@@ -67,7 +67,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
                     (artifacts / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
                     self.assertLessEqual(metrics["content"], width + 1, f"Overflow: {name} at {width}: {metrics}")
                     self.assertEqual(metrics["duplicateIds"], [], f"Duplicate IDs: {name}")
-                    if name in {"login", "signup", "signup-error", "login-error", "profile", "avatar-picker", "unsaved-popup", "food-preferences", "preferences-ingredients", "password-change"}:
+                    if name in {"login", "signup", "signup-error", "login-error", "profile", "avatar-picker", "unsaved-popup", "login:food_preferences", "preferences-ingredients", "login:change_password"}:
                         self.assertEqual(metrics["background"], "rgb(242, 248, 244)")
                         self.assertIn("Plus Jakarta Sans", metrics["font"])
                     if name in {"login", "signup", "profile"}:
@@ -88,7 +88,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             expect(page.locator("#budget-result")).to_contain_text("10.000")
             page.locator("#trial-days").fill("0")
             expect(page.locator("#budget-result")).to_contain_text("valid")
-            for path in ("/planner/", "/modul1/"):
+            for path in ("/planner/",):
                 open_page(path)
                 expect(page).to_have_url(self.live_server_url + "/login/?next=" + path)
                 expect(page.get_by_role("heading", name="Selamat Datang Kembali")).to_be_visible()
@@ -183,7 +183,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             expect(page).to_have_url(self.live_server_url + "/profil/preferensi/")
             expect(page.locator('select[name="avoided_ingredients"]')).to_have_count(0)
             expect(settings_nav.locator('[aria-current="page"]')).to_have_text("Preferensi makanan")
-            capture("food-preferences")
+            capture("login:food_preferences")
             page.locator('[name="allergens"][value="telur"]').check()
             settings_nav.get_by_role("link", name="Akun", exact=True).click()
             expect(unsaved).to_be_visible()
@@ -271,7 +271,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             page.get_by_role("navigation", name="Pengaturan profil", exact=True).get_by_role("link", name="Keamanan akun", exact=True).click()
             expect(page).to_have_url(self.live_server_url + "/profil/ganti-kata-sandi/")
             expect(settings_nav.locator('[aria-current="page"]')).to_have_text("Keamanan akun")
-            capture("password-change", widths=(1440, 390, 320))
+            capture("login:change_password", widths=(1440, 390, 320))
             page.locator('[name="old_password"]').fill("BelumDisimpan!123")
             page.locator('form[action="/logout/"] button').click()
             expect(unsaved).to_be_visible()
@@ -289,7 +289,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             expect(page.locator('[name="servings"]')).to_have_value("3")
             expect(page.get_by_text("Preferensi halal:", exact=False)).to_have_count(0)
             capture("planner", widths=(1440, 390))
-            for path, name in (("/pantry/", "pantry"), ("/modul4/", "recipe-book"), ("/modul5/", "dashboard")):
+            for path, name in (("/pantry/", "pantry"), ("/recipes/", "recipe-book"), ("/dashboard/", "dashboard")):
                 open_page(path)
                 expect(page.locator('.app-header')).to_be_visible()
                 capture(name, widths=(1440, 390))
@@ -317,7 +317,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             expect(page.locator('[name="username"]')).to_be_focused()
             page.locator('[name="password"]').fill("BrowserChanged!938")
             page.get_by_role("button", name="MasukKuy").click()
-            expect(page).to_have_url(self.live_server_url + "/modul5/")
+            expect(page).to_have_url(self.live_server_url + "/dashboard/")
             session = next(c for c in context.cookies() if c["name"] == settings.SESSION_COOKIE_NAME)
             self.assertEqual(session["expires"], -1)
             open_page("/login/")
@@ -325,7 +325,7 @@ class AccountBrowserTests(StaticLiveServerTestCase):
             page.locator('[name="password"]').fill("BrowserChanged!938")
             page.locator('[name="remember_me"]').check()
             page.get_by_role("button", name="MasukKuy").click()
-            expect(page).to_have_url(self.live_server_url + "/modul5/")
+            expect(page).to_have_url(self.live_server_url + "/dashboard/")
             session = next(c for c in context.cookies() if c["name"] == settings.SESSION_COOKIE_NAME)
             self.assertGreater(session["expires"], 0)
             self.assertEqual(errors, [])

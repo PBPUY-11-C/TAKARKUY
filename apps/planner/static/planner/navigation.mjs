@@ -1,8 +1,11 @@
 let lastPage = null;
+// Callback yang dijalankan setelah <main> diganti; default tidak melakukan apa-apa.
 let afterSwap = () => {};
 
+// Mendaftarkan callback (biasanya init halaman) yang dipanggil setiap selesai swap.
 export function onSwap(callback) { afterSwap = callback; }
 
+// Navigasi penuh ke URL; jika path dan query sama, hanya hash diganti lalu halaman dimuat ulang.
 export function navigate(url) {
   const destination = new URL(url, window.location.origin);
   if (destination.pathname === window.location.pathname && destination.search === window.location.search) {
@@ -13,11 +16,12 @@ export function navigate(url) {
   }
 }
 
+// True jika browser mendukung DOMParser dan pushState serta halaman punya elemen #main.
 export function canSwap() {
   return Boolean(window.DOMParser && window.history?.pushState && document.getElementById("main"));
 }
 
-// Fetch a planner page and replace only <main>, so actions finish without a full reload.
+// Mengambil halaman planner dan hanya mengganti <main> agar aksi selesai tanpa reload penuh; false jika gagal.
 export async function swap(url, options = {}, record = true) {
   if (!canSwap()) return false;
   const target = new URL(url, window.location.origin);
@@ -48,6 +52,7 @@ export async function swap(url, options = {}, record = true) {
   return true;
 }
 
+// Pindah ke URL lewat swap (pesan tampil sebagai toast); jika swap gagal, pesan di-flash lalu navigasi penuh.
 export async function visit(url, message) {
   if (await swap(url)) {
     if (message) globalThis.TakarKuy?.toast(message);
@@ -57,7 +62,7 @@ export async function visit(url, message) {
   navigate(url);
 }
 
-// Back/forward and a[data-swap] links reuse swap() instead of reloading the page.
+// Tombol back/forward dan link a[data-swap] memakai swap() alih-alih memuat ulang halaman.
 export function bindNavigation() {
   lastPage = window.location.pathname + window.location.search;
   window.addEventListener?.("popstate", async () => {

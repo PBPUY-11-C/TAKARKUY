@@ -23,15 +23,18 @@ let workerPromise = null;
 let hasUploaded = false;
 let scanVersion = 0;
 
+// Menampilkan pesan status di elemen; class "error" dipasang bila isError true.
 function feedback(element, message, isError = false) {
   element.textContent = message;
   element.classList.toggle("error", isError);
 }
 
+// Mengambil semua baris draft hasil struk yang sedang tampil di tabel.
 function draftElements() {
   return [...draftRows.querySelectorAll("tr[data-draft]")];
 }
 
+// Memperbarui jumlah draft dan menampilkan tabel atau state kosong sesuai sudah unggah atau belum.
 function refreshDraftCount() {
   const count = draftElements().length;
   draftCount.textContent = `${count} bahan`;
@@ -43,12 +46,14 @@ function refreshDraftCount() {
     : "Belum ada struk yang diunggah. Unggah struk untuk mendeteksi bahan makanan secara otomatis.";
 }
 
+// Membungkus kontrol form dalam sel <td> baru lalu menambahkannya ke baris.
 function addControlCell(row, control) {
   const cell = document.createElement("td");
   cell.append(control);
   row.append(cell);
 }
 
+// Menambah input wajib ke baris draft; field angka diberi min/step, nama dibatasi 255 karakter.
 function addInput(row, field, type, value, label) {
   const input = document.createElement("input");
   input.dataset.field = field;
@@ -65,6 +70,7 @@ function addInput(row, field, type, value, label) {
   addControlCell(row, input);
 }
 
+// Menambah select wajib ke baris draft dengan opsi disalin dari elemen sourceId di template.
 function addSelect(row, field, sourceId, value, label) {
   const source = document.getElementById(sourceId);
   const select = document.createElement("select");
@@ -76,6 +82,7 @@ function addSelect(row, field, sourceId, value, label) {
   addControlCell(row, select);
 }
 
+// Membuat baris draft (nama, jumlah, satuan, hapus); mengedit nama membuang saran dan kode bahan.
 function addDraftRow(item = {}) {
   const row = document.createElement("tr");
   row.dataset.draft = "";
@@ -128,6 +135,8 @@ function addDraftRow(item = {}) {
   return row;
 }
 
+// Meminta saran nama katalog ke server dan menerapkannya hanya ke baris yang belum diedit pengguna.
+// Hasil scan lama (version berbeda) diabaikan; error jaringan didiamkan.
 async function suggestRows(rows, version, allowLLM = true) {
   const draft = draftElements();
   try {
@@ -163,6 +172,7 @@ async function suggestRows(rows, version, allowLLM = true) {
   }
 }
 
+// Mengganti isi draft dengan rows; saran nama diminta kecuali hasil foto AI sudah berhasil.
 function showDraftItems(rows, {photoAttempted = false, photoSucceeded = false} = {}) {
   draftRows.replaceChildren();
   rows.forEach(addDraftRow);
@@ -171,6 +181,7 @@ function showDraftItems(rows, {photoAttempted = false, photoSucceeded = false} =
   return rows.length;
 }
 
+// Mengirim foto struk ke endpoint OCR cadangan Gemini, mengembalikan item; gagal melempar Error.
 async function readWithGemini(file) {
   const form = new FormData();
   form.append("image", file);
@@ -186,6 +197,8 @@ async function readWithGemini(file) {
   return data.items;
 }
 
+// Memperbesar foto kecil (lebar < 600 px) atau saat enhance: grayscale, kontras naik, margin putih.
+// Bila browser tidak mendukung atau gagal, file asli dipakai apa adanya.
 async function prepareReceiptImage(file, enhance = false) {
   if (typeof createImageBitmap !== "function") return { image: file, width: null };
   let bitmap;
@@ -216,6 +229,7 @@ async function prepareReceiptImage(file, enhance = false) {
   }
 }
 
+// Membuat worker Tesseract (ind+eng) sekali lalu dipakai ulang; promise direset bila gagal dibuat.
 async function getWorker() {
   if (!window.Tesseract) throw new Error("Pustaka OCR gagal dimuat. Periksa koneksi internet lalu muat ulang halaman.");
   if (!workerPromise) {
@@ -350,6 +364,7 @@ document.getElementById("add-draft-row").addEventListener("click", () => {
 
 const actionKey = createActionKeyStore();
 
+// Menyimpan item ke server dengan operation_key idempoten; melempar error validasi pertama.
 async function saveItems(items, source) {
   const response = await fetch("/pantry/items/", {
     method: "POST",
@@ -429,11 +444,13 @@ manualForm.addEventListener("submit", async (event) => {
 const MS_PER_DAY = 86400000;
 const dateFormat = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" });
 
+// Mengubah string YYYY-MM-DD menjadi Date waktu lokal; format lain menghasilkan null.
 function parseIsoDate(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
   return match ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])) : null;
 }
 
+// Menentukan warna dan label badge kedaluwarsa: lewat (bad), 0 s.d. 3 hari (warn), sisanya ok.
 function expiryBadge(value) {
   const target = parseIsoDate(value);
   if (!target) return { tone: "unknown", label: "Tanggal belum diketahui" };
@@ -446,11 +463,14 @@ function expiryBadge(value) {
   return { tone: "ok", label: `${days} hari lagi` };
 }
 
+// Teks label opsi yang sedang dipilih pada select, atau string kosong.
 function selectedText(select) {
   return select.selectedOptions?.[0]?.textContent?.trim() || "";
 }
 
+// Menyalin nilai form edit ke ringkasan baris stok: nama, kategori, jumlah, lokasi, badge, tanggal.
 function refreshSummary(row) {
+  // Pintasan querySelector di dalam baris ini.
   const get = (selector) => row.querySelector(selector);
   const name = get("[data-edit-name]").value.trim();
   get("[data-sum-name]").textContent = name;
@@ -495,15 +515,18 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
   const toggle = row.querySelector(".pantry-edit-toggle");
   const cancelButton = row.querySelector(".cancel-pantry-edit");
   const summaryFeedback = row.querySelector("[data-summary-feedback]");
+  // Semua input dan select di panel edit, dipakai untuk snapshot dan pemulihan nilai.
   const editControls = () => [...panel.querySelectorAll("input, select")];
   let snapshot = null;
   let storageSnapshot = "";
   refreshSummary(row);
+  // Membuka atau menutup panel edit sekaligus memperbarui aria-expanded dan label tombol.
   function setPanel(open) {
     panel.hidden = !open;
     toggle.setAttribute("aria-expanded", String(open));
     toggle.textContent = open ? "Tutup" : "Ubah";
   }
+  // Menyimpan snapshot nilai form agar bisa dibatalkan, lalu membuka panel dan fokus ke nama.
   function openEdit() {
     snapshot = editControls().map((control) => control.value);
     storageSnapshot = storageFeedback.textContent;
@@ -511,6 +534,7 @@ document.querySelectorAll("[data-pantry-item]").forEach((row) => {
     setPanel(true);
     row.querySelector("[data-edit-name]").focus();
   }
+    // Mengembalikan nilai form dari snapshot, mereset mode kedaluwarsa, lalu menutup panel.
     function cancelEdit() {
     if (snapshot) editControls().forEach((control, index) => { control.value = snapshot[index]; });
     expiryMode = "";
@@ -652,7 +676,7 @@ document.getElementById("stock-recipes-button").addEventListener("click", async 
       const targetServings = hasServingEstimate && maxServings > 0
         ? Math.min(requestedServings, maxServings)
         : requestedServings;
-      link.href = `/modul4/?recipe=${encodeURIComponent(recipe.recipe_code)}`
+      link.href = `/recipes/?recipe=${encodeURIComponent(recipe.recipe_code)}`
         + (hasServingEstimate ? `&servings=${targetServings}` : "");
       link.textContent = `${recipe.name} · ${recipe.complete ? "Bahan cukup" : "Sebagian bahan tersedia"}${recipe.unknown_expiry ? " · tanggal stok belum diketahui" : ""}`;
       line.append(link);
@@ -670,6 +694,7 @@ document.getElementById("stock-recipes-button").addEventListener("click", async 
         }
         line.append(portion);
       }
+      // Menambah daftar bahan (terpenuhi/kurang, gram) ke kartu resep; daftar kosong dilewati.
       const appendIngredientGroup = (title, rows, className) => {
         if (!rows?.length) return;
         const group = document.createElement("section");
@@ -710,6 +735,8 @@ window.addEventListener("pagehide", () => {
   if (workerPromise) workerPromise.then((worker) => worker.terminate()).catch(() => {});
 });
 
+// initExpiryFilter: memasang filter stok per kedaluwarsa (semua, lewat, 7 hari, tanpa tanggal).
+// Komentar ditaruh di luar IIFE karena tes JS mencari teks "(() => {" yang langsung diikuti fungsi.
 (() => {
   function initExpiryFilter() {
     const filter = document.getElementById("expiry-filter");
@@ -723,6 +750,7 @@ window.addEventListener("pagehide", () => {
       ),
     ];
 
+    // Parse YYYY-MM-DD dan menolak tanggal tidak nyata (mis. 31 Februari) dengan null.
     function parseDate(value) {
       const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
       if (!match) return null;
@@ -741,6 +769,7 @@ window.addEventListener("pagehide", () => {
       return date;
     }
 
+    // Menyembunyikan baris yang tidak cocok dengan filter dan menampilkan jumlah yang terlihat.
     function applyFilter() {
       const now = new Date();
       const today = new Date(
