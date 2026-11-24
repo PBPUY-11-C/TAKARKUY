@@ -6,3 +6,5 @@ python-dotenv
 whitenoise
 reportlab>=4.2,<6
 djangorestframework~=3.18.3
+drf-spectacular~=0.30.0
+django-cors-headers~=4.9.0
