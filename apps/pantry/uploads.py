@@ -5,6 +5,8 @@ from django.http import JsonResponse
 
 from .receipt_ocr import MAX_IMAGE_BYTES
 
+SCAN_PATHS = {"/pantry/ocr-fallback/", "/api/pantry/receipt/scan/"}
+
 
 class ReceiptUploadHandler(MemoryFileUploadHandler):
     """Upload handler foto struk yang selalu menyimpan di memori dan berhenti di batas ukuran."""
@@ -26,7 +28,7 @@ class ReceiptUploadHandler(MemoryFileUploadHandler):
 
 
 class ReceiptUploadMiddleware:
-    """Middleware yang memasang ReceiptUploadHandler khusus untuk POST ke endpoint OCR fallback."""
+    """Middleware yang memasang ReceiptUploadHandler khusus untuk POST ke endpoint OCR fallback (web dan API mobile)."""
 
     def __init__(self, get_response):
         """Menyimpan handler berikutnya dalam rantai middleware."""
@@ -37,7 +39,7 @@ class ReceiptUploadMiddleware:
 
         Bila handler menandai foto melebihi batas saat streaming, respons diganti 413.
         """
-        if request.path == "/pantry/ocr-fallback/" and request.method == "POST":
+        if request.path in SCAN_PATHS and request.method == "POST":
             try:
                 length = int(request.META.get("CONTENT_LENGTH") or 0)
             except ValueError:

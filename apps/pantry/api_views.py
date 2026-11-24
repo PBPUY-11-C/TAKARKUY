@@ -1,105 +1,184 @@
-"""Endpoint REST Modul 2 untuk aplikasi mobile; aksi tulis memakai view JSON web yang sama.
-Hanya GET dan POST karena pbp_django_auth di Flutter hanya mendukung dua method itu."""
+"""Endpoint REST Modul 2 (Smart Pantry) untuk aplikasi mobile.
 
-import inspect
+Logika simpan, ubah, dan buang stok memakai view web yang sama (idempotency key, version, riwayat
+movement tetap berlaku). Bedanya hanya di pintu masuk: autentikasi session tanpa token CSRF
+(lihat config/api_auth.py) dan hanya GET/POST karena pbp_django_auth di Flutter tidak mendukung
+PATCH maupun DELETE."""
+
 from datetime import timedelta
 from functools import wraps
 from zoneinfo import ZoneInfo
 
-from django.http import Http404
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.cache import patch_cache_control
-from rest_framework import status
+from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import views
+from . import views as web
 from .models import PantryItem
-from .serializers import PantryItemDetailSerializer, PantryItemSerializer
+from .storage import DEFAULT_LOCATION
 
-NOT_FOUND_MESSAGE = "Stok tidak ditemukan."
+EXPIRY_FILTERS = {"all", "expired", "soon", "unknown"}
+SOON_DAYS = 7
 
 
-def pantry_errors(view):
-    """Menolak POST yang bukan JSON (415), mengubah 404/400 menjadi JSON {"error": ...},
-    dan menandai respons agar tidak di-cache karena berisi data pribadi."""
+def today():
+    """Tanggal hari ini menurut WIB, acuan semua hitungan kedaluwarsa."""
+    return timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
+
+
+class PantryItemSerializer(serializers.ModelSerializer):
+    """Satu batch stok untuk Virtual Pantry; `version` wajib dikirim balik saat mengubah atau membuang."""
+
+    quantity = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+    ingredient_code = serializers.CharField(source="ingredient_id", default=None)
+    days_remaining = serializers.SerializerMethodField()
+    expiry_status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PantryItem
+        fields = [
+            "id",
+            "name",
+            "category",
+            "quantity",
+            "unit",
+            "location",
+            "ingredient_code",
+            "source",
+            "starting_on",
+            "estimated_expires_on",
+            "expiry_source",
+            "days_remaining",
+            "expiry_status",
+            "version",
+            "updated_at",
+        ]
+
+    def get_quantity(self, item):
+        """Jumlah sebagai angka biasa agar mudah dibaca Dart (bukan string desimal 6 digit)."""
+        return float(item.quantity)
+
+    def get_location(self, item):
+        """Lokasi simpan; item lama tanpa lokasi dianggap suhu ruang seperti di web."""
+        return item.location or DEFAULT_LOCATION
+
+    def get_days_remaining(self, item):
+        """Sisa hari sampai tanggal kedaluwarsa (negatif bila lewat); None bila belum diketahui."""
+        if not item.estimated_expires_on:
+            return None
+        return (item.estimated_expires_on - today()).days
+
+    def get_expiry_status(self, item):
+        """expired, soon (0–7 hari), ok, atau unknown; dasar filter di layar Pantry."""
+        days = self.get_days_remaining(item)
+        if days is None:
+            return "unknown"
+        if days < 0:
+            return "expired"
+        return "soon" if days <= SOON_DAYS else "ok"
+
+
+def active_items(request):
+    """Stok aktif milik user: belum diarsipkan dan jumlahnya masih lebih dari nol."""
+    return PantryItem.objects.filter(user=request.user, archived_at__isnull=True, quantity__gt=0)
+
+
+def no_store(view):
+    """Respons berisi data pribadi tidak boleh di-cache."""
 
     @wraps(view)
     def wrapped(request, *args, **kwargs):
-        """Menjalankan view setelah cek Content-Type lalu memetakan 404/400."""
-        # Perlindungan CSRF API bergantung pada aturan JSON-only; view hapus web tidak mengeceknya.
-        if request.method == "POST" and request._request.content_type != "application/json":
-            response = Response(
-                {"error": "Kirim data sebagai JSON."}, status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
-            )
-        else:
-            try:
-                response = view(request, *args, **kwargs)
-            except Http404:
-                response = Response({"error": NOT_FOUND_MESSAGE}, status=status.HTTP_404_NOT_FOUND)
-            except ValueError as exc:
-                response = Response({"error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+        """Menjalankan view lalu menandai respons private, no-store."""
+        response = view(request, *args, **kwargs)
         patch_cache_control(response, private=True, no_store=True)
         return response
 
     return wrapped
 
 
-def web(view):
-    """View JSON web tanpa decorator login dan method-nya; DRF sudah mengautentikasi user dan
-    membatasi method, jadi validasi, penguncian, versi, dan riwayat tetap satu sumber."""
-    return inspect.unwrap(view)
+def delegate(web_view, request, *args, method=None, **kwargs):
+    """Menjalankan view web pada HttpRequest asli (body belum dibaca DRF); `method` menggantikan
+    method request sementara karena klien mobile hanya bisa GET/POST."""
+    raw = request._request
+    original = raw.method
+    if method:
+        raw.method = method
+    try:
+        return web_view(raw, *args, **kwargs)
+    finally:
+        raw.method = original
 
 
 @api_view(["GET", "POST"])
-@pantry_errors
+@no_store
 def item_list(request):
-    """GET: stok aktif milik user, bisa difilter `expiry` (all, expired, next7, unknown) seperti web.
-    POST: menambah 1–30 bahan dengan body yang sama seperti web (`source`, `operation_key`, `items`)."""
+    """GET: stok aktif, opsional `?filter=expired|soon|unknown` (default semua). POST: menambah
+    1–30 bahan; body `{"source": "manual"|"ocr", "operation_key": <uuid>, "items": [...]}`."""
     if request.method == "POST":
-        return web(views.save_pantry_items)(request._request)
-
-    today = timezone.localdate(timezone=ZoneInfo("Asia/Jakarta"))
-    filters = {
-        "all": {},
-        "expired": {"estimated_expires_on__lt": today},
-        "next7": {"estimated_expires_on__range": (today, today + timedelta(days=7))},
-        "unknown": {"estimated_expires_on__isnull": True},
-    }
-    expiry = request.query_params.get("expiry", "all")
-    if expiry not in filters:
-        raise ValueError("Filter kedaluwarsa harus all, expired, next7, atau unknown.")
-    items = PantryItem.objects.filter(
-        user=request.user, archived_at__isnull=True, quantity__gt=0, **filters[expiry]
-    )
+        return delegate(web.save_pantry_items, request)
+    mode = request.query_params.get("filter", "all")
+    if mode not in EXPIRY_FILTERS:
+        return Response(
+            {"error": "filter harus salah satu dari: all, expired, soon, unknown."}, status=400
+        )
+    items = active_items(request)
+    if mode == "expired":
+        items = items.filter(estimated_expires_on__lt=today())
+    elif mode == "soon":
+        items = items.filter(
+            estimated_expires_on__gte=today(),
+            estimated_expires_on__lte=today() + timedelta(days=SOON_DAYS),
+        )
+    elif mode == "unknown":
+        items = items.filter(estimated_expires_on__isnull=True)
     return Response(PantryItemSerializer(items, many=True).data)
 
 
 @api_view(["GET"])
-@pantry_errors
+@no_store
 def item_detail(request, item_id):
-    """Detail satu bahan milik user beserta riwayat perubahannya, termasuk bahan yang sudah dibuang."""
-    item = get_object_or_404(PantryItem, pk=item_id, user=request.user)
-    return Response(PantryItemDetailSerializer(item).data)
+    """Detail satu stok milik user; milik user lain diperlakukan sebagai tidak ditemukan."""
+    item = active_items(request).filter(pk=item_id).first()
+    if item is None:
+        return Response({"error": "Stok tidak ditemukan."}, status=404)
+    return Response(PantryItemSerializer(item).data)
 
 
 @api_view(["POST"])
-@pantry_errors
+@no_store
 def item_update(request, item_id):
-    """Mengubah detail bahan seperti PATCH di web; `version` dan `operation_key` wajib."""
-    return web(views.update_pantry_details)(request._request, item_id)
+    """Mengubah jumlah, satuan, lokasi, atau tanggal kedaluwarsa (setara PATCH di web).
+    Body wajib memuat `version` dan `operation_key`."""
+    return delegate(web.update_pantry_details, request, item_id, method="PATCH")
 
 
 @api_view(["POST"])
-@pantry_errors
+@no_store
 def item_delete(request, item_id):
-    """Membuang bahan (jumlah 0 dan diarsipkan) seperti DELETE di web; `version` dan `operation_key` wajib."""
-    return web(views.delete_pantry_item)(request._request, item_id)
+    """Membuang stok (setara DELETE di web: diarsipkan dan dicatat). Body: `version`, `operation_key`."""
+    return delegate(web.delete_pantry_item, request, item_id, method="DELETE")
 
 
 @api_view(["GET"])
-@pantry_errors
-def recipe_ideas(request):
-    """Resep yang bisa dimasak dari stok, sama dengan pintasan web; `servings` 1–10."""
-    return web(views.pantry_recipe_matches)(request._request)
+@no_store
+def item_movements(request, item_id):
+    """Riwayat perubahan stok (maksimal 100 terbaru)."""
+    return delegate(web.pantry_movements, request, item_id)
+
+
+@api_view(["GET"])
+@no_store
+def recipe_matches(request):
+    """Ide menu dari stok yang belum kedaluwarsa; `?servings=1..10`, maksimal 20 resep."""
+    return delegate(web.pantry_recipe_matches, request)
+
+
+@api_view(["POST"])
+@no_store
+def receipt_scan(request):
+    """Membaca foto struk (multipart, field `image`, maksimal 10 MB) lewat Gemini. Hasilnya belum
+    tersimpan: periksa dulu, lalu kirim ke POST /api/pantry/items/ dengan source "ocr"."""
+    return delegate(web.fallback_receipt_ocr, request)
