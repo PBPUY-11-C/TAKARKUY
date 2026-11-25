@@ -72,17 +72,34 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "drf_spectacular",
+    "corsheaders",
 ]
 
-# API untuk aplikasi mobile: wajib login, hanya menerima body JSON.
+# API untuk aplikasi mobile: wajib login, hanya menerima body JSON, error berbentuk seragam.
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["config.api_auth.MobileSessionAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
+    "EXCEPTION_HANDLER": "config.api_errors.api_exception_handler",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+SPECTACULAR_SETTINGS = {
+    "TITLE": "TAKARKUY API",
+    "DESCRIPTION": "API untuk aplikasi mobile TAKARKUY. Login lewat /api/auth/login/ (session cookie).",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
+# Flutter yang dijalankan di Chrome (localhost) boleh memanggil API saat pengembangan.
+# Hanya path /api/ dan hanya origin localhost; situs lain tetap ditolak browser.
+CORS_ALLOWED_ORIGIN_REGEXES = [r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"]
+CORS_ALLOW_CREDENTIALS = True
+CORS_URLS_REGEX = r"^/api/.*$"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
