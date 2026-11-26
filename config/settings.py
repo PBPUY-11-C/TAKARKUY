@@ -51,6 +51,7 @@ except ValueError as error:
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "10.0.2.2",
     "alfredo-nathaniel-takarkuy.pws.cs.ui.ac.id",
 ]
 CSRF_TRUSTED_ORIGINS = [
@@ -72,13 +73,17 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework.authtoken",
     "drf_spectacular",
     "corsheaders",
 ]
 
 # API untuk aplikasi mobile: wajib login, hanya menerima body JSON, error berbentuk seragam.
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ["config.api_auth.MobileSessionAuthentication"],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "config.api_auth.MobileTokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "EXCEPTION_HANDLER": "config.api_errors.api_exception_handler",
@@ -86,7 +91,7 @@ REST_FRAMEWORK = {
 }
 SPECTACULAR_SETTINGS = {
     "TITLE": "TAKARKUY API",
-    "DESCRIPTION": "API untuk aplikasi mobile TAKARKUY. Login lewat /api/auth/login/ (session cookie).",
+    "DESCRIPTION": "API mobile TAKARKUY. Kirim token login pada header Authorization: Token <token>.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }

@@ -5,6 +5,7 @@ from uuid import uuid4
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 from apps.catalog.models import Ingredient, Recipe, RecipeIngredient, RecipeTag
 from apps.pantry.models import PantryItem
@@ -260,7 +261,8 @@ class RecipeApiTests(TestCase):
 
     def test_post_works_without_csrf_token(self):
         client = self.client_class(enforce_csrf_checks=True)
-        client.force_login(self.user)
+        token, _ = Token.objects.get_or_create(user=self.user)
+        client.defaults["HTTP_AUTHORIZATION"] = f"Token {token.key}"
         response = client.post(
             API + "favorites/",
             data=json.dumps({"recipe_code": self.soup.pk, "favorite": True}),

@@ -6,6 +6,7 @@ from uuid import uuid4
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 from apps.catalog.models import Recipe
 from apps.home.models import MapQuota, MyRecipe
@@ -239,7 +240,8 @@ class MyRecipeApiTests(HomeApiTestCase):
 
     def test_post_works_without_csrf_token(self):
         client = self.client_class(enforce_csrf_checks=True)
-        client.force_login(self.user)
+        token, _ = Token.objects.get_or_create(user=self.user)
+        client.defaults["HTTP_AUTHORIZATION"] = f"Token {token.key}"
         response = client.post(
             "/api/dashboard/recipes/", data=json.dumps(DATA_VALID), content_type="application/json"
         )
