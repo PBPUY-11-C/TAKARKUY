@@ -1,17 +1,17 @@
-"""Endpoint REST Modul 3 (akun, profil, preferensi makan) untuk aplikasi mobile; validasinya memakai
-form yang sama dengan web. Hanya GET dan POST karena pbp_django_auth di Flutter hanya mendukung keduanya."""
+"""Endpoint REST Modul 3 untuk autentikasi token, profil, dan preferensi makanan."""
 
 from functools import wraps
 
-from django.contrib.auth import get_user_model, login, logout, update_session_auth_hash
+from django.contrib.auth import get_user_model, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db import IntegrityError, transaction
 from django.utils.cache import patch_cache_control
 from rest_framework import status
 from rest_framework.decorators import api_view, parser_classes, permission_classes
-from rest_framework.parsers import FormParser, JSONParser
+from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from .forms import AccountDetailsForm, EmailOrUsernameAuthenticationForm, PreferenceForm, SignUpForm
 from .models import UserProfile
@@ -62,11 +62,10 @@ def profile_response(user_pk):
 
 
 @api_view(["POST"])
-@parser_classes([FormParser, JSONParser])
+@parser_classes([JSONParser])
 @permission_classes([AllowAny])
 def login_view(request):
-    """Login dengan email atau username; menerima form-urlencoded karena itu yang dikirim
-    pbp_django_auth.login. Balasan mengikuti pola tutorial PBP: {status, username, message}."""
+    """Login email/username dan terbitkan token DRF untuk aplikasi mobile."""
     if not isinstance(request.data, dict):
         return Response({"status": False, "message": INVALID_BODY}, status=status.HTTP_400_BAD_REQUEST)
     form = EmailOrUsernameAuthenticationForm(request, data=request.data)
@@ -77,8 +76,13 @@ def login_view(request):
             status=status.HTTP_400_BAD_REQUEST if incomplete else status.HTTP_401_UNAUTHORIZED,
         )
     user = form.get_user()
-    login(request, user)
-    return Response({"status": True, "username": user.username, "message": "Login berhasil."})
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({
+        "status": True,
+        "username": user.username,
+        "token": token.key,
+        "message": "Login berhasil.",
+    })
 
 
 @api_view(["POST"])
