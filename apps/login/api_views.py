@@ -2,7 +2,7 @@
 
 from functools import wraps
 
-from django.contrib.auth import get_user_model, logout, update_session_auth_hash
+from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db import IntegrityError, transaction
 from django.utils.cache import patch_cache_control
@@ -86,12 +86,10 @@ def login_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
 def logout_view(request):
-    """Mengakhiri session; tetap 200 bila session sudah habis agar aplikasi selalu bisa keluar."""
-    username = request.user.username
-    logout(request)
-    return Response({"status": True, "username": username, "message": "Logout berhasil."})
+    """Cabut token perangkat saat ini."""
+    request.auth.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(["POST"])
