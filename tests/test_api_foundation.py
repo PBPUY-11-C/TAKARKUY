@@ -63,10 +63,10 @@ class ApiDocsTests(TestCase):
         missing = sorted(set(api_routes(get_resolver().url_patterns)) - documented)
         self.assertEqual(missing, [])
 
-    def test_schema_describes_session_cookie_login(self):
+    def test_schema_describes_token_header_authentication(self):
         schema = json.loads(self.client.get("/api/schema/?format=json").content)
         schemes = schema["components"]["securitySchemes"]
-        self.assertIn({"type": "apiKey", "in": "cookie", "name": "sessionid"}, schemes.values())
+        self.assertIn({"type": "apiKey", "in": "header", "name": "Authorization", "description": "Token <token>"}, schemes.values())
 
     def test_swagger_and_redoc_pages(self):
         for url in ("/api/docs/", "/api/redoc/"):
@@ -108,7 +108,7 @@ class CekApiScriptTests(LiveServerTestCase):
         results = cek_semua(self.live_server_url, "penguji", "Takar#Uji2026x")
 
         self.assertEqual([name for name, _, _ in results], ["Login", *ENDPOINTS, "Logout"])
-        self.assertEqual({status for _, _, status in results}, {200})
+        self.assertEqual([status for _, _, status in results], [200, 200, 200, 200, 200, 200, 204])
 
     def test_wrong_password_stops_after_login(self):
         get_user_model().objects.create_user("penguji", password="Takar#Uji2026x")

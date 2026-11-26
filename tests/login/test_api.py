@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
+from rest_framework.authtoken.models import Token
 
 from apps.catalog.models import Ingredient
 from apps.login.models import FoodPreference, UserProfile
@@ -54,44 +55,46 @@ class AuthApiTests(TestCase):
 
     # Login dan logout
 
-    def test_login_accepts_form_body_like_pbp_django_auth(self):
+    def test_login_rejects_form_body_and_requires_json(self):
         client = Client(enforce_csrf_checks=True)
         response = client.post("/api/auth/login/", {"username": "DINA@example.com", "password": PASSWORD})
-        self.assertEqual(response.status_code, 200)
-        body = response.json()
-        self.assertIs(body["status"], True)
-        self.assertEqual(body["username"], "penakar")
-        self.assertIn("message", body)
-        self.assertEqual(client.get("/api/auth/profile/").status_code, 200)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(client.get("/api/auth/profile/").status_code, 403)
 
     def test_login_also_accepts_json(self):
         response = self.post("/api/auth/login/", {"username": "penakar", "password": PASSWORD})
         self.assertEqual(response.status_code, 200)
-        self.assertIs(response.json()["status"], True)
+        body = response.json()
+        self.assertIs(body["status"], True)
+        token = Token.objects.get(user=self.user)
+        self.assertEqual(body["token"], token.key)
+        profile = self.client.get("/api/auth/profile/", HTTP_AUTHORIZATION=f"Token {token.key}")
+        self.assertEqual(profile.status_code, 200)
 
     def test_login_with_wrong_password_is_rejected(self):
-        response = self.client.post("/api/auth/login/", {"username": "penakar", "password": "salah"})
+        response = self.post("/api/auth/login/", {"username": "penakar", "password": "salah"})
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.json()["status"], False)
         self.assertIn("message", response.json())
         self.assertEqual(self.client.get("/api/auth/profile/").status_code, 403)
 
     def test_login_with_missing_fields_is_bad_request(self):
-        response = self.client.post("/api/auth/login/", {"username": "penakar"})
+        response = self.post("/api/auth/login/", {"username": "penakar"})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["status"], False)
 
     def test_inactive_account_cannot_log_in(self):
         get_user_model().objects.filter(pk=self.other.pk).update(is_active=False)
-        response = self.client.post("/api/auth/login/", {"username": "other", "password": PASSWORD})
+        response = self.post("/api/auth/login/", {"username": "other", "password": PASSWORD})
         self.assertEqual(response.status_code, 401)
 
-    def test_logout_ends_session_without_body(self):
-        self.client.force_login(self.user)
-        response = self.client.post("/api/auth/logout/")
-        self.assertEqual(response.status_code, 200)
-        self.assertIs(response.json()["status"], True)
-        self.assertEqual(self.client.get("/api/auth/profile/").status_code, 403)
+    def test_logout_revokes_token(self):
+        token = Token.objects.create(user=self.user)
+        headers = {"HTTP_AUTHORIZATION": f"Token {token.key}"}
+        response = self.client.post("/api/auth/logout/", **headers)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Token.objects.filter(user=self.user).exists())
+        self.assertEqual(self.client.get("/api/auth/profile/", **headers).status_code, 403)
 
     # Registrasi
 
@@ -275,9 +278,9 @@ class AuthApiTests(TestCase):
         with patch("apps.login.rate_limits.datetime", wraps=datetime) as clock:
             clock.now.return_value = datetime(2026, 11, 18, 9, 1, tzinfo=UTC)
             for _ in range(10):
-                response = self.client.post("/api/auth/login/", {"username": "penakar", "password": "x"})
+                response = self.post("/api/auth/login/", {"username": "penakar", "password": "x"})
                 self.assertEqual(response.status_code, 401)
-            response = Client().post("/api/auth/login/", {"username": "DINA@example.com", "password": PASSWORD})
+            response = self.post("/api/auth/login/", {"username": "DINA@example.com", "password": PASSWORD}, client=Client())
         self.assertEqual(response.status_code, 429)
         self.assertEqual(response.json()["status"], False)
         self.assertIn("message", response.json())

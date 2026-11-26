@@ -1,25 +1,28 @@
-"""Autentikasi API untuk aplikasi mobile (Flutter + pbp_django_auth)."""
+"""Autentikasi token untuk API aplikasi mobile."""
 
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 
 
-class MobileSessionAuthentication(SessionAuthentication):
-    """Login lewat cookie session yang sama dengan web, tanpa token CSRF karena pbp_django_auth tidak
-    mengirimnya. Tetap aman dari CSRF: API hanya menerima body JSON (form lintas situs ditolak 415,
-    fetch JSON lintas situs butuh izin CORS) dan cookie session memakai SameSite=Lax."""
+class MobileTokenAuthentication(TokenAuthentication):
+    """Token DRF stateless dengan respons unauthenticated 403 seragam."""
 
-    def enforce_csrf(self, request):
-        """Lewati pemeriksaan token CSRF; perlindungannya dari aturan JSON-only dan SameSite."""
+    def authenticate(self, request):
+        try:
+            return super().authenticate(request)
+        except AuthenticationFailed as exc:
+            raise NotAuthenticated("Token tidak valid atau sudah dicabut.", code="not_authenticated") from exc
+
+    def authenticate_header(self, request):
         return None
 
 
-class MobileSessionScheme(OpenApiAuthenticationExtension):
-    """Menjelaskan di dokumentasi Swagger bahwa API memakai cookie `sessionid` hasil login."""
+class MobileTokenScheme(OpenApiAuthenticationExtension):
+    """Skema header token untuk dokumentasi OpenAPI."""
 
-    target_class = "config.api_auth.MobileSessionAuthentication"
-    name = "sessionCookie"
+    target_class = "config.api_auth.MobileTokenAuthentication"
+    name = "mobileToken"
 
     def get_security_definition(self, auto_schema):
-        """Definisi keamanan OpenAPI: kunci API berupa cookie sessionid."""
-        return {"type": "apiKey", "in": "cookie", "name": "sessionid"}
+        return {"type": "apiKey", "in": "header", "name": "Authorization", "description": "Token <token>"}

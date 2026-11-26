@@ -5,6 +5,7 @@ from uuid import uuid4
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 from zoneinfo import ZoneInfo
 
 from apps.pantry.models import PantryItem, PantryMovement
@@ -24,9 +25,11 @@ class PantryApiTests(TestCase):
         cls.other = users.create_user("pantry-other", password="Demo1234!")
 
     def setUp(self):
-        # Klien mobile tidak mengirim token CSRF, jadi pemeriksaannya dibiarkan aktif di tes.
+        # Simulasikan aplikasi mobile: autentikasi token dan pemeriksaan CSRF tetap aktif.
         self.client = Client(enforce_csrf_checks=True)
         self.client.force_login(self.user)
+        token, _ = Token.objects.get_or_create(user=self.user)
+        self.client.defaults["HTTP_AUTHORIZATION"] = f"Token {token.key}"
 
     def post(self, url, data):
         return self.client.post(url, data=json.dumps(data), content_type="application/json")
@@ -52,6 +55,7 @@ class PantryApiTests(TestCase):
 
     def test_requires_login(self):
         self.client.logout()
+        self.client.defaults.pop("HTTP_AUTHORIZATION", None)
         for method, url in [
             ("get", BASE),
             ("post", BASE),
