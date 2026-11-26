@@ -6,11 +6,10 @@ skrip berjalan dan tidak disimpan di mana pun.
 """
 
 import getpass
+import json
 import sys
-from http.cookiejar import CookieJar
 from urllib.error import HTTPError
-from urllib.parse import urlencode
-from urllib.request import HTTPCookieProcessor, Request, build_opener
+from urllib.request import Request, urlopen
 
 LOGIN = "/api/auth/login/"
 LOGOUT = "/api/auth/logout/"
@@ -25,22 +24,34 @@ ENDPOINTS = {
 
 def cek_semua(base_url, username, password):
     """Mengembalikan [(nama, path, status HTTP)]; berhenti setelah login bila login gagal."""
-    opener = build_opener(HTTPCookieProcessor(CookieJar()))
-
-    def call(path, data=None):
-        """Status HTTP satu request; cookie session dibawa otomatis oleh opener."""
+    def call(path, data=None, token=None):
+        """Panggil API JSON dengan token pada header bila endpoint memerlukannya."""
+        headers = {}
+        if data is not None:
+            headers["Content-Type"] = "application/json"
+        if token:
+            headers["Authorization"] = f"Token {token}"
+        request = Request(
+            base_url.rstrip("/") + path,
+            data=json.dumps(data).encode() if data is not None else None,
+            headers=headers,
+        )
         try:
-            with opener.open(Request(base_url.rstrip("/") + path, data=data), timeout=30) as response:
-                return response.status
+            with urlopen(request, timeout=30) as response:
+                payload = response.read()
+                return response.status, json.loads(payload) if payload else {}
         except HTTPError as error:
-            return error.code
+            return error.code, {}
 
-    credentials = urlencode({"username": username, "password": password}).encode()
-    results = [("Login", LOGIN, call(LOGIN, credentials))]
+    status, body = call(LOGIN, {"username": username, "password": password})
+    results = [("Login", LOGIN, status)]
     if results[0][2] != 200:
         return results
-    results += [(name, path, call(path)) for name, path in ENDPOINTS.items()]
-    results.append(("Logout", LOGOUT, call(LOGOUT, b"")))
+    token = body.get("token")
+    if not token:
+        return results
+    results += [(name, path, call(path, token=token)[0]) for name, path in ENDPOINTS.items()]
+    results.append(("Logout", LOGOUT, call(LOGOUT, {}, token=token)[0]))
     return results
 
 
@@ -51,8 +62,9 @@ def main():
     password = getpass.getpass("Kata sandi: ")
     results = cek_semua(base_url, username, password)
     for name, path, status in results:
-        print(f"{'OK   ' if status == 200 else 'GAGAL'} {status}  {name:<10} {path}")
-    sys.exit(0 if all(status == 200 for _, _, status in results) else 1)
+        success = status == 200 or (name == "Logout" and status == 204)
+        print(f"{'OK   ' if success else 'GAGAL'} {status}  {name:<10} {path}")
+    sys.exit(0 if all(status == 200 or (name == "Logout" and status == 204) for name, _, status in results) else 1)
 
 
 if __name__ == "__main__":
