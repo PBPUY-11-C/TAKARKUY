@@ -57,3 +57,13 @@ class TokenAuthenticationApiTests(TestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertFalse(Token.objects.filter(user=self.user).exists())
+
+    def test_session_logout_preserves_the_mobile_token(self):
+        token = Token.objects.create(user=self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.post("/api/auth/logout/")
+
+        self.assertEqual(response.status_code, 204)
+        self.assertNotIn("_auth_user_id", self.client.session)
+        self.assertTrue(Token.objects.filter(key=token.key).exists())

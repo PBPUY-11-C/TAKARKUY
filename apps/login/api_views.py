@@ -3,6 +3,7 @@
 from functools import wraps
 
 from django.contrib.auth import get_user_model, update_session_auth_hash
+from django.contrib.auth import logout as django_logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db import IntegrityError, transaction
 from django.utils.cache import patch_cache_control
@@ -87,8 +88,11 @@ def login_view(request):
 
 @api_view(["POST"])
 def logout_view(request):
-    """Cabut token perangkat saat ini."""
-    request.auth.delete()
+    """Cabut token mobile atau akhiri sesi web yang sedang digunakan."""
+    if request.auth is not None:
+        request.auth.delete()
+    else:
+        django_logout(request)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
